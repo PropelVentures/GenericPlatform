@@ -12,10 +12,11 @@ class MainPageBuilder
     private $tabNum; //Current Tab Number
     private $table_alias; //Table alias associated with current display page (located in Data Dictionary and related to Field Dictionary)
     private $database_table_name; //database_table_name field inside the
-    private $list_fields; //fields to be displayed in table retrieved from data dictionary
+    private $list_fields; // fields to be displayed in table retrieved from data dictionary
     private $list_filter; //
     private $list_sort; //way to sort fields retrieved from field dictionary (retieved from data dictionary)
     private $dataDictQuery; // Resulting array from querying data dictionary
+    private $WHERE; // Where statement
 
     function LoadMainContent($displayPage, $menu_location, Factory $oFactory){
         if(!empty($_GET["tab_num"])){
@@ -27,14 +28,119 @@ class MainPageBuilder
         //$_SESSION["tab_num"] = $this->tabNum;
         
         // Query data dictionary for needed fields
-        $this->dataDictQuery = this->GetInfoFromDataDictionary($displayPage, $menu_location, $oFactory);
+        $this->dataDictQuery = $this->GetInfoFromDataDictionary($displayPage, $menu_location, $oFactory);
         // Create the main tabs for the body
         $this->CreateAndDisplayTabs($displayPage, $menu_location, $oFactory);
-        // Create the table headers 
-        $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory);
-        // Grab field data and populate the table
-        $this->PopulateTable($displayPage, $menu_location, $oFactory);
+        
+        
+        // Get the list_view and create display field
+        foreach($this->dataDictQuery as $key => $row){
+            $row["list_views"];
+            $list_view = explode(" ", $row);
+            foreach ($list_view as $key => 
+            if ($list_view[0] == "listView"){
+                CreateTable($displayPage, $menu_location, $oFactory);
+            }
+            else if ($list_view[0] == "boxView"){
+                // To be made
+                // CreateBoxView($displayPage, $menu_location, $oFactory);
+            }
+            else if ($list_view[0] == "thumbView"){
+                // To be made
+                //  CreateThumbView($displayPage, $menu_location, $oFactory);
+            }
+            else if ($list_view[0] == "Cards"){
+                // To be made
+                // CreateCardVsiew($displayPage, $menu_location, $oFactory);
+            }
+            else if ($list_view[0] == "Xlist"){
+                // To be made
+                // CreateXListView($displayPage, $menu_location, $oFactory);
+            }
+            // Just display field_data
+            else {                
+                CreateDefaultView($displayPage, $menu_location, $oFactory);
+            }
+        }
+        
+
     }
+    
+    // No styling or specific layout, just display data listed in field_dictionary
+    function CreateDefaultView($displayPage, $menu_location, $oFactory){
+        
+        // Grab fields from field_dictionary
+        $data_fields = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+        if(empty($this->list_fields) || $this->list_fields == ""){
+            foreach($data_fields as $key=>$value){
+                if($key < count($data_fields) - 1){
+                    $this->list_fields .= $value["generic_field_name"] . ",";
+                }
+                else {
+                    $this->list_fields .= $value["generic_field_name"];
+                }
+            }
+        }
+        foreach($data_fields as $field){
+            // Generate html code based off format_type
+            GetAndDisplayData($field);        
+    }
+    
+    
+    // Creates html for a data field and retrieves the value to go inside
+    function GetAndDisplayData($field){
+        $tag_data = $oFactory->SQLHelper()->queryToDatabase("SELECT $field FROM `$this->database_table_name` ORDER BY $this->list_sort");
+        
+        if ($field["format_type"] == "" || empty($field["format_type"]){
+            echo "<p> $tag_data </p>";
+        }
+        else if ($field["format_type"] == "username"){
+            echo "<input type='text' name='username'>";
+        }
+        else if ($field["format_type"] == "transaction_text"){
+            
+        }
+        else if ($field["format_type"] == "transaction_execute"){
+            
+        }
+        else if ($field["format_type"] == "transaction_confirmation"){
+            
+        }
+        else if ($field["format_type"] == "transaction_cancel"){
+            
+        }
+        else if ($field["format_type"] == "textbox"){
+            echo "<input type='text' name='$field['generic_field_name'>";
+
+        }
+        else if ($field["format_type"] == "tag"){
+            echo "<input type='text' value='html,input,tag' data-role='tagsinput'></input>";
+        }
+        else if ($field["format_type"] == "pdf_inline"){
+            
+        }
+        else if ($field["format_type"] == "password"){
+            echo "<input type='password' name='username'>";
+        }
+        else if ($field["format_type"] == "list_fragment"){
+            
+        }
+        else if ($field["format_type"] == "image"){
+            echo "<img src='" . $oFactory->SQLHelper()->queryToDatabase("SELECT $field['generic_field_name' FROM `$this->database_table_name` ORDER BY $this->list_sort $this->WHERE "); . "' >";
+        }
+        else if ($field["format_type"] == "email"){
+            
+        }
+        else if ($field["format_type"] == "dropdown"){
+            
+        }
+        else if ($field["format_type"] == "crf"){
+            
+        }
+        
+        
+    }
+    
 
     // Creates the HTML tab tags to be displayed
     function CreateAndDisplayTabs($displayPage, $menu_location, Factory $oFactory){
@@ -66,8 +172,26 @@ class MainPageBuilder
         $this->list_fields = $resArr[$this->tabNum - 1]["list_fields"]; //explode(",", $resArr[$this->tabNum - 1]["list_fields"]);
         // Grab list sort method
         $this->list_sort = $resArr[$this->tabNum - 1]["list_sort"];
+        // Get WHERE statement
+        if ($resArr[$this->tabNum-1]["list_filter"] != "" && !empty($resArr[$this->tabNum-1]["list_filter"]){
+            $this->WHERE = "WHERE $resArr[$this->tabNum-1]['list_filter']";
+        }
+        else {
+            $this->WHERE = "";
+        }
+        
+        
     }
 
+    
+    function CreateTable($displayPage, $menu_location,$oFactory){
+        // Create the table headers 
+        $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory);
+        // Grab field data and populate the table
+        $this->PopulateTable($displayPage, $menu_location, $oFactory);
+    }
+
+    
     // Iterate through the field_dictionary to grab the table headers
     Function CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory){
         $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
