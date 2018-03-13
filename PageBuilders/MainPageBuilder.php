@@ -35,11 +35,9 @@ class MainPageBuilder
         
         // Get the list_view and create display field
         foreach($this->dataDictQuery as $key => $row){
-            $row["list_views"];
-            $list_view = explode(" ", $row);
-            foreach ($list_view as $key => 
-            if ($list_view[0] == "listView"){
-                CreateTable($displayPage, $menu_location, $oFactory);
+            $list_view = explode(" ", $row["list_views"]);
+            if ($list_view[0] == "listview"){
+                $this->CreateTable($displayPage, $menu_location, $oFactory);
             }
             else if ($list_view[0] == "boxView"){
                 // To be made
@@ -58,8 +56,8 @@ class MainPageBuilder
                 // CreateXListView($displayPage, $menu_location, $oFactory);
             }
             // Just display field_data
-            else {                
-                CreateDefaultView($displayPage, $menu_location, $oFactory);
+            else {
+                $this->CreateDefaultView($oFactory);
             }
         }
         
@@ -67,13 +65,18 @@ class MainPageBuilder
     }
     
     // No styling or specific layout, just display data listed in field_dictionary
-    function CreateDefaultView($displayPage, $menu_location, $oFactory){
+    function CreateDefaultView($oFactory){
         
         // Grab fields from field_dictionary
-        $data_fields = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+        $query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`";
+        $data_fields = $oFactory->SQLHelper()->queryToDatabase($query);
+        $data_fields_copy = $data_fields;
+        $data_fields =$this->GetDataFields($oFactory);
+
+        // Unused, not sure
         if(empty($this->list_fields) || $this->list_fields == ""){
-            foreach($data_fields as $key=>$value){
-                if($key < count($data_fields) - 1){
+            foreach($data_fields_copy as $key=>$value){
+                if($key < count($data_fields_copy) - 1){
                     $this->list_fields .= $value["generic_field_name"] . ",";
                 }
                 else {
@@ -81,64 +84,76 @@ class MainPageBuilder
                 }
             }
         }
-        foreach($data_fields as $field){
-            // Generate html code based off format_type
-            GetAndDisplayData($field);        
+
+        // Iterate through and display data
+        foreach($data_fields as $result){
+            // Iterate through each fields's column's name and value
+            foreach($result as $key=>$value){
+                // Foreach field row (field_dict copy)
+                foreach($data_fields_copy as $field_return) {
+                    // If the column name matches the generic_field_name format the data
+                    if ($field_return["generic_field_name"] == $key) {
+                        $this->DisplayData($field_return["format_type"], $value);
+                    }
+                }
+            }
+        }
+        $this->DisplayData($data_fields, $oFactory);
+
     }
     
     
     // Creates html for a data field and retrieves the value to go inside
-    function GetAndDisplayData($field){
-        $tag_data = $oFactory->SQLHelper()->queryToDatabase("SELECT $field FROM `$this->database_table_name` ORDER BY $this->list_sort");
-        
-        if ($field["format_type"] == "" || empty($field["format_type"]){
-            echo "<p> $tag_data </p>";
+    // Creates html for a data field
+    function DisplayData($formatType, $value){
+        if ($formatType == "" || empty($formatType)){
+            echo "<p> $value </p>";
         }
-        else if ($field["format_type"] == "username"){
+        else if ($formatType == "username"){
             echo "<input type='text' name='username'>";
         }
-        else if ($field["format_type"] == "transaction_text"){
-            
-        }
-        else if ($field["format_type"] == "transaction_execute"){
-            
-        }
-        else if ($field["format_type"] == "transaction_confirmation"){
-            
-        }
-        else if ($field["format_type"] == "transaction_cancel"){
-            
-        }
-        else if ($field["format_type"] == "textbox"){
-            echo "<input type='text' name='$field['generic_field_name'>";
+        else if ($formatType == "transaction_text"){
 
         }
-        else if ($field["format_type"] == "tag"){
-            echo "<input type='text' value='html,input,tag' data-role='tagsinput'></input>";
+        else if ($formatType == "transaction_execute"){
+
         }
-        else if ($field["format_type"] == "pdf_inline"){
-            
+        else if ($formatType == "transaction_confirmation"){
+
         }
-        else if ($field["format_type"] == "password"){
+        else if ($formatType == "transaction_cancel"){
+
+        }
+        else if ($formatType == "textbox"){
+            echo "<input type='text' value='$value'>";
+
+        }
+        else if ($formatType == "tag"){
+            echo "<input type='text' value='$value' data-role='tagsinput'></input>";
+        }
+        else if ($formatType == "pdf_inline"){
+
+        }
+        else if ($formatType == "password"){
             echo "<input type='password' name='username'>";
         }
-        else if ($field["format_type"] == "list_fragment"){
-            
+        else if ($formatType == "list_fragment"){
+
         }
-        else if ($field["format_type"] == "image"){
-            echo "<img src='" . $oFactory->SQLHelper()->queryToDatabase("SELECT $field['generic_field_name' FROM `$this->database_table_name` ORDER BY $this->list_sort $this->WHERE "); . "' >";
+        else if ($formatType == "image"){
+            echo "<img src='" . $value . "' >";
         }
-        else if ($field["format_type"] == "email"){
-            
+        else if ($formatType == "email"){
+
         }
-        else if ($field["format_type"] == "dropdown"){
-            
+        else if ($formatType == "dropdown"){
+
         }
-        else if ($field["format_type"] == "crf"){
-            
+        else if ($formatType == "crf"){
+
         }
-        
-        
+
+
     }
     
 
@@ -163,24 +178,26 @@ class MainPageBuilder
     // Grab the Relevant information from data dictionary to prepare query for field_dictionary
     function GetInfoFromDataDictionary($displayPage, $menu_location, Factory $oFactory){
         // Grab Tabs
-        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `data_dictionary` WHERE `display_page` = '$displayPage'  ORDER BY `tab_num`");
+        $query = "SELECT * FROM data_dictionary WHERE display_page = '$displayPage'";
+        $resArr = $oFactory->SQLHelper()->queryToDatabase($query);
         // Set current tab to be tab 0
         $this->table_alias = $resArr[$this->tabNum - 1]["table_alias"];
         // Set reference to database_table name to current tab's reference
         $this->database_table_name = $resArr[$this->tabNum - 1]["database_table_name"];
         // Grab the list fields
         $this->list_fields = $resArr[$this->tabNum - 1]["list_fields"]; //explode(",", $resArr[$this->tabNum - 1]["list_fields"]);
+        $this->list_fields = str_replace('*', '', $this->list_fields);
         // Grab list sort method
         $this->list_sort = $resArr[$this->tabNum - 1]["list_sort"];
         // Get WHERE statement
-        if ($resArr[$this->tabNum-1]["list_filter"] != "" && !empty($resArr[$this->tabNum-1]["list_filter"]){
-            $this->WHERE = "WHERE $resArr[$this->tabNum-1]['list_filter']";
+        if ($resArr[$this->tabNum-1]["list_filter"] != "" && !empty($resArr[$this->tabNum-1]["list_filter"])){
+            $where = $resArr[$this->tabNum-1]['list_filter'];
+            $this->WHERE = "WHERE $where";
         }
         else {
             $this->WHERE = "";
         }
-        
-        
+        return $resArr;
     }
 
     
@@ -214,28 +231,55 @@ class MainPageBuilder
 
     // Grab all the data for the field_data and populate the table
     Function PopulateTable($displayPage, $menu_location, Factory $oFactory){
+        // Not sure?
         if(empty($this->list_sort)){
             $this->list_sort = "\"\"";
         }
-        //$resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
-        if($this->list_fields == null || $this->list_fields == ""){ //shouldnt ever happen anymore
-            $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `$this->database_table_name` ORDER BY $this->list_sort");
-        }
-        elseif(is_numeric($this->list_fields)){
-            //if is number grab the first four fields from field dictionary and populate only those?
-            //They don't even do this. Note table_alias transactions... For now just getting everything
-            $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `$this->database_table_name` ORDER BY $this->list_sort");
-        }
-        else{
-            $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY $this->list_sort");
-        }
+        // Grab the fields from field dictionary
+        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+        // Create a copy of the fields
+        $resArrCopy = $resArr;
+        // Check for specific fields and if no fields specified, grab them all
+        $resArr = $this->GetDataFields($oFactory);
+
+        // Iterate through each field (database_table row)
         foreach($resArr as $result){
             echo "<tr>";
-            foreach($result as $index){
-                echo "<td>$index</td>";
+            // Iterate through each fields's column's name and value
+            foreach($result as $key=>$value){
+                echo "<td>";
+                // Foreach field row (field_dict copy)
+                foreach($resArrCopy as $field_return) {
+                    // If the column name matches the generic_field_name format the data
+                    if ($field_return["generic_field_name"] == $key) {
+                        $this->DisplayData($field_return["format_type"], $value);
+                    }
+                }
+                echo "</td>";
             }
             echo "</tr>";
         }
         echo "</table>";
     }
+
+
+    function GetDataFields($oFactory){
+        // Check for specific fields and if no fields specified, grab them all
+
+        if($this->list_fields == null || $this->list_fields == ""){ //shouldnt ever happen anymore
+            $query = "SELECT * FROM `$this->database_table_name` ORDER BY '$this->list_sort'";
+            $field_list = $oFactory->SQLHelper()->queryToDatabase($query);
+        }
+        elseif(is_numeric($this->list_fields)){
+            //if is number grab the first four fields from field dictionary and populate only those?
+            //They don't even do this. Note table_alias transactions... For now just getting everything
+            $field_list = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `$this->database_table_name` ORDER BY `'$this->list_sort'`");
+        }
+        else{
+            $query = "SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY $this->list_sort";
+            $field_list = $oFactory->SQLHelper()->queryToDatabase($query);
+        }
+        return $field_list;
+    }
 }
+v
