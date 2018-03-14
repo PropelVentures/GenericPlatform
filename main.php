@@ -25,6 +25,7 @@ $displayPage = $_GET["display"]
     </head>
     <body style="padding-top:7rem;">
     <script>
+        //Right now this is what adds in the search and pagination... Might want to edit location later.
         $(document).ready(function () {
             $("#example").DataTable();
         });
