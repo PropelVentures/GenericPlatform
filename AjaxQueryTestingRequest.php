@@ -7,7 +7,7 @@ if(!isset($_SESSION["dbHost"])) {
 }
 include("Helpers/SQLHelper.php");
 $oSQLHelper = new SQLHelper();
-$results = $oSQLHelper->queryToDatabase("SELECT * FROM `affiliations`");
+//$results = $oSQLHelper->queryToDatabase("SELECT * FROM `states`");
 
 /**
  * Created by PhpStorm.
@@ -16,16 +16,13 @@ $results = $oSQLHelper->queryToDatabase("SELECT * FROM `affiliations`");
  * Time: 8:54 PM
  */
 
-if($_POST['action'] == "test") {
+$resultArray = $_POST["resultArray"];
+$currentPage = $_POST["currentPage"];
+$amountToDisplay = $_POST["amountToDisplay"];
 
-    /**
-     * we can pass any action like block, follow, unfollow, send PM....
-     * if we get a 'follow' action then we could take the user ID and create a SQL command
-     * but with no database, we can simply assume the follow action has been completed and return 'ok'
-     **/
+$lowerBound = $amountToDisplay *$currentPage;
+$upperBound = $amountToDisplay;
 
-    echo "ok";
-}
-elseif ($_POST['action'] == "test2"){
-    echo json_encode($results);
-}
+$splitArray = array_slice($resultArray, $lowerBound, $upperBound);
+
+echo json_encode($splitArray);

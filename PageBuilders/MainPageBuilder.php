@@ -220,11 +220,12 @@ class MainPageBuilder
                 }
             }
         }
-        echo "<table class='table table-bordered table-striped'><tr>";
+        echo "<table class='table table-bordered table-striped' id='example'><thead><tr>";
+
         foreach($resArr as $result){
             echo "<th>" . $result["field_label_name"] . "</th>";
         }
-        echo "</tr>";
+        echo "</thead></tr>";
     }
 
     // Grab all the data for the field_data and populate the table
@@ -239,8 +240,18 @@ class MainPageBuilder
         $resArrCopy = $resArr;
         // Check for specific fields and if no fields specified, grab them all
         $resArr = $this->GetDataFields($oFactory);
+        ?>
+        <script>
+            $(document).ready(function(){
+                $('#testing123').DataTable();
+            });
+        </script>
+        <?php
+
+
 
         // Iterate through each field (database_table row)
+        echo "<tbody>";
         foreach($resArr as $result){
             echo "<tr>";
             // Iterate through each fields's column's name and value
@@ -257,7 +268,7 @@ class MainPageBuilder
             }
             echo "</tr>";
         }
-        echo "</table>";
+        echo "</tbody></table>";
     }
 
 
