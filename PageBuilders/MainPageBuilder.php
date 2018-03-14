@@ -34,33 +34,31 @@ class MainPageBuilder
         
         
         // Get the list_view and create display field
-        foreach($this->dataDictQuery as $key => $row){
-            $list_view = explode(" ", $row["list_views"]);
-            if ($list_view[0] == "listview"){
-                $this->CreateTable($displayPage, $menu_location, $oFactory);
-            }
-            else if ($list_view[0] == "boxView"){
-                // To be made
-                // CreateBoxView($displayPage, $menu_location, $oFactory);
-            }
-            else if ($list_view[0] == "thumbView"){
-                // To be made
-                //  CreateThumbView($displayPage, $menu_location, $oFactory);
-            }
-            else if ($list_view[0] == "Cards"){
-                // To be made
-                // CreateCardVsiew($displayPage, $menu_location, $oFactory);
-            }
-            else if ($list_view[0] == "Xlist"){
-                // To be made
-                // CreateXListView($displayPage, $menu_location, $oFactory);
-            }
-            // Just display field_data
-            else {
-                $this->CreateDefaultView($oFactory);
-            }
+        $list_view = explode(" ", $this->dataDictQuery[$this->tabNum]["list_views"]);
+        if ($list_view[0] == "listview"){
+            $this->CreateTable($displayPage, $menu_location, $oFactory);
         }
-        
+        else if ($list_view[0] == "boxView"){
+            // To be made
+            // CreateBoxView($displayPage, $menu_location, $oFactory);
+        }
+        else if ($list_view[0] == "thumbView"){
+            // To be made
+            //  CreateThumbView($displayPage, $menu_location, $oFactory);
+        }
+        else if ($list_view[0] == "Cards"){
+            // To be made
+            // CreateCardVsiew($displayPage, $menu_location, $oFactory);
+        }
+        else if ($list_view[0] == "Xlist"){
+            // To be made
+            // CreateXListView($displayPage, $menu_location, $oFactory);
+        }
+        // Just display field_data
+        else {
+            $this->CreateDefaultView($oFactory);
+        }
+
 
     }
     
@@ -178,7 +176,7 @@ class MainPageBuilder
     // Grab the Relevant information from data dictionary to prepare query for field_dictionary
     function GetInfoFromDataDictionary($displayPage, $menu_location, Factory $oFactory){
         // Grab Tabs
-        $query = "SELECT * FROM data_dictionary WHERE display_page = '$displayPage'";
+        $query = "SELECT * FROM `data_dictionary` WHERE `display_page` = '$displayPage'  ORDER BY `tab_num`";
         $resArr = $oFactory->SQLHelper()->queryToDatabase($query);
         // Set current tab to be tab 0
         $this->table_alias = $resArr[$this->tabNum - 1]["table_alias"];
@@ -282,4 +280,3 @@ class MainPageBuilder
         return $field_list;
     }
 }
-v
