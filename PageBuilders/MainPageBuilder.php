@@ -34,7 +34,7 @@ class MainPageBuilder
         
         
         // Get the list_view and create display field
-        $list_view = explode(" ", $this->dataDictQuery[$this->tabNum]["list_views"]);
+        $list_view = explode(" ", $this->dataDictQuery[$this->tabNum - 1]["list_views"]);
         if ($list_view[0] == "listview"){
             $this->CreateTable($displayPage, $menu_location, $oFactory);
         }
