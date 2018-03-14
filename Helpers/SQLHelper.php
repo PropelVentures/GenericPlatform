@@ -38,7 +38,7 @@ class SQLHelper
         if ($result == true) {
             // output data of each row
             if(empty($result->num_rows)){
-                return true;
+                return [];
             }
             else{
                 $results_array = array();
