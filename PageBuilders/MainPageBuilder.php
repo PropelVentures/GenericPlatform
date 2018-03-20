@@ -304,10 +304,10 @@ class MainPageBuilder
 
     //This gets an object from the field dictionary and displays it with a box around it.
     function CreateBoxView($displayPage, $menu_location, Factory $oFactory){
-        $this->CreateBoxViewHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory);
+        $this->CreateBoxViewFromFieldDictionary($displayPage, $menu_location, $oFactory);
     }
 
-    function CreateBoxViewHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory){
+    function CreateBoxViewFromFieldDictionary($displayPage, $menu_location, Factory $oFactory){
         //Get the object from the field dictionary.
         $query = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
         $dataFields =$this->GetDataFields($oFactory);
