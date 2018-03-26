@@ -44,5 +44,12 @@ $displayPage = $_GET["display"]
                 //end populating page
             ?>
         </div>
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                //$this->EditDatabaseValues($oFactory, $_POST);
+                //EditDatabaseValues($oFactory, $_POST);
+                $oFactory->EditDatabase()->EditDatabaseValues($oFactory, $_POST);
+            }
+            ?>
     </body>
 </html>

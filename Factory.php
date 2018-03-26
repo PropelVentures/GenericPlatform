@@ -1,6 +1,7 @@
 <?php
 
 include("Helpers/SQLHelper.php");
+include("Helpers/EditDatabase.php");
 include("PageBuilders/NavigationPageBuilder.php");
 include("PageBuilders/MainPageBuilder.php");
 
@@ -14,6 +15,7 @@ class Factory
     private $oSQLHelper;
     private $oNavigationPageBuilder;
     private $oMainPageBuilder;
+    private $oEditDatabase;
 
     function SQLHelper(){
         if(empty($this->oSQLHelper)){
@@ -43,6 +45,16 @@ class Factory
         }
         else{
             return $this->oMainPageBuilder;
+        }
+    }
+
+    function EditDatabase(){
+        if(empty($this->oEditDatabase)){
+            $this->oEditDatabase = new EditDatabase();
+            return $this->oEditDatabase;
+        }
+        else{
+            return $this->oEditDatabase;
         }
     }
     

@@ -54,4 +54,14 @@ class SQLHelper
         }
     }
 
+    public function UpdateDatabase($update){
+        $sql = $update;
+        $result = $this->connection->query($sql);
+        if($result == true){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
 }
