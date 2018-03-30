@@ -173,7 +173,7 @@ class MainPageBuilder
         }
         $_SESSION['oFactory'] = $oFactory;
         // Should return only one row
-        echo "<br><input type='submit' value='Submit Changes'>";
+        echo "<br><input type='submit' value='Submit Changes' onclick='ajaxTesting()'>";
         echo "</form>";
     }
     function CreateEditView($key, $value){
