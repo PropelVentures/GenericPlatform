@@ -29,4 +29,7 @@ if(!empty($updatedValues) && !empty($oldKey) && !empty($oldValue) && !empty($dat
     }
     $query .= "WHERE `$oldKey` = '$oldValue'";
     $result = $oSqlHelper->queryToDatabase($query);
+    if(is_array($result)){
+        echo "success";
+    }
 }

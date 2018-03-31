@@ -3,7 +3,7 @@
 function ajaxTesting(databasetablename, oldkey, oldvalue) {
 
     var dataDictionary = CreateDataDictionary();
-
+    var BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
     $.ajax({
         url: "http://home.localhost/GenericNew/GenericPlatform/AjaxPhpPages/UpdateQuery.php",
         type: 'post',
@@ -14,9 +14,12 @@ function ajaxTesting(databasetablename, oldkey, oldvalue) {
             'DatabaseTableName': databasetablename
         },
         success: function (data, status) {
-            if (data == "ok") {
-                console.log("worked");
-                $("#test123").text("yay");
+            if (data == "success") {
+                var redirect = confirm("The value was updated. \nPress OK to go back and cancel to stay on this page.");
+                if(redirect == true){
+                    var urlParams = getUrlVars();
+                    window.location.assign(BASE_URL + "?display=" + urlParams["display"] + "&tab_num=" + urlParams["tab_num"]);
+                }
             }
             else {
                 console.log("???");
@@ -35,4 +38,17 @@ function CreateDataDictionary(){
             dict[$(this).attr("name")] = $(this).val();
         });
     return dict;
+}
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
 }
