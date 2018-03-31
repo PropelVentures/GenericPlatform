@@ -1,11 +1,17 @@
 
 
-function ajaxTesting() {
+function ajaxTesting(databasetablename, oldkey, oldvalue) {
+
+    var dataDictionary = CreateDataDictionary();
+
     $.ajax({
         url: "http://home.localhost/GenericNew/GenericPlatform/AjaxPhpPages/UpdateQuery.php",
         type: 'post',
         data: {
-            'action': 'test2'
+            'UpdatedValues': dataDictionary,
+            'OldKey': oldkey,
+            'OldValue': oldvalue,
+            'DatabaseTableName': databasetablename
         },
         success: function (data, status) {
             if (data == "ok") {
@@ -21,4 +27,12 @@ function ajaxTesting() {
             console.log("Details: " + desc + "\nError:" + err);
         }
     });
+}
+
+function CreateDataDictionary(){
+    var dict = {};
+    $("form :input[type=text]").each(function(){
+            dict[$(this).attr("name")] = $(this).val();
+        });
+    return dict;
 }

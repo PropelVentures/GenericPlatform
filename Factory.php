@@ -15,7 +15,7 @@ class Factory
     private $oSQLHelper;
     private $oNavigationPageBuilder;
     private $oMainPageBuilder;
-    private $oEditDatabase;
+    //private $oEditDatabase;
 
     function SQLHelper(){
         if(empty($this->oSQLHelper)){
