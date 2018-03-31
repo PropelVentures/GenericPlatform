@@ -162,6 +162,7 @@ class MainPageBuilder
         $data_result = $oFactory->SQLHelper()->queryToDatabase($data_result_query);
         //echo "<form action='Helpers/EditDatabase.php' method='post'>";
         $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
+        //might not be necessary since doing this in javascript now
         echo "<form action='$location' method='post'>";
         $data_result = $data_result[0];
 
@@ -173,16 +174,17 @@ class MainPageBuilder
         }
         $_SESSION['oFactory'] = $oFactory;
         // Should return only one row
-        echo "<br><input type='submit' value='Submit Changes' onclick='ajaxTesting()'>";
+        echo "<br><input type='button' value='Submit Changes' onclick='ajaxTesting(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
         echo "</form>";
     }
     function CreateEditView($key, $value){
         echo "<div style='display: inline-table; margin-right: 20px; margin-top:19px;' id='$key' class='form-group row'>";
         echo "<label style='display:inline-block;'> $key </label>";
         echo "<input type='text' name='$key' value='$value' class='form-control'>";
-        $oldValue = $value;
-        $oldKey = "old_" . $key;
-        echo "<input type='hidden' name='$oldKey' value='$oldValue'></div>";
+//        $oldValue = $value;
+//        $oldKey = "old_" . $key;
+//        echo "<input type='hidden' name='$oldKey' value='$oldValue'>
+        echo "</div>";
     }
     function DisplayData2($formatType, $value, $field_display_name){
         if ($formatType == "" || empty($formatType)){
