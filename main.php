@@ -8,7 +8,12 @@ if(!isset($_SESSION["dbHost"])) {
 if(empty($oFactory)){
     $oFactory = new Factory();
 }
-$displayPage = $_GET["display"]
+if (empty($_GET["display"])){
+    $displayPage = 'home';
+} else {
+    $displayPage = $_GET["display"];
+}
+
 ?>
 <html>
     <head>
