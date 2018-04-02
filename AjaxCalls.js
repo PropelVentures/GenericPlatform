@@ -52,3 +52,59 @@ function getUrlVars()
     }
     return vars;
 }
+
+function login()
+{
+    var BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
+
+    $.ajax({
+        url: "http://home.localhost/GenericNew/GenericPlatform/AjaxPhpPages/LoginCheck.php",
+        type: 'post',
+        data: {
+            'username': uname,
+            'password': pword
+        },
+        success: function(data, status){
+            if(data == "success"){
+                var redirect = confirm("You have been logged in.");
+                if(redirect == true){
+                    var urlParams = getUrlVars();
+                    window.location.assign(BASE_URL + "?display=home" + urlParams["display"] + "&tab_num=" + urlParams["tab_num"]);
+                }
+
+            }
+            else{
+
+            }
+        },
+        error: function (xhr, desc, err) {
+            console.log(xhr);
+            console.log("Details: " + desc + "\nError:" + err);
+        }
+    })
+}
+
+function logout()
+{
+    var BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
+
+    $.ajax({
+        url: "http://home.localhost/GenericNew/GenericPlatform/AjaxPhpPages/Logout.php",
+        //type: 'post',
+        data: {
+
+        },
+        success: function(data, status){
+            if(data == "success"){
+                window.location.assign(BASE_URL + "?display=home");
+            }
+            else{
+
+            }
+        },
+        error: function (xhr, desc, err) {
+            console.log(xhr);
+            console.log("Details: " + desc + "\nError:" + err);
+        }
+    })
+}

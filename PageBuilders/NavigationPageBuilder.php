@@ -56,6 +56,28 @@ class NavigationPageBuilder
                                 echo "</ul></li>";
                             }
                         }
+                        //Check if the user is logged in.
+                        //If the user is not logged in, display the "Login" link
+                        //If the user is logged in, display the "Logout" link
+                        $sessionId = session_id();
+                        echo "<p>$sessionId</p>";
+                        /*if(!isset($_SESSION["user_id"])){
+                            //echo "<li><a href=" . $BASE_URL . "?display=login>Login</a></li>";
+                            $displayType = "block";
+                            $loginPageId = "theLoginPage";
+                            echo "<button id='login' class='button' onclick='document.getElementById(\"$loginPageId\").style.display=\"$displayType\"'>Login</button>";
+                            echo "<div id=$loginPageId class='loginPage'><p>";
+                            //echo "<p>";
+                            $this->LoginBuilder();
+                            echo "</p></div>";
+                        }
+                        else{
+                            //echo "<li><a href=" . $BASE_URL . "?display=logout>Logout</a></li>";
+                            //echo "<li><input type='button' value='Login'></li>";
+                            echo "<form method='post' action='AjaxPhpPages/Logout.php'>";
+                            echo "<button type='submit' id='logout' class='button' onclick=''>Logout</button>";
+                            echo "</form>";
+                        }*/
                         ?>
         <!--        ENDING HTML              -->
                     </ul>
@@ -64,5 +86,18 @@ class NavigationPageBuilder
             </div>
         </nav>
         <?php
+    }
+
+    function LoginBuilder(){
+        $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
+        echo "<form id='loginForm' method='post' action='$location'>";
+        echo "<div><label for='username'><b>Username</b></label>";
+        echo "<input type='text' placeholder='Enter Username' name='username' required><br>";
+        echo "<label for='password'><b>Password</b></label>";
+        echo "<input type='password' placeholder='Enter Password' name='pword' required><br>";
+        echo "<button type='submit' onclick='login()'>Login</button>";
+        echo "<button type='button' onclick='document.getElementById(\"loginPageId\").style.display=\"none\"'>Cancel</button>";
+        echo "</div>";
+        echo "</form>";
     }
 }

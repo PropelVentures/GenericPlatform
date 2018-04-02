@@ -1,0 +1,10 @@
+.button {
+    background:    #eeeeee;
+    border-radius: 5px;
+    padding:       12px 18px;
+    color:         #666666;
+    display:       inline-block;
+    font:          normal 400 16px/1 "Calibri", sans-serif;
+    text-align:    center;
+    text-shadow:   none;
+}
