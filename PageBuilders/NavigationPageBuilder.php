@@ -59,8 +59,10 @@ class NavigationPageBuilder
                         //Check if the user is logged in.
                         //If the user is not logged in, display the "Login" link
                         //If the user is logged in, display the "Logout" link
-                        $sessionId = session_id();
-                        echo "<p>$sessionId</p>";
+                        //$sessionId = session_id();
+                        //$id = $_SESSION["user_id"];
+                        //echo "<p>User id: " . ", Session Id: " . $sessionId . "</p>";
+                        //echo session_id();
                         /*if(!isset($_SESSION["user_id"])){
                             //echo "<li><a href=" . $BASE_URL . "?display=login>Login</a></li>";
                             $displayType = "block";

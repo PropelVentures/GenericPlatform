@@ -9,10 +9,12 @@
 /*if(!isset($_SESSION["dbHost"])){
     include_once "../setup.php";
 }*/
-
-include("setup.php");
-session_id("default");
+//session_regenerate_id();
 session_start();
+if(!isset($_SESSION["dbHost"])) {
+    include_once "../setup.php";
+}
+
 include("../Helpers/SQLHelper.php");
 $oSqlHelper = new SQLHelper();
 $username = $_POST["username"];
@@ -33,15 +35,18 @@ if(!empty($username) && !empty($password)){
         //echo $id;
         //}
         //setcookie("user", $username, time() + (86400 * 30), "/");
-        session_abort();
+        session_destroy();
         //session_start();
-        echo $username;
+        //echo $username;
+        //Set the session id to their username
         session_id($username);
         session_start();
+        //$_SESSION["user_id"] = $username;
         $url = "http://home.localhost/GenericNew/GenericPlatform/main.php?display=home";
         header("Location: " . $url);
+        die();
 
-        echo "success"; //Successful login
+        //echo "success"; //Successful login
     }
     else{
         //echo "Login failed: incorrect username or password"; //Login failure; incorrect password
