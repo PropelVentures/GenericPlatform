@@ -215,7 +215,7 @@ class MainPageBuilder
         $_SESSION['oFactory'] = $oFactory;
         // Should return only one row
 
-        echo "<br><input type='button' class='btn btn-primary' value='Submit Changes' onclick='ajaxTesting(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
+        echo "<br><input type='button' value='Submit Changes' onclick='UpdateValue(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
         echo "</form>";
     }
 
@@ -336,6 +336,37 @@ class MainPageBuilder
 
 
     function CreateTable($displayPage, $menu_location,$oFactory, $data_fields){
+        //Create Add and Delete Buttons
+        echo "<input type=button value='Add' style='margin-right: 20px; float: left;' onclick='DisplayAddPopUp()'>";
+
+        //Add Button Modal Setup
+        echo "<div id='AddDialog' title='Add To List' style='text-align: center; padding-top:40px;'>
+            <label id='AddSuccess' style='color:#4CAF50'>Added Successfully</label>";
+
+        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+        echo "<div id='AddDialogContent'>";
+        foreach($resArr as $key=>$value){
+            //Format Type is empty in the call enventually we might want it to pass in the format type however we are not there yet.
+            //$this->DisplayData2($value["format_type"], "", $value["field_label_name"]);
+            $this->DisplayData_Label(null, null, $value["field_label_name"], null);
+        }
+        echo "</div>";
+
+
+        echo"
+                <input type='button' value='Add' style='background-color: #4CAF50; color: white;' onclick='AddValues(\"$this->database_table_name\")'/>
+                <input type='button' value='Cancel' onclick='CloseAddPopUp()'/>
+             </div>";
+
+        //End Add Button Modal Setup
+        $primary_key_query = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
+        $primary_key_arr = $oFactory->SqlHelper()->queryToDatabase($primary_key_query);
+        $primary_key = $primary_key_arr[0]["Column_name"];
+        $primary_field_name_query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = '$this->database_table_name' AND `generic_field_name` = '$primary_key'";
+        $primary_field_name_arr =  $oFactory->SqlHelper()->queryToDatabase($primary_field_name_query);
+        $primary_field_name = $primary_field_name_arr[0]["field_label_name"];
+        echo "<input type=button value='Delete' style='margin-right: 20px; margin-bottom:10px; float: left;' onclick='DeleteValues(\"$this->database_table_name\", \"$primary_key\", \"$primary_field_name\")'>";
+
         // Create the table headers
         $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory, $data_fields);
         // Grab field data and populate the table
@@ -356,6 +387,7 @@ class MainPageBuilder
             }
         }
         echo "<table class='table table-bordered table-striped' id='example'><thead><tr>";
+        echo "<th></th>";
         foreach($resArr as $result){
             echo "<th>" . $result["field_label_name"] . "</th>";
         }
@@ -389,10 +421,26 @@ class MainPageBuilder
         ?>
         <script>
             $(document).ready(function(){
+
+                selectedIndex = [];
+
+                $('.odd input:checkbox').click(function (e) {
+                    // button's stuff
+                    e.stopImmediatePropagation();
+                    var row = $(this).closest("tr").index() + 1;
+                    selectedIndex.push(row);
+                    console.log(selectedIndex);
+                });
+                $('.even input:checkbox').click(function (e) {
+                    // button's stuff
+                    e.stopImmediatePropagation();
+                    var row = $(this).closest("tr").index() + 1;
+                    selectedIndex.push(row);
+                    console.log(selectedIndex);
+                });
+
                 $(".odd").click(function() {
-
-                    var base_url =  "<?php echo $_SESSION['baseURL']; ?>";
-
+                    var base_url = "<?php echo $_SESSION['baseURL']; ?>";
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
@@ -400,9 +448,7 @@ class MainPageBuilder
                     window.location = totalURI;
                 });
                 $(".even").click(function() {
-
-                    var base_url = "<?php echo $_SESSION['baseURL']; ?>";
-
+                    var base_url =  "<?php echo $_SESSION['baseURL']; ?>";
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
@@ -417,6 +463,7 @@ class MainPageBuilder
         foreach($resArr as $result){
             echo "<tr id='clickable-row' search_id='$result[$keyfield]' displaypage='$displayPage' tabnum='$this->tabNum'>";
             // Iterate through each fields's column's name and value
+            echo "<td><input type='checkbox'></td>";
             foreach($result as $key=>$value){
                 echo "<td>";
                 // Foreach field row (field_dict copy)
