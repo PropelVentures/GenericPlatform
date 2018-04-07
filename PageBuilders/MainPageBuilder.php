@@ -403,6 +403,8 @@ class MainPageBuilder
                         echo $result["field_label_name"];
                         echo "<br>";
                         echo "$value";
+                        //echo "<br>";
+                        //echo $_SESSION[session_id()];
                         echo "</div>";
                     }
                 }
