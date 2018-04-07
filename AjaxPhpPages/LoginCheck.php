@@ -40,7 +40,7 @@ if(!empty($username) && !empty($password)){
         //session_start();
         //echo $username;
         //Set the session id to their username
-        //session_id($username);
+        session_id($username);
         //session_start();
         //$_SESSION[session_id()] = $username;
         //$_SESSION["user_id"] = $username;
