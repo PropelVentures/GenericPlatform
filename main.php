@@ -8,7 +8,13 @@ if(!isset($_SESSION["dbHost"])) {
 if(empty($oFactory)){
     $oFactory = new Factory();
 }
-$displayPage = $_GET["display"]
+if (empty($_GET["display"])){
+    $displayPage = 'home';
+} else {
+    $displayPage = $_GET["display"];
+}
+$_SESSION['baseURL'] = "http://genericnew.cjcornell.net/GenericPlatform/main.php?";
+
 ?>
 <html>
     <head>
