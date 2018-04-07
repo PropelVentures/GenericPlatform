@@ -1,0 +1,18 @@
+.loginPage {
+    position: absolute;
+    left: 0;
+    top: 35%;
+    width: 100%;
+    text-align: center;
+}
+
+.loginText {
+    border: 2px double #337fed;
+    border-radius: 10px;
+}
+
+.container{
+    width: 10%;
+    margin: auto;
+}
+
