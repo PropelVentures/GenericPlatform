@@ -12,8 +12,14 @@ class MainPageBuilder
     private $list_sort; //way to sort fields retrieved from field dictionary (retieved from data dictionary)
     private $dataDictQuery; // Resulting array from querying data dictionary
     private $WHERE; // Where statement
+
+    // Used for when a cell is clicked on to edit it's values
     private $isEdit;
-    private $BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
+
+    // Used for whenever the page is editable by default
+    private $page_editable = false;
+
+
     function LoadMainContent($displayPage, $menu_location, Factory $oFactory){
         if(empty($_GET["edit"])){
             $this->isEdit = false;
@@ -403,15 +409,11 @@ class MainPageBuilder
                         echo $result["field_label_name"];
                         echo "<br>";
                         echo "$value";
-                        //echo "<br>";
-                        //echo $_SESSION[session_id()];
                         echo "</div>";
                     }
                 }
             }
         }
     }
-
-
 }
 
