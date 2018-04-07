@@ -21,6 +21,7 @@ class MainPageBuilder
 
 
     function LoadMainContent($displayPage, $menu_location, Factory $oFactory){
+
         if(empty($_GET["edit"])){
             $this->isEdit = false;
         }
@@ -38,6 +39,13 @@ class MainPageBuilder
         $this->dataDictQuery = $this->GetInfoFromDataDictionary($displayPage, $menu_location, $oFactory);
         // Create the main tabs for the body
         $this->CreateAndDisplayTabs($displayPage, $menu_location, $oFactory);
+        $query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`";
+        $data_fields = $oFactory->SQLHelper()->queryToDatabase($query);
+
+        if ($this->dataDictQuery[0]['dd_editable'] == '1'){
+            $this->page_editable = true;
+            echo "<div style='text-align:right; margin-top:10px; margin-bottom: 10px'><input type='button' class='btn btn-primary' value='Edit'/></div>";
+        }
         if($this->isEdit){
             $this->LoadEditPage($displayPage, $menu_location, $oFactory);
         }
@@ -45,10 +53,12 @@ class MainPageBuilder
             // Get the list_view and create display field
             $list_view = explode(" ", $this->dataDictQuery[$this->tabNum - 1]["list_views"]);
             if ($list_view[0] == "listview"){
-                $this->CreateTable($displayPage, $menu_location, $oFactory);
+
+                $this->CreateTable($displayPage, $menu_location, $oFactory, $data_fields);
             }
             else if ($list_view[0] == "boxView"){
-                $this->CreateBoxView($displayPage, $menu_location, $oFactory);
+                $this->CreateBoxView($displayPage, $menu_location, $oFactory, $data_fields);
+
             }
             else if ($list_view[0] == "thumbView"){
                 // To be made
@@ -64,17 +74,23 @@ class MainPageBuilder
             }
             // Just display field_data
             else {
-                $this->CreateDefaultView($oFactory);
+
+                $this->CreateDefaultView($oFactory, $data_fields);
             }
+        }
+
+        // Edit button for editable pages
+        if ($this->dataDictQuery[0]['dd_editable'] == '1'){
+            $this->page_editable = true;
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' class='btn btn-primary' value='Edit'/></div>";
         }
     }
     // No styling or specific layout, just display data listed in field_dictionary
-    function CreateDefaultView($oFactory){
+    function CreateDefaultView($oFactory, $data_fields){
         // Grab fields from field_dictionary
         // will need to change some queries
         $query = "";
-        $query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`";
-        $data_fields = $oFactory->SQLHelper()->queryToDatabase($query);
+
         $data_fields_copy = $data_fields;
         $data_fields =$this->GetDataFields($oFactory);
         // Unused, not sure Creates tabs
@@ -97,8 +113,10 @@ class MainPageBuilder
                 foreach($data_fields_copy as $field_return) {
                     // If the column name matches the generic_field_name format the data
                     if ($field_return["generic_field_name"] == $key) {
-                        //$this->DisplayData($field_return["format_type"], $value);
-                        $this->DisplayData2($field_return["format_type"], $value, $field_return["field_label_name"]);
+
+                        //$this->DisplayData_NoLabel($field_return["format_type"], $value);
+                        $this->DisplayData_Label($field_return["format_type"], $value, $field_return["field_label_name"], $field_return);
+
                     }
                 }
             }
@@ -107,9 +125,14 @@ class MainPageBuilder
         echo "</form>";
         //$this->DisplayData($data_fields, $oFactory);
     }
+
+
+
+
     // Creates html for a data field and retrieves the value to go inside
     // Creates html for a data field
-    function DisplayData($formatType, $value){
+    function DisplayData_NoLabel($formatType, $value){
+
         if ($formatType == "" || empty($formatType)){
             echo "<p> $value </p>";
         }
@@ -125,7 +148,13 @@ class MainPageBuilder
         else if ($formatType == "transaction_cancel"){
         }
         else if ($formatType == "textbox"){
-            echo "<input type='text' value='$value' readonly='$this->isEdit'>";
+
+            $readonly = "";
+            if ($this->page_editable == true){
+                $readonly = 'readonly';
+            }
+            echo "<input type='text' value='$value' $readonly>";
+
         }
         else if ($formatType == "tag"){
             echo "<input type='text' value='$value' data-role='tagsinput'></input>";
@@ -138,7 +167,9 @@ class MainPageBuilder
         else if ($formatType == "list_fragment"){
         }
         else if ($formatType == "image"){
-            echo "<img src='" . $value . "' >";
+
+            echo "<img src='" . $value . "' onerror='this.src=\"http://generic.cjcornell.net/users_uploads/NO-IMAGE-AVAILABLE-ICON.jpg\"'  width='100' height='100'>";
+
         }
         else if ($formatType == "email"){
         }
@@ -147,6 +178,7 @@ class MainPageBuilder
         else if ($formatType == "crf"){
         }
     }
+
     function LoadEditPage($displayPage, $menu_location, Factory $oFactory){
         // Get the current tab number selected
         if(!empty($_GET["tab_num"])){
@@ -174,15 +206,21 @@ class MainPageBuilder
 
         foreach($data_result as $key=>$value) {
             // If the column name matches the generic_field_name format the data
-            //$this->DisplayData($field_return["format_type"], $value);
+
+            //$this->DisplayData_NoLabel($field_return["format_type"], $value);
+
             $this->CreateEditView($key, $value);
             $_SESSION['$key'] = $value;
         }
         $_SESSION['oFactory'] = $oFactory;
         // Should return only one row
-        echo "<br><input type='button' value='Submit Changes' onclick='ajaxTesting(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
+
+        echo "<br><input type='button' class='btn btn-primary' value='Submit Changes' onclick='ajaxTesting(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
         echo "</form>";
     }
+
+
+
     function CreateEditView($key, $value){
         echo "<div style='display: inline-table; margin-right: 20px; margin-top:19px;' id='$key' class='form-group row'>";
         echo "<label style='display:inline-block;'> $key </label>";
@@ -192,11 +230,23 @@ class MainPageBuilder
 //        echo "<input type='hidden' name='$oldKey' value='$oldValue'>
         echo "</div>";
     }
-    function DisplayData2($formatType, $value, $field_display_name){
+
+
+
+    function DisplayData_Label($formatType, $value, $field_display_name,$field_return){
+        $readonly = "";
+        if ($this->page_editable == true){
+            $readonly = 'readonly';
+        }
+        $field_size = '';
+        if (!empty($field_return["format_length"])){
+            $field_size = $field_return["format_length"];
+        }
         if ($formatType == "" || empty($formatType)){
-            echo "<div style='display: inline-table; margin-right: 20px; margin-top:19px;' id='$field_display_name' class='form-group row'>";
+            echo "<div style='display: inline-table;margin: auto; padding: 5px' id='$field_display_name' class='form-group row'>";
             echo "<label style='display:inline-block;'> $field_display_name </label>";
-            echo "<input type='text' value='$value' class='form-control'></div>";
+            echo "<input type='text' size='$field_size' value='$value' class='form-control' $readonly></div>";
+
         }
         else if ($formatType == "username"){
             echo "<input type='text' name='username'>";
@@ -210,10 +260,16 @@ class MainPageBuilder
         else if ($formatType == "transaction_cancel"){
         }
         else if ($formatType == "textbox"){
-            echo "<input type='text' value='$value' readonly='$this->isEdit'>";
+
+            echo "<input type='text' value='$value' $readonly>";
         }
         else if ($formatType == "tag"){
-            echo "<input type='text' value='$value' data-role='tagsinput'></input>";
+            echo "<div style='display: inline-table;margin: auto; padding: 5px' id='$field_display_name' class='form-group row'>";
+            echo "<label> $field_display_name </label>";
+            echo "<div id='$field_display_name'_inpu style='max-width: 200px'><input class='form-control' type='text' value='$value' data-role='tagsinput' $readonly></input></div>";
+            echo "</div>";
+
+
         }
         else if ($formatType == "pdf_inline"){
         }
@@ -223,7 +279,10 @@ class MainPageBuilder
         else if ($formatType == "list_fragment"){
         }
         else if ($formatType == "image"){
-            echo "<img src='$value' class='img-thumbnail img-responsive user_thumb' >";
+
+
+            echo "<div style='margin:5px; display:inline-block'><img  width='150' height='150' src='http://generic.cjcornell.net/users_uploads/$value' class='img-thumbnail img-responsive user_thumb' onerror='this.src=\"http://generic.cjcornell.net/users_uploads/NO-IMAGE-AVAILABLE-ICON.jpg\"'></div>";
+
         }
         else if ($formatType == "email"){
         }
@@ -236,7 +295,9 @@ class MainPageBuilder
     function CreateAndDisplayTabs($displayPage, $menu_location, Factory $oFactory){
         // Create tabs
         echo "<ul class='nav nav-tabs'>";
-        $BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
+
+        $BASE_URL =  $_SESSION['baseURL'];
+
         // Iterate through each entry
         foreach($this->dataDictQuery as $key=>$value){
             // If current tab is current active tab
@@ -272,15 +333,18 @@ class MainPageBuilder
         }
         return $resArr;
     }
-    function CreateTable($displayPage, $menu_location,$oFactory){
+
+
+    function CreateTable($displayPage, $menu_location,$oFactory, $data_fields){
         // Create the table headers
-        $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory);
+        $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory, $data_fields);
         // Grab field data and populate the table
-        $this->PopulateTable($displayPage, $menu_location, $oFactory);
+        $this->PopulateTable($displayPage, $menu_location, $oFactory, $data_fields);
     }
     // Iterate through the field_dictionary to grab the table headers
-    Function CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory){
-        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+    Function CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory, $data_fields){
+        $resArr = $data_fields;
+
         if(empty($this->list_fields) || $this->list_fields == ""){
             foreach($resArr as $key=>$value){
                 if($key < count($resArr) - 1){
@@ -298,13 +362,17 @@ class MainPageBuilder
         echo "</thead></tr>";
     }
     // Grab all the data for the field_data and populate the table
-    Function PopulateTable($displayPage, $menu_location, Factory $oFactory){
+
+    Function PopulateTable($displayPage, $menu_location, Factory $oFactory, $data_fields){
+
         // Not sure?
         if(empty($this->list_sort)){
             $this->list_sort = "\"\"";
         }
         // Grab the fields from field dictionary
-        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+
+        $resArr = $data_fields;
+
         // Create a copy of the fields
         $resArrCopy = $resArr;
         $keyfield = "";
@@ -322,7 +390,9 @@ class MainPageBuilder
         <script>
             $(document).ready(function(){
                 $(".odd").click(function() {
-                    var base_url = "http://home.localhost/GenericNew/GenericPlatform/main.php?";
+
+                    var base_url =  "<?php echo $_SESSION['baseURL']; ?>";
+
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
@@ -330,7 +400,9 @@ class MainPageBuilder
                     window.location = totalURI;
                 });
                 $(".even").click(function() {
-                    var base_url = "http://home.localhost/GenericNew/GenericPlatform/main.php?";
+
+                    var base_url = "<?php echo $_SESSION['baseURL']; ?>";
+
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
@@ -351,7 +423,9 @@ class MainPageBuilder
                 foreach($resArrCopy as $field_return) {
                     // If the column name matches the generic_field_name format the data
                     if ($field_return["generic_field_name"] == $key) {
-                        $this->DisplayData($field_return["format_type"], $value);
+
+                        $this->DisplayData_NoLabel($field_return["format_type"], $value);
+
                     }
                 }
                 echo "</td>";
@@ -360,6 +434,7 @@ class MainPageBuilder
         }
         echo "</tbody></table>";
     }
+
     function GetDataFields($oFactory){
         // Check for specific fields and if no fields specified, grab them all
         if($this->list_fields == null || $this->list_fields == ""){ //shouldnt ever happen anymore
