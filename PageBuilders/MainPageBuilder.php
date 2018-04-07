@@ -1,6 +1,5 @@
 <?php
 
-//include("EditDatabase.php");
 
 class MainPageBuilder
 {
@@ -150,17 +149,12 @@ class MainPageBuilder
             $this->tabNum = 1;
         }
         $data_id = $_GET["search_id"];
-        // Create the tabs
-        //$this->CreateAndDisplayTabs($displayPage, $menu_location, $oFactory);
-        // Generate globals for display page
-        //$this->dataDictQuery = $this->GetInfoFromDataDictionary($displayPage, $menu_location, $oFactory);
         // Grab the selected cell
         $primary_key = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
         $primary_key = $oFactory->SQLHelper()->queryToDatabase($primary_key);
         $primary_key = $primary_key[0]["Column_name"];
         $data_result_query = "SELECT * from $this->database_table_name WHERE $primary_key = '$data_id'";
         $data_result = $oFactory->SQLHelper()->queryToDatabase($data_result_query);
-        //echo "<form action='Helpers/EditDatabase.php' method='post'>";
         $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
         //might not be necessary since doing this in javascript now
         echo "<form action='$location' method='post'>";
@@ -174,7 +168,7 @@ class MainPageBuilder
         }
         $_SESSION['oFactory'] = $oFactory;
         // Should return only one row
-        echo "<br><input type='button' value='Submit Changes' onclick='ajaxTesting(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
+        echo "<br><input type='button' value='Submit Changes' onclick='UpdateValue(\"$this->database_table_name\", \"$primary_key\", \"$data_id\")'>";
         echo "</form>";
     }
     function CreateEditView($key, $value){
@@ -229,7 +223,7 @@ class MainPageBuilder
     // Creates the HTML tab tags to be displayed
     function CreateAndDisplayTabs($displayPage, $menu_location, Factory $oFactory){
         // Create tabs
-        echo "<ul class='nav nav-tabs'>";
+        echo "<ul class='nav nav-tabs' style='margin-bottom: 20px;'>";
         $BASE_URL = "http://home.localhost/GenericNew/GenericPlatform/main.php";
         // Iterate through each entry
         foreach($this->dataDictQuery as $key=>$value){
@@ -267,6 +261,36 @@ class MainPageBuilder
         return $resArr;
     }
     function CreateTable($displayPage, $menu_location,$oFactory){
+        //Create Add and Delete Buttons
+        echo "<input type=button value='Add' style='margin-right: 20px; float: left;' onclick='DisplayAddPopUp()'>";
+
+        //Add Button Modal Setup
+        echo "<div id='AddDialog' title='Add To List' style='text-align: center; padding-top:40px;'>
+            <label id='AddSuccess' style='color:#4CAF50'>Added Successfully</label>";
+
+        $resArr = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
+        echo "<div id='AddDialogContent'>";
+        foreach($resArr as $key=>$value){
+            //Format Type is empty in the call enventually we might want it to pass in the format type however we are not there yet.
+            //$this->DisplayData2($value["format_type"], "", $value["field_label_name"]);
+            $this->DisplayData2(null, null, $value["field_label_name"]);
+        }
+        echo "</div>";
+
+
+        echo"
+                <input type='button' value='Add' style='background-color: #4CAF50; color: white;' onclick='AddValues(\"$this->database_table_name\")'/>
+                <input type='button' value='Cancel' onclick='CloseAddPopUp()'/>
+             </div>";
+
+        //End Add Button Modal Setup
+        $primary_key_query = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
+        $primary_key_arr = $oFactory->SqlHelper()->queryToDatabase($primary_key_query);
+        $primary_key = $primary_key_arr[0]["Column_name"];
+        $primary_field_name_query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = '$this->database_table_name' AND `generic_field_name` = '$primary_key'";
+        $primary_field_name_arr =  $oFactory->SqlHelper()->queryToDatabase($primary_field_name_query);
+        $primary_field_name = $primary_field_name_arr[0]["field_label_name"];
+        echo "<input type=button value='Delete' style='margin-right: 20px; margin-bottom:10px; float: left;' onclick='DeleteValues(\"$this->database_table_name\", \"$primary_key\", \"$primary_field_name\")'>";
         // Create the table headers
         $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory);
         // Grab field data and populate the table
@@ -286,6 +310,7 @@ class MainPageBuilder
             }
         }
         echo "<table class='table table-bordered table-striped' id='example'><thead><tr>";
+        echo "<th></th>";
         foreach($resArr as $result){
             echo "<th>" . $result["field_label_name"] . "</th>";
         }
@@ -315,6 +340,23 @@ class MainPageBuilder
         ?>
         <script>
             $(document).ready(function(){
+                selectedIndex = [];
+
+                $('.odd input:checkbox').click(function (e) {
+                    // button's stuff
+                    e.stopImmediatePropagation();
+                    var row = $(this).closest("tr").index() + 1;
+                    selectedIndex.push(row);
+                    console.log(selectedIndex);
+                });
+                $('.even input:checkbox').click(function (e) {
+                    // button's stuff
+                    e.stopImmediatePropagation();
+                    var row = $(this).closest("tr").index() + 1;
+                    selectedIndex.push(row);
+                    console.log(selectedIndex);
+                });
+
                 $(".odd").click(function() {
                     var base_url = "http://home.localhost/GenericNew/GenericPlatform/main.php?";
                     var displayPage = $(this).attr("displaypage");
@@ -339,6 +381,7 @@ class MainPageBuilder
         foreach($resArr as $result){
             echo "<tr id='clickable-row' search_id='$result[$keyfield]' displaypage='$displayPage' tabnum='$this->tabNum'>";
             // Iterate through each fields's column's name and value
+            echo "<td> <input type='checkbox'></td>";
             foreach($result as $key=>$value){
                 echo "<td>";
                 // Foreach field row (field_dict copy)

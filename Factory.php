@@ -1,7 +1,6 @@
 <?php
 
 include("Helpers/SQLHelper.php");
-include("Helpers/EditDatabase.php");
 include("PageBuilders/NavigationPageBuilder.php");
 include("PageBuilders/MainPageBuilder.php");
 
