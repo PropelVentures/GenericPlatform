@@ -76,7 +76,12 @@ function DeleteValues(databasetablename, primarykey, primaryfieldname){
             while(columnThing.children().length > 0){
                 columnThing = columnThing.children().first();
             }
-            valsToDelete.push(columnThing.val());
+            if(columnThing.val() == ""){
+                valsToDelete.push(columnThing.text());
+            }
+            else{
+                valsToDelete.push(columnThing.val());
+            }
         }
 
         $.ajax({
