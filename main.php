@@ -14,7 +14,7 @@ if (empty($_GET["display"])){
 } else {
     $displayPage = $_GET["display"];
 }
-$_SESSION['baseURL'] = "http://genericnew.cjcornell.net/GenericPlatform/main.php?";
+$_SESSION['baseURL'] = "http://home.localhost/GenericNew/GenericPlatform/main.php?";
 
 ?>
 <html>
