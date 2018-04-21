@@ -1,6 +1,11 @@
 <?php
+/*
+This is not the final login page, this is just to get the login functionality working
+so that components that depend on this can be built.
+*/
+
 if(isset($_COOKIE["user"])){
-    $url = "http://home.localhost/GenericNew/GenericPlatform/main.php?display=home";
+    $url = "http://genericnew.cjcornell.net/GenericPlatform/main.php?display=home";
     header("Location: " . $url);
     die();
 }

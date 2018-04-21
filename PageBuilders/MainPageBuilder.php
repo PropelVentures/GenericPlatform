@@ -500,40 +500,51 @@ class MainPageBuilder
         return $field_list;
     }
 
-    //This gets an object from the field dictionary and displays it with a box around it.
+    //This gets an object from the field dictionary and displays it in a box, or "card'.
     function CreateBoxView($displayPage, $menu_location, Factory $oFactory){
         $this->CreateBoxViewFromFieldDictionary($displayPage, $menu_location, $oFactory);
     }
 
-    function CreateBoxViewFromFieldDictionary($displayPage, $menu_location, Factory $oFactory){
+    function CreateBoxViewFromFieldDictionary($displayPage, $menu_location, Factory $oFactory)
+    {
         //Get the object from the field dictionary.
         $query = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`");
-        $dataFields =$this->GetDataFields($oFactory);
+        $dataFields = $this->GetDataFields($oFactory);
 
-        if(empty($this->list_fields) || $this->list_fields == ""){
-            foreach($query as $key=>$value){
-                if($key < count($query) - 1){
+        if (empty($this->list_fields) || $this->list_fields == "") {
+            foreach ($query as $key => $value) {
+                if ($key < count($query) - 1) {
                     $this->list_fields .= $value["generic_field_name"] . ",";
-                }
-                else {
+                } else {
                     $this->list_fields .= $value["generic_field_name"];
                 }
             }
         }
-        //Display the object from the field dictionary with a box around it.
-        foreach($dataFields as $field) {
-            foreach($field as $key=>$value) {
-                foreach ($query as $result) {
-                    if($result["generic_field_name"] == $key) {
-                        //The formatting should probably be edited.
-                        //It currently displays as a vertical list with one element per row.
-                        echo '<div style="border: 2px solid grey;">';
-                        echo $result["field_label_name"];
-                        echo "<br>";
-                        echo "$value";
-                        echo "</div>";
+        //Display the object from the field dictionary in a card
+        //The image should be in the top left corner with the text below it
+        //TODO: Fix this so it only displays the values that should be visible, currently displays all
+        if (!is_string($dataFields)) {
+            foreach ($dataFields as $field) {
+                echo '<div class="boxView">';
+                $toDisplay = "";
+                foreach ($field as $key => $value) {
+                    foreach ($query as $result) {
+                        if ($result["generic_field_name"] == $key) {
+                            if($key == "image"){
+                                echo '<div class="boxImage">';
+                                $this->DisplayData_Label("image", $value, $key, null);
+                                echo '</div>';
+                            }
+                            else {
+                                $toDisplay = $toDisplay . $value . " ";
+                            }
+                        }
                     }
                 }
+                echo '<div class="boxText">';
+                echo "$toDisplay";
+                echo '</div>';
+                echo "</div>";
             }
         }
     }
