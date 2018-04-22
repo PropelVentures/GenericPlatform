@@ -12,6 +12,10 @@ class MainPageBuilder
     private $list_sort; //way to sort fields retrieved from field dictionary (retieved from data dictionary)
     private $dataDictQuery; // Resulting array from querying data dictionary
     private $WHERE; // Where statement
+    private $oFactory;
+
+    // Used for checking if a field dis editable or not.
+    private $fieldEditStatus;
 
     // Used for when a cell is clicked on to edit it's values
     private $isEdit;
@@ -20,7 +24,10 @@ class MainPageBuilder
     private $page_editable = false;
 
 
+
     function LoadMainContent($displayPage, $menu_location, Factory $oFactory){
+
+        $this->oFactory = $oFactory;
 
         if(empty($_GET["edit"])){
             $this->isEdit = false;
@@ -41,6 +48,9 @@ class MainPageBuilder
         $this->CreateAndDisplayTabs($displayPage, $menu_location, $oFactory);
         $query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`";
         $data_fields = $oFactory->SQLHelper()->queryToDatabase($query);
+
+        // Make sure list fields are set
+        $this->setListFields();
 
         if ($this->dataDictQuery[0]['dd_editable'] == '1'){
             $this->page_editable = true;
@@ -112,7 +122,7 @@ class MainPageBuilder
                 // Foreach field row (field_dict copy)
                 foreach($data_fields_copy as $field_return) {
                     // If the column name matches the generic_field_name format the data
-                    if ($field_return["generic_field_name"] == $key) {
+                    if ($field_return["generic_field_name"] == $key && $field_return["visibility"] == '1') {
 
                         //$this->DisplayData_NoLabel($field_return["format_type"], $value);
                         $this->DisplayData_Label($field_return["format_type"], $value, $field_return["field_label_name"], $field_return);
@@ -179,6 +189,32 @@ class MainPageBuilder
         }
     }
 
+
+
+
+    /**
+     * @return mixed
+     */
+    public function setListFields()
+    {
+        $query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = \"$this->table_alias\" ORDER BY `display_field_order`";
+        $data_fields = $this->oFactory->SQLHelper()->queryToDatabase($query);
+
+        // Create the list fields
+        if(empty($this->list_fields) || $this->list_fields == "") {
+            foreach ($data_fields as $key => $value) {
+                if ($value["visibility"] == 1) {
+                    $this->list_fields .= $value["generic_field_name"] . ",";
+                }
+                $this->fieldEditStatus[$value["generic_field_name"]] = $value["editable"];
+            }
+            if ($this->list_fields[strlen($this->list_fields) - 1] == ',') {
+                $this->list_fields = substr($this->list_fields, 0, -1);
+            }
+        }
+
+    }
+
     function LoadEditPage($displayPage, $menu_location, Factory $oFactory){
         // Get the current tab number selected
         if(!empty($_GET["tab_num"])){
@@ -193,10 +229,11 @@ class MainPageBuilder
         // Generate globals for display page
         //$this->dataDictQuery = $this->GetInfoFromDataDictionary($displayPage, $menu_location, $oFactory);
         // Grab the selected cell
+
         $primary_key = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
         $primary_key = $oFactory->SQLHelper()->queryToDatabase($primary_key);
         $primary_key = $primary_key[0]["Column_name"];
-        $data_result_query = "SELECT * from $this->database_table_name WHERE $primary_key = '$data_id'";
+        $data_result_query = "SELECT $this->list_fields from $this->database_table_name WHERE $primary_key = '$data_id'";
         $data_result = $oFactory->SQLHelper()->queryToDatabase($data_result_query);
         //echo "<form action='Helpers/EditDatabase.php' method='post'>";
         $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
@@ -222,9 +259,13 @@ class MainPageBuilder
 
 
     function CreateEditView($key, $value){
+        $readonly = 'readonly';
+        if ($this->fieldEditStatus[$key] == 'true'){
+            $readonly = '';
+        }
         echo "<div style='display: inline-table; margin-right: 20px; margin-top:19px;' id='$key' class='form-group row'>";
         echo "<label style='display:inline-block;'> $key </label>";
-        echo "<input type='text' name='$key' value='$value' class='form-control'>";
+        echo "<input type='text' name='$key' value='$value' class='form-control' $readonly>";
 //        $oldValue = $value;
 //        $oldKey = "old_" . $key;
 //        echo "<input type='hidden' name='$oldKey' value='$oldValue'>
@@ -348,7 +389,11 @@ class MainPageBuilder
         foreach($resArr as $key=>$value){
             //Format Type is empty in the call enventually we might want it to pass in the format type however we are not there yet.
             //$this->DisplayData2($value["format_type"], "", $value["field_label_name"]);
-            $this->DisplayData_Label(null, null, $value["field_label_name"], null);
+
+            // Only fields that should be visible are displayed
+            if ($value["visibility"] == 1) {
+                $this->DisplayData_Label(null, null, $value["field_label_name"], null);
+            }
         }
         echo "</div>";
 
@@ -376,20 +421,11 @@ class MainPageBuilder
     Function CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory, $data_fields){
         $resArr = $data_fields;
 
-        if(empty($this->list_fields) || $this->list_fields == ""){
-            foreach($resArr as $key=>$value){
-                if($key < count($resArr) - 1){
-                    $this->list_fields .= $value["generic_field_name"] . ",";
-                }
-                else {
-                    $this->list_fields .= $value["generic_field_name"];
-                }
-            }
-        }
         echo "<table class='table table-bordered table-striped' id='example'><thead><tr>";
         echo "<th></th>";
         foreach($resArr as $result){
-            echo "<th>" . $result["field_label_name"] . "</th>";
+            if ($result["visibility"] == 1)
+                echo "<th>" . $result["field_label_name"] . "</th>";
         }
         echo "</thead></tr>";
     }
@@ -444,7 +480,7 @@ class MainPageBuilder
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
-                    var totalURI = base_url + "display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
+                    var totalURI = base_url + "?display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
                     window.location = totalURI;
                 });
                 $(".even").click(function() {
@@ -452,7 +488,7 @@ class MainPageBuilder
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
-                    var totalURI = base_url + "display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
+                    var totalURI = base_url + "?display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
                     window.location = totalURI;
                 });
             });
@@ -469,7 +505,7 @@ class MainPageBuilder
                 // Foreach field row (field_dict copy)
                 foreach($resArrCopy as $field_return) {
                     // If the column name matches the generic_field_name format the data
-                    if ($field_return["generic_field_name"] == $key) {
+                    if ($field_return["generic_field_name"] == $key && $field_return["visibility"] == '1') {
 
                         $this->DisplayData_NoLabel($field_return["format_type"], $value);
 
@@ -494,7 +530,7 @@ class MainPageBuilder
             $field_list = $oFactory->SQLHelper()->queryToDatabase("SELECT * FROM `$this->database_table_name` ORDER BY `'$this->list_sort'`");
         }
         else{
-            $query = "SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY $this->list_sort";
+            $query = "SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY '$this->list_sort'";
             $field_list = $oFactory->SQLHelper()->queryToDatabase($query);
         }
         return $field_list;
