@@ -343,9 +343,9 @@ class MainPageBuilder
         foreach($this->dataDictQuery as $key=>$value){
             // If current tab is current active tab
             if(!empty($this->tabNum) && $key + 1 == $this->tabNum){
-                echo "<li class='active'><a href='$BASE_URL?display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li class='active'><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             } else{ // Else, Inactive tab
-                echo "<li><a href='$BASE_URL?display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             }
         }
         echo "</ul>";
