@@ -433,7 +433,7 @@ class MainPageBuilder
     // Iterate through the field_dictionary to grab the table headers
     Function CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, Factory $oFactory, $data_fields){
         $resArr = $data_fields;
-
+        //$resArr = $this->GetDataFields($this->oFactory);
         echo "<table class='table table-bordered table-striped' id='example'><thead><tr>";
         echo "<th></th>";
         foreach($resArr as $result){
@@ -547,20 +547,16 @@ class MainPageBuilder
             //These if statements are added because the select breaks when the query has a sql keyword in it.
             //The keywords are gotten from the field dicitonary
             if(strpos($this->list_fields, 'group') !== false){
-                $this->list_fields = str_replace("group,", "", $this->list_fields);
-                $this->list_fields = str_replace(",group", "", $this->list_fields);
+                $this->list_fields = str_replace("group", "`group`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'share') !== false){
-                $this->list_fields = str_replace("share,", "", $this->list_fields);
-                $this->list_fields = str_replace(",share", "", $this->list_fields);
+                $this->list_fields = str_replace("share", "`share`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'edit') !== false){
-                $this->list_fields = str_replace("edit,", "", $this->list_fields);
-                $this->list_fields = str_replace(",edit", "", $this->list_fields);
+                $this->list_fields = str_replace("edit", "`edit`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'delete') !== false){
-                $this->list_fields = str_replace("delete,", "", $this->list_fields);
-                $this->list_fields = str_replace(",delete", "", $this->list_fields);
+                $this->list_fields = str_replace("delete", "`delete`", $this->list_fields);
             }
             $query = "SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY '$this->list_sort'";
             $field_list = $oFactory->SQLHelper()->queryToDatabase($query);
