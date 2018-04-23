@@ -103,6 +103,10 @@ class MainPageBuilder
 
         $data_fields_copy = $data_fields;
         $data_fields =$this->GetDataFields($oFactory);
+        //This means something is does not exist in the database or is invalid. So display an error message.
+        if($data_fields == "no results found"){
+            echo "<h1> No Results Found Check Database</h1>";
+            return;}
         // Unused, not sure Creates tabs
         if(empty($this->list_fields) || $this->list_fields == ""){
             foreach($data_fields_copy as $key=>$value){
@@ -360,7 +364,7 @@ class MainPageBuilder
         // Set reference to database_table name to current tab's reference
         $this->database_table_name = $resArr[$this->tabNum - 1]["database_table_name"];
         // Grab the list fields
-        $this->list_fields = $resArr[$this->tabNum - 1]["list_fields"]; //explode(",", $resArr[$this->tabNum - 1]["list_fields"]);
+        $this->list_fields = $resArr[$this->tabNum - 1]["list_fields"];
         $this->list_fields = str_replace('*', '', $this->list_fields);
         // Grab list sort method
         $this->list_sort = $resArr[$this->tabNum - 1]["list_sort"];
