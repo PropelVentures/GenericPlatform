@@ -381,8 +381,18 @@ class MainPageBuilder
 
 
     function CreateTable($displayPage, $menu_location,$oFactory, $data_fields){
+        //Add delete button setup
+        $primary_key_query = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
+        $primary_key_arr = $oFactory->SqlHelper()->queryToDatabase($primary_key_query);
+        $primary_key = $primary_key_arr[0]["Column_name"];
+        $primary_field_name_query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = '$this->database_table_name' AND `generic_field_name` = '$primary_key'";
+        $primary_field_name_arr =  $oFactory->SqlHelper()->queryToDatabase($primary_field_name_query);
+        //End setup
+
         //Create Add and Delete Buttons
-        echo "<input type=button value='Add' style='margin-right: 20px; float: left;' onclick='DisplayAddPopUp()'>";
+        if(!empty($primary_field_name_arr)) {
+            echo "<input type=button value='Add' style='margin-right: 20px; float: left;' onclick='DisplayAddPopUp()'>";
+        }
 
         //Add Button Modal Setup
         echo "<div id='AddDialog' title='Add To List' style='text-align: center; padding-top:40px;'>
@@ -408,13 +418,11 @@ class MainPageBuilder
              </div>";
 
         //End Add Button Modal Setup
-        $primary_key_query = "SHOW KEYS FROM $this->database_table_name WHERE Key_name = 'PRIMARY'";
-        $primary_key_arr = $oFactory->SqlHelper()->queryToDatabase($primary_key_query);
-        $primary_key = $primary_key_arr[0]["Column_name"];
-        $primary_field_name_query = "SELECT * FROM `field_dictionary` WHERE `table_alias` = '$this->database_table_name' AND `generic_field_name` = '$primary_key'";
-        $primary_field_name_arr =  $oFactory->SqlHelper()->queryToDatabase($primary_field_name_query);
-        $primary_field_name = $primary_field_name_arr[0]["field_label_name"];
-        echo "<input type=button value='Delete' style='margin-right: 20px; margin-bottom:10px; float: left;' onclick='DeleteValues(\"$this->database_table_name\", \"$primary_key\", \"$primary_field_name\")'>";
+
+        if(!empty($primary_field_name_arr)){
+            $primary_field_name = $primary_field_name_arr[0]["field_label_name"];
+            echo "<input type=button value='Delete' style='margin-right: 20px; margin-bottom:10px; float: left;' onclick='DeleteValues(\"$this->database_table_name\", \"$primary_key\", \"$primary_field_name\")'>";
+        }
 
         // Create the table headers
         $this->CreateTableHeadersFromFieldDictionary($displayPage, $menu_location, $oFactory, $data_fields);
