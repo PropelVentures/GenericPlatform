@@ -52,9 +52,11 @@ class MainPageBuilder
         // Make sure list fields are set
         $this->setListFields();
 
-        if ($this->dataDictQuery[0]['dd_editable'] == '1'){
+        if (strpos($this->dataDictQuery[0]['dd_editable'], '1') !== false ){
             $this->page_editable = true;
-            echo "<div style='text-align:right; margin-top:10px; margin-bottom: 10px'><input type='button' class='btn btn-primary' value='Edit'/></div>";
+            echo "<div style='text-align:right; margin-top:10px; margin-bottom: 10px'><input type='button' onclick='editButton()' class='btn btn-primary edit_btn' value='Edit'/></div>";
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' onclick='cancelButton()' class='btn btn-success update_btn' value='Update' style='display:none'/></div>";
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' onclick='cancelButton()' class='btn btn-danger cancel_btn' value='Cancel' style='display:none'/></div>";
         }
         if($this->isEdit){
             $this->LoadEditPage($displayPage, $menu_location, $oFactory);
@@ -90,9 +92,12 @@ class MainPageBuilder
         }
 
         // Edit button for editable pages
-        if ($this->dataDictQuery[0]['dd_editable'] == '1'){
-            $this->page_editable = true;
-            echo "<div style='text-align:right; margin-top:10px'><input type='button' class='btn btn-primary' value='Edit'/></div>";
+        if (strpos($this->dataDictQuery[0]['dd_editable'], '1') !== false ){
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' onclick='editButton()' class='btn btn-primary edit_btn' value='Edit'/></div>";
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' onclick='cancelButton()' class='btn btn-success update_btn' value='Update' style='display:none'/></div>";
+            echo "<div style='text-align:right; margin-top:10px'><input type='button' onclick='cancelButton()' class='btn btn-danger cancel_btn' value='Cancel' style='display:none'/></div>";
+
+
         }
     }
     // No styling or specific layout, just display data listed in field_dictionary
@@ -244,7 +249,9 @@ class MainPageBuilder
         $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
         //might not be necessary since doing this in javascript now
         echo "<form action='$location' method='post'>";
-        $data_result = $data_result[0];
+        if (!empty($data_result)){
+            $data_result = $data_result[0];
+        }
 
         foreach($data_result as $key=>$value) {
             // If the column name matches the generic_field_name format the data
@@ -282,7 +289,7 @@ class MainPageBuilder
     function DisplayData_Label($formatType, $value, $field_display_name,$field_return){
         $readonly = "";
         if ($this->page_editable == true){
-            //$readonly = 'readonly';
+            $readonly = 'readonly';
         }
         $field_size = '';
         if (!empty($field_return["format_length"])){
@@ -348,9 +355,9 @@ class MainPageBuilder
         foreach($this->dataDictQuery as $key=>$value){
             // If current tab is current active tab
             if(!empty($this->tabNum) && $key + 1 == $this->tabNum){
-                echo "<li class='active'><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li class='active'><a href='$BASE_URL?" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             } else{ // Else, Inactive tab
-                echo "<li><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li><a href='$BASE_URL?" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             }
         }
         echo "</ul>";
@@ -547,16 +554,16 @@ class MainPageBuilder
             //These if statements are added because the select breaks when the query has a sql keyword in it.
             //The keywords are gotten from the field dicitonary
             if(strpos($this->list_fields, 'group') !== false){
-                $this->list_fields = str_replace("group", "`group`", $this->list_fields);
+                $this->list_fields = str_replace(" group ", "`group`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'share') !== false){
-                $this->list_fields = str_replace("share", "`share`", $this->list_fields);
+                $this->list_fields = str_replace(" share ", "`share`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'edit') !== false){
-                $this->list_fields = str_replace("edit", "`edit`", $this->list_fields);
+                $this->list_fields = str_replace(" edit ", "`edit`", $this->list_fields);
             }
             if(strpos($this->list_fields, 'delete') !== false){
-                $this->list_fields = str_replace("delete", "`delete`", $this->list_fields);
+                $this->list_fields = str_replace(" delete ", "`delete`", $this->list_fields);
             }
             $query = "SELECT $this->list_fields FROM `$this->database_table_name` ORDER BY '$this->list_sort'";
             $field_list = $oFactory->SQLHelper()->queryToDatabase($query);
@@ -614,3 +621,22 @@ class MainPageBuilder
     }
 }
 
+?>
+<script>
+    function editButton(){
+        var items = document.getElementsByTagName("*");
+        for (var i = 0; i < items.length; i++) {
+            var e1 = items[i];
+            e1.removeAttribute('readonly');
+        }
+        $('.edit_btn').hide();
+        $('.update_btn').show();
+        $('.cancel_btn').show();
+
+    }
+
+    function cancelButton(){
+        location.reload();
+    }
+
+</script>
