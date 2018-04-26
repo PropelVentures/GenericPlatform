@@ -126,7 +126,7 @@ function CreateDataDictionary(FromAddDialog){
         });
     }
     else{
-        $("form :input[type=text]").each(function(){
+        $("input[type=text]").each(function(){
             dict[$(this).attr("name")] = $(this).val();
         });
     }
