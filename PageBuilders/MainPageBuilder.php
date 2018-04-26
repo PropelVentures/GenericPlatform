@@ -289,7 +289,7 @@ class MainPageBuilder
     function DisplayData_Label($formatType, $value, $field_display_name,$field_return){
         $readonly = "";
         if ($this->page_editable == true){
-            $readonly = 'readonly';
+            $readonly = '';
         }
         $field_size = '';
         if (!empty($field_return["format_length"])){
