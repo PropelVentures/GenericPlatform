@@ -246,9 +246,7 @@ class MainPageBuilder
         $data_result_query = "SELECT $this->list_fields from $this->database_table_name WHERE $primary_key = '$data_id'";
         $data_result = $oFactory->SQLHelper()->queryToDatabase($data_result_query);
         //echo "<form action='Helpers/EditDatabase.php' method='post'>";
-        $location = $_SERVER['PHP_SELF'] . "?display=" . $_GET['display'];
         //might not be necessary since doing this in javascript now
-        echo "<form action='$location' method='post'>";
         if (!empty($data_result)){
             $data_result = $data_result[0];
         }
@@ -355,9 +353,9 @@ class MainPageBuilder
         foreach($this->dataDictQuery as $key=>$value){
             // If current tab is current active tab
             if(!empty($this->tabNum) && $key + 1 == $this->tabNum){
-                echo "<li class='active'><a href='$BASE_URL?" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li class='active'><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             } else{ // Else, Inactive tab
-                echo "<li><a href='$BASE_URL?" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
+                echo "<li><a href='$BASE_URL" . "display=$displayPage&tab_num=" . ($key + 1) . "'>" . $value["tab_name"] . "</a> </li>";
             }
         }
         echo "</ul>";
@@ -500,7 +498,7 @@ class MainPageBuilder
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
-                    var totalURI = base_url + "?display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
+                    var totalURI = base_url + "display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
                     window.location = totalURI;
                 });
                 $(".even").click(function() {
@@ -508,7 +506,7 @@ class MainPageBuilder
                     var displayPage = $(this).attr("displaypage");
                     var tabNum = $(this).attr("tabnum");
                     var search_id = $(this).attr("search_id");
-                    var totalURI = base_url + "?display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
+                    var totalURI = base_url + "display=" + displayPage + "&tab_num=" + tabNum + "&edit=true&search_id=" + search_id;
                     window.location = totalURI;
                 });
             });
