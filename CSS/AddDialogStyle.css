@@ -1,9 +1,0 @@
-#AddDialog {
-    display: none;
-    overflow: visible;
-    z-index: 10;
-}
-
-#AddSuccess {
-    display: none;
-}
