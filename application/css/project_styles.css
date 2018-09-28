@@ -1,0 +1,19 @@
+.project-detail .profile-image{display:block; /*height:130px; overflow:hidden;*/ }
+.project-detail img{border-top-left-radius:4px; border-top-right-radius:4px;}
+
+.project-detail-list:hover{background-color:#2ecc71 !important;}
+.project-detail a {color:black;}
+.project-detail a:hover{text-decoration:none;}
+.project-details-wrapper img{display:block;max-width:100%;height:auto;}
+.project-info{width:95%; margin:auto;}
+.project-info h3{font-size:24px; color:#3498db;}
+.project-info p{font-size:14px;}
+.project-info p strong{font-weight:600;}
+
+
+.project-info.projDetails{color:black; margin-top:20px;}
+
+.createproject .form_element.increase{width:29.1111%;}
+.createproject .tags_main, .createproject .description_gui{width:96%;}
+
+.project-info.projDetails span.btn.btn-primary{font-size:14px;}

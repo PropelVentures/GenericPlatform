@@ -1,0 +1,201 @@
+body{font-family: 'Galdeano', sans-serif;}
+p{font-family: 'Open Sans', sans-serif; font-size:14px; line-height:24px;}
+.clr{clear:both;}
+
+
+/********* Main template Content classes *******/
+.main-content-container{margin-top:90px;margin-bottom: 30px;}
+.center-container{border:1px solid #e7e7e7; padding:20px; font-size:16px;background-color: white;}
+
+
+
+/********* Main template Content classes Ends here*******/
+
+
+
+
+/**** applied when user didn't click edit button or fields are not for edit purpose***/
+
+
+.page_not_editable .form-control{border: none;
+                                 box-shadow: none;
+}
+
+
+/*********** PROFILE PAGE CLASS **************/
+
+.profile_page .new_form .form-control,.profile_page .form-control[disabled],
+.profile_page .form-control[readonly]{
+    padding-left: 0;
+    border: none;
+    box-shadow: none;
+    background-color: white;opacity: 1;
+    cursor: default;
+    color:red;
+}
+
+.profile_page .new_form label{font-weight: bold;
+}
+
+
+
+.tab-header{font-size: 18px;}
+
+
+/* yasir cSs starts here*/
+
+.list-span{}
+
+
+
+#nav_test_1 li a{
+    /* added by CJ to test */
+    color: orange;
+    font-weight: 800;
+    font-size: 16pt;
+}
+
+#nav_test_1 li a:hover{background-color: yellow;}
+
+#nav_test_1 li ul li a{
+    font-size: 12pt;
+    color:green;
+}
+.new_form {display:inline-table; margin-bottom:20px; margin-right: 19px;}
+.new_form label{font-size:18px;}
+
+
+#single-menu-class a{color:red;}
+
+
+
+
+
+
+.h1-sep{
+
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.h1-sep span{
+
+    border-style: dotted;
+
+    border-bottom-width: 1px;
+
+    border-color: #333;
+
+    display: block;
+}
+
+.content-h1{
+
+    background-color: #EEEEEE;
+
+    padding-left: 10px;
+}
+.test-class2  {
+    color: green;
+    font-weight: 800;
+    margin-bottom: 75px;
+}
+
+.test-class2 fieldset legend{color: red;}
+
+.test-class2  li a{
+    /* added by CJ to test */
+    color: red !important;
+    font-weight: 800;
+    font-size: 22pt;
+
+}
+
+
+/*****IMAGE DIV CSS****/
+
+.left-content, pdf-content{width:150px;}
+
+.left-content-clone, pdf-content-clone{width:150px;}
+
+
+
+/*****Tooltip style goes here *****/
+
+#tooltip {
+    display:none;
+    position:absolute;
+    border:1px solid #333;
+    background-color:#161616;
+    border-radius:5px;
+    padding:10px;
+    color:#fff;
+    font-size:12px Arial;
+}
+
+
+/*** backtoTop style ***/
+
+
+.scrollToTop{
+    width:100px;
+    height:130px;
+    padding:10px;
+    text-align:center;
+
+    font-weight: bold;
+    color: #444;
+    text-decoration: none;
+    position:fixed;
+    bottom:40px;
+    right:40px;
+    display:none;
+    background: url('../images/arrow.png') no-repeat -8px 20px;
+    opacity: .5;
+    -webkit-transition: opacity .3s 0s;
+    -moz-transition: opacity .3s 0s;
+    transition: opacity .3s 0s;
+
+}
+.scrollToTop:hover{
+    text-decoration:none;
+    opacity: 1;
+}
+
+/***** for making link unclikable******/
+
+.inactiveLink {
+    pointer-events: none;
+    cursor: default;
+}
+
+
+#form-footer{padding-bottom:5px;padding-top:5px;}
+
+
+
+.test2{display:inline;}
+
+
+
+.pdfInline{
+    
+    width: 600px;
+    height: 400px;
+}
+
+
+.pdf_inline_anchor{display: block;}
+
+
+
+/****
+List fragment style goes here
+
+*********/
+
+.list_fragment{
+    
+    border-spacing: 10px;
+    border-collapse: separate;
+}

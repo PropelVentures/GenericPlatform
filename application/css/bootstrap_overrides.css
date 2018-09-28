@@ -1,0 +1,63 @@
+/*
+Bootstrap Overrides
+See
+http://getbootstrap.com/css/
+
+*/
+
+/* ---
+later CJ will separate these into different smaller css files)
+*/
+
+
+/* ---------------------------------------------
+
+FORMS
+http://getbootstrap.com/css/#forms
+
+Individual form controls automatically receive some global styling.
+All textual <input>, <textarea>, and <select> elements with
+.form-control are set to width: 100%; by default. Wrap labels and controls in .form-group for optimum spacing.
+
+
+
+--------------------------------------------- */
+
+
+
+
+/* ---------------------------------------------
+BUTTONS
+http://getbootstrap.com/css/#buttons
+
+
+Sizes
+Fancy larger or smaller buttons? Add .btn-lg, .btn-sm, or .btn-xs for additional sizes.
+
+Active state
+Buttons will appear pressed (with a darker background, darker border, and inset shadow) when active. For <button> elements, this is done via :active. For <a> elements, it's done with .active. However, you may use .active on <button>s (and include the aria-pressed="true" attribute) should you need to replicate the active state programmatically.
+
+--------------------------------------------- */
+
+.btn {padding: 1px;}
+.btn{font-size:18px;}
+
+
+
+
+.disabled{cursor: default;}
+
+/* ---------------------------------------------
+--------------------------------------------- */
+
+/* ---------------------------------------------
+--------------------------------------------- */
+
+/* ---------------------------------------------
+--------------------------------------------- */
+
+/* ---------------------------------------------
+--------------------------------------------- */
+
+/* ---------------------------------------------
+--------------------------------------------- */

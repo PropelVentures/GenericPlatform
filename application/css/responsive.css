@@ -1,0 +1,138 @@
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    /*.navbar.navbar-default.navbar-fixed-top{background:red;}*/
+    .carousel, .carousel .item{height:450px;}
+    .boxView{margin-bottom:0px;}
+
+    .search-form .input-bg, select, .select{width:100%;}
+    .select{margin-bottom:10px;}
+    .main-select{width:96%;}
+
+    .sortby, .grid-type{float:none; text-align:left; width:100%;}
+    .navbar-fixed-top .navbar-collapse, .navbar-fixed-bottom .navbar-collapse{max-height:inherit;}
+    .form_element{width:98%;}
+    .profile-image {width:100%; height:175px; overflow:auto; }
+
+
+    /***submit/cancel button .update-btn2****/
+
+    
+    #form-footer .form_element{display:inline;width:auto;}
+    
+    #form-footer input{ font-size: 12px;}
+
+}
+
+
+@media only screen and (min-width: 570px) and (max-width: 767px) {
+    /*.navbar.navbar-default.navbar-fixed-top{background:blue;}*/
+    .carousel, .carousel .item{height:400px;}
+    .boxView{margin-bottom:0px;}
+    .login-div{width:80%;}
+
+    .search-form .input-bg, select, .select{width:100%;}
+    .select{margin-bottom:10px;}
+    .main-select{width:93%;}
+
+    .sortby, .grid-type{float:none; text-align:left; width:100%;}
+    .navbar-fixed-top .navbar-collapse, .navbar-fixed-bottom .navbar-collapse{max-height:inherit;}
+    .form_element{width:42%;}
+    .user-profile{margin-top:80px}
+    .nav.navbar-nav.navbar-right a{text-align:left;}
+
+    .thumbView .profile-image{width:10%;}
+    .profile-image {width:100%; height:350px; overflow:auto; }
+  
+
+
+       #form-footer .form_element{display:inline;width:auto;}
+    
+    #form-footer input{ font-size: 12px;}
+}
+
+@media only screen and (min-width: 480px) and (max-width: 569px) {
+    /*.navbar.navbar-default.navbar-fixed-top{background:green;}*/
+    .boxView{margin-bottom:0px;}
+    .search-form .input-bg, select{width:50%;}
+    .thumbView .profile-image{width:15%;}
+
+    .thumbView .project-info h3, .thumbView .project-info p{float:left; width:100%;}
+    .thumbView .project-info{width:68%; float:left;}
+    .profile-image {width:100%; height:350px; overflow:auto; }
+    
+    
+     #form-footer .form_element{display:inline;width:auto;}
+    
+    #form-footer input{ font-size: 12px;}
+}
+
+
+
+@media only screen and (min-width: 320px) and (max-width: 568px) {
+    /*.navbar.navbar-default.navbar-fixed-top{background:pink;}*/
+    .search-form .input-bg, select{width:100%;}
+    .sortby span{display:block;}
+    .select2{width:100%;}
+    .sortby button span{display:inline-block;}
+    .footer p, .social{float:none; width:100%;}
+    .social ul{float:none;}
+    .navbar-header .logo, .logo-login{font-size:24px;}
+    .thumbView .profile-image{width:20%; float:none; margin:0;}
+    .thumbView .project-info h3, .thumbView .project-info p{float:none; width:100%;}
+    .thumbView .project-info{width:100%; float:none; margin:10px 0;}
+    .profile-image {width:100%; height:350px; overflow:auto; }
+  
+    
+     #form-footer .form_element{display:inline;width:auto;}
+    
+    #form-footer input{ font-size: 10px;}
+}
+
+
+@media only screen and (min-width: 100px) and (max-width: 319px) {
+    /*.navbar.navbar-default.navbar-fixed-top{background:yellow;}*/
+    .search-form .input-bg, select{width:100%;}
+    .sortby span{display:block;}
+    .select2{width:100%;}
+    .sortby button span{display:inline-block;}
+    .footer p, .social{float:none; width:100%;}
+    .social ul{float:none;}
+    .navbar-header .logo, .logo-login{font-size:24px;}
+    .thumbView .profile-image{width:25%; float:none; margin:0;}
+    .thumbView .project-info{width:100%; float:none; margin:10px 0;}
+    .profile-image {width:100%; height:175px; overflow:auto; }
+    
+     #form-footer .form_element{display:inline;width:auto;}
+    
+    #form-footer input{ font-size: 10px;}
+}
+
+
+@media only screen and (min-width: 480px) and (max-width: 569px), (min-width: 320px) and (max-width: 479px), (min-width: 100px) and (max-width: 319px){
+    .carousel, .carousel .item{height:300px;}
+    .slide3{width:90%; left:0; top:0;}
+    .listing{width:100%;}
+    .boxView{margin-bottom:30px;}
+    .login-div{width:90%;}
+
+    .search-form .input-bg, select, .select{width:100%;}
+    .select{margin-bottom:10px;}
+    .main-select{width:85%;}
+
+    .sortby, .grid-type{float:none; text-align:left; width:100%;}
+    .sortby h3{float:none;}
+
+    .user-profile{margin-top:80px;}
+    .form_element{width:98%;}
+    .nav.navbar-nav.navbar-right a{text-align:left;}
+    .thumbView .project-info h3, .thumbView .project-info p, .thumbView .project-info .email-section, .listView .project-info h3, .listView .project-info p{width:100%;}
+    .profile-image {width:100%; height:175px; overflow:auto; }
+}
+
+
+@media only screen and (max-width: 767px) {
+
+    /*****TESTING****/
+
+    .content-manual{width:100%; float: none;display:block;}
+
+}
