@@ -157,7 +157,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
                 $_SESSION['search_id'] = $_SESSION['uid'];
             else if (trim($row1['table_type']) == 'child') {
-
+//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID"); 
                 $_SESSION['search_id'] = $_SESSION['parent_value'];
             } else
                 $_SESSION['search_id'] = '76'; /// for displaying one user
@@ -558,7 +558,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                             $breadcrumb_display = " Back To <span>Home</span> Page";
                         else
                             $breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
-
+//echo "<font color=orange>INSIDE get_ata_fd_records.php line 261</font><br>";
+//echo "<Pre>";
+//print_r($row1);
+//echo "</pre>";
                         echo "<div class='breadcrumb'>
                                 <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>      
                                     " . editPagePagination($row1['list_extra_options'], $primary_key) . "
