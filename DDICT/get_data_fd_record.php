@@ -96,6 +96,87 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
           unset($_SESSION['profile-image']);
           } */
+        
+        
+        ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######STARTS########################################################################################
+        
+        ##Debuging which buttons are in use:
+        $debug = false;##True will display texts in the button area.
+        
+        if ($editable == 'true') {
+            if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id']) ) || $_GET['edit'] == 'true' || !empty($_GET['addFlag']) ) {
+                
+                $operationsVarArray = array();
+                $operation = '';
+                
+                ##DD.edit_operation
+                if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) 
+                {
+                    $operation = 'edit_operations';
+                            
+                    if(!empty(trim($row1['edit_operations']) ) )
+                        $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
+                }
+                else if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 0) ##DD.view_operation
+                {
+                    $operation = 'view_operations';
+                    
+                    if(!empty(trim($row1['view_operations']) ) )
+                        $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
+                }
+                
+//                echo "<pre>";
+//                var_dump($operationsVarArray);
+//                echo "</pre>";
+                
+                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array, 
+                    $customFunctionArray,
+                    $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;      
+                
+            }
+        }
+        
+//        echo "<pre>";
+//        var_dump($operation, $del_array);
+//        var_dump($copy_array);
+//        var_dump($add_array);
+//        echo "</pre>";
+        
+        /// setting for  Save/Update button
+        if (!empty($submit_array) ) {
+            $updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
+        }
+        else if($operation == 'edit_operations')
+        {
+            if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
+                $updateSaveButton = "<input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' /> &nbsp;";
+            }
+            else
+            {
+                $updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
+            }            
+        }
+        else if($operation == 'view_operations')
+        {
+            #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
+        }
+        
+        /// setting for  delete button
+        if (!empty($del_array) ) {
+            $deleteButton = "<button type='submit' class='btn action-delete " . $del_array['style'] . "' name='delete' >" . $del_array['label'] . "</button> &nbsp;";
+        }
+
+        //// setting for  copy button
+        if (!empty($copy_array) ) {
+            $copyButton = "<button type='submit' class='btn action-copy " . $copy_array['style'] . "' name='copy' >" . $copy_array['label'] . "</button> &nbsp;";
+        }
+        /// ADD BUTTON
+
+        if (!empty($add_array) ) {
+            $addButton = "<button type='button' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
+        }
+        ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######ENDS##########################################################################################
+        
 
         /*         * *****************
          * *****************************************
@@ -166,11 +247,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 /* if (isset($_GET['search_id']) && !empty($_GET['search_id'])) {
 
                   // $_SESSION['search_id'] = $_GET['search_id'];
-                  } */
+                } */
 
             if (isset($_GET['id']) && $_GET['id'] != '') {
                 $_SESSION['search_id'] = $_GET['id'];
-//$_SESSION['update_table']['keyfield'] = 'id';
+                //$_SESSION['update_table']['keyfield'] = 'id';
             }
 
 
@@ -448,11 +529,17 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                 $actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
+                
 
 
+                echo "<div class='form-footer'>      
+                                                    
+                        " . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
+                        $deleteButton
+                        $addButton
+                        $copyButton
+                        $updateSaveButton
 
-                echo "<div class='form-footer'>                            
-                        <input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' />
                         <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                     </div>";
 
@@ -472,8 +559,14 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                 // }
 
-                echo "<div class='form-footer'>                            
-                        <input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' />                                
+                echo "<div class='form-footer'>     
+                    
+                        " . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
+                        $deleteButton
+                        $addButton
+                        $copyButton
+                        $updateSaveButton       
+                            
                         <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                     </div>
                             
@@ -559,13 +652,31 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                         else
                             $breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
 //echo "<font color=orange>INSIDE get_ata_fd_records.php line 261</font><br>";
-//echo "<Pre>";
-//print_r($row1);
-//echo "</pre>";
-                        echo "<div class='breadcrumb'>
+
+                        echo "<div class='breadcrumb'> 
                                 <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>      
                                     " . editPagePagination($row1['list_extra_options'], $primary_key) . "
                               </div>";
+                    }
+                    
+                    ##VIEW OPERATION CUSTOM BUTTONS
+                    if($operation == 'view_operations')
+                    {
+                        echo "<div class='form-footer'>           
+                                      
+                                    " . (!empty($debug) ? 'View operation Buttons' : '') . "    
+                                    $deleteButton
+                                    $addButton
+                                    $copyButton
+                                    $updateSaveButton
+
+                                    <!--<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> -->
+                                </div>
+                                
+                                <div style='clear:both'></div>
+                                <hr>
+
+                                ";
                     }
 
                     /*
@@ -601,17 +712,17 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                                 if ($tab_status != 'bars') {
 
-                                    echo "<div class='form-footer'>  
-                                    
-                           
-                                <input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />
+                                    echo "<div class='form-footer' >                                    
+                                                  
+                                            " . (!empty($debug) ? 'Top DD_EDITABLE' : '') . "
+                                            $deleteButton
+                                            $addButton
+                                            $copyButton
+                                            $updateSaveButton
+                                                
+                                            <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                             
-                                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-                               
-                            
-                          
-                            
-                                </div>";
+                                        </div>";
                                 }
                             }/// if for submit and cancel ends here
                             // profile-image }
@@ -638,20 +749,20 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     if (isset($_GET['id'])) {
                         $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
                     }
-//print_r($urow);die;
+                    //print_r($urow);die;
 
                     while ($row = $rs2->fetch_assoc()) {
                         //echo "<pre>"; print_r($row); 
                         formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
                     }//// end of while loop
                 } else {
-//// fetching child list
-// if ($row1['list_views'] == 'NULL' || $row1['list_views'] == '') {
-/////////////
-////////////////
-//  echo "<form action='?action=update&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
-// Child_List($qry);
-// } else {
+                    //// fetching child list
+                    // if ($row1['list_views'] == 'NULL' || $row1['list_views'] == '') {
+                    /////////////
+                    ////////////////
+                    //  echo "<form action='?action=update&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+                    // Child_List($qry);
+                    // } else {
 
                     if (trim($row1['table_type']) == 'content') {
 
@@ -700,8 +811,14 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                             //if( $row1['dd_editable'] != 0 ){
 
-                            echo "<div class='form-footer'>                           
-                                    <input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />                                
+                            echo "<div class='form-footer'>           
+                                      
+                                    " . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "    
+                                    $deleteButton
+                                    $addButton
+                                    $copyButton
+                                    $updateSaveButton
+
                                     <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> 
                                 </div>";
 
