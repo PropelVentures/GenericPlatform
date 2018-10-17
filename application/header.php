@@ -13,7 +13,7 @@ include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
 
 include_once($GLOBALS['APP_DIR'] . "application/functions.php");
 include_once($GLOBALS["APP_DIR"] . "models/GenericDBFunctions.php");
-require_once($GLOBALS["APP_DIR"] . "Porting/masterFunctions.php");
+require_once($GLOBALS["APP_DIR"] . "porting/masterFunctions.php");
 
 
 if($_GET['source'] == 'api'){

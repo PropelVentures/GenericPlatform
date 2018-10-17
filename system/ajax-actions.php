@@ -6,7 +6,7 @@ require_once("../application/appConfig.php");
 include_once("../system/database/db.php");
 require_once '../application/config.php';
 require_once '../application/functions.php';
-require_once '../Porting/masterFunctions.php';
+require_once '../porting/masterFunctions.php';
 
 
 

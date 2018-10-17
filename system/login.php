@@ -10,7 +10,7 @@ require_once("../application/appConfig.php");
 include_once("../system/database/db.php");
 include_once("../application/config.php");
 include_once("../application/functions.php");
-include_once("../Porting/masterFunctions.php");
+include_once("../porting/masterFunctions.php");
 
 
 //Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
