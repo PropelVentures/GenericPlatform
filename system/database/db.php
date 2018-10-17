@@ -10,9 +10,9 @@ if ($_SERVER['HTTP_HOST'] === 'localhost') {
      * Here make changes if you want to change the DB Credentials
      */
     $GLOBALS['db-host'] = "localhost";
-    $GLOBALS['db-username'] = "genericsandbox2";
-    $GLOBALS['db-password'] = "Upwork0703!**";
-    $GLOBALS['db-database'] = "genericsandbox2";
+    $GLOBALS['db-username'] = "genericinternal";
+    $GLOBALS['db-password'] = "Upwork2016!";
+    $GLOBALS['db-database'] = "genericplatform";
 }
 
 //print_r($config);die;
