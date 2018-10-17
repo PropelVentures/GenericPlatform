@@ -16,8 +16,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $rs = $con->query($qry);
     $row = $rs->fetch_assoc();
 //    echo "<pre>";
-//    var_dump($_REQUEST);
 //    print_r($row);
+//    var_dump($_REQUEST);
 //    print_r($_SESSION);
 //    echo "</pre>";
 //    die;
@@ -102,9 +102,22 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
      * Fetching list_extra_options
      */
 
-    $ret_array = listExtraOptions($row['list_extra_options']);
+#echo "<font color=green>callling listExtraOptions for list process</font><br/>";
 
-    //echo "<pre>";print_r($ret_array);die;
+    #array('list_operations' => $row['list_operations'], 'edit_operations' => $row['edit_operations'], 'view_operations' => $row['view_operations'] );
+
+    ##CHECK DD.list_select if empty then its for single page/profile view then we check DD.dd_editable=11 for page editable(dd_editable=1 for view only). If list_select is not empty its for a list page.
+    if(!empty($row['list_select']) )
+        $buttonOptions = $row['list_operations'];    
+    else if($row['dd_editable'] == '11' )
+        $buttonOptions = $row['edit_operations'];  
+    else if($row['dd_editable'] == '1' )
+        $buttonOptions = $row['view_operations'];  
+
+    $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
+
+    #echo "<pre>";print_r($ret_array);echo "</pre>";
+    #die;
 
 
 
@@ -319,6 +332,35 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
 
                     echo "<button type='button' class='btn action-add " . $ret_array['add_array']['style'] . "' name='add' >" . $ret_array['add_array']['label'] . "</button>";
+                }
+                ##CUSTOM FUNCTION BUTTON##
+                if (!empty($ret_array['custom_function_array']) ) {
+
+                    echo "<button type='button' class='btn actionCustomfunction btn-primary' data-function_name='{$ret_array['custom_function_array']['function']}' data-function_params='{$ret_array['custom_function_array']['params']}' name='add' >" . $ret_array['custom_function_array']['label'] . "</button>";
+                    ?>
+                    <script>
+                    jQuery(document).ready(function($){
+                        $('#list-form').on('click', '.actionCustomfunction', function(event){
+                            
+                            if (confirm( $(this).text() ) == true) {
+                                
+                                $.ajax({
+                                    method: "POST",
+                                    url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+                                    data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
+                                })
+                                .done(function (msg) {
+                                    alert('Success');
+                                    //location.reload();
+                                });
+                                
+                            } else {
+                                event.stopImmediatePropagation();
+                            }
+                        });
+                    });
+                    </script>    
+                    <?php
                 }
                 /// select checkbox div ends here
                 ?>

