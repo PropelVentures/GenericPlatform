@@ -84,7 +84,18 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     //print_r($list->fetch_assoc());die;
 
     $listView = trim($row['list_views']);
-
+	//echo $row['list_views']; exit;
+	//Added BY Dharmesh 2018-10-07
+	$list_views = listvalues($row['list_views']);
+	//print_r($list_views); exit;
+	//Code End//
+	
+	//Added BY Dharmesh 2018-10-12
+	$list_pagination = listpageviews($row['list_pagination']);
+	//print_r($list_views); exit;
+	//Code End//
+	
+	
     /*
      * @function listExtraOptions
      * 
@@ -284,7 +295,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         <form name="list-form" id="list-form" action="ajax-actions.php" method="post">
             <div id='checklist-div'>
                 <?php
-                if ($ret_array['checklist_array'] == 'true' && $listView != 'boxView') {
+                if ($list_views['checklist'] == 'true') {
 
                     echo "  <input type='hidden' name='checkHidden' id='checkHidden'>
                             <input type='checkbox' id='selectAll'> &nbsp;<strong>Select All </strong> 
@@ -404,12 +415,40 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                         <input type='hidden' class='show_per_page' />
                     ";
             }
+
             if ($list->num_rows != 0)
             {
+			$i=0;
+			
                 while ($listRecord = $list->fetch_assoc()) {
-
+				
+				foreach($list_pagination as $k=>$v){
+				//echo $v[1][0];
+					if(strpos($v, '#') !== FALSE)
+					{
+						preg_match_all('!\d+!',$v, $no_of_pages);
+						$no_of_pages = $no_of_pages[0][0];
+						break;
+					}else {
+						$no_of_pages = 0;
+					}
+				}
+				//echo $i;
+				if(count($list_pagination)==1) {
+					$list_pagination_no = $list_pagination[0];
+				}else{
+					$list_pagination_no = $list_pagination[0];
+				}
+				
+				unset($_SESSION['list_pagination']);
+				if(!empty($list_pagination_no) && !empty($no_of_pages)){
+					$_SESSION['list_pagination'] = array($list_pagination_no,$no_of_pages);
+				}elseif(!empty($list_pagination_no && empty($no_of_pages))){
+					$_SESSION['list_pagination'] = array($list_pagination_no);
+				}
+				
                 $rs = $con->query($qry);
-
+				
                 if ($listView == 'boxView') {
                 ?>
                     <div class="boxView <?php echo (!empty($list_style) ? $list_style : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px" >
@@ -490,7 +529,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
                                     $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
 
-
+									
 
                                     /*
                                      * displaying checkboxes
@@ -498,7 +537,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                      */
 
 
-                                    if ($ret_array['checklist_array'] == 'true') {
+                                    if ($list_views['checklist'] == 'true') {
 
                                         echo "<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='$checkbox_id' class='list-checkbox' style='marginright:6px;'/></span>";
 
@@ -533,7 +572,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                       $sing_del_style = $ret_array['single_copy_array']['style'];
 
                                       echo " <a class='btn btn-default' title='Copy' ><span class='list-copy $sing_del_style' title='Delete' id='$checkbox_id' name='$row[dict_id]'>
-                                      <img src='" . BASE_URL . "'application/images/copy.ico' width='15' height='15'></span>
+                                      <img src='" . BASE_URL . "'application/system_images/copy.ico' width='15' height='15'></span>
                                       </a>";
                                       }
                                      * 
@@ -597,15 +636,21 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                      */
                                     /////table view starts here                                          
                                     //fetching data from corresponding table
+									
                                     while ($row = $rs->fetch_assoc()) {
-
+										//if($listView!='BoxView') {
+											
+										//}
                                         $fieldValue = $listRecord[$row[generic_field_name]];
-
+										
+										
                                         if (!empty($row[dropdown_alias])) {
 
 
                                             $fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
                                         }
+										 
+										
 
                                         //will temprory truncate
 
@@ -613,7 +658,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
                                         if ($_SESSION['user_privilege'] >= $row[privilege_level] && $tbRow[format_type] != 'list_fragment')
                                             echo "<td>$fieldValue</td>";
-                                    }
+                                    
+									}
                                     if ($table_type == 'child') {
 
                                         $_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -637,16 +683,31 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
             if ($listView != 'boxView') {
                 echo "</tbody></table> ";
-            } else if (isset($ret_array['pagination']) && !empty($ret_array['pagination'])) {
+/*             } else if (isset($ret_array['pagination']) && !empty($ret_array['pagination'])) {
 
                 /*
                  * 
                  * Pagination Function goes here
                  */
 
-                echo boxViewPagination($ret_array['pagination'], $tab_num, $list_select_arr);
+             /*   echo boxViewPagination($ret_array['pagination'], $tab_num, $list_select_arr);
+            } */
+			
+			//Added By Dharmesh 2018-10-10//
+			} else if (isset($list_pagination) && !empty($list_pagination)) {
+
+                /*
+                 * 
+                 * Pagination Function goes here
+                 */
+
+                echo boxViewPagination($list_pagination, $tab_num, $list_select_arr); 
             }
+			//Code End//  
+			//echo $ret_array['pagination'];
+			
 ?>
+
         </form> 
     </div>
 <?php
@@ -664,7 +725,9 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
      * displaying of image in list
      */
 
-
+	//$listRecord =array_slice($listRecord, 0, 50, true);
+	
+	
     $tbl_img = $listRecord[$imageField['generic_field_name']];
 
 

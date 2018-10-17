@@ -150,7 +150,7 @@ p{font-family: 'Open Sans', sans-serif; font-size:14px; line-height:24px;}
     bottom:40px;
     right:40px;
     display:none;
-    background: url('../images/arrow.png') no-repeat -8px 20px;
+    background: url('../system_images/arrow.png') no-repeat -8px 20px;
     opacity: .5;
     -webkit-transition: opacity .3s 0s;
     -moz-transition: opacity .3s 0s;

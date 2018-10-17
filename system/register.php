@@ -1,22 +1,27 @@
     <?php
 session_start();
 
-require_once("../appConfig/appConfig.php");
+require_once("../application/appConfig.php");
 
 
-include_once("../application/database/db.php");
+include_once("../system/database/db.php");
 require_once '../application/config.php';
 require_once '../application/functions.php';
 include_once($GLOBALS['APP_DIR'] . "actions/CustomHtml.php");
 
-if (isset($_SESSION['lang']))
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+/* if (isset($_SESSION['lang']))
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
 }
 else
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-}
+} */
+
+include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+//Code End//
+
 if (isUserLoggedin())
 {
   echo "<META http-equiv='refresh' content='0;URL=index.php'>";

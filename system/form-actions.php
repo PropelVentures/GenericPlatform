@@ -3,17 +3,22 @@ ob_start();
 session_start();
 include("../kint/Kint.class.php");
 
-require_once("../appConfig/appConfig.php");
-include_once("../application/database/db.php");
+require_once("../application/appConfig.php");
+include_once("../system/database/db.php");
 require_once '../application/config.php';
 include_once($GLOBALS['APP_DIR'] . "application/functions.php");
 //include $GLOBALS['APP_DIR'] . "system/special_config.php";
 
-if (isset($_SESSION['lang'])) {
+/* if (isset($_SESSION['lang'])) {
     include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
 } else {
     include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-}
+} */
+
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+//include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
+include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+//Code End//
 
 
 /* * ********************************* */

@@ -2,12 +2,17 @@
 //error_reporting(E_ERROR | E_PARSE);
 session_start();
 include_once("application/config.php");
-if(isset($_SESSION['lang'])){
+
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+/* if(isset($_SESSION['lang'])){
 	include_once($GLOBALS['LANGUAGE_APP_DIR'].$_SESSION['lang'].".php");
 }
 else{
 	include_once($GLOBALS['LANGUAGE_APP_DIR']."en.php");
-}
+} */
+include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+//Code End//
+
 include_once($GLOBALS['DATABASE_APP_DIR']."db.php");
 include_once("application/functions.php");
 include_once("transactionUtilityFunctions.php");

@@ -5,10 +5,15 @@ $_SESSION['lang'] = 'en';
 
 require_once 'config.php';
 //exit($GLOBALS['APP_DIR']);
-include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
+
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+//include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
+include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+//Code End//
+
 include_once($GLOBALS['APP_DIR'] . "application/functions.php");
 include_once($GLOBALS["APP_DIR"] . "models/GenericDBFunctions.php");
-require_once($GLOBALS["APP_DIR"] . "DDICT/masterFunctions.php");
+require_once($GLOBALS["APP_DIR"] . "Porting/masterFunctions.php");
 
 
 if($_GET['source'] == 'api'){
@@ -51,7 +56,7 @@ if($_GET['source'] == 'api'){
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>responsive.css">
         
       
-        <link rel="stylesheet" href="<?php echo BASE_URL ?>appConfig/custom-css.css" type="text/css">
+        <link rel="stylesheet" href="<?php echo BASE_URL ?>application/custom-css.css" type="text/css">
 <!--        <script src="http://scrollrevealjs.org/js/scrollReveal.min.js?ver=0.2.0-rc.1"></script>-->
         <script src="https://unpkg.com/scrollreveal"></script>
 

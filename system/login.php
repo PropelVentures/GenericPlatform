@@ -6,15 +6,15 @@ session_start();
 $_SESSION['lang'] = 'en';
 include("../kint/Kint.class.php");
 
-require_once("../appConfig/appConfig.php");
-include_once("../application/database/db.php");
+require_once("../application/appConfig.php");
+include_once("../system/database/db.php");
 include_once("../application/config.php");
 include_once("../application/functions.php");
-include_once("../DDICT/masterFunctions.php");
+include_once("../Porting/masterFunctions.php");
 
 
-
-if (isset($_SESSION['lang']))
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+/* if (isset($_SESSION['lang']))
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
 }
@@ -30,7 +30,11 @@ if (isset($_SESSION['lang']))
 else
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-}
+} */
+
+include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+//Code End//
+
 if (isUserLoggedin())
 {
 	echo "<script>window.location='../index.php';</script>";
@@ -54,7 +58,7 @@ $alias = 'login';
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>common-responsive.css" type="text/css">
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>style.css" type="text/css">
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>responsive.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL ?>appConfig/custom-css.css" type="text/css">
+    <link rel="stylesheet" href="<?php echo BASE_URL ?>application/custom-css.css" type="text/css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="<?php echo BASE_JS_URL ?>bootstrap.min.js"></script>
     <style>

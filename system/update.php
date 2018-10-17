@@ -59,7 +59,7 @@ $i=0;
 $editHtml="<td ><div style='float: left; width: 20px;'>
 <img title='Edit row' alt='Edit'
 onclick=\"editRow($row[0],'$tableAlias','$pagenum');\"
-src='socprox3.0/resources/images/edit.png' class='icon'
+src='socprox3.0/resources/system_images/edit.png' class='icon'
 style='float: left;'>
 </div></td>";
 while ($rowCount>$i){
@@ -69,7 +69,7 @@ while ($rowCount>$i){
 $deleteHtml="<td><div style='float: left; width: 20px;'>
 <img title='Delete row' alt='delete'
 onclick=\"deleteRow($row[0],'$tableAlias','$pagenum');\"
-src='socprox3.0/resources/images/delete.png' class='icon'
+src='socprox3.0/resources/system_images/delete.png' class='icon'
 style='float: left;'>
 </div></td>";
 $tblBody=$tblBody.$editHtml.$tbltd.$deleteHtml.'';
