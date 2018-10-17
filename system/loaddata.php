@@ -172,7 +172,7 @@ while ($row = $result->fetch_array())
   $i = 0;
   $editHtml = "<td>
 	<div style='float: left; width: 20px;'>
-	<img title='Edit row' alt='Edit' onclick=\"editRow($row[0],'$tableAlias','$pagenum','$sortID','$tableSORT','$where');\" src='" . $GLOBALS['app_plugin_prefix'] . "resources/images/edit.png' class='icon' style='float: left;'>
+	<img title='Edit row' alt='Edit' onclick=\"editRow($row[0],'$tableAlias','$pagenum','$sortID','$tableSORT','$where');\" src='" . $GLOBALS['app_plugin_prefix'] . "resources/system_images/edit.png' class='icon' style='float: left;'>
 	</div>
 	</td>";
   while ($rowCount > $i)
@@ -324,7 +324,7 @@ while ($row = $result->fetch_array())
   $deleteHtml = "<td><div style='float: left; width: 20px;'>
 									<img title='Delete row' alt='delete'
 										onclick=\"deleteRow($row[0],'$tableAlias','$pagenum');\"
-										src='" . $GLOBALS['app_plugin_prefix'] . "resources/images/delete.png' class='icon'
+										src='" . $GLOBALS['app_plugin_prefix'] . "resources/system_images/delete.png' class='icon'
 										style='float: left;'>
 								</div></td>";
   $tblBody = $tblBody . $editHtml . $tbltd . $deleteHtml . '</tr>';

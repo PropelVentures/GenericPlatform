@@ -9,10 +9,10 @@
 session_start();
 
 require_once("appConfig.php");
-require_once("../application/database/db.php");
+require_once("../system/database/db.php");
 require_once '../application/config.php';
 require_once '../application/functions.php';
-require_once '../DDICT/masterFunctions.php';
+require_once '../Porting/masterFunctions.php';
 
 
 

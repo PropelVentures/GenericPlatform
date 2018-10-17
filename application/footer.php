@@ -10,7 +10,7 @@ require_once 'config.php';
     <div style="float: left; padding-top: 7px;">Loading Page..</div>
     <div style="float: left;">
         <img alt="" style="height: 40px !important;"
-             src="<?php echo BASE_URL ?>application/images/wait.gif">
+             src="<?php echo BASE_URL ?>application/system_images/wait.gif">
     </div>
 </div>
 <div class="footer">

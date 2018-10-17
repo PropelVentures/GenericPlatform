@@ -1057,3 +1057,118 @@ Stack trace:
 [13-Sep-2018 16:14:39 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/generic/system/login.php on line 7
 [13-Sep-2018 16:14:46 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/generic/system/login.php on line 7
 [13-Sep-2018 16:14:46 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/generic/system/login.php on line 7
+[12-Oct-2018 17:15:02 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[12-Oct-2018 17:15:02 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 08:35:34 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[13-Oct-2018 08:35:34 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 08:36:27 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[13-Oct-2018 08:36:27 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 08:37:34 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[13-Oct-2018 08:37:34 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 08:38:01 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[13-Oct-2018 08:38:01 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 08:51:34 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/cjcornell/public_html/genericsandbox2/system/database/db.php on line 26
+[13-Oct-2018 08:51:34 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php:91
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/system/profile.php(34): Navigation('home')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/links_and_nav.php on line 91
+[13-Oct-2018 09:01:03 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 09:01:03 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 10:33:46 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 10:33:46 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 11:44:15 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function list_display() in /home/cjcornell/public_html/genericsandbox2/Porting/display_content.php:308
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/Porting/get_data_fd_record.php(49): display_content(Array)
+#1 /home/cjcornell/public_html/genericsandbox2/system/profile.php(212): Get_Data_FieldDictionary_Record(NULL, 'home', 'true')
+#2 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/display_content.php on line 308
+[13-Oct-2018 11:44:31 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function list_display() in /home/cjcornell/public_html/genericsandbox2/Porting/display_content.php:308
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/Porting/get_data_fd_record.php(49): display_content(Array)
+#1 /home/cjcornell/public_html/genericsandbox2/system/profile.php(212): Get_Data_FieldDictionary_Record(NULL, 'home', 'true')
+#2 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/display_content.php on line 308
+[13-Oct-2018 12:45:08 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 12:45:08 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 13:43:44 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 13:43:44 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 15:05:12 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[13-Oct-2018 15:05:12 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 05:48:00 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 05:48:00 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 08:29:44 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 08:29:44 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 23:43:18 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[15-Oct-2018 23:43:18 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 06:30:27 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 06:30:27 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 08:30:42 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 08:30:42 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 10:54:16 UTC] PHP Fatal error:  Uncaught Error: Unsupported operand types in /home/cjcornell/public_html/genericsandbox2/Porting/list_display_views.php:443
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/Porting/get_data_fd_record.php(669): list_display('SELECT * FROM f...', '1')
+#1 /home/cjcornell/public_html/genericsandbox2/system/profile.php(226): Get_Data_FieldDictionary_Record('data_dictionary', 'data_dictionary', 'false')
+#2 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/list_display_views.php on line 443
+[16-Oct-2018 10:54:57 UTC] PHP Fatal error:  Uncaught Error: Unsupported operand types in /home/cjcornell/public_html/genericsandbox2/Porting/list_display_views.php:443
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/Porting/get_data_fd_record.php(669): list_display('SELECT * FROM f...', '1')
+#1 /home/cjcornell/public_html/genericsandbox2/system/profile.php(226): Get_Data_FieldDictionary_Record('data_dictionary', 'data_dictionary', 'false')
+#2 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/list_display_views.php on line 443
+[16-Oct-2018 12:45:46 UTC] PHP Parse error:  syntax error, unexpected ']', expecting end of file in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:45:50 UTC] PHP Parse error:  syntax error, unexpected ']', expecting end of file in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:48:48 UTC] PHP Parse error:  syntax error, unexpected '.2' (T_DNUMBER), expecting ',' or ';' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:49:38 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:49:43 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:50:45 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:51:17 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 422
+[16-Oct-2018 12:58:41 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 12:58:41 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 13:01:07 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/cjcornell/public_html/genericsandbox2/Porting/formDisplayFnc.php:906
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox2/Porting/formDisplayFnc.php(145): list_fragment(Array)
+#1 /home/cjcornell/public_html/genericsandbox2/Porting/get_data_fd_record.php(643): formating_Update(Array, 'edit', Array, 'false', true)
+#2 /home/cjcornell/public_html/genericsandbox2/system/profile.php(226): Get_Data_FieldDictionary_Record('myaccount_2', 'MYACCOUNT', 'false')
+#3 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/Porting/formDisplayFnc.php on line 906
+[16-Oct-2018 14:06:27 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 14:06:27 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 14:53:21 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 14:53:21 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 15:37:10 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 15:37:10 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 15:40:39 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 15:40:39 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 18:02:07 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[16-Oct-2018 18:02:07 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 05:39:55 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 05:39:55 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 08:19:58 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 08:19:58 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 09:36:15 UTC] PHP Parse error:  syntax error, unexpected '{' in /home/cjcornell/public_html/genericsandbox2/system/profile.php on line 423
+[17-Oct-2018 14:42:15 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 14:42:15 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 15:26:13 UTC] PHP Warning:  include(../kint/Kint.class.php): failed to open stream: No such file or directory in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7
+[17-Oct-2018 15:26:13 UTC] PHP Warning:  include(): Failed opening '../kint/Kint.class.php' for inclusion (include_path='.:/opt/alt/php70/usr/share/pear') in /home/cjcornell/public_html/genericsandbox2/system/login.php on line 7

@@ -4,9 +4,10 @@
 /////////////////////////////////////////////////////////
 
 
-require_once("../appConfig/appConfig.php");
-include_once("../application/database/db.php");
+require_once("../application/appConfig.php");
+include_once("../system/database/db.php");
 include("../application/header.php");
+
 
 
 $display_page = $_GET['display'];
@@ -36,7 +37,6 @@ Navigation($display_page);
 
 if ($display_page == 'home') {
     ?>
-
     <div class="slider">
         <div id="myCarousel" class="carousel slide" data-ride="carousel">
             <!-- Indicators -->
@@ -102,10 +102,6 @@ if ($display_page == 'home') {
 
 
 <div class="container main-content-container">
-
-
-
-
 
     <!-- Left sidebar content Area --> 
     <?php
@@ -412,18 +408,93 @@ if ($popup_menu['popupmenu'] == 'true') {
 		}
 	 
  } */
- $page_no = $_SESSION['list_pagination'];
+ 
+	#Added By Dharmesh 2018-10-17#
+	//Setting the Pagination Number and Records per Page 
+	$page_no = @$_SESSION['list_pagination'][0];
+	$pagination_no = @$_SESSION['list_pagination'][1];
+
  ?>
 <script>
 
 
-    $(document).ready(function () {
+   $(document).ready(function () {
+	//Added By Dharmesh 2018-10-17//
+   <?php if(!empty($pagination_no)) {?>	
+   $.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
 
-        $('.display').DataTable({
+   $.fn.DataTable.ext.pager.numbers_no_ellipses = function(page, pages){
+   var numbers = [];
+   var buttons = $.fn.DataTable.ext.pager.numbers_length;
+   var half = Math.floor( buttons / 2 );
+
+   var _range = function ( len, start ){
+      var end;
+    
+      if ( typeof start === "undefined" ){
+         start = 0;
+         end = len;
+ 
+      } else {
+         end = start;
+         start = len;
+      }
+ 
+      var out = [];
+      for ( var i = start ; i < end; i++ ){ out.push(i); }
+    
+      return out;
+   };
+    
+   if ( pages <= buttons ) {
+      numbers = _range( 0, pages );
+
+   } else if ( page <= half ) {
+      numbers = _range( 0, buttons);
+
+   }  else if ( page >= pages - 1 - half ) {
+	
+      numbers = _range( 0, pages );
+
+   } else {
+      numbers = _range( 0, buttons);
+   } 
+ 
+   numbers.DT_el = 'span';
+ 
+   //return ["first","previous", numbers , "next", "last" ];
+   return [ numbers  ];
+};
+	var pagingType = 'numbers_no_ellipses';
+<?php }else { ?>
+var pagingType = 'full_numbers';
+<?php } ?>
+//Code End//
+		 var dTable = $('.display').DataTable({
             "scrollX": true,
-			"pagingType": "full_numbers",
-			"lengthMenu": [[<?php if(!empty($page_no)){echo (int)$page_no;}else{ echo 10;}?>, 25, 50, -1], ['<?php if(!empty($page_no)){echo (int)$page_no;}else{ echo 10;}?>', 25, 50, "All"]]
+			"pagingType": pagingType,
+			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
+			"bStateSave": true,
+			
+			"bStateSave": function (oSettings, oData) {
+			alert(JSON.stringify(oData));
+            localStorage.setItem('genericData', JSON.stringify(oData));
+			},
+			"bStateLoad": function (oSettings) {
+			alert(JSON.stringify(oData));
+            return JSON.parse(localStorage.getItem('genericData'));
+			}
         });
+		
+		
+		
+		
+		setTimeout(function(){
+			//Setting the time to
+		//$("select[name='example_length'] option[text='ALL']").attr("selected","selected") ;
+		$('select[name="example_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
+		$("select[name=example_length]").trigger('change');
+		}, 3000);
         //// to stop from going to edit screen//
 
         $('.list-checkbox').on('click', function () {
@@ -1228,7 +1299,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
             $.ajax({
                 method: "GET",
-                url: "../appConfig/custom-functions.php",
+                url: "../application/custom-functions.php",
                 dataType: 'json',
                 data: {action: "execute_trans", project_id: project_id, display: display, ta: ta, trans_id: trans_id, dd_id: dd_id}
             })
@@ -1277,7 +1348,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
             $.ajax({
                 method: "GET",
-                url: "../appConfig/custom-functions.php",
+                url: "../application/custom-functions.php",
                 data: {action: "confirm_trans", impData: impData}
             })
 

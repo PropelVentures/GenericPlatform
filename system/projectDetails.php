@@ -77,7 +77,7 @@ if (isset($_GET['pid']) && !empty($_GET['pid']))
           <div class="row">
             <div class="row top-add-tab">
               <div class="col-md-10 col-lg-12 col-sm-10 add-tab">
-                <div class="left-content" style="float:left; width:25%;"> <img class="img-thumbnail" src="<?php echo BASE_URL ?><?php echo ($project[$projectTblArray['projectImage_fld']] != "") ? ("project_uploads/thumbs/" . $project['projectImage']) : 'images/thumb_defaultImageIcon.png' ?>"> </div>
+                <div class="left-content" style="float:left; width:25%;"> <img class="img-thumbnail" src="<?php echo BASE_URL ?><?php echo ($project[$projectTblArray['projectImage_fld']] != "") ? ("project_uploads/thumbs/" . $project['projectImage']) : 'system_images/thumb_defaultImageIcon.png' ?>"> </div>
                 <div class="right-content" style="float:left; width:75%; padding-left:5px;">
                   <h2>
                     <?php echo isset($project[$projectTblArray['pname_fld']]) ? $project[$projectTblArray['pname_fld']] : 'Project Name' ?>
@@ -205,7 +205,7 @@ if (isset($_GET['pid']) && !empty($_GET['pid']))
         <div class="col-md-6 col-lg-4 col-sm-6 p-owner">
           <div class="project-detail" >
             <div class="row side-set">
-              <div class="col-md-5 col-sm-5"> <span class="profile-image"> <img class="img-responsive" src="<?php echo BASE_URL ?><?php echo ($project[$userTblArray['image_fld']] != "") ? ("users_uploads/thumbs/" . $project[$userTblArray['image_fld']]) : 'images/thumb_defaultImageIcon.png' ?>"> </span> </div>
+              <div class="col-md-5 col-sm-5"> <span class="profile-image"> <img class="img-responsive" src="<?php echo BASE_URL ?><?php echo ($project[$userTblArray['image_fld']] != "") ? ("users_uploads/thumbs/" . $project[$userTblArray['image_fld']]) : 'system_images/thumb_defaultImageIcon.png' ?>"> </span> </div>
               <div class="col-md-7 col-sm-7">
                 <div class="project-info ownername" >
                   <h3>Project Owner <a href="<?php echo BASE_URL_SYSTEM ?>userDetails.php?uid=<?php echo $project[$projectTblArray['uid_fld']] ?>" style="text-decoration:underline;">

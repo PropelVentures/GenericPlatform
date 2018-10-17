@@ -2,11 +2,11 @@
 
 session_start();
 
-require_once("../appConfig/appConfig.php");
-include_once("../application/database/db.php");
+require_once("../application/appConfig.php");
+include_once("../system/database/db.php");
 require_once '../application/config.php';
 require_once '../application/functions.php';
-require_once '../DDICT/masterFunctions.php';
+require_once '../Porting/masterFunctions.php';
 
 
 

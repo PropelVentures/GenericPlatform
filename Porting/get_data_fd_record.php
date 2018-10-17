@@ -23,6 +23,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
     if (empty($_GET['tabNum'])) {
+
         $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num != 0 and tab_name != 'fffr_icon' order by tab_num");
         $row = $rs->fetch_assoc();
         $_GET['tabNum'] = $row['tab_num'];

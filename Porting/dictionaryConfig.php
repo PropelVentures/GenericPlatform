@@ -2,9 +2,9 @@
 
 //********************************  Configuration  ********************
 
-require("../appConfig/appConfig.php");
+require("../application/appConfig.php");
 
-require("../application/database/db.php");
+require("../system/database/db.php");
 
 require("default.php");
 

@@ -1,7 +1,7 @@
 
 
 /******************************Login-window******************************/
-.login-body{background:url(../../appConfig/images/login.jpg) no-repeat center center; background-size:cover; background-attachment:fixed;}
+.login-body{background:url(../../appConfig/system_images/login.jpg) no-repeat center center; background-size:cover; background-attachment:fixed;}
 .login-window{ padding:0; margin-bottom:0; background:transparent;}
 .logo-login:hover{text-decoration:none; color:#3498db;}
 .overlay-bg{background:rgba(255,255,255,0.4);}
@@ -50,7 +50,7 @@
 .login-div p{font-size:16px; text-align:center;}
 
 /***********************************Register********************************/
-.reg-body{background:url(../../appConfig/images/register.jpg) center center no-repeat; background-size:cover; background-attachment:fixed;}
+.reg-body{background:url(../../appConfig/system_images/register.jpg) center center no-repeat; background-size:cover; background-attachment:fixed;}
 .register-window{ padding:0; margin-bottom:0; background:transparent;}
 .register-window .login-div{margin:auto; margin-top:2%;}
 .register-window button{margin-top:5px;}

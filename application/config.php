@@ -3,11 +3,14 @@
 if ($_SERVER['HTTP_HOST'] === 'localhost') {
 
     //define('APP_DIR', $_SERVER['DOCUMENT_ROOT'].'generic-platforms/'); // Base Root or Directory Path For Application
-    define('APP_DIR', $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/'); // Base Root or Directory Path For Application
+    //define('APP_DIR', $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/'); // Base Root or Directory Path For Application
+    define('APP_DIR', $_SERVER['DOCUMENT_ROOT'] . '/generic/'); // Base Root or Directory Path For Application
 
-    $GLOBALS['APP_DIR'] = $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/';#'generic/'
+    //$GLOBALS['APP_DIR'] = $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/';#'generic/'
+    $GLOBALS['APP_DIR'] = $_SERVER['DOCUMENT_ROOT'] . '/generic/';#'generic/'
 
-    define('BASE_URL', 'http://localhost/GenericPlatform/');#http://localhost/generic/
+    //define('BASE_URL', 'http://localhost/GenericPlatform/');#http://localhost/generic/
+    define('BASE_URL', 'http://localhost/generic/');#http://localhost/generic/
 //    ini_set('display_errors', 1);
 //   error_reporting(1);
     error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
@@ -46,9 +49,9 @@ if ($_SERVER['HTTP_HOST'] === 'localhost') {
 /* System URLS */
 define('BASE_URL_SYSTEM', BASE_URL . 'system/');
 define('BASE_URL_ADMIN', BASE_URL . 'admin/');
-define('BASE_CSS_URL', BASE_URL . 'application/css/');
+define('BASE_CSS_URL', BASE_URL . 'application/custom_css/');
 define('BASE_JS_URL', BASE_URL . 'application/js/');
-define('BASE_IMAGES_URL', BASE_URL . 'appConfig/images/');
+define('BASE_IMAGES_URL', BASE_URL . 'application/system_images/');
 define('CHILD_FILES_URL', BASE_URL . 'childPages/');
 
 $GLOBALS['session_set'] = 0;
@@ -56,7 +59,7 @@ $GLOBALS['session_set'] = 0;
 $GLOBALS['CONFIG_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/config.php';
 $GLOBALS['INCLUDE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/includes/';
 $GLOBALS['DATABASE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/database/';
-$GLOBALS['LANGUAGE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'appConfig/language/';
+$GLOBALS['LANGUAGE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/language/';
 $GLOBALS['CHILD_FILES_DIR'] = $GLOBALS['APP_DIR'] . 'application/childPages/';
 
 define('MYPATH_USERS_DIR', APP_DIR . '/users_uploads/');
