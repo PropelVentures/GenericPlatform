@@ -487,18 +487,17 @@ var pagingType = 'full_numbers';
         });
 		
 		
-		
-		
+		//Fixing the bug for default pagination values for the datatable//
+		<?php $page_no = empty($page_no)?10:$page_no; ?>
 		setTimeout(function(){
 			//Setting the time to
 		//$("select[name='example_length'] option[text='ALL']").attr("selected","selected") ;
 		$('select[name="example_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
 		$("select[name=example_length]").trigger('change');
-		}, 3000);
+		}, 2000);
         //// to stop from going to edit screen//
 
         $('.list-checkbox').on('click', function () {
-
             event.stopImmediatePropagation();
         });
 
