@@ -1,5 +1,10 @@
 <?php
 /* * *SITE INFORMATION********* */
+
+define("SESSION_AUTO_TIMEOUT","1200");
+
+
+
 define("SITE_TITLE", "Generic Platform");
 define("BRAND_LOGO", "Generic <span>LOGO</span>");
 define("LOGIN_LOGO", '<a class="logo-login" href="index.php">Generic <span>Platform</span></a>');

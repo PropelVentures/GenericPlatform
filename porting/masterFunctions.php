@@ -6,9 +6,11 @@
  */
 
 
-
+require_once("../application/appConfig.php");
 //$_SESSION['listCount'] = 0;
-require_once("../system/database/db.php");
+ /*  require_once("../system/database/db.php");  */
+
+
 
 require_once("helperFunctions.php");    
 

@@ -13,7 +13,8 @@ else{
 include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
 //Code End//
 
-include_once($GLOBALS['DATABASE_APP_DIR']."db.php");
+/* include_once($GLOBALS['DATABASE_APP_DIR']."db.php"); */
+require_once("../application/appConfig.php");
 include_once("application/functions.php");
 include_once("transactionUtilityFunctions.php");
 

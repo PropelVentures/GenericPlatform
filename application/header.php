@@ -56,7 +56,7 @@ if($_GET['source'] == 'api'){
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>responsive.css">
         
       
-        <link rel="stylesheet" href="<?php echo BASE_URL ?>application/custom-css.css" type="text/css">
+        <link rel="stylesheet" href="<?php echo BASE_URL ?>application/custom_css/custom-css.css" type="text/css">
 <!--        <script src="http://scrollrevealjs.org/js/scrollReveal.min.js?ver=0.2.0-rc.1"></script>-->
         <script src="https://unpkg.com/scrollreveal"></script>
 

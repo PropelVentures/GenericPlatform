@@ -4,7 +4,7 @@ session_start();
 include("../kint/Kint.class.php");
 
 require_once("../application/appConfig.php");
-include_once("../system/database/db.php");
+/* include_once("../system/database/db.php"); */
 require_once '../application/config.php';
 include_once($GLOBALS['APP_DIR'] . "application/functions.php");
 //include $GLOBALS['APP_DIR'] . "system/special_config.php";

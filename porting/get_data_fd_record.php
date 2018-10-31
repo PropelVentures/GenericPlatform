@@ -348,9 +348,15 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                  * This check is deploying for Transaction feature.
                  */
 
-
-                if (trim($row1['table_type']) != 'transaction')
-                    $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_SESSION['search_id']);
+				#Added By Dharmesh 2018-27-10#
+				$user_id  = !empty($_GET['search_id'])?$_GET['search_id']:$_SESSION['search_id'];
+                
+				if (trim($row1['table_type']) != 'transaction')
+                    $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $user_id);
+					
+/* 				if (trim($row1['table_type']) != 'transaction')
+                    $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_SESSION['search_id']); */
+				
             }
 
 

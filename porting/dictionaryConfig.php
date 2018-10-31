@@ -4,7 +4,7 @@
 
 require("../application/appConfig.php");
 
-require("../system/database/db.php");
+/* require("../system/database/db.php"); */
 
 require("default.php");
 

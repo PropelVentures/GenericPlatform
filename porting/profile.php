@@ -5,7 +5,7 @@
 
 
 require_once("../application/appConfig.php");
-include_once("../system/database/db.php");
+/* include_once("../system/database/db.php");  */
 include("../application/header.php");
 
 
@@ -107,7 +107,7 @@ if ($display_page == 'home') {
 
 
 
-    <!-- Left sidebar content Area --> 
+    <!-- Left sidebar content Area -->
     <?php
     /*
      * Finding page layout by DD->tab_num
@@ -123,7 +123,7 @@ if ($display_page == 'home') {
 
 
         $r1 = explode('w', trim($row['tab_num']));
-       
+
         if (!empty($r1[1])) {
 
             if ($r1[0] == 'R1')
@@ -221,19 +221,19 @@ if ($display_page == 'home') {
 
             unset($_SESSION['display2']);
 
-            echo Get_Links($display_page); 
+            echo Get_Links($display_page);
 
             global $tab;
 
             $tab_status = 'false';
- 
+
             if (isset($_SESSION['tab'])) {
                 Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
             } else {
                 Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
             }
         }/// tab_num else ends here
-    }//// page_layout           
+    }//// page_layout
     ?>
     <div style="clear:both"></div>
 </div>
@@ -418,19 +418,19 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*
-         * 
+         *
          * Selecting all checkboxes
-         * 
+         *
          */
 
-        $('#selectAll').click(function (event) {  //on click 
+        $('#selectAll').click(function (event) {  //on click
             if (this.checked) { // check select status
                 $('.list-checkbox').each(function () { //loop through each checkbox
-                    this.checked = true; //select all checkboxes with class "checkbox1"               
+                    this.checked = true; //select all checkboxes with class "checkbox1"
                 });
             } else {
                 $('.list-checkbox').each(function () { //loop through each checkbox
-                    this.checked = false; //deselect all checkboxes with class "checkbox1"                       
+                    this.checked = false; //deselect all checkboxes with class "checkbox1"
                 });
             }
         });
@@ -524,17 +524,17 @@ if ($popup_menu['popupmenu'] == 'true') {
             window.location.href = '<?= $_SESSION['add_url_list'] ?>';
         });
         /*
-         
+
          var test = 'something ';
          $(".span-checkbox").click(function(){
-         
+
          test = test.concat($(this).html());
-         
+
          alert(test);
-         
-         
+
+
          });
-         
+
          */
 
         /* Sorting function on SORT button click */
@@ -847,7 +847,7 @@ if ($popup_menu['popupmenu'] == 'true') {
          * **************************************************BACK TO LSIT
          * ***************
          * **********************************
-         * 
+         *
          */
 
         var form_edit = '';
@@ -862,7 +862,7 @@ if ($popup_menu['popupmenu'] == 'true') {
         $(".back-to-list").click(function (event) {
 
   if( $(this).parents('#user_profile_form').hasClass('profile_page') ){
-      
+
        window.location = $(this).attr('href');
         }else{
             if (form_edit == 'changed') {
@@ -876,7 +876,7 @@ if ($popup_menu['popupmenu'] == 'true') {
                 }
 
             }
-            
+
             }
 
         });
@@ -916,7 +916,7 @@ if ($popup_menu['popupmenu'] == 'true') {
         });
 
         /*
-         * 
+         *
          * Friend ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -955,7 +955,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*
-         * 
+         *
          * Follow me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -996,7 +996,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*
-         * 
+         *
          * Favorite me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1041,7 +1041,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*
-         * 
+         *
          * Rate me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1094,7 +1094,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*
-         * 
+         *
          * Voting Number CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1150,7 +1150,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
         /*******
-         * 
+         *
          * ********
          * ***********
          * ************************HIDING UPDATE/CANCEL BUTTON WHEN FFFR PRESENT
@@ -1183,10 +1183,10 @@ if ($popup_menu['popupmenu'] == 'true') {
 
         /******
          * **********
-         * *******************Transaction Js code goes here 
+         * *******************Transaction Js code goes here
          * *******
          * *************************
-         * 
+         *
          */
 
 
@@ -1245,7 +1245,7 @@ if ($popup_menu['popupmenu'] == 'true') {
          * *******************Transaction Action ,when user Confirms the Transaction
          * *******
          * *************************
-         * 
+         *
          */
 
 
@@ -1276,7 +1276,7 @@ if ($popup_menu['popupmenu'] == 'true') {
                             }, 2000);
 
                         }else{
-                            
+
                               $('.transBody').html("<p class='transFail'><?= transFail ?></p>");
 
                             setTimeout(function () {

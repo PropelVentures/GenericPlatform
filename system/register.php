@@ -4,7 +4,7 @@ session_start();
 require_once("../application/appConfig.php");
 
 
-include_once("../system/database/db.php");
+/* include_once("../system/database/db.php"); */
 require_once '../application/config.php';
 require_once '../application/functions.php';
 include_once($GLOBALS['APP_DIR'] . "actions/CustomHtml.php");
