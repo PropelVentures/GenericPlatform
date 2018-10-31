@@ -1,0 +1,137 @@
+
+
+
+
+/********* BOXVIEW ***********/
+
+.boxView{}
+
+.boxView img{}
+
+
+.boxView:hover
+{
+
+border-color:lightgray;
+
+box-shadow:1px 1px 3px lightgray;
+
+}
+
+
+/************/
+
+
+
+
+
+
+.boxView  {
+box-shadow: 1px 1px 1px #888888;
+ background-color: white;
+width: 23% !important;
+/* height: 300px; */
+min-width:200px;
+position: relative;
+margin-top:10px;
+
+
+
+/* new ideas from republic.co  */
+border-radius: 4px;
+-webkit-transition: all 0.2s ease-in-out;
+transition: all 0.2s ease-in-out;
+
+cursor: pointer;
+border-bottom: 1px solid #d7d7d7;
+box-shadow: 0px 0px 5px 0px
+box-sizing: border-box;
+background-color: #eeeeee;
+background-size: cover;
+background-position: center;
+border-bottom: 1px solid rgba(0,0,0,0.08);
+
+}
+
+
+
+
+
+.boxView .img-responsive {
+
+/*   position: absolute;  */
+
+/*
+  border-radius: 145px 145px 145px 145px;
+  border-color: blue;
+  border-width: 13px;
+  margin-left: 40px;
+  margin-bottom: 10px;
+*/
+
+
+/* border-radius: 15px 50px; */
+
+width: 100%;
+max-height: 50%;
+min-height: 50%;
+
+
+border-radius: 0px 0px 0px 0px;
+
+}
+
+
+
+
+
+.boxView span.list-data {
+/* display: inline; */
+/* display: flex; */
+/*  position: relative; */
+/*  position: absolute; */
+
+   }
+
+/***Edit Button Inside BoxView Widget****/
+
+.boxView .edit{position: relative;}
+
+
+
+
+
+/**********
+BoxView Pagination and Show All button Classes/styles Details
+******************/
+
+/******Pagination is en-wrapped in a div which has following class*****/
+
+.page_navigation{}
+
+.page_navigation a{}
+
+.page_navigation a.active_page{}
+
+/*********SHOW ALL button**********/
+
+.show_all{}
+
+/**** this test-super class is for hover effect on show_all button***/
+#test-super:hover{}
+
+
+
+
+.my-box-style
+{
+/*    margin-left: 100px;  */
+background-color: yellow;
+width: 90% ;
+
+
+/* height: 400px; */
+}
+
+
+

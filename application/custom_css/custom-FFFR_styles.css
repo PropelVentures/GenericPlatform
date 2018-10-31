@@ -1,0 +1,95 @@
+
+
+/*****
+Classes Details of Buttons ,which you will see with FFFR-V widget
+************/
+
+/****This widget is en-wrapped in the div which class name is fffr ***/
+
+.fffr{}
+
+/***All FFFR ICONS/BUTTONS has one general class which name is button Except Favorite ICON and one specific class***/
+
+/***General class can be manage by following class ***/
+
+.fffr .button{}
+
+/*********Friend Button********/
+
+.fffr .button.friend_me_icon{}
+
+/*********Follow Button********/
+
+.fffr .button.follow_me_icon{}
+
+
+
+/*******
+****************Favorite Button Details*******
+*******
+***********************
+it used span tag. It's slightly different from above two FFFR buttons.
+It assign class ,which name is favorite_me_icon_selected ,
+when user want to add corresponding user/script/project etc to his/her favorite list,
+And it assigned class which name is favorite_me_icon ,
+when user didn't add the corresponding item/record to his/her favorite list.
+
+******************/
+
+.favorite_me_icon_selected{}
+
+.favorite_me_icon{}
+
+
+/*****
+*******************Rating Widget Details
+*****
+*******************/
+
+
+
+/*********
+In Rating widget, we have two options. Which are as follow.
+
+OPTION 1
+
+One is voting/number.
+Which is en-wrapped in span tag which has class name=fffr-rating-number.
+label is displayed for Number voting ,which is further en-wrapped in span tag which has class name= numberLabel.
+For voting/number ,we have used input tag to accept integers from the user.
+This input tag has class ,which name is fffr-input.
+This widget has also Anchor tag ,on which User click to submit the Value he/she inserted in the input field.
+This anchor tag has class=button voting-number << one button general class and another
+you can use to further customize.
+
+**********/
+
+/******************************************************************************************/
+
+/***whole voting/number widget is enwrapped in div which has following class ***/
+
+.fffr-rating-number{}
+
+/***class for label***/
+
+.numberLabel{}
+
+/*****input field ******/
+
+.fffr-input{}
+
+.fffr-input:focus{}
+
+
+/**********************************************************************************************/
+
+/**
+Option 2
+
+This is rating widget.
+We had used 3rd party rating widget for displaying Rating.
+This widget is en-wrapped in div which class=rating-container
+
+*******************/
+
+.rating-container{}

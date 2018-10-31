@@ -1,0 +1,103 @@
+
+.center-container
+{
+background-color: white;
+}
+
+
+
+.user-profile
+{
+background-color: white;
+}
+
+
+
+#user_profile_form
+{
+background-color: white;
+}
+
+
+
+
+
+ .profile-image {
+ clip-path: ellipse(60px 40px at 75px 30px);
+ }
+
+
+
+
+/* --------------------------------------
+when you set dd->page_editable=0,
+then GP includes class page_not_editable
+
+and when user mention dd->page_editable=1
+then GP includes class simple_edit_page
+
+and when user mention dd->page_editable=2,
+then GP include class profile_page
+--------------------------------------- */
+
+
+/*********PROFILE pages Styling details*************/
+
+.profile_page .new_form .form-control,.profile_page .form-control[disabled],
+.profile_page .form-control[readonly]{
+
+
+}
+
+.profile_page .new_form label
+{
+  display:none;
+}
+
+
+/***********None editable pages Styling details***********/
+
+.page_not_editable .form-control
+{
+}
+
+
+
+
+
+
+.form-control {
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+
+
+
+.new_form label
+    {
+
+/*    display:none;  */
+    }
+
+
+  #user_profile_form.profile_page
+.new_form  .form-control
+{
+color: black;
+    font-size: 16pt;
+
+    }
