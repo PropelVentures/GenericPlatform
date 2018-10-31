@@ -1,0 +1,74 @@
+
+
+
+/******** TABS **********/
+
+
+
+.center-tab, .center-tab li {
+    color: #333;
+    color: orange;
+    background-color: white;
+    font-size: 14px;
+    font-weight: 400;
+/*    color: #777;  */
+    text-decoration: none;
+/*    border-top: 2px solid #fff; */
+
+
+
+}
+
+.center-tab  a {
+background-color: white;
+
+}
+.center-tab a:hover,
+.center-tab a:focus {}
+
+
+.center-tab .active {
+    background-color: none;
+    font-weight: 700;
+    font-size: 14px;
+    color: #333;
+    border-top: 1px solid #aaa;
+}
+
+.center-tab .active  a,
+.center-tab .active  a:hover,
+.center-tab .active a:focus {
+    background-color: #f9f9fa;
+    font-weight: 700;
+    font-size: 14px;
+    color: #333;
+    border-top: 1px solid #aaa;
+}
+
+.center-tab .active  a:hover
+{
+    border-top: 1px solid #aaa;
+}
+
+
+
+
+.center-tab {
+ white-space: nowrap;
+   overflow-x:auto;
+     overflow-y: hidden;
+     
+     }
+
+.center-tab li
+{
+
+      display: inline-block;
+
+}
+
+.center-container {
+border: none;
+}
+
+

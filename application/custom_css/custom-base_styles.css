@@ -1,0 +1,166 @@
+
+body {
+background-color: lightgray;
+background-color: white;
+
+}
+
+
+
+
+section.section-sep:nth-child(even) {background: white;}
+
+section.section-sep:nth-child(odd) {background: snow;}
+
+.jumbotron {background-color: white;}
+
+
+/*
+.img-responsive {
+	width: 200px;
+	height: 100px;
+	background: red;
+	-moz-border-radius: 100px / 50px;
+	-webkit-border-radius: 100px / 50px;
+	border-radius: 100px / 50px;
+/* display: flex;  */
+/*	}
+*/
+
+
+/********** Classes Names and Details by Yasir ************/
+
+.container{
+/* width:100%; */
+}
+
+/**Sidebars(left & right) & center content area is en-wrapped in main-content-container class ***/
+
+.main-content-container{
+/* width:70%; */
+}
+
+/****Left sidebar Div has following class ***/
+
+.left-sidebar{}
+
+/****Center Content area Div has following class ***/
+
+.center-container{}
+
+
+/****right sidebar Div has following class ***/
+
+.right-sidebar{}
+
+
+/******************************
+***************************************
+
+********* CSS Classes details For Simple edit/form page *********
+
+**************************************************/
+
+
+
+/****update button has separate following class ***/
+
+.update-btn{}
+
+
+
+update-btn {
+float:right;
+color: darkblue;
+padding: 1px;
+margin-left: 5px;
+}
+
+
+/****Cancel button has separate following class ***/
+
+a .update-btn{}
+
+
+/****Form Elements are displayed in Pairs >>> element & label. << These pair
+are en-wrapped in div which has class new_form ****/
+
+.new_form {}
+
+/*** if you want to target labels inside form ***/
+
+.new_form label{}
+
+/****Extra Notes >>> Each form element has bootstrap's class ,which name is form-control.
+so you can control the style of form elements via .your_custom_class .form-control OR even
+Can override bootstrap class=form-control
+*********/
+.form-control{}
+
+/*** More directed will be the following way (appropriate way)***/
+
+.new_form .form-control{}
+
+
+
+/******************************************************************/
+
+
+/********
+*****************
+*************************CSS styling Details of all buttons Used in GPC
+**********/
+
+
+/****Form's update/cancel/save buttons details are provided above.****/
+
+
+
+/**Classes Details of prev/next/last/first buttons ,which are used ,
+When a user views a record from a LIST (ie selects, and views/edits the record)
+***/
+
+/****These buttons are en-wrapped in the div which class name is editPagePagination**/
+
+.editPagePagination{}
+
+/***Anchor tags are used to display these buttons. Each Anchor tag has general class=button .
+And for disabling effect another class is used which name is disabled.***/
+
+.editPagePagination .button{}
+
+.editPagePagination .disabled{}
+
+
+/*****
+
+Classes Details of Buttons ,
+which you will see with Form element which's format_type= audio
+
+******************/
+
+/****These buttons are en-wrapped in the div which class name is button_panel ***/
+
+.button_panel{}
+
+/******It uses same button and disabled class as mentioned above ****/
+
+.button_panel .button{}
+
+.button_panel .disabled{}
+
+/****
+Text has been displayed for your guidance when user click on any button.
+This text msg is displayed in div which class name is recording_msg.
+***********/
+
+.recording_msg{}
+
+
+
+
+section.section-sep:nth-child(even) {background: none;}
+
+section.section-sep:nth-child(odd) {background: #f2f2f2;}
+section.section-sep:nth-child(odd) {background: none;}
+
