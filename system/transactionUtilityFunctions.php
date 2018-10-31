@@ -1,6 +1,7 @@
 <?php
 session_start();
-include_once($GLOBALS['DATABASE_APP_DIR']."db.php");
+/* include_once($GLOBALS['DATABASE_APP_DIR']."db.php"); */
+require_once("../application/appConfig.php");
 
 function getCurrentUserWallet(){
 	

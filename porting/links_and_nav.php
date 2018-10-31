@@ -68,7 +68,7 @@ function Get_Links($display_page) {
             echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
         } else {
 
-            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
+            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class'>$row[tab_name]</a></li>";
         }
         $i++;
     }
@@ -110,7 +110,7 @@ function Navigation($page, $menu_location = 'header') {
     }
     $item_style = $row['item_style'];
 
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and item_number != 0 and menu_location='$menu_location' order by item_number");
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' order by item_number");
 
     $arr = array();
     $i = 0;
@@ -120,9 +120,35 @@ function Navigation($page, $menu_location = 'header') {
 
         $i++;
     }
-
+	
+	
+	for ($j = 0; count($arr) > $j; $j++) {
+		if(strtoupper($arr[$j]['display_page'])==strtoupper($_GET['display']) && empty($_GET['search_id'])){
+			if($arr[$j]['item_number']==0){
+			$pagename = $arr[$j]['display_page'];
+			$action = 'only1';
+			}
+			elseif( $arr[$j]['item_number']!=0 && explode('.',$arr[$j]['item_number'])[1]==0){
+			$pagename = $arr[$j]['display_page'];
+			$action = 'showall';
+			}
+			}
+			if( $arr[$j]['item_number']==0 && $arr[$j]['display_page']=='ALL'){
+			$itemlable = $arr[$j]['item_label'];
+			}
+	 }
+	 
 //////html version of navigation will be displayed....
     ?>
+	<script type='text/javascript'>
+		$(document).ready(function() {
+			<?php if($action=='only1') { ?>
+			$('.<?= $pagename ?>').show();
+			$('.ALL').hide();
+			<?php } ?>
+			$("li:contains('<?= $itemlable ?>')").remove();
+		});
+	</script>
 
     <!-- Navigation starts here -->
     <div class="navbar navbar-default navbar-fixed-top">
@@ -165,11 +191,8 @@ function Navigation($page, $menu_location = 'header') {
                         } else
                             $enabled = 'disabled';
 
-                        if ($arr[$i]['item_visibility'] <= 0)
-                            $visibility = 'hidden';
-                        else
-                            $visibility = 'show';
-
+                        $visibility = $arr[$i]['display_page'];
+ 
                         /*
                           if ($arr[$i]['admin_level'] <= 0) {
                           $admin_enabled = 'enabled';

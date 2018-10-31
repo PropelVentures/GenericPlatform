@@ -5,7 +5,7 @@
 
 
 require_once("../application/appConfig.php");
-include_once("../system/database/db.php");
+/* include_once("../system/database/db.php");  */
 include("../application/header.php");
 
 
@@ -103,7 +103,7 @@ if ($display_page == 'home') {
 
 <div class="container main-content-container">
 
-    <!-- Left sidebar content Area --> 
+    <!-- Left sidebar content Area -->
     <?php
     /*
      * Finding page layout by DD->tab_num
@@ -119,7 +119,7 @@ if ($display_page == 'home') {
 
 
         $r1 = explode('w', trim($row['tab_num']));
-       
+
         if (!empty($r1[1])) {
 
             if ($r1[0] == 'R1')
@@ -211,25 +211,25 @@ if ($display_page == 'home') {
 
             Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
         } else {
-			
+
             $_SESSION['display2'] = '';
 
             unset($_SESSION['display2']);
 
-            echo Get_Links($display_page); 
- 
+            echo Get_Links($display_page);
+
             global $tab;
 
             $tab_status = 'false';
-			
-            if (isset($_SESSION['tab'])) { 
+
+            if (isset($_SESSION['tab'])) {
                 Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
-				
+
 			} else {
                 Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
             }
         }/// tab_num else ends here
-    }//// page_layout           
+    }//// page_layout
     ?>
     <div style="clear:both"></div>
 </div>
@@ -394,25 +394,27 @@ if ($popup_menu['popupmenu'] == 'true') {
 
 
 <a href="#" class="scrollToTop">Scroll To Top</a>
-<?php 
+<?php
 /* $page_no = '';
  $pagination_no = explode(';',$_SESSION['list_pagination']);
  for($j=0;$j<count($pagination_no);$j++)
  {
 	$newvar =  explode(',',$pagination_no[$j]);
-		//echo strpos(trim($newvar[0]),'pagination')."<br>"; 
-		if(strpos(trim($newvar[0]),'pagination')=='0') 
+		//echo strpos(trim($newvar[0]),'pagination')."<br>";
+		if(strpos(trim($newvar[0]),'pagination')=='0')
 		{
 			//echo "hello";
-		 $page_no = $newvar[1]; break; 
+		 $page_no = $newvar[1]; break;
 		}
-	 
+
  } */
- 
+
 	#Added By Dharmesh 2018-10-17#
-	//Setting the Pagination Number and Records per Page 
-	$page_no = @$_SESSION['list_pagination'][0];
-	$pagination_no = @$_SESSION['list_pagination'][1];
+	//Setting the Pagination Number and Records per Page
+	if(empty($_GET['edit'])){
+		$page_no = @$_SESSION['list_pagination'][0];
+		$pagination_no = !empty($_SESSION['list_pagination'][1])?$_SESSION['list_pagination'][1]:0;
+	}
 
  ?>
 <script>
@@ -420,7 +422,7 @@ if ($popup_menu['popupmenu'] == 'true') {
 
    $(document).ready(function () {
 	//Added By Dharmesh 2018-10-17//
-   <?php if(!empty($pagination_no)) {?>	
+   <?php if(!empty($pagination_no)) {?>
    $.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
 
    $.fn.DataTable.ext.pager.numbers_no_ellipses = function(page, pages){
@@ -430,22 +432,22 @@ if ($popup_menu['popupmenu'] == 'true') {
 
    var _range = function ( len, start ){
       var end;
-    
+
       if ( typeof start === "undefined" ){
          start = 0;
          end = len;
- 
+
       } else {
          end = start;
          start = len;
       }
- 
+
       var out = [];
       for ( var i = start ; i < end; i++ ){ out.push(i); }
-    
+
       return out;
    };
-    
+
    if ( pages <= buttons ) {
       numbers = _range( 0, pages );
 
@@ -453,15 +455,15 @@ if ($popup_menu['popupmenu'] == 'true') {
       numbers = _range( 0, buttons);
 
    }  else if ( page >= pages - 1 - half ) {
-	
+
       numbers = _range( 0, pages );
 
    } else {
       numbers = _range( 0, buttons);
-   } 
- 
+   }
+
    numbers.DT_el = 'span';
- 
+
    //return ["first","previous", numbers , "next", "last" ];
    return [ numbers  ];
 };
@@ -475,49 +477,41 @@ var pagingType = 'full_numbers';
 			"pagingType": pagingType,
 			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
 			"bStateSave": true,
-			
-			"bStateSave": function (oSettings, oData) {
-			alert(JSON.stringify(oData));
-            localStorage.setItem('genericData', JSON.stringify(oData));
-			},
-			"bStateLoad": function (oSettings) {
-			alert(JSON.stringify(oData));
-            return JSON.parse(localStorage.getItem('genericData'));
-			}
         });
-		
-		
+
+
 		//Fixing the bug for default pagination values for the datatable//
 		<?php $page_no = empty($page_no)?10:$page_no; ?>
+
 		setTimeout(function(){
 			//Setting the time to
 		//$("select[name='example_length'] option[text='ALL']").attr("selected","selected") ;
 		$('select[name="example_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
 		$("select[name=example_length]").trigger('change');
-		}, 2000);
+		}, 1000);
         //// to stop from going to edit screen//
 
-        $('.list-checkbox').on('click', function () {
-            event.stopImmediatePropagation();
-        });
+        /* $('.list-checkbox').on('click', function () {
+            //event.stopImmediatePropagation();
+        }); */
 
 
 
 
         /*
-         * 
+         *
          * Selecting all checkboxes
-         * 
+         *
          */
 
-        $('#selectAll').click(function (event) {  //on click 
+        $('#selectAll').click(function (event) {  //on click
             if (this.checked) { // check select status
                 $('.list-checkbox').each(function () { //loop through each checkbox
-                    this.checked = true; //select all checkboxes with class "checkbox1"               
+                    this.checked = true; //select all checkboxes with class "checkbox1"
                 });
             } else {
                 $('.list-checkbox').each(function () { //loop through each checkbox
-                    this.checked = false; //deselect all checkboxes with class "checkbox1"                       
+                    this.checked = false; //deselect all checkboxes with class "checkbox1"
                 });
             }
         });
@@ -611,17 +605,17 @@ var pagingType = 'full_numbers';
             window.location.href = '<?= $_SESSION['add_url_list'] ?>';
         });
         /*
-         
+
          var test = 'something ';
          $(".span-checkbox").click(function(){
-         
+
          test = test.concat($(this).html());
-         
+
          alert(test);
-         
-         
+
+
          });
-         
+
          */
 
         /* Sorting function on SORT button click */
@@ -644,16 +638,26 @@ var pagingType = 'full_numbers';
          */
 
 
-        $('#example tbody').on('click', 'tr', function () {
+        $('#example tbody').on('click', 'tr td:not(:first-child)', function () {
 
+			event.stopImmediatePropagation();
             if ($(this).hasClass('tabholdEvent')) {
                 return false;
             } else {
 
-                window.location = $(this).attr('id');
+                window.location = $(this).parent().attr('id');
             }
 
         });
+
+/* 		        $('#example').on('click', 'tbody tr td:not(:first-child)', function () {
+            if ($(this).hasClass('tabholdEvent')) {
+                return false;
+            } else {
+                window.location = $(this).attr('id');
+            }
+
+        }); */
 
 
 
@@ -934,7 +938,7 @@ var pagingType = 'full_numbers';
          * **************************************************BACK TO LSIT
          * ***************
          * **********************************
-         * 
+         *
          */
 
         var form_edit = '';
@@ -949,7 +953,7 @@ var pagingType = 'full_numbers';
         $(".back-to-list").click(function (event) {
 
   if( $(this).parents('#user_profile_form').hasClass('profile_page') ){
-      
+
        window.location = $(this).attr('href');
         }else{
             if (form_edit == 'changed') {
@@ -963,7 +967,7 @@ var pagingType = 'full_numbers';
                 }
 
             }
-            
+
             }
 
         });
@@ -1003,7 +1007,7 @@ var pagingType = 'full_numbers';
         });
 
         /*
-         * 
+         *
          * Friend ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1042,7 +1046,7 @@ var pagingType = 'full_numbers';
 
 
         /*
-         * 
+         *
          * Follow me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1083,7 +1087,7 @@ var pagingType = 'full_numbers';
 
 
         /*
-         * 
+         *
          * Favorite me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1128,7 +1132,7 @@ var pagingType = 'full_numbers';
 
 
         /*
-         * 
+         *
          * Rate me ICONS CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1181,7 +1185,7 @@ var pagingType = 'full_numbers';
 
 
         /*
-         * 
+         *
          * Voting Number CODE GOES HERE****************
          * ************************************
          * *****************************************************
@@ -1237,7 +1241,7 @@ var pagingType = 'full_numbers';
 
 
         /*******
-         * 
+         *
          * ********
          * ***********
          * ************************HIDING UPDATE/CANCEL BUTTON WHEN FFFR PRESENT
@@ -1270,10 +1274,10 @@ var pagingType = 'full_numbers';
 
         /******
          * **********
-         * *******************Transaction Js code goes here 
+         * *******************Transaction Js code goes here
          * *******
          * *************************
-         * 
+         *
          */
 
 
@@ -1332,7 +1336,7 @@ var pagingType = 'full_numbers';
          * *******************Transaction Action ,when user Confirms the Transaction
          * *******
          * *************************
-         * 
+         *
          */
 
 
@@ -1363,7 +1367,7 @@ var pagingType = 'full_numbers';
                             }, 2000);
 
                         }else{
-                            
+
                               $('.transBody').html("<p class='transFail'><?= transFail ?></p>");
 
                             setTimeout(function () {

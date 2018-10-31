@@ -564,7 +564,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                     // $target_url2 = $target_url . "#$tab_anchor";
 
                                     echo "<tr id='$target_url&edit=true#$tab_anchor' class='boxview-tr'>
-                                                <td><!--<a href='$target_url&edit=true#$tab_anchor' title='Edit' class='btn btn-default' style='color: #E6B800' >
+                                                <td class='dt-body-center'><!--<a href='$target_url&edit=true#$tab_anchor' title='Edit' class='btn btn-default' style='color: #E6B800' >
                                                 <span class='glyphicon glyphicon-edit'></span> 
                                             </a>-->";
 
@@ -581,7 +581,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
                                     if ($list_views['checklist'] == 'true') {
 
-                                        echo "<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='$checkbox_id' class='list-checkbox' style='marginright:6px;'/></span>";
+                                        echo "<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='$checkbox_id' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>";
 
                                         echo "<input type='hidden' name='dict_id[]' value='$dict_id' >";
                                     }
