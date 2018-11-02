@@ -1,0 +1,7 @@
+[19-May-2016 14:49:38 UTC] PHP Notice:  Undefined index: NAV in /home/cjcornell/public_html/generic/DDICT/default.php on line 29
+[19-May-2016 14:49:38 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'generic'@'198.71.235.9' (using password: YES) in /home/cjcornell/public_html/generic/application/database/db.php on line 33
+[20-May-2016 22:39:35 UTC] PHP Notice:  Undefined index: NAV in /home/cjcornell/public_html/generic/DDICT/default.php on line 29
+[20-May-2016 22:39:36 UTC] PHP Warning:  mysqli_connect(): (28000/1045): Access denied for user 'generic'@'198.71.235.9' (using password: YES) in /home/cjcornell/public_html/generic/application/database/db.php on line 33
+[20-Aug-2018 15:59:06 UTC] PHP Notice:  Undefined index: NAV in /home/cjcornell/public_html/generic/DDICT/default.php on line 29
+[20-Aug-2018 16:07:47 UTC] PHP Notice:  Undefined index: NAV in /home/cjcornell/public_html/generic/DDICT/default.php on line 29
+[20-Aug-2018 16:11:26 UTC] PHP Notice:  Undefined index: NAV in /home/cjcornell/public_html/generic/DDICT/default.php on line 29

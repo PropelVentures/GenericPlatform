@@ -1,0 +1,24 @@
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant MY_TRANSACTIONS already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 35
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant OTHER_TRANSACTIONS already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 36
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Use of undefined constant BASE_URL - assumed 'BASE_URL' in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 50
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Use of undefined constant BASE_URL - assumed 'BASE_URL' in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 188
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant SORT_BY already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 212
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant voteInserted already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 405
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 452
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 453
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 454
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 455
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 456
+[30-Oct-2018 01:38:24 UTC] PHP Notice:  Constant formSave already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 473
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant MY_TRANSACTIONS already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 35
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant OTHER_TRANSACTIONS already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 36
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Use of undefined constant BASE_URL - assumed 'BASE_URL' in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 50
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Use of undefined constant BASE_URL - assumed 'BASE_URL' in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 188
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant SORT_BY already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 212
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant voteInserted already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 405
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 452
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 453
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 454
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 455
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant audioClear already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 456
+[30-Oct-2018 01:39:06 UTC] PHP Notice:  Constant formSave already defined in /home/cjcornell/public_html/genericsandbox2/application/system-constants.php on line 473

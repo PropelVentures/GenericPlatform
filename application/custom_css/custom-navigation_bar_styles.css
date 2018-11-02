@@ -1,0 +1,15 @@
+
+
+/*********Navigation has mostly bootstrap classes. some classes below are modified for the header and logo*****/
+.navbar{
+/*
+ white-space: nowrap;
+   overflow-x:auto;
+     overflow-y: hidden;
+*/
+}
+.navbar-brand{}
+.navbar-default{}
+
+.logo, .logo-login{}
+.logo span, .logo-login span{}
