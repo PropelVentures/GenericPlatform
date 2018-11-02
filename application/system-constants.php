@@ -1,5 +1,7 @@
 <?php
 /* * *SITE INFORMATION********* */
+##FIX FOR BASE_URL UNDEFINED CONSTANT WHICH MIGHT CAUSE OTHER ISSUES WITH SCRIPT LOADING AND URLS###
+include_once 'config.php';
 
 define("SESSION_AUTO_TIMEOUT","1200");
 
@@ -32,8 +34,6 @@ define("MY_ACCOUNT", "My Account");
 define("MY_TRANSACTIONS", "My Transactions");
 define("OTHER_TRANSACTIONS", "Other Transactions");
 define("USER_INFO", "User Info");
-define("MY_TRANSACTIONS", "My Transactions");
-define("OTHER_TRANSACTIONS", "Other Transactions");
 
 /* * ********Form labels for SIGNIN page************* */
 define("LOGIN_EMAIL_PLACEHOLDER", "Your Email or Username");
@@ -209,7 +209,7 @@ define("NO_COMMENT_EMPTY", "Please make sure you " . COMMENT . " box in not empt
 /* * *Form labels for USERS page** */
 define("SORT_BUTTON", "SORT");
 define("SEARCH_BUTTON", "Searech Users");
-define("SORT_BY", "Sort By");
+#define("SORT_BY", "Sort By");
 define("PROJECT_VISBILITY_LABEL", "Product Visibility");
 
 
@@ -402,9 +402,6 @@ define("AlERTBOX", "Alert Box"); ////Alert box of voting(FFFR)
 define("voteInserted", "<p>Vote Inserted Successfully</p>"); ////Alert box of vote in number format
 
 
-define("voteInserted", "<p>Vote Inserted Successfully</p>"); ////Alert box of vote in number format
-
-
 
 define("editBtnAlertMsg", "Please update/cancel the current data before trying to edit a different column"); ////Alert box of Edit button
 
@@ -449,11 +446,7 @@ define("audioPauseMsg", "Recording has been Paused!");
 
 /**************FFFR ICONS CONSTANTS***********/
 
-define("audioClear", "Clear");
-define("audioClear", "Clear");
-define("audioClear", "Clear");
-define("audioClear", "Clear");
-define("audioClear", "Clear");
+#define("audioClear", "Clear");
 
 
 /******** update & cancel button & Save Record ***********/
@@ -470,7 +463,7 @@ define("followOn", "Follow me");
 define("followOff", "Un-Follow me");
 define("voteChangeOptionDisable", "<p>You Can not Change your vote</p>");
 define("votingNoSubmitBtn", "<i class='glyphicon glyphicon-ok-sign'></i>");
-define("formSave", "Save Record");
+#define("formSave", "Save Record");
 
 
 

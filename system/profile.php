@@ -381,7 +381,7 @@ if ($popup_menu['popupmenu'] == 'true') {
         echo "<li data-action='copy'  class='" . $popup_menu['popup_copy']['style'] . "'>" . $popup_menu['popup_copy']['label'] . "</li>";
     }
 
-    if (isset($popup_menu['popup_copy']) && !empty($popup_menu['popup_copy'])) {
+    if (isset($popup_menu['popup_openChild']) && !empty($popup_menu['popup_openChild'])) {
 
 
 
@@ -821,17 +821,18 @@ var pagingType = 'full_numbers';
         function popup_add(dict_id) {
 
             if (confirm("Are you sure ,You want to go to ADD Record!") == true) {
-
-                $.ajax({
-                    method: "GET",
-                    url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                    data: {list_add: dict_id, check_action: "add", url: window.location.href}
-                })
-                        .done(function (msg) {
-
-                            // console.log(msg);
-                            window.location = msg;
-                        });
+                
+                window.location = '<?= $_SESSION['add_url_list'] ?>';
+                //###THIS ACTION NEEDS TO BE REMOVED FROM ajax-actions.php######################
+//                $.ajax({
+//                    method: "GET",
+//                    url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+//                    data: {list_add: dict_id, check_action: "add", url: window.location.href}
+//                })
+//                .done(function (msg) {
+//                    // console.log(msg);
+//                    window.location = msg;
+//                });
             }
         }
 
