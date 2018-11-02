@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+#RewriteCond %{HTTP_HOST} ^cyrano\.cjcornell\.com [NC]
+#RewriteRule ^(.*) - [L]
+#RewriteCond %{HTTP_HOST} !^www\.cjcornell\.com [NC]
+#RewriteRule ^(.*) http://www.cjcornell.com/$1 [L,R=301]
+
+</IfModule>
+#for ssl starts here
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{SERVER_NAME}/%{REQUEST_URI} [R,L]
+#ssl ends here 
+
+
+#RewriteCond %{HTTP_HOST} ^cyrano\.cjcornell\.net$ [OR]
+#RewriteCond %{HTTP_HOST} ^www\.cyrano\.cjcornell\.net$
+#RewriteRule ^/?$ "http\:\/\/www\.cyrano\.mobi" [R=301,L]
+
