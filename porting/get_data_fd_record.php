@@ -126,11 +126,14 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                         $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
                 }
                 
+//                echo "<pre>\$operation:$operation:<br>";
+//                print_r($row1);
 //                echo "<pre>";
 //                var_dump($operationsVarArray);
 //                echo "</pre>";
                 
-                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array, 
+                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,                        
+                    $addImportArray,
                     $customFunctionArray,
                     $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;      
                 
@@ -513,8 +516,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                     // $style = trim($style);
 
-
-                    echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+                    ###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
+                    echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre'><br>";
                 } else {
                     $_SESSION['return_url2'] = $actual_link;
 
