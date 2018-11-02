@@ -1,5 +1,0 @@
-.navbar-fixed-top .navbar-collapse, .navbar-fixed-bottom .navbar-collapse{max-height:inherit;}
-
-.navbar-toggle{margin-top:20px;}
-.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus{background-color:#3498db; border-color:#3498db; color:#fff;}
-.navbar-toggle:hover .icon-bar{background-color:#fff;}
