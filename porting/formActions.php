@@ -94,10 +94,15 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
  * *******************
  * *************************************
  */
-
+#####THIS WILL HANDLE ALL ADD OPERATIONS IN COMMON SO IT WILL BE A FUNCTION INSTEAD. IT SHOULD HANDLE INDIVIDUAL ADD AS WELL AS BULK IMPORT/ADD#####
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
 
+    addData();
+    
+}
 
+function addData()
+{
     if (array_key_exists('field_name_unique', $_POST)) {
 
         unset($_POST['field_name_unique']);
@@ -118,74 +123,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
       die; */
     //print_r($_POST);die; 
 
-
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-
 
     if (!empty($row['list_filter'])) {
 
+        $keyfield = explode(";", $row['list_filter']);
 
-    $keyfield = explode(";", $row['list_filter']);
+        $firstParent = $keyfield[0];
+        //print_r($keyfield);die;
 
-
-    $firstParent = $keyfield[0];
-   //print_r($keyfield);die;
-    
         if (!empty($keyfield[1])) {
-
-        $listCond = $keyfield[1];
-    }
-
-
-  //  $checkFlag = false;
-
-    if (!empty($keyfield[0])) {
-        $i = 0;
-
-
-        $keyfield = explode(",", $keyfield[0]);
-
-        foreach ($keyfield as $val) {
-
-            $keyField = explode("=", $val);
-
-            $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
-
-            $i++;
-        }
-    }
-
-    foreach ($keyVal as $val) {
-
-        if (!empty($val['projects'])) {
-
-            $pid = $val['projects'];
+            $listCond = $keyfield[1];
         }
 
-        if (!empty($val['users'])) {
 
-            $uid = $val['users'];
+        //  $checkFlag = false;
+
+        if (!empty($keyfield[0])) {
+            $i = 0;
+
+            $keyfield = explode(",", $keyfield[0]);
+
+            foreach ($keyfield as $val) {
+
+                $keyField = explode("=", $val);
+
+                $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
+
+                $i++;
+            }
         }
-    }
-//print_r($pid);die;
+
+        foreach ($keyVal as $val) {
+
+            if (!empty($val['projects'])) {
+
+                $pid = $val['projects'];
+            }
+
+            if (!empty($val['users'])) {
+
+                $uid = $val['users'];
+            }
+        }
+        //print_r($pid);die;
 
         if (!empty($pid)) {
-
-
             $project = array($pid => $_SESSION['search_id2']);
-            
-            
         }
 
         if (!empty($uid)) {
-
-
             $user = array($uid => $_SESSION['uid']);
         }
     }
 
-$data = $_POST;
-    
+    $data = $_POST;
+
     if (!empty($user)) {
 
         $userKey = key($user);
@@ -193,47 +186,37 @@ $data = $_POST;
         if (array_key_exists($userKey, $data))
             unset($data[$userKey]);
 
-
-
         $data = array_merge($user, $data);
     }
-    
+
     if (!empty($project)) {
-        
+
         $projectKey = key($project);
-        
-       // print_r($projectKey);die;
+
+        // print_r($projectKey);die;
 
         if (array_key_exists($projectKey, $data))
             unset($data[$projectKey]);
 
-
-
         $data = array_merge($project, $data);
-        
-      //  print_r($data);die;
-    }
-    
 
+        //  print_r($data);die;
+    }
 
     unset($data['imgu']);
 
     ////assigning user_id field a value of current session if list_filter doesn't' have
 
- $field = 'false';
- 
-    if (empty($user)) {
+    $field = 'false';
 
+    if (empty($user)) {
 
         $tblName = $_SESSION['update_table2']['database_table_name'];
 
         $con = connect();
         $rs = $con->query("SHOW COLUMNS FROM $tblName");
 
-
-       
         while ($fdCol = $rs->fetch_assoc()) {
-
 
             if ($fdCol['Field'] == 'user_id') {
 
@@ -243,25 +226,22 @@ $data = $_POST;
             }
         }
     }
-    
-    if( $field == 'true'){
-        
+
+    if ($field == 'true') {
+
         $additional_array = array('user_id' => $_SESSION['uid']);
-        
+
         $data = array_merge($additional_array, $data);
     }
-    
-    
-   // echo "<pre>";print_r($data);die;
+
+    // echo "<pre>";print_r($data);die;
 
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-
 
     /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag'] == 'true')
       $link_to_return = $_SESSION['add_url_list'];
       else */
     $link_to_return = BASE_URL . "system/profile.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
-
 
     if ($_GET['fnc'] != 'onepage') {
 
@@ -269,6 +249,8 @@ $data = $_POST;
     } else {
         echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
     }
+    
+    
 }
 
 
