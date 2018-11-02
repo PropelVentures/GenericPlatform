@@ -125,7 +125,10 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     $popup_menu = array("popupmenu" => $ret_array['popupmenu'], "popup_delete" => $ret_array['popup_delete'], "popup_copy" => $ret_array['popup_copy'], "popup_add" => $ret_array['popup_add'], "popup_openChild" => $ret_array['popup_openChild']);
 
-
+//echo "<pre>";
+//var_dump($popup_menu); 
+//echo "</pre>"; die;
+    
     if (count($list_sort) > 1 && $listView == 'boxView') {
 ?>
 
@@ -336,7 +339,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 ##CUSTOM FUNCTION BUTTON##
                 if (!empty($ret_array['custom_function_array']) ) {
 
-                    echo "<button type='button' class='btn actionCustomfunction btn-primary' data-function_name='{$ret_array['custom_function_array']['function']}' data-function_params='{$ret_array['custom_function_array']['params']}' name='add' >" . $ret_array['custom_function_array']['label'] . "</button>";
+                    echo "<button type='button' class='btn actionCustomfunction btn-primary {$ret_array['custom_function_array']['style']}' data-function_name='{$ret_array['custom_function_array']['function']}' 
+                        data-function_params='{$ret_array['custom_function_array']['params']}' name='custom_function' >" . $ret_array['custom_function_array']['label'] . "</button>";
                     ?>
                     <script>
                     jQuery(document).ready(function($){
@@ -361,7 +365,42 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                     });
                     </script>    
                     <?php
+                }  
+                
+                ##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
+                if (!empty($ret_array['addimport_array']) ) {
+                    
+                    if($ret_array['addimport_array']['function'] == 'addimport')
+                    {
+                        echo "<button type='button' class='btn actionImportButton btn-primary {$ret_array['addimport_array']['style']}' data-function_name='{$ret_array['addimport_array']['function']}' 
+                            data-function_params='{$ret_array['addimport_array']['params']}' name='add_import' >" . $ret_array['addimport_array']['label'] . "</button>";
+                    }
+                    ?>
+                    <script>
+                    jQuery(document).ready(function($){
+                        $('#list-form').on('click', '.actionImportButton', function(event){
+                            
+                            if (confirm( $(this).text() ) == true) {
+                                
+                                $.ajax({
+                                    method: "POST",
+                                    url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+                                    data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
+                                })
+                                .done(function (msg) {
+                                    alert('Success');
+                                    //location.reload();
+                                });
+                                
+                            } else {
+                                event.stopImmediatePropagation();
+                            }
+                        });
+                    });
+                    </script>    
+                    <?php
                 }
+                
                 /// select checkbox div ends here
                 ?>
             </div>
