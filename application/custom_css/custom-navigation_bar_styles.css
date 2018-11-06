@@ -13,3 +13,25 @@
 
 .logo, .logo-login{}
 .logo span, .logo-login span{}
+
+.logo.center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin: auto;
+    width: 400px;
+}
+.logo.right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.navbar-brand  {
+    display: inline-block;
+    height: auto;
+}
+.navbar-brand > img {
+    display: inline-block;
+    margin-right: 10px;
+}
