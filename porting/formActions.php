@@ -94,15 +94,204 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
  * *******************
  * *************************************
  */
+
+####THIS HANDLES addimport FILEIMPORT and textarea manual import#############################################################################################
+####ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function####
+if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET['actionType'] == 'addimport') {
+
+    ###GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards####
+    $customFunctionImportFields = $_SESSION['addImportParameters'];
+    array_splice($customFunctionImportFields, 0, 3); 
+
+//    echo "<pre>\$customFunctionImportFields<br>";
+//    print_r($customFunctionImportFields);
+//    echo "</pre>";
+
+    $importFieldsLength = count($customFunctionImportFields);
+    
+    ###HANDLE addimport POPUP FORM SUBMIT for csv file import###
+    if(!empty($_FILES['addImportFile']['name']) )
+    {
+        #$file_mimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 
+        #    'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain');
+        
+        
+//        echo "<pre>";
+//        print_r($_FILES);
+//        print_r($_SESSION);
+//        print_r($_SESSION['addImportParameters']);
+//        echo "</pre>";
+        
+        $customFunctionThirdParameter = $_SESSION['addImportParameters']['2'];
+        
+        ###DEFAULT TO C IF C|T IS NOT PRESENT IN THIRD PARAM OF ADDIMPORT
+        $importFieldSeparator = 'C';
+        if(stripos($customFunctionThirdParameter, 'T') !== false)
+        {
+            $importFieldSeparator = 'T';
+        }
+        
+        
+//        $csvFile = fopen($_FILES['addImportFile']['tmp_name'], 'r');
+//        fclose($csvFile);
+//        print_r(fgetcsv($csvFile) );        
+//        die;
+        
+        
+        #  [0] => 18 [1] => csv test product1 [2] => Description of test product 1 [3] 
+        if (!empty($_FILES['addImportFile']['name']) ) { ##&& in_array($_FILES['file']['type'], $file_mimes)
+            if (is_uploaded_file($_FILES['addImportFile']['tmp_name'])) {
+                $csvFile = fopen($_FILES['addImportFile']['tmp_name'], 'r');
+                //fgetcsv($csv_file);
+                
+                $csvRowNumber = 1;
+                $errorCsvRows = array();
+                $successCsvRows = array();
+                
+                // get data records from csv file
+                while (($csvRowData = fgetcsv($csvFile)) !== FALSE) {
+                    
+                    $fieldCountCsvRow = count($csvRowData);
+                             
+                                        
+                    if(!empty($csvRowData) && $fieldCountCsvRow == $importFieldsLength)
+                    {
+                        #"$csvRowData[0], $csvRowData[1], $csvRowData[2], $csvRowData[3], $csvRowData[4]";
+                        // Check if employee already exists with same email
+                        #$sql_query = "SELECT emp_id, emp_name, emp_salary, emp_age FROM emp WHERE emp_email = '" . $emp_record[2] . "'";###PARAMS FIELDS AND THEN THE DB TABLE TO INSERT INTO WE CHECK AND SKIP IF EXISTS.
+                        #$resultset = mysqli_query($conn, $sql_query) or die("database error:" . mysqli_error($conn));
+                        // if employee already exist then update details otherwise insert new record
+                        #if (mysqli_num_rows($resultset)) {
+                        #    $sql_update = "UPDATE emp set emp_name='" . $emp_record[1] . "', emp_salary='" . $emp_record[3] . "', emp_age='" . $emp_record[4] . "' WHERE emp_email = '" . $emp_record[2] . "'";
+                        #    mysqli_query($conn, $sql_update) or die("database error:" . mysqli_error($conn));
+                        #} else {
+                        #    $mysql_insert = "INSERT INTO emp (emp_name, emp_email, emp_salary, emp_age )VALUES('" . $emp_record[1] . "', '" . $emp_record[2] . "', '" . $emp_record[3] . "', '" . $emp_record[4] . "')";
+                        #    mysqli_query($conn, $mysql_insert) or die("database error:" . mysqli_error($conn));
+                        #}
+                        
+                        ###ASSIGN DATA TO $_POST WITH RESPECTIVE FIELD KEYS FROM addimport Parameters AND VALUES FROM CSV FILE###
+                        for($i = 0; $i < $importFieldsLength; $i++)
+                        {
+                            $_POST[$customFunctionImportFields[$i]] = $csvRowData[$i];
+                        }
+                        
+                        ###CALL addData() to insert each single row#####                
+                        $insertStatus = addData();
+                        if($insertStatus == false)
+                        {
+                            $errorCsvRows[$csvRowNumber] = "Either field count didn't match or some other error occured while importing from CSV.";
+                        }
+                        else
+                        {
+                            $successCsvRows[$csvRowNumber] = "CSV Row imported Successfully.";
+                        }
+                        
+                        
+                    }
+                    else
+                    {
+                        $errorCsvRows[$csvRowNumber] = "Either field count didn't match or some other error occured while importing from CSV.";
+                    }
+                    
+                    $csvRowNumber++;
+                    
+                }
+                
+                fclose($csvFile);
+            }
+        }
+        
+        $_SESSION['errorsAddImport'] = $errorCsvRows;
+        $_SESSION['SuccessAddImport'] = $successCsvRows;
+    }
+    ###HANDLE addimport POPUP FORM SUBMIT for csv file import###
+    else if(!empty($_POST['addImportText']) )
+    {
+//        echo "<pre>";
+//        var_dump($_POST['addImportText']);
+        
+        $textAreaAddImporTData = $_POST['addImportText'];
+        
+        ###UNSET THE $_POST FOR TEXTAREA AS THE addData() function Relies on $_POST###
+        unset($_POST['addImportText']);
+        
+        $importRowsArray = explode("\r\n", $textAreaAddImporTData);#explode("\n", $textAreaAddImporTData); 
+        
+        #print_r($importRowsArray);
+        
+        $errorTextRows = array();
+        $successTextRows = array();
+        
+        $textRowNumber = 1;
+        
+        foreach ($importRowsArray as $key => $importTextRowData) {
+            
+            $importTextRowFeildsData = explode(',', $importTextRowData);##GET ALL FIELDS SEPARATED BY comma ,##
+            
+            $fieldCountTextRow = count($importTextRowFeildsData);
+            
+
+            if(!empty($importTextRowFeildsData) && $fieldCountTextRow == $importFieldsLength)
+            {
+                ###ASSIGN DATA TO $_POST WITH RESPECTIVE FIELD KEYS FROM addimport Parameters AND VALUES FROM CSV FILE###
+                for($i = 0; $i < $importFieldsLength; $i++)
+                {
+                    $_POST[$customFunctionImportFields[$i]] = $importTextRowFeildsData[$i];
+                }
+                
+                ###CALL addData() to insert each single row#####                
+                $insertStatus = addData();
+                if($insertStatus == false)
+                {
+                    $errorTextRows[$textRowNumber] = "Either field count didn't match or some other error occured while importing from CSV.";
+                }
+                else
+                {
+                    $successTextRows[$textRowNumber] = "Manual Row data imported Successfully.";
+                }
+
+                
+            }
+            else
+            {
+                $errorTextRows[$textRowNumber] = "Either field count didn't match or some other error occured while importing from Manual input.";
+            }
+            
+            $textRowNumber++;
+
+        }
+        
+        $_SESSION['errorsAddImport'] = $errorTextRows;
+        $_SESSION['SuccessAddImport'] = $successTextRows;
+    }
+        
+//    print_r($_SESSION['errorsAddImport']);
+//    print_r($_SESSION['SuccessAddImport']);    
+//    die("TESING CSV");
+    
+    ###REDIRECT TO THE LIST FROM WHICH USER CAME AND SHOW A POPUP MESSAGE REGARDING SUCCESS/ERRORS ACCORDINGLY############
+    $link_to_return = BASE_URL . "system/profile.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
+
+    if ($_GET['fnc'] != 'onepage') {
+        echo "<script>window.location='$link_to_return'</script>";
+    } else {
+        echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
+    }
+    
+}
 #####THIS WILL HANDLE ALL ADD OPERATIONS IN COMMON SO IT WILL BE A FUNCTION INSTEAD. IT SHOULD HANDLE INDIVIDUAL ADD AS WELL AS BULK IMPORT/ADD#####
-if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
+else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
 
     addData();
     
 }
 
+
 function addData()
-{
+{    
+    
+    #exit("INSIDE addData()");
+    
     if (array_key_exists('field_name_unique', $_POST)) {
 
         unset($_POST['field_name_unique']);
@@ -113,17 +302,43 @@ function addData()
     if (array_key_exists('old_audio', $_POST)) {
 
         unset($_POST['old_audio']);
-    }
-
-    /*
-      echo
-      $_SESSION['dict_id'] .
-      $_SESSION['update_table2']['database_table_name'] .
-      $_SESSION['update_table2']['keyfield'] . "<br>" . $_SESSION[return_url2];
-      die; */
-    //print_r($_POST);die; 
+    }   
+    
+//    echo "<pre>";
+//    $_SESSION['dict_id'] .
+//    $_SESSION['update_table2']['database_table_name'] .
+//    $_SESSION['update_table2']['keyfield'] . "<br>" . $_SESSION[return_url2];
+//    die("TETING ADD SESSION");
+//    print_r($_POST);die; 
 
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+    
+    ### if addimport then CHECK FOR DD.table_type = PARENT/CHILD AND IF CHILD THEN FIELD ITS PARENT DD.dict_id and its keyfield and autoincrement it###
+    if($_GET['actionType'] == 'addimport')
+    {
+        $keyfield = $row['keyfield'];
+        $tableType = strtolower(trim($row['table_type']) );
+        
+        #echo "<font color=red>\$keyfield:$keyfield :: \$tableType:$tableType " . var_dump((int)$_SESSION['parent_value'] ) . " </font><br>"; 
+        
+        if ($tableType == 'parent' && !empty($keyfield) )
+        {
+            ##$_SESSION['parent_key_value'] = $keyfield;
+        }
+        ###if the table is a child table - then the function must add the parent ID to every record
+        else if ($tableType == 'child' && !empty($keyfield))
+        {
+            #$rowParent = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']); 
+            if((int)$_SESSION['parent_value'] !== 0 )###DON'T ASSIGN STRING VALUES, ONLY ASSIGN REAL PRIMARY KEYS WHICH WILL ALWAYS BE INTEGERS OR 0 IF TYPECASTED FROM STRING
+                $_POST["$keyfield"] = $_SESSION['parent_value'];###SET KEYFIELD TO THE PARENT VALUE TO PRESERVE PARENT->CHILD RELATIONSHIP            
+        }
+    }
+    
+//    echo "<pre>TESTING AddDATA POST";
+//    print_r($_POST);
+//    #print_r($row);
+//    #print_r($_SESSION);
+//    echo "</pre>";#die;
 
     if (!empty($row['list_filter'])) {
 
@@ -237,6 +452,12 @@ function addData()
     // echo "<pre>";print_r($data);die;
 
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
+    
+    ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
+    if($_GET['actionType'] == 'addimport')
+    {
+        return $check;
+    }
 
     /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag'] == 'true')
       $link_to_return = $_SESSION['add_url_list'];

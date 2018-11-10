@@ -118,7 +118,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     if(!empty(trim($row1['edit_operations']) ) )
                         $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
                 }
-                else if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 0) ##DD.view_operation
+                else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
                 {
                     $operation = 'view_operations';
                     
@@ -132,8 +132,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 //                var_dump($operationsVarArray);
 //                echo "</pre>";
                 
-                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,                        
-                    $addImportArray,
+                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
                     $customFunctionArray,
                     $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;      
                 
@@ -517,11 +516,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     // $style = trim($style);
 
                     ###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
-                    echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre'><br>";
+                    echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-true'><br>";
                 } else {
                     $_SESSION['return_url2'] = $actual_link;
 
-                    echo "<form action='?action=add&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+                    echo "<form action='?action=add&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-false'><br>";
                 }
 
 
@@ -554,12 +553,52 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     </div>";
 
                 echo "<div style='clear:both'></div><hr>";
+                
+                ####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######
+//                if($_GET['addImport'] == 'true' && !empty($_SESSION['addImportParameters']) )
+//                {
+//                    
+////                    echo "<Pre>";
+////                    print_r($_SESSION['addImportParameters']);
+////                    print_r($_GET);
+////                    echo "</pre>";
+//                    
+//                    
+//                    
+//                    if(strtolower($_GET['addImportType']) == 'file')
+//                    {
+//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
+//                            echo "<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' >";
+//                        echo "</div>";
+//                    }
+//                    else if(strtolower($_GET['addImportType']) == 'manual') 
+//                    {
+//                        $customFunctionParameters = $_SESSION['addImportParameters'];
+//                        
+//                        array_splice($customFunctionParameters, 0, 3); 
+//                        
+//                        $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
+//                        
+//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
+//                            echo "<br>Fields : " . implode(', ', $customFunctionParameters) . "<br>";
+//                            echo '<textarea name="addImportText" class="form-control" cols="100" required ></textarea>';
+//                        echo "</div>";
+//                    }
+//                    
+//                    
+//                    
+//                }
+//                else
+//                {
+                    while ($row = $rs2->fetch_assoc()) {
 
-                while ($row = $rs2->fetch_assoc()) {
+                        formating_Update($row, $method = 'add', $urow);
+                    }//// end of while loop
+                    //if ($_GET['checkFlag'] == 'true') {
+//                }
+                
 
-                    formating_Update($row, $method = 'add', $urow);
-                }//// end of while loop
-                //if ($_GET['checkFlag'] == 'true') {
+                
 
 
                 /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag' == 'true'])
