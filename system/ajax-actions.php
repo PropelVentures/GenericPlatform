@@ -633,6 +633,11 @@ if(!empty($_POST['action']) && $_POST['action'] == 'custom_function')
     }    
 }
 
+###UNSET VIEW/EDIT OPERATIONS addimport SUCCESS/FAILURE SESSIONS#####
+if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
+{    
+    unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']); 
+}
 
 
 

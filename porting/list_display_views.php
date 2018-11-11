@@ -935,7 +935,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                     <h4 class="modal-title" id="myModalLabel">Import from CSV File</h4>
                 </div>
 
-                <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
+                <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
                     
                     <div class="modal-body">                        
 
@@ -966,7 +966,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                     <h4 class="modal-title" id="myModalLabel">Import</h4>
                 </div>
                 
-                <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
+                <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
                     
                     <div class="modal-body">
                         
