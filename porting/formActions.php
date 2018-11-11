@@ -106,6 +106,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
 //    echo "<pre>\$customFunctionImportFields<br>";
 //    print_r($customFunctionImportFields);
 //    echo "</pre>";
+    
+//    echo "<pre>";
+//    print_r($_GET); die;
+    
 
     $importFieldsLength = count($customFunctionImportFields);
     
@@ -202,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
         }
         
         $_SESSION['errorsAddImport'] = $errorCsvRows;
-        $_SESSION['SuccessAddImport'] = $successCsvRows;
+        $_SESSION['SuccessAddImport'] = $successCsvRows;        
     }
     ###HANDLE addimport POPUP FORM SUBMIT for csv file import###
     else if(!empty($_POST['addImportText']) )
@@ -266,11 +270,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
     }
         
 //    print_r($_SESSION['errorsAddImport']);
-//    print_r($_SESSION['SuccessAddImport']);    
+//    print_r($_SESSION['SuccessAddImport']); 
 //    die("TESING CSV");
     
     ###REDIRECT TO THE LIST FROM WHICH USER CAME AND SHOW A POPUP MESSAGE REGARDING SUCCESS/ERRORS ACCORDINGLY############
     $link_to_return = BASE_URL . "system/profile.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
+        
+
+    
+    ###http://localhost/GenericPlatform/system/profile.php?display=myproduct&tab=products&tabNum=1&ta=products&search_id=91&checkFlag=true&table_type=parent&edit=true#false
+    ###ADD ADDITIONAL REDIRECT PARAMS FOR REDIRETING TO VIEW AND EDIT OPERATIONS
+    if(!empty($_GET['search_id']) )
+    {
+        $link_to_return .= "&search_id={$_GET['search_id']}";
+    }
+    if(!empty($_GET['edit']))
+        $link_to_return .= "&edit={$_GET['edit']}";
 
     if ($_GET['fnc'] != 'onepage') {
         echo "<script>window.location='$link_to_return'</script>";
@@ -314,7 +329,7 @@ function addData()
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
     
     ### if addimport then CHECK FOR DD.table_type = PARENT/CHILD AND IF CHILD THEN FIELD ITS PARENT DD.dict_id and its keyfield and autoincrement it###
-    if($_GET['actionType'] == 'addimport')
+    if($_GET['actionType'] == 'addimport' || 1)
     {
         $keyfield = $row['keyfield'];
         $tableType = strtolower(trim($row['table_type']) );
