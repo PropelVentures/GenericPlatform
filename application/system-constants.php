@@ -9,6 +9,9 @@ define("SESSION_AUTO_TIMEOUT","1200");
 
 define("SITE_TITLE", "Generic Platform");
 define("BRAND_LOGO", "Generic <span>LOGO</span>");
+define("BRAND_LOGO_IMAGE", "");
+define("BRAND_LOGO_LINK", "/");
+define("BRAND_LOGO_POSITION", "left");
 define("LOGIN_LOGO", '<a class="logo-login" href="index.php">Generic <span>Platform</span></a>');
 /* * *menu labels for HEADER** */
 define("HOME_MENU", "Home");
@@ -64,6 +67,8 @@ define("REGISTRATION_NOT_SUCCESS", "Registration not successfull");
 define("PROFILE_COMPLETE_MESSAGE", "Welcome. Please complete your profile");
 
 /* * *********HOME PAGE********* */
+define("HOME_SLIDER_IMAGES_URL", "application/banner-images/");
+define("HOME_SLIDER_HEIGHT", "550px");
 define("HOME_SLIDER_TITLE1", "Generic Platform");
 define("HOME_SLIDER_CONTENT1", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.");
 define("HOME_SLIDER_BUTTON_TEXT1", "Sign up today");
