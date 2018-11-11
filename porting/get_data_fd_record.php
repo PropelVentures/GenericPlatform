@@ -111,7 +111,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 $operation = '';
                 
                 ##DD.edit_operation
-                if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) 
+                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1) 
                 {
                     $operation = 'edit_operations';
                             
@@ -128,7 +128,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                  
 //                echo "<pre>\$operation:$operation:<br>";
 //                print_r($row1);
-//                echo "<pre>";
+//                echo "</pre>";
 //                var_dump($operationsVarArray);
 //                echo "</pre>";
                 
