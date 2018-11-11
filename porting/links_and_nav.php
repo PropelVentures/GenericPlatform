@@ -159,8 +159,41 @@ function Navigation($page, $menu_location = 'header') {
                     <?php echo TOGGLE_NAVIGATION ?>
                 </span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> 
             </button>
-            <a class="navbar-brand logo" href="<?php echo BASE_URL ?>">
-                <?php echo BRAND_LOGO ?>
+            <?php
+                /*
+                 * Logo
+                 */
+                $logo_position = BRAND_LOGO_POSITION;
+                $logo_link = BRAND_LOGO_LINK;
+                $logo_image = BRAND_LOGO_IMAGE;
+                $logo_text = BRAND_LOGO;
+
+                $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location LIKE 'LOGO%' order by item_number");
+                $row = $rs->fetch_assoc();
+
+                if ($row) {
+                    $nav_menu_location = strtoupper($row['menu_location']);
+                    $logo_image = BASE_IMAGES_URL . $row['item_target'];
+                    $logo_text = $row['item_label'];
+                    $logo_style = $row['item_style'];
+
+                    if ($nav_menu_location == 'LOGO' || $nav_menu_location == 'LOGO-LEFT') {
+                        $logo_position = 'left';
+                    } else if ($nav_menu_location == 'LOGO-RIGHT') {
+                        $logo_position = 'right';
+                    } else if ($nav_menu_location == 'LOGO-CENTER') {
+                        $logo_position = 'center';
+                    }                    
+                }
+ 
+            ?>
+            <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
+                <?php 
+                    if ($logo_image != '') {
+                        echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                    }
+                    echo $logo_text;
+                ?>
             </a> 
         </div>
         <div class="navbar-collapse collapse">
