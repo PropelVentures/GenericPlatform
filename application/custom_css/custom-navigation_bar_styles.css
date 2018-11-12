@@ -23,9 +23,7 @@
     width: 400px;
 }
 .logo.right {
-    position: absolute;
-    right: 0;
-    top: 0;
+    margin-right: 15px;
 }
 .navbar-brand  {
     display: inline-block;

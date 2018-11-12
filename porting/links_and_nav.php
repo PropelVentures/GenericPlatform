@@ -110,7 +110,7 @@ function Navigation($page, $menu_location = 'header') {
     }
     $item_style = $row['item_style'];
 
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' )  and menu_location='$menu_location' order by item_number");
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' order by item_number");
 
     $arr = array();
     $i = 0;
@@ -120,35 +120,35 @@ function Navigation($page, $menu_location = 'header') {
 
         $i++;
     }
-
-	
-	for ($j = 0; count($arr) > $j; $j++) {
-		if(strtoupper($arr[$j]['display_page'])==strtoupper($_GET['display']) && empty($_GET['search_id'])){
-			if($arr[$j]['item_number']==0){
-			$pagename = $arr[$j]['display_page'];
-			$action = 'only1';
-			}
-			elseif( $arr[$j]['item_number']!=0 && explode('.',$arr[$j]['item_number'])[1]==0){
-			$pagename = $arr[$j]['display_page'];
-			$action = 'showall';
-			}
-			}
-			 if( $arr[$j]['item_number']==0 && $arr[$j]['display_page']=='ALL'){
-			$itemlable = $arr[$j]['item_label'];
-			}
-	 }
-	 
+    
+    
+    for ($j = 0; count($arr) > $j; $j++) {
+        if(strtoupper($arr[$j]['display_page'])==strtoupper($_GET['display']) && empty($_GET['search_id'])){
+            if($arr[$j]['item_number']==0){
+            $pagename = $arr[$j]['display_page'];
+            $action = 'only1';
+            }
+            elseif( $arr[$j]['item_number']!=0 && explode('.',$arr[$j]['item_number'])[1]==0){
+            $pagename = $arr[$j]['display_page'];
+            $action = 'showall';
+            }
+            }
+            if( $arr[$j]['item_number']==0 && $arr[$j]['display_page']=='ALL'){
+            $itemlable = $arr[$j]['item_label'];
+            }
+     }
+     
 //////html version of navigation will be displayed....
     ?>
-	<script type='text/javascript'>
-		$(document).ready(function() {
-			<?php if($action=='only1') { ?>
-			$('.<?= $pagename ?>').show();
-			$('.ALL').hide();
-			<?php } ?>
-			$("li:contains('<?= $itemlable ?>')").remove();
-		});
-	</script>
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            <?php if($action=='only1') { ?>
+            $('.<?= $pagename ?>').show();
+            $('.ALL').hide();
+            <?php } ?>
+            $("li:contains('<?= $itemlable ?>')").remove();
+        });
+    </script>
 
     <!-- Navigation starts here -->
     <div class="navbar navbar-default navbar-fixed-top">
@@ -177,24 +177,22 @@ function Navigation($page, $menu_location = 'header') {
                     $logo_text = $row['item_label'];
                     $logo_style = $row['item_style'];
 
-                    if ($nav_menu_location == 'LOGO' || $nav_menu_location == 'LOGO-LEFT') {
-                        $logo_position = 'left';
-                    } else if ($nav_menu_location == 'LOGO-RIGHT') {
-                        $logo_position = 'right';
-                    } else if ($nav_menu_location == 'LOGO-CENTER') {
+                    if ($nav_menu_location == 'LOGO-CENTER') {
                         $logo_position = 'center';
                     }                    
                 }
- 
             ?>
-            <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
-                <?php 
-                    if ($logo_image != '') {
-                        echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
-                    }
-                    echo $logo_text;
-                ?>
-            </a> 
+
+            <?php if ($nav_menu_location != 'LOGO-RIGHT') { ?>
+                <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
+                    <?php 
+                        if ($logo_image != '') {
+                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                        }
+                        echo $logo_text;
+                    ?>
+                </a> 
+            <?php } ?>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right" id="<?= $item_style; ?>">
@@ -206,13 +204,15 @@ function Navigation($page, $menu_location = 'header') {
 
 
                         $label = $arr[$i]['item_label'];
-
-                        if (strpos($arr[$i]['item_target'], 'http://') !== false) {
-
-                            $target = $arr[$i]['item_target'];
+                        $item_target = trim($arr[$i]['item_target']);
+                        if ($item_target == '') {
+                            $item_target = 'system/profile.php';
+                        }
+                       
+                        if (strpos($item_target, 'http://') !== false) {
+                            $target = $item_target;
                         } else {
-
-                            $target = BASE_URL . $arr[$i]['item_target'] . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
+                            $target = BASE_URL . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
                         }
                         $curr_item_number = explode('.', $arr[$i]['item_number']);
 
@@ -337,6 +337,17 @@ function Navigation($page, $menu_location = 'header') {
 
 
             <?php } ///////else if ends here                                                                                           ?>
+
+            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
+                <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
+                    <?php 
+                        if ($logo_image != '') {
+                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                        }
+                        echo $logo_text;
+                    ?>
+                </a> 
+            <?php } ?>
 
             </ul>
         </div>
