@@ -6,8 +6,6 @@
 # $config['db_user'] = "root";
 # $config['db_password'] = "";
 
-
-
 $config['db_host'] = "localhost";
 $config['db_name'] = "genericsandbox2";
 $config['db_user'] = "genericsandbox2";
