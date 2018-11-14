@@ -11,7 +11,8 @@
 $config['db_host'] = "localhost";
 $config['db_name'] = "genericsandbox2";
 $config['db_user'] = "genericsandbox2";
-$config['db_password'] = "Elance081461**";
+$config['db_password'] = "Upwork!081461!";
+
 
 $GLOBALS['db-host'] =  $config['db_host'];
 $GLOBALS['db-username'] = $config['db_name'] ;
