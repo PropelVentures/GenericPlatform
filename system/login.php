@@ -4,16 +4,14 @@ session_start();
 
 //echo $_SESSION['callBackPage'];die;
 $_SESSION['lang'] = 'en';
-include("../kint/Kint.class.php");
 
-require_once("../application/appConfig.php");
-/* include_once("../system/database/db.php");  */
-include_once("../application/config.php");
-include_once("../application/functions.php");
-include_once("../porting/masterFunctions.php");
+include_once("config.php");
+require_once("appConfig.php");
+include_once("functions.php");
+include_once("functions_loader.php");
 
 
-//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-config.php//
 /* if (isset($_SESSION['lang']))
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
@@ -32,7 +30,7 @@ else
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
 } */
 
-include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
 //Code End//
 
 if (isUserLoggedin())
@@ -58,7 +56,7 @@ $alias = 'login';
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>common-responsive.css" type="text/css">
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>style.css" type="text/css">
     <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>responsive.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL ?>application/custom_css/custom-css.css" type="text/css">
+    <link rel="stylesheet" href="<?php echo CUSTOM_CSS_URL ?>custom-css.css" type="text/css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="<?php echo BASE_JS_URL ?>bootstrap.min.js"></script>
     <style>
@@ -90,7 +88,7 @@ $alias = 'login';
           <div class="col-lg-12">
             <!--Login block starts here-->
             <div class="login-div sign-in">
-              <form class="form-signin" role="form" action="profile.php?action=login" method="post" onSubmit="return loginFormvalidate()">
+              <form class="form-signin" role="form" action="main.php?action=login" method="post" onSubmit="return loginFormvalidate()">
                 <h2 class="form-signin-heading"><?php echo LOGIN_LOGO ?></h2>
                 <p><?php echo REGISTRATION_MESSAGE1 ?><a href="register.php"><?php echo REGISTRATION_MESSAGE2 ?></a></p>
 

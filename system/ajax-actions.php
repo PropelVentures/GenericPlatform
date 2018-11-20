@@ -2,17 +2,17 @@
 
 session_start();
 
-require_once("../application/appConfig.php");
-/* include_once("../system/database/db.php"); */
-require_once '../application/config.php';
-require_once '../application/functions.php';
-require_once '../porting/masterFunctions.php';
+require_once("../application/system-config.php");
+require_once("appConfig.php");
+require_once 'config.php';
+require_once 'functions.php';
+require_once 'functions_loader.php';
 
 
 
 /*
- * 
- * @checklist Multiple Deletion 
+ *
+ * @checklist Multiple Deletion
  */
 
 
@@ -40,7 +40,7 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 
             if (!empty($image_name[0][$val['generic_field_name']])) {
 
-                @unlink("../users_uploads/" . $image_name[0][$val['generic_field_name']]);
+                @unlink(RELATIVE_USERS_DIR. "" . $image_name[0][$val['generic_field_name']]);
             }
         }/////inside list
     }
@@ -67,8 +67,8 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 
 
 /*
- * 
- * @checklist Multiple copy 
+ *
+ * @checklist Multiple copy
  */
 
 
@@ -92,7 +92,7 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 }
 
 /*
- * 
+ *
  * @TAking care of Edit option when user click on tabs
  */
 
@@ -104,7 +104,7 @@ if (isset($_GET["tab_check"]) && !empty($_GET["tab_check"]) && $_GET["tab_check"
 
 
 /*
- * 
+ *
  * @checklist single deletion
  */
 
@@ -125,7 +125,7 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
 
         if (!empty($image_name[0][$val['generic_field_name']])) {
 
-            @unlink("../users_uploads/" . $image_name[0][$val['generic_field_name']]);
+            @unlink(RELATIVE_USERS_DIR . "" . $image_name[0][$val['generic_field_name']]);
         }
     }
 
@@ -138,7 +138,7 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
 }
 
 /*
- * 
+ *
  * @checklist single copy
  */
 if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_action"] == 'copy') {
@@ -158,7 +158,7 @@ if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_acti
 }
 
 /*
- * 
+ *
  * @checklist single deletion
  */
 
@@ -171,11 +171,12 @@ if (isset($_GET["list_add"]) && !empty($_GET["list_add"]) && $_GET["check_action
 }
 
 /*
- * 
+ *
  * @checklist openChild
  */
 
 if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"] == 'openChild') {
+
 
     //exit($_GET['display']);
 
@@ -213,12 +214,12 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
     $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
     $navList = $nav->fetch_assoc();
 
-    //print_r($navList);          
+    //print_r($navList);
     //if (count($list_select_arr) == 2) {
 
 
 
-    $target_url = BASE_URL . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+    $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
     //}
 
     exit($target_url);
@@ -234,7 +235,7 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
  * ***********************
  * **********************************
  * Enabling submit buttons for forms
- * 
+ *
  * ****
  * ***********
  * *********************
@@ -305,7 +306,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_submit') {
     $filename = $_GET['imgName'];
     $fieldName = $_GET['fieldName'];
 
-    $imageInfo = fileUploadCare($uploadcare_image_url, $filename, "../users_uploads");
+    $imageInfo = fileUploadCare($uploadcare_image_url, $filename, RELATIVE_USERS_DIR, "");
 
     if ($_GET['profile_img'] != 'no-profile') {
 
@@ -335,8 +336,8 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_delete') {
 
 
     if ($fileName != "") {
-        if (file_exists("../users_uploads/" . $fileName)) {
-            unlink("../users_uploads/" . $fileName);
+        if (file_exists(RELATIVE_USERS_DIR . "" . $fileName)) {
+            unlink(RELATIVE_USERS_DIR . "" . $fileName);
         }
     }
 
@@ -374,7 +375,7 @@ if (!empty($_GET["img_revert"]) && $_GET["img_revert"] == 'img-revert') {
  * *************
  * ************************
  * ************************************
- * 
+ *
  * @Friend me Ajax Code goes here
  */
 
@@ -403,7 +404,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fri
  * *************
  * ************************
  * ************************************
- * 
+ *
  * @Follow me Ajax Code goes here
  */
 
@@ -431,7 +432,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fol
  * *************
  * ************************
  * ************************************
- * 
+ *
  * @Favorite me Ajax Code goes here
  */
 
@@ -462,7 +463,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fav
  * *************
  * ************************
  * ************************************
- * 
+ *
  * @rate me Ajax Code goes here
  */
 
@@ -543,8 +544,8 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rat
 
 
         ///////////Checking Upper Lower Limit//////
-        
-   
+
+
 
         if (!empty(trim($icons_table['lowerLimit'])) || !empty(trim($icons_table['upperLimit']))) {
 
@@ -619,24 +620,24 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rat
 
 ##CUSTOM FUNCTION CODE GOES HERE##Params are tilde ` separated
 if(!empty($_POST['action']) && $_POST['action'] == 'custom_function')
-{    
+{
     $functionName = $_POST['function'];
     $functionParams = $_POST['params'];
-    
+
     $functionParams = explode("`", $functionParams);
-    
-    $functionParams = array_map('trim', $functionParams);    
-    
+
+    $functionParams = array_map('trim', $functionParams);
+
     if(function_exists($functionName) )
     {
         call_user_func_array($functionName, $functionParams);
-    }    
+    }
 }
 
 ###UNSET VIEW/EDIT OPERATIONS addimport SUCCESS/FAILURE SESSIONS#####
 if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
-{    
-    unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']); 
+{
+    unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
 }
 
 

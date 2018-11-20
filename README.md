@@ -1,2 +1,0 @@
-# GenericPlatform
-Generic Platform
