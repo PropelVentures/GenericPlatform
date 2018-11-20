@@ -1,15 +1,11 @@
     <?php
 session_start();
+require_once 'config.php';
+require_once("appConfig.php");
+require_once 'functions.php';
+// include_once($GLOBALS['APP_DIR'] . "actions/CustomHtml.php");
 
-require_once("../application/appConfig.php");
-
-
-/* include_once("../system/database/db.php"); */
-require_once '../application/config.php';
-require_once '../application/functions.php';
-include_once($GLOBALS['APP_DIR'] . "actions/CustomHtml.php");
-
-//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-constants.php//
+//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-config.php//
 /* if (isset($_SESSION['lang']))
 {
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
@@ -19,7 +15,7 @@ else
   include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
 } */
 
-include_once($GLOBALS['APP_DIR'] . "application/system-constants.php");
+include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
 //Code End//
 
 if (isUserLoggedin())
@@ -114,7 +110,7 @@ if (isUserLoggedin())
     <script type="text/javascript">
 
                   var email_flag1 = false;
-                  
+
                   function createAccountValidation() {
                     var username = $("#uname").val();
                     var password = $("#password").val();
@@ -174,15 +170,15 @@ if (isUserLoggedin())
                     }
 
                     if (username_flag && pwd_flag && repwd_flag && email_flag && country_flag) {
-                      
+
                       query_string = "";
                       $.get("<?php echo BASE_URL?>system/ajax-actions.php?userName=" + username + "&checkUserName=true", query_string, function (data) {
-                         
+
                          data = $.trim(data);
-                         
+
                          //alert(data);
                         if (data == 'false') {
-                            
+
                           if (validateEmail(email)) {
                             $.get("<?php echo BASE_URL ?>system/ajax-actions.php?email=" + email + "&checkEmail=true", query_string, function (data) {
                                 data = $.trim(data);
@@ -212,7 +208,7 @@ if (isUserLoggedin())
                       });
                     }
                     else {
-               
+
                       return false;
                     }
                   }
