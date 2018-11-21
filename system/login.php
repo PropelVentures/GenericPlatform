@@ -2,36 +2,12 @@
 
 session_start();
 
-//echo $_SESSION['callBackPage'];die;
-$_SESSION['lang'] = 'en';
-
 include_once("config.php");
 require_once("appConfig.php");
 include_once("functions.php");
 include_once("functions_loader.php");
-
-
-//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-config.php//
-/* if (isset($_SESSION['lang']))
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
-}
-else
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-}
-
-if (isset($_SESSION['lang']))
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
-}
-else
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-} */
-
 include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
-//Code End//
+
 
 if (isUserLoggedin())
 {

@@ -127,6 +127,7 @@ function Navigation($page, $menu_location = 'header') {
             if($arr[$j]['item_number']==0){
             $pagename = $arr[$j]['display_page'];
             $action = 'only1';
+
             }
             elseif( $arr[$j]['item_number']!=0 && explode('.',$arr[$j]['item_number'])[1]==0){
             $pagename = $arr[$j]['display_page'];
@@ -285,7 +286,6 @@ function Navigation($page, $menu_location = 'header') {
                                 } else
                                     echo $label;
                                 echo "<span class='caret'></span></a>
-
                                     <ul class='dropdown-menu'>";
                             }
                         } else

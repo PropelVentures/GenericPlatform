@@ -3,20 +3,8 @@ session_start();
 require_once 'config.php';
 require_once("appConfig.php");
 require_once 'functions.php';
-// include_once($GLOBALS['APP_DIR'] . "actions/CustomHtml.php");
-
-//Added By Dharmesh 2018-10-11 Changing the language/en.php to application/system-config.php//
-/* if (isset($_SESSION['lang']))
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . $_SESSION['lang'] . ".php");
-}
-else
-{
-  include_once($GLOBALS['LANGUAGE_APP_DIR'] . "en.php");
-} */
-
 include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
-//Code End//
+
 
 if (isUserLoggedin())
 {

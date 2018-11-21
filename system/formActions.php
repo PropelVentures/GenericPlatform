@@ -557,7 +557,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
             if (!empty($oldImage)) {
 
-                @unlink(RELATIVE_USERS_DIR . "pdf/$oldImage");
+                @unlink(USER_UPLOADS . "pdf/$oldImage");
 
 
                 //unset($_POST[$img]);
@@ -570,7 +570,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
                 if (!empty($_POST[$img]['img_extra'])) {
 
-                    @unlink(RELATIVE_USERS_DIR . "pdf/$img2[imageName]");
+                    @unlink(USER_UPLOADS . "pdf/$img2[imageName]");
 
 
 
@@ -623,9 +623,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
             if (!empty($oldImage)) {
 
-                @unlink(RELATIVE_USERS_DIR . "$oldImage");
+                @unlink(USER_UPLOADS . "$oldImage");
 
-                @unlink(RELATIVE_USERS_DIR . "thumbs/$oldImage");
+                @unlink(USER_UPLOADS . "thumbs/$oldImage");
 
                 //unset($_POST[$img]);
             }
@@ -637,9 +637,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
                 if (!empty($_POST[$img]['img_extra'])) {
 
-                    @unlink(RELATIVE_USERS_DIR . "$img2[imageName]");
+                    @unlink(USER_UPLOADS . "$img2[imageName]");
 
-                    @unlink(RELATIVE_USERS_DIR . "thumbs/$img2[imageName]");
+                    @unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
 
 
                     unset($_POST['imgu'][$img]);
@@ -689,8 +689,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
         $oldFile = $row[0][$file];
 
         if ($oldFile != "") {
-            if (file_exists(RELATIVE_USERS_DIR . "audio/" . $oldFile)) {
-                @unlink(RELATIVE_USERS_DIR . "audio/" . $oldFile);
+            if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
+                @unlink(USER_UPLOADS . "audio/" . $oldFile);
             }
         }
     }

@@ -144,7 +144,7 @@ $(document).ready(function () {
                 if (field_value.indexOf(".wav") >= 0) {
 
 //                    elem.prepend("<audio controls src='" + "../../application/user_uploads/audio/" + field_value + "' id='audio'></audio>");
-                    elem.prepend("<audio controls src='<?php echo MYPATH_USERS_DIR ?>audio/" + field_value + "' id='audio'></audio>");
+                    elem.prepend("<audio controls src='<?php echo USER_UPLOADS ?>audio/" + field_value + "' id='audio'></audio>");
 
 
 
