@@ -301,7 +301,7 @@ function audio_upload($row, $urow = 'false', $image_display = 'false') {
 
             if ($pos !== false || $pos_mp3 !== false) {
 
-                $audio_path_2 = RELATIVE_USERS_DIR . "audio/" . $audio_path;
+                $audio_path_2 = USER_UPLOADS . "audio/" . $audio_path;
             } else {
 
                 $audio_path_2 = $audio_path;
@@ -464,11 +464,11 @@ function image_upload($row, $urow = 'false', $image_display = 'false') {
 
     $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
 
-     $img_test= RELATIVE_USERS_DIR . $img;
+     $img_test= USER_UPLOADS . $img;
 
-//echo "<br><br> <br><br> 1. RELATIVE_USERS_DIR .  $img_test  <br><br>";
+//echo "<br><br> <br><br> 1. USER_UPLOADS .  $img_test  <br><br>";
 //echo $img_test ;
-//echo "<br><br> <br><br> 2 - RELATIVE_USERS_DIR .  $img_test <br><br>";
+//echo "<br><br> <br><br> 2 - USER_UPLOADS .  $img_test <br><br>";
 
 
     $img_show = (!empty($img) && file_exists($img_test) ) ? $img : 'NO-IMAGE-AVAILABLE-ICON.jpg';
@@ -488,7 +488,7 @@ function image_upload($row, $urow = 'false', $image_display = 'false') {
 
         $masterToolTip = $title = "";
     }
-    echo "<span> <img src='" . RELATIVE_USERS_DIR . "" . $img_show . "' border='0' width='150' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
+    echo "<span> <img src='" . USER_UPLOADS . "" . $img_show . "' border='0' width='150' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
 
     /* if (!empty($_SESSION['profile-image'])) {
 
@@ -534,7 +534,7 @@ function pdf_upload($row, $urow = 'false', $image_display = 'false') {
     $row[generic_field_name] = trim($row[generic_field_name]);
 
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
-    // $img_show = (!empty($img) && file_exists(RELATIVE_USERS_DIR . "pdf/" . $img) ) ? $img : 'pdf.png';
+    // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
 
     if ($image_display == 'true' && $row['editable'] == 'true') {
         echo "<div class='pdf-content'>";
@@ -546,7 +546,7 @@ function pdf_upload($row, $urow = 'false', $image_display = 'false') {
 
         $masterToolTip = $title = "";
     }
-    echo "<span> <img src='" . RELATIVE_USERS_DIR . "pdf/pdf.png' border='0' width='128' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
+    echo "<span> <img src='" . USER_UPLOADS . "pdf/pdf.png' border='0' width='128' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
 
     /* if (!empty($_SESSION['profile-image'])) {
 
@@ -599,7 +599,7 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
 
     $field_val = $urow[$row[generic_field_name]];
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
-    // $img_show = (!empty($img) && file_exists(RELATIVE_USERS_DIR . "pdf/" . $img) ) ? $img : 'pdf.png';
+    // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
 
     if ($image_display == 'true' && $row['editable'] == 'true') {
         echo "<div class='pdf-content'> <a href='' title='" . pdfInline . "' class='pdf_inline_anchor'>" . pdfInline . "</a>";
@@ -622,7 +622,7 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
 
     if (!empty($urow[$row[generic_field_name]])) {
 
-        echo "<embed  src='" . RELATIVE_USERS_DIR . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
+        echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
         ;
 
         $field_val = explode("-", $field_val);

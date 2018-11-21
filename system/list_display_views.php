@@ -1034,7 +1034,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
     $tbl_img = $listRecord[$imageField['generic_field_name']];
 
 
-    $filename = RELATIVE_USERS_DIR . "" . $tbl_img;
+    $filename = USER_UPLOADS . "" . $tbl_img;
 
 
 
@@ -1042,10 +1042,10 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
     if (!empty($tbl_img) && file_exists($filename)) {
 
-        echo "        <img src='" . RELATIVE_USERS_DIR . "$tbl_img' alt='' class='img-responsive'></a>";
+        echo "        <img src='" . USER_UPLOADS . "$tbl_img' alt='' class='img-responsive'></a>";
     } else {
 
-        echo "<img src='" . RELATIVE_USERS_DIR . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
+        echo "<img src='" . USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
     }
 
 

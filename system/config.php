@@ -1,44 +1,20 @@
 <?php
 
 if ($_SERVER['HTTP_HOST'] === 'localhost') {
-
-    //define('APP_DIR', $_SERVER['DOCUMENT_ROOT'].'generic-platforms/'); // Base Root or Directory Path For Application
     define('APP_DIR', $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/'); // Base Root or Directory Path For Application
-   // define('APP_DIR', $_SERVER['DOCUMENT_ROOT'] . '/generic/'); // Base Root or Directory Path For Application
-
     $GLOBALS['APP_DIR'] = $_SERVER['DOCUMENT_ROOT'] . '/GenericPlatform/';#'generic/'
-    //$GLOBALS['APP_DIR'] = $_SERVER['DOCUMENT_ROOT'] . '/generic/';#'generic/'
-
     define('BASE_URL', 'http://localhost/GenericPlatform/');#http://localhost/generic/
-    //define('BASE_URL', 'http://localhost/generic/');#http://localhost/generic/
-//    ini_set('display_errors', 1);
-//   error_reporting(1);
     error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 } else {
-
-    //$const_pathname = get("custom_setup", "constant_name='pathname'");
-
-    /*if (!empty($const_pathname['value'])) {
-
-        define('APP_DIR', (!empty($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) ? $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . trim($const_pathname['value'])); // Base Root or Directory Path For Application
-
-        $GLOBALS['APP_DIR'] = (!empty($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) ? $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] . '/' : $_SERVER['DOCUMENT_ROOT'] . '/' . trim($const_pathname['value']) . '/'; // Base Root or Directory Path For Application
-
-        define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/' . trim($const_pathname['value']) . '/' );
-    } else {*/
         define('APP_DIR', (!empty($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) ? $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT']); // Base Root or Directory Path For Application
         $GLOBALS['APP_DIR'] = (!empty($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) ? $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] . '/' : $_SERVER['DOCUMENT_ROOT'] . '/'; // Base Root or Directory Path For Application
 
-
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
-
-         //   exit('yasir');
    define('BASE_URL', 'https://' . $_SERVER['HTTP_HOST'] . '/');
 }else{
 
-   // exit('ohh');
-        define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/');
+         define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/');
     }
 
     ini_set('display_error', 1);
@@ -58,31 +34,13 @@ define('CHILD_FILES_URL', BASE_URL . 'childPages/');
 
 $GLOBALS['session_set'] = 0;
 
-$GLOBALS['CONFIG_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/config.php';
-$GLOBALS['INCLUDE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/includes/';
-$GLOBALS['DATABASE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/database/';
-$GLOBALS['LANGUAGE_APP_DIR'] = $GLOBALS['APP_DIR'] . 'application/language/';
-$GLOBALS['CHILD_FILES_DIR'] = $GLOBALS['APP_DIR'] . 'application/childPages/';
-
-define('MYPATH_USERS_DIR', BASE_URL . 'application/user_uploads/');
-define('RELATIVE_USERS_DIR', '../application/user_uploads/');
-
-define('MYPATH_USERS_DIR_THUMB', BASE_URL . 'application/user_uploads/thumbs/');
-define('RELATIVE_USERS_DIR_THUMB', '../application/user_uploads/thumbs/');
-
-define('MYPATH_PROJECTS_DIR', BASE_URL . '../application/project_uploads/');
-define('RELATIVE_PROJECTS_DIR',  '../application/project_uploads/');
-
-define('MYAPTH_PROJECTS_DIR_THUMB', BASE_URL . '../application/project_uploads/thumbs/');
-define('RELATIVE_PROJECTS_DIR_THUMB',  '../application/project_uploads/thumbs/');
+define('USER_UPLOADS', '../application/user_uploads/');
+define('USER_UPLOADS_THUMB', BASE_URL . 'application/user_uploads/thumbs/');
+define('PROJECT_UPLOADS', BASE_URL . '../application/project_uploads/');
+define('PROJECT_UPLOADS_THUMB', BASE_URL . '../application/project_uploads/thumbs/');
 
 /* System Configurations */
-define('CHILD_FILES_CONFIG', 'true');  // true or false For Child Records
-$GLOBALS['CHILD_FILES_TABLE_CONFIG'] = array("tableName" => "project_child", "displayType" => "table", "displayColumns" => array("col1", "col2"), "sortable" => array("col1"), "filter" => array("col1"));
-
-define('DEPLOY_ENV', 'PRD');
 define('PROJECT_TEAM_SIZE', '5');  // Project team size
-
 define('PROJECT_VISIBILITY', true);  // Project visibility
 
 /* * ************User Type/Privacy Configurations @starts******************* */

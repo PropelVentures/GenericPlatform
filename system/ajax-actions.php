@@ -40,7 +40,7 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 
             if (!empty($image_name[0][$val['generic_field_name']])) {
 
-                @unlink(RELATIVE_USERS_DIR. "" . $image_name[0][$val['generic_field_name']]);
+                @unlink(USER_UPLOADS. "" . $image_name[0][$val['generic_field_name']]);
             }
         }/////inside list
     }
@@ -125,7 +125,7 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
 
         if (!empty($image_name[0][$val['generic_field_name']])) {
 
-            @unlink(RELATIVE_USERS_DIR . "" . $image_name[0][$val['generic_field_name']]);
+            @unlink(USER_UPLOADS . "" . $image_name[0][$val['generic_field_name']]);
         }
     }
 
@@ -306,7 +306,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_submit') {
     $filename = $_GET['imgName'];
     $fieldName = $_GET['fieldName'];
 
-    $imageInfo = fileUploadCare($uploadcare_image_url, $filename, RELATIVE_USERS_DIR, "");
+    $imageInfo = fileUploadCare($uploadcare_image_url, $filename, USER_UPLOADS, "");
 
     if ($_GET['profile_img'] != 'no-profile') {
 
@@ -336,8 +336,8 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_delete') {
 
 
     if ($fileName != "") {
-        if (file_exists(RELATIVE_USERS_DIR . "" . $fileName)) {
-            unlink(RELATIVE_USERS_DIR . "" . $fileName);
+        if (file_exists(USER_UPLOADS . "" . $fileName)) {
+            unlink(USER_UPLOADS . "" . $fileName);
         }
     }
 
