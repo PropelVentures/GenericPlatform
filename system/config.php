@@ -21,6 +21,9 @@ if ($_SERVER['HTTP_HOST'] === 'localhost') {
     error_reporting(1);
 }
 
+
+$GLOBALS['session_set'] = 0;
+
 //echo APP_DIR . "<br>" . $GLOBALS['APP_DIR'] . "<br>" . BASE_URL;exit();
 /* System URLS */
 define('BASE_URL_SYSTEM', BASE_URL . 'system/');
@@ -32,9 +35,8 @@ define('BASE_JS_URL',  '../system/js/');
 define('BASE_IMAGES_URL',  '../system/system_images/');
 define('CHILD_FILES_URL', BASE_URL . 'childPages/');
 
-$GLOBALS['session_set'] = 0;
 
-define('USER_UPLOADS', '../application/user_uploads/');
+define('USER_UPLOADS',  '../application/user_uploads/');
 define('USER_UPLOADS_THUMB', BASE_URL . 'application/user_uploads/thumbs/');
 define('PROJECT_UPLOADS', BASE_URL . '../application/project_uploads/');
 define('PROJECT_UPLOADS_THUMB', BASE_URL . '../application/project_uploads/thumbs/');

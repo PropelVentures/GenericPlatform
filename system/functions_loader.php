@@ -5,6 +5,7 @@
  *
  */
 require_once("appConfig.php");
+require_once("functions.php");
 require_once("helperFunctions.php");
 require_once("formActions.php");
 require_once("formDisplayFnc.php");
