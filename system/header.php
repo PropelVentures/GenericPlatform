@@ -1,7 +1,6 @@
 <?php
-@session_start();
-
-$_SESSION['lang'] = 'en';
+// @session_start();
+// $_SESSION['lang'] = 'en';
 
 
 if($_GET['source'] == 'api'){

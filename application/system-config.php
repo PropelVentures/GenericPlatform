@@ -1,6 +1,6 @@
 <?php
 /* * *SITE INFORMATION********* */
-require_once '../system/config.php';
+// require_once '../system/config.php';
 
 define("SESSION_AUTO_TIMEOUT","9200");
 
