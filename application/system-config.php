@@ -9,18 +9,17 @@ define("SESSION_AUTO_TIMEOUT","9200");
 // DATABASE CONFIG (Location, CREDENTIALS)
 // =======================================================================
 
+$config['db_host'] = "localhost";
 
 #$config['db_name'] = "genericplatform";
 #$config['db_user'] = "genericinternal";
 #$config['db_password'] = "Upwork0814!!";
 
-$config['db_host'] = "localhost";
 
 /*
-$config['db_host'] = "localhost";
 $config['db_name'] = "genericsandbox2";
 $config['db_user'] = "genericsandbox2";
-$config['db_password'] = "Elance081461**";
+$config['db_password'] = "Upwork!081461!";
 */
 
 
@@ -282,18 +281,6 @@ define("PROJECT_VISBILITY_LABEL", "Product Visibility");
 define('EDIT', 'Edit');
 
 
-/*  Constants for DD DataDictionary Special Display Pages */
-define("DISPLAY_PAGE_HOME", "HOME");
-define("DISPLAY_PAGE_ACCOUNT", "MYACCOUNT");
-define("DISPLAY_PAGE_USERPROFILE", "USERPROFILE");
-define("DISPLAY_PAGE_PROJECT", "MYPROJECTS");
-define("DISPLAY_PAGE_PROJECTPROFILE", "PROJECTPROFILE");
-define("DISPLAY_PAGE_TRANSACTION", "TRANSACTION");
-define("DISPLAY_PAGE_OTHER", "OTHER");
-
-
-
-
 /*  Constants for DD DataDictionary Special Table Types  */
 $internal_table_types = array(
 "USER",
@@ -310,177 +297,34 @@ for($x=0;$x<$arrlength;$x++)
   define($z, $internal_table_types[$x]);
   }
 
-
-
-/*  Constants for FD FieldDictionary Special Format Types */
-
-
-
-$internal_field_identifier = array(
-"USER",
-"PROJECT",
-"CROSSREF",
-"TRANSACTION",
-"CHILD",
-"P2P");
-
-$internal_field_identifier["USER"]= array(
-"USERID",
-"USERNAME",
-"PASSWORD",
-"PROFILE_IMAGE",
-
-
-"FIRSTNAME",
-"LASTNAME",
-
-"EMAIL",
-"STATE",
-"CITY",
-"ZIPCODE" ,
-"COUNTRY",
-
-"ABOUTME",
-"INTERESTS",
-"SKILLS",
-"DESCRIPTION",
-"COMPANY",
-"RESETPASSWORD",
-"RESETFLAG",
-"ISACTIVE",
-"LOGINIP",
-"DATEADDED",
-"LAST_LOGIN",
-"UPLOAD_CARE_IMG_URL",
-"OAUTH_PROVIDER",
-"TWITTER_OAUTH_TOKEN",
-"TWITTER_OAUTH_TOKEN_SECRET",
-"TWITTER_ACCOUNT",
-"FACEBOOK_ACCOUNT",
-"GOOGLEPLUS_ACCOUNT",
-"USER_TYPE",
-"USER_TYPE_STATUS",
-"USER_PRIVILEGE_LEVEL"
-);
-
-
-$internal_field_identifier["PROJECT"]= array(
-
-"PROJECT_ID",
-"PID",
-"PROJECT_NAME",
-"PROJECT_DESC",
-"PROJECT_EXPIRATION",
-"PROJECT_PRICE",
-"PROJECT_QTY",
-"PROJECT_IS_LIVE",
-"PROJECT_PURCHASED",
-"PROJECT_TRANSACTION_ID",
-
-"IMAGE",
-"PROJECT_IMAGE",
-"OWNER_ID",
-
-"PROJECT_VIDEO"
-
-);
-
-/*
-Special Field_Identifiers
-KEYFIELD
-KEYFIELD_2
-KEYFIELD_3
-
-"INTERNAL_REQUIRED",
-
-"UNUSED",
-"TEXT",
-"TEXT-",
-"NUMBER",
-"NUMBER-",
-"DATE",
-"DATE-",
-"YESNO";
-
-"IMAGE",
-"UNUSED",
-
-"DROPDOWN",
-
-
-RICHTEXT
-(Blank = standard regular length field)
-(TEXT# = specific length text fiedld)
-(other formats
-CURRENCY
-*/
-
-
-
-// dd($internal_field_identifier);
-
-/*
-$arrlength=count($internal_field_identifier);
-
-for($x=0;$x<$arrlength;$x++)
-  {
-  define($internal_field_identifier[$x]."_FT", $internal_field_identifier[$x]);
-  }
-*/
-
 /******
  *
  * Defining default field_length for field_types
  */
-
-
 define("defaultFeildLenInteger", "30");
-
 define("defaultFeildLenOtherInteger", "20");
-
 define("defaultFeildLenText", "40");
-
 define("defaultFeildLenTextarea", "50");
-
 define("defaultFeildLenBoolean", "10");
 
-
 define("showClear", "true"); ///set rating icon
-
 define("dropdownSeparator", "&nbsp;");///dropdown separator
-
-
 define("favoriteTitle", "Favorite");///FFFR favorite title
-
-
 define("friendTitle", "Friend");///
-
 define("followTitle", "Follow");///
 
 //define("ratingTitle", "Rate Me");///dropdown separator
 
-
-
 define("AlERTBOX", "Alert Box"); ////Alert box of voting(FFFR)
-
-
 define("voteInserted", "<p>Vote Inserted Successfully</p>"); ////Alert box of vote in number format
-
-
-
 define("editBtnAlertMsg", "Please update/cancel the current data before trying to edit a different column"); ////Alert box of Edit button
-
-
 define("backAlertMsg", "Are you sure ,You want to go to Main List without Saving!"); ////Alert box when user want to go back to list without saving the form.
 
 /************ On page Form pagination Constants *********/
 
 define("pageFirst", "First");
-
 define("pagePrev", "Prev");
-
 define("pageNext", "Next");
-
 define("pageLast", "Last");
 
 
@@ -491,26 +335,17 @@ define("pageLast", "Last");
  *  these names with html tag as well , for using glyphicon icons etc ****/
 
 define("audioRecord", "Record");
-
 define("audioPause", "Pause");
-
 define("audioClear", "Clear");
-
 define("audioCancel", "Cancel");
-
 define("audioResume", "Resume");
-
 define("audioStop", "Stop");
-
 define("audioRecordingMsg", "Recording has been Started!");
-
 define("audioRecordingResume", "Recording has been Resumed/Started!");
-
 define("audioPauseMsg", "Recording has been Paused!");
 
 
 /**************FFFR ICONS CONSTANTS***********/
-
 #define("audioClear", "Clear");
 
 
@@ -534,28 +369,16 @@ define("votingNoSubmitBtn", "<i class='glyphicon glyphicon-ok-sign'></i>");
 
 
 /************* List filter multiple Selection of Delete/copy Confirmation Msgs **************/
-
 define("deleteConfirm", "Are you sure ,You want to Delete the Records!");
-
 define("copyConfirm", "Are you sure ,You want to Copy the Records!");
-
-
 define("pdfInline", "Click Me!");
-
 define("noFile", "No File!");
 
 
 /******** Constant use for user_privilege_level *******/
-
 define("user_privilege_level", "user_privilege_level");
 
-
-
 /******** Constant use for Transaction popup Title *******/
-
 define("transTtile", "Title Goes here");
-
 define("transSuccess", "Transaction Successful!");
-
-
 define("transFail", "Transaction Fail, Please Try again!");

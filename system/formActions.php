@@ -95,11 +95,11 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
  * *************************************
  */
 
-####THIS HANDLES addimport FILEIMPORT and textarea manual import#############################################################################################
-####ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function####
+// THIS HANDLES addimport FILEIMPORT and textarea manual import
+// ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET['actionType'] == 'addimport') {
 
-    ###GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards####
+    // GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards
     $customFunctionImportFields = $_SESSION['addImportParameters'];
     array_splice($customFunctionImportFields, 0, 3);
 
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
 
     $importFieldsLength = count($customFunctionImportFields);
 
-    ###HANDLE addimport POPUP FORM SUBMIT for csv file import###
+    // HANDLE addimport POPUP FORM SUBMIT for csv file import
     if(!empty($_FILES['addImportFile']['name']) )
     {
         #$file_mimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream',

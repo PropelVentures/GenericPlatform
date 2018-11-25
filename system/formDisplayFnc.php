@@ -466,18 +466,15 @@ function image_upload($row, $urow = 'false', $image_display = 'false') {
 
      $img_test= USER_UPLOADS . $img;
 
-//echo "<br><br> <br><br> 1. USER_UPLOADS .  $img_test  <br><br>";
-//echo $img_test ;
-//echo "<br><br> <br><br> 2 - USER_UPLOADS .  $img_test <br><br>";
-
 
     $img_show = (!empty($img) && file_exists($img_test) ) ? $img : 'NO-IMAGE-AVAILABLE-ICON.jpg';
-
-//echo "<br><br> <br><br> 3 - HERE IS THE IMAGE <br><br>";
-//echo file_exists($img_test);
-//echo "<br><br> <br><br> 4 - HERE IS THE IMAGE <br><br>";
-//die;
-
+/*
+echo "<br> 3 - img = $img<br>";
+echo "<br> 4 - img_show = $img_show<br>";
+echo "<br> 5 - img_test = $img_test<br>";
+echo "<br> 6 - file_exists(img_test) = <br>"  . (file_exists($img_test) ? "Yes" : "No");
+die;
+*/
     if ($image_display == 'true' && $row['editable'] == 'true') {
         echo "<div class='left-content'>";
         $masterToolTip = "masterTooltip";
