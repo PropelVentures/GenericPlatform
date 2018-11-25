@@ -20,6 +20,7 @@ require_once("serial_layout.php");
 require_once("display_content.php");
 require_once("get_data_fd_record.php");
 require_once("select_dd_fd.php");
+require_once("resizeImage.php");
 
 
 
