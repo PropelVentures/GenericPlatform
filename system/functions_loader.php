@@ -4,6 +4,8 @@
  *  This is Intake array which take DD AND FD data and put in master array
  *
  */
+
+include_once("config.php");
 require_once("appConfig.php");
 require_once("functions.php");
 require_once("helperFunctions.php");

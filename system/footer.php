@@ -1,11 +1,4 @@
 
-<?php
-
-// require_once 'config.php';
-
-?>
-
-
 <div id="loading-msg"
      style="position: static !important; display: none;">
     <div style="float: left; padding-top: 7px;">Loading Page..</div>

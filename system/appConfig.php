@@ -1,5 +1,6 @@
 <?php
 @session_start();
+
 require_once("../application/system-config.php");
 require_once("dbFunctions.php");
 
