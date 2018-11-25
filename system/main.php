@@ -1,8 +1,7 @@
 <?php
 
-require_once("config.php");
-require_once("functions_loader.php");
 
+require_once("functions_loader.php");
 include("header.php");
 
 
