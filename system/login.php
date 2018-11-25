@@ -1,12 +1,13 @@
 <?php
 
-session_start();
+// session_start();
 
 include_once("config.php");
 require_once("appConfig.php");
+
 include_once("functions.php");
 include_once("functions_loader.php");
-include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
+
 
 
 if (isUserLoggedin())

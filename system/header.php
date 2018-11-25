@@ -3,11 +3,6 @@
 
 $_SESSION['lang'] = 'en';
 
-require_once 'config.php';
-include_once("../application/system-config.php");
-include_once("functions.php");
-require_once("functions_loader.php");
-
 
 if($_GET['source'] == 'api'){
 

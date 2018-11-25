@@ -2,10 +2,6 @@
 
 session_start();
 
-require_once("../application/system-config.php");
-require_once("appConfig.php");
-require_once 'config.php';
-require_once 'functions.php';
 require_once 'functions_loader.php';
 
 

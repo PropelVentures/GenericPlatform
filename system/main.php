@@ -1,8 +1,10 @@
 <?php
 
 require_once("config.php");
-require_once("appConfig.php");
+require_once("functions_loader.php");
+
 include("header.php");
+
 
 
 $display_page = $_GET['display'];
