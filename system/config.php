@@ -37,6 +37,7 @@ define('CHILD_FILES_URL', BASE_URL . 'childPages/');
 
 
 define('USER_UPLOADS',  '../application/user_uploads/');
+define('USER_UPLOADS_THUMB', '../application/user_uploads/thumbs/');
 define('PROJECT_UPLOADS', BASE_URL . '../application/project_uploads/');
 define('PROJECT_UPLOADS_THUMB', BASE_URL . '../application/project_uploads/thumbs/');
 
