@@ -669,10 +669,10 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
         if ($urow[$row['generic_field_name']] == '1')
             echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox' checked='checked'>";
         else
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }else {
 
-        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }
 }
 
