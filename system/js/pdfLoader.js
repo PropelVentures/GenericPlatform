@@ -77,7 +77,7 @@ $(document).ready(function () {
             file.done(function (fileInfo) {
 
 
-var fileNameByUser = prompt("Please enter file name", "");
+var fileNameByUser = prompt("Enter a Short NAME for this file", "");
 
 if( fileNameByUser == null || fileNameByUser == '')
     fileNameByUser = 'Pdf File'

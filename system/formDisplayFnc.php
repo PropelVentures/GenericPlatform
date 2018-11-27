@@ -622,9 +622,9 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
         echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
         ;
 
-        $field_val = explode("-", $field_val);
+        $field_val1 = explode("-", $field_val);
 
-        echo "<div class='audio-upload-filename'>$field_val[1]</div>";
+        echo "<div class='audio-upload-filename'>$field_val1[1]</div>";
 
         echo "<input type='hidden' name='pdf[$row[generic_field_name]][imageName]' class='$row[generic_field_name]' value='$field_val'/>";
     } else {
