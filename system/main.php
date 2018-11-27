@@ -467,8 +467,8 @@ var pagingType = 'full_numbers';
             if (confirm("<?= deleteConfirm ?>") == true) {
                 $("#checkHidden").val('delete');
                 $('#list-form').ajaxForm(function (data) {
-                    // alert(data);
-                    // return false;
+                     //console.log(data);
+                     //return false;
                     location.reload();
                 });
 

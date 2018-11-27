@@ -50,13 +50,18 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 
     //exit("delete from " . $row['database_table_name'] ." where " . $row['keyfield'] . " IN( $item )");
 
-
     mysqli_query($con, "delete from " . $row['database_table_name'] . " where " . firstFieldName($row['database_table_name']) . " IN( $item )");
     //exit('yasir');
 
     // delete project child table records related to project
     if($row['database_table_name'] == 'project'){
         mysqli_query($con, "delete from project_child  where " . firstFieldName($row['database_table_name']) . " IN( $item )");
+    }
+	// delete product child table records related to product
+    if($row['database_table_name'] == 'product'){
+		foreach($_POST['list'] as $list1) {
+			mysqli_query($con, "delete from product_child  where child_product_id = ".$list1);
+		}
     }
 }
 
