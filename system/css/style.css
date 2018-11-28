@@ -1,6 +1,10 @@
 @import url("jquery.tagit.css");
 @import url("tagit.ui-zendesk.css");
+<<<<<<< HEAD
 
+=======
+@import url("jquery-ui.css");
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
 @import url("base_styles.css");
 @import url("navigation_bar_styles.css");
 @import url("login_styles.css");

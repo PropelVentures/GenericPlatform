@@ -23,6 +23,17 @@
  * function dropdown($row, $urow = 'false', $fieldValue = 'false')
  *
  * function list_fragment($row, $urow = 'false', $fieldValue = 'false')
+<<<<<<< HEAD
+=======
+ * 
+ * function boolean_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
+ *
+ * function boolean_button($row, $formatArray, $urow = 'false', $fieldValue = 'false')
+ * 
+ * function number_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
+ * 
+ * function datepicker($row, $formatArray, $urow = 'false', $fieldValue = 'false')
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
  *
  *
  */
@@ -120,7 +131,12 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     //$row[field_label_name] = $row[field_label_name] . $row['privilege_level'];
 
     if ($userPrivilege === true) {
+<<<<<<< HEAD
         switch ($row['format_type']) {
+=======
+		$formatArray = explode("-",$row['format_type']);
+        switch ($formatArray[0]) {
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
 
             case "richtext":
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
@@ -182,7 +198,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "checkbox":
+<<<<<<< HEAD
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
+=======
+                echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
                 if ($urow != 'false')
                     checkbox($row, $urow, $page_editable);
                 else
@@ -261,8 +281,58 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                     $row[field_label_name]
                 </div>";
                 break;
+<<<<<<< HEAD
 
 
+=======
+			case "boolean":
+				switch(@$formatArray[1]){
+					case "slider":
+						echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+						if ($urow != 'false'){
+							boolean_slider($row,$formatArray,$urow, $page_editable);
+						} else {
+							boolean_slider($row,$formatArray);
+						}
+						echo "</div>";
+					break;
+					
+					case "button":
+						echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+							boolean_button($row,$formatArray,$urow, $page_editable);
+						echo "</div>";
+						
+					break;
+					
+					default:
+						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "</div>";
+				}
+			break;
+			
+			case "number":
+				switch(@$formatArray[1]){
+					case "slider":
+						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+							number_slider($row,$formatArray,$urow, $page_editable);
+						echo "</div>";
+					break;
+					
+					default:
+						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "</div>";
+				}
+			break;
+			
+			case "datepicker":
+				echo "<div class='new_form'><label>$row[field_label_name]</label>";
+					datepicker($row,$formatArray,$urow, $page_editable);
+				echo "</div>";
+			break;
+				
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
             default :
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
                 echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
@@ -932,3 +1002,162 @@ function list_fragment($row2) {
 
     echo "</tbody></table>";
 }
+<<<<<<< HEAD
+=======
+
+
+/*
+ *
+ * BOOLEAN SLIDER FUNCTION
+ */
+
+function boolean_slider($row, $formatArray, $urow = false, $page_editable = false) {
+    $required = '';
+    $disabled = '';
+    if ($_GET['addFlag'] == 'true'){
+		 $row['dd_editable'] = '11';
+	}
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+		$disabled = 'disabled';
+	}
+    if (!empty($row['required'])){
+		$required = 'required';
+	}
+	echo "<input type='hidden' name='$row[generic_field_name]' value='0' >";
+	echo '<div class="boolean_slider_box">
+			<span><b>'.(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF').'</b></span>
+			<label class="boolean_slider">';
+			if ($urow != false) {
+				if ($urow[$row['generic_field_name']] == '1'){
+					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]' checked='checked'>";
+				} else {
+					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]' >";
+				}
+			} else {
+				echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]'>";
+			}
+	
+	echo 	'<span class="boolean_slider_span"></span>
+			</label>
+			<span><b>'.(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON').'</b></span>
+		</div>';
+}
+/*
+ *
+ * BOOLEAN BUTTON FUNCTION
+ */
+
+function boolean_button($row, $formatArray, $urow = false, $page_editable = false) {
+    $required = '';
+    $disabled = '';
+	$disabledClass = '';
+    if ($_GET['addFlag'] == 'true'){
+		 $row['dd_editable'] = '11';
+	}
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+		$disabled = 'disabled';
+		$disabledClass = 'disable_btn';
+	}
+    if (!empty($row['required'])){
+		$required = 'required';
+	}
+	echo "<input type='hidden' name='$row[generic_field_name]' value='0'>";
+	echo '<div class="boolean_button_box">'; 
+	if ($urow != false) {
+		echo "<label class='boolean_button $disabledClass'>
+				<span>".(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF')."<span>
+				<input $disabled type='radio' name='$row[generic_field_name]' value='0' ".($urow[$row['generic_field_name']] == '0' ? 'checked="checked"':'').">
+				<span class='boolean_button_checkmark'></span>
+			</label>
+			<label class='boolean_button $disabledClass'>
+				<span>".(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON')."<span>
+				<input $disabled type='radio' name='$row[generic_field_name]' value='1' ".($urow[$row['generic_field_name']] == '1' ? 'checked="checked"':'').">
+				<span class='boolean_button_checkmark'></span>
+			</label>";
+	} else {
+		echo "<label class='boolean_button $disabledClass'>
+				<span>".(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF')."<span>
+				<input $disabled type='radio' name='$row[generic_field_name]' value='0'>
+				<span class='boolean_button_checkmark'></span>
+			</label>
+			<label class='boolean_button $disabledClass'>
+				<span>".(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON')."<span>
+				<input $disabled type='radio' name='$row[generic_field_name]' value='1'>
+				<span class='boolean_button_checkmark'></span>
+			</label>";
+	}
+	echo '</div>'; 
+}
+
+/*
+ *
+ * NUMBER SLIDER FUNCTION
+ */
+
+function number_slider($row, $formatArray, $urow = false, $page_editable = false) {
+    $required = '';
+    $disabled = 'false';
+    if ($_GET['addFlag'] == 'true'){
+		 $row['dd_editable'] = '11';
+	}
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+		$disabled = 'true';
+	}
+    if (!empty($row['required'])){
+		$required = 'required';
+	}
+	echo '<script>
+			$( function() {
+				var handle = $( "#uiSliderCustom" );
+					$( "#sliderCustom" ).slider({
+						min: '.(isset($formatArray[2]) ? $formatArray[2] : '0').',
+						max: '.(isset($formatArray[3]) ? $formatArray[3] : '100').',
+						value: '.(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '0').',
+						disabled: '.$disabled.',
+						create: function() {
+							handle.text( $( this ).slider( "value" ) );
+							$("#number_'.$row[generic_field_name].'").val(  $( this ).slider( "value" ) );
+						},
+					slide: function( event, ui ) {
+						handle.text( ui.value );
+						$("#number_'.$row[generic_field_name].'").val( ui.value );
+					}
+				});
+			});
+		</script>';
+	echo "<input id='number_$row[generic_field_name]' type='hidden' name='$row[generic_field_name]'>";
+	echo "<div id='sliderCustom'>
+			<div id='uiSliderCustom' class='ui-slider-handle'></div>
+		</div>"; 
+}
+
+/*
+ *
+ * DATEPICKER FUNCTION
+ */
+
+function datepicker($row, $formatArray, $urow = false, $page_editable = false) {
+    $required = '';
+    $disabled = '';
+    if ($_GET['addFlag'] == 'true'){
+		 $row['dd_editable'] = '11';
+	}
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+		$disabled = 'disabled';
+	}
+    if (!empty($row['required'])){
+		$required = 'required';
+	}
+	echo "<script>
+			$( function() {
+				$('#datepicker_$row[generic_field_name]').datepicker({
+					changeMonth: true,
+					changeYear: true,
+					dateFormat: 'yy-mm-dd'
+				});
+			});
+		  </script>";
+	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+}
+
+>>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
