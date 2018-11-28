@@ -38,15 +38,23 @@ function display_content($row) {
      *
      */
 
-    if ($_SESSION['user_privilege'] < $row1['dd_privilege_level'] && $_SESSION['user_privilege'] <= 9) {
+    /*if ($_SESSION['user_privilege'] < $row1['dd_privilege_level'] && $_SESSION['user_privilege'] <= 9) {
 
         $userPrivilege = true;
     } else {
 
         $userPrivilege = false;
-    }
+    }*/
 
-    if ($userPrivilege === false) {
+	$userPrivilege = false;
+	if(itemHasPrivilege($row1['dd_privilege_level'])){
+		$userPrivilege = true;
+	}
+	if(!itemHasVisibility($row1['dd_visibility'])){
+		$userPrivilege = false;
+	}
+
+    if ($userPrivilege === true) {
 
         ///////// for displaying image container
         $image_display = 'true';

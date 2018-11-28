@@ -6,8 +6,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 //    print_r($_REQUEST);
 //    print_r($_SESSION);
 //    die;
-    
-    
+
+
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
     $con = connect();
@@ -39,7 +39,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
      * ********************************************************
      * *******************************************************************************
      * ****************************************************************************
-     * 
+     *
      */
     if ($tab_status == 'true') {
 
@@ -61,7 +61,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          * ********************************************************
          * *******************************************************************************
          * ****************************************************************************
-         * 
+         *
          */
 
         if ($tab_status == 'bars') {
@@ -85,7 +85,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         $_SESSION['list_pagination'] = $row1['list_pagination'];
         ///////// for displaying image container
         $image_display = 'true';
-        
+
 //        echo "<pre>";
 //        print_r($row1);die;
 
@@ -97,52 +97,52 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
           unset($_SESSION['profile-image']);
           } */
-        
-        
+
+
         ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######STARTS########################################################################################
-        
+
         ##Debuging which buttons are in use:
         $debug = false;##True will display texts in the button area.
-        
+
         if ($editable == 'true') {
             if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id']) ) || $_GET['edit'] == 'true' || !empty($_GET['addFlag']) ) {
-                
+
                 $operationsVarArray = array();
                 $operation = '';
-                
+
                 ##DD.edit_operation
-                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1) 
+                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
                 {
                     $operation = 'edit_operations';
-                            
+
                     if(!empty(trim($row1['edit_operations']) ) )
                         $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
                 }
                 else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
                 {
                     $operation = 'view_operations';
-                    
+
                     if(!empty(trim($row1['view_operations']) ) )
                         $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
                 }
-                 
+
 //                echo "<pre>\$operation:$operation:<br>";
 //                print_r($row1);
 //                echo "</pre>";
 //                var_dump($operationsVarArray);
 //                echo "</pre>";
-                
+
                 list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
                     $customFunctionArray,
-                    $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;      
-                
+                    $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;
+
             }
         }
-        
+
 //        echo "<pre>";
 //        print_r($customFunctionArray);
 //        echo "</pre>";
-        
+
         /// setting for  Save/Update button
         if (!empty($submit_array) ) {
             $updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
@@ -155,13 +155,13 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             else
             {
                 $updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
-            }            
+            }
         }
         else if($operation == 'view_operations')
         {
             #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
         }
-        
+
         /// setting for  delete button
         if (!empty($del_array) ) {
             $deleteButton = "<button type='submit' class='btn action-delete " . $del_array['style'] . "' name='delete' >" . $del_array['label'] . "</button> &nbsp;";
@@ -176,17 +176,17 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         if (!empty($add_array) ) {
             $addButton = "<button type='button' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
         }
-        
+
         ##CUSTOM FUNCTION BUTTON##
         if (!empty($customFunctionArray) ) {
-            
+
 //            echo "<pre>";
 //            print_r($_SESSION);
 //            echo "</pre>";
-            
+
             echo "<br/>";
             foreach($customFunctionArray as $keyCustomFunction => $customFunction)
-            {    
+            {
 
                 ##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
                 if(strtolower($customFunction['function']) == 'addimport')
@@ -197,7 +197,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######STARTS####
                     $customFunctionParams = $customFunction['params'];
                     $customFunctionParams = explode("`", $customFunctionParams);
-                    $customFunctionParams = array_map('trim', $customFunctionParams);  
+                    $customFunctionParams = array_map('trim', $customFunctionParams);
 
                     $customFunctionThirdParameter = $customFunctionParams['2'];
 
@@ -209,16 +209,16 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 //                            print_r($_SESSION['addImportParameters']);
 //                            echo "</pre>";
 
-                    $addImportLink = $_SESSION['add_url_list'] . '&addImport=true';                            
+                    $addImportLink = $_SESSION['add_url_list'] . '&addImport=true';
 
-                    $buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';                                
+                    $buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';
                     $buttonHtmlManualImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=manual' . '" data-prompt_action="importManual" >Manual Import</a>';
                     #<a data-dismiss="modal" data-toggle="modal" href="#lost">Click</a>
 
-                    $buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';                                
+                    $buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';
                     $buttonHtmlManualImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportManualModal" data-prompt_action="importManual" >Manual Import</a>';
 
-                    $importPromptMessage = 'Import from CSV File, or Manual Import?';  
+                    $importPromptMessage = 'Import from CSV File, or Manual Import?';
 
                     ###DEFAULT IMPORT TYPE = P i.e. prompt after every import###
                     $importButtonActionType = 'P';
@@ -232,7 +232,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 //                            if(stripos($customFunctionThirdParameter, 'P') !== false )
 //                            {
-//                                $importButtonActionType = 'P';                              
+//                                $importButtonActionType = 'P';
 //                            }
 //                            else if(stripos($customFunctionThirdParameter, 'I') !== false)
 //                            {
@@ -246,11 +246,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 //                            }
                     ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######ENDS######
                     #<!-- Button trigger modal -->
-                    echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
+                    echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
                         data-function_params='{$customFunction['params']}' name='add_import' data-import_type='$importButtonActionType'
                         data-toggle='modal' data-target='#addimportModal'>" . $customFunction['label'] . "</button>";
 
-                    ?>                         
+                    ?>
 
 
                     <!-- addimport prompt Modal -->
@@ -301,7 +301,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                                     ?>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                                            
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -328,12 +328,12 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                         #unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
                         ?>
                     });
-                    </script>    
+                    </script>
                     <?php
                 }
                 else
                 {
-                    echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
+                    echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
                         data-function_params='{$customFunction['params']}' name='custom_function_$keyCustomFunction' >" . $customFunction['label'] . "</button>";
                     ?>
                     <script>
@@ -357,12 +357,12 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                             }
                         });
                     });
-                    </script>    
+                    </script>
             <?php
                 }
 
             }
-            
+
             ?>
             <!--####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######-->
             <!--File modal addimport-->
@@ -376,11 +376,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                         <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
 
-                            <div class="modal-body">                        
+                            <div class="modal-body">
 
                                 <div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
                                     <input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' />
-                                </div>  
+                                </div>
 
                             </div>
                             <div class="modal-footer" style="border-top: none;">
@@ -410,11 +410,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                             <div class="modal-body">
 
                                 <?php
-                                #if(strtolower($_GET['addImportType']) == 'manual') 
+                                #if(strtolower($_GET['addImportType']) == 'manual')
                                 {
                                     $customFunctionParameters = $_SESSION['addImportParameters'];
 
-                                    array_splice($customFunctionParameters, 0, 3); 
+                                    array_splice($customFunctionParameters, 0, 3);
 
                                     $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
                                     ###$_SESSION['addImportParameters']['1'] == description###
@@ -424,7 +424,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                                 <div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
                                     <br>Fields : <?= implode(', ', $customFunctionParameters); ?> <br>
                                     <textarea name="addImportText" class="form-control" cols="100" required ></textarea>
-                                </div>                        
+                                </div>
 
                             </div>
                             <div class="modal-footer" style="border-top: none;">
@@ -437,13 +437,13 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                         </form>
                     </div>
                 </div>
-            </div>        
+            </div>
             <?php
-            
-        }     
-        
+
+        }
+
         ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######ENDS##########################################################################################
-        
+
 
         /*         * *****************
          * *****************************************
@@ -454,26 +454,27 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          * ********************************************************
          * *******************************************************************************
          * ****************************************************************************
-         * 
+         *
          */
 
-
-
-        if ($_SESSION['user_privilege'] < $row1['dd_privilege_level'] && $_SESSION['user_privilege'] <= 9) {
+		//pr($row1);
+		$userPrivilege = false;
+		if(itemHasPrivilege($row1['dd_privilege_level'])){
+			$userPrivilege = true;
+		}
+		if(!itemHasVisibility($row1['dd_visibility'])){
+			$userPrivilege = false;
+		}
+        /*if ($_SESSION['user_privilege'] < $row1['dd_privilege_level'] && $_SESSION['user_privilege'] <= 9) {
 
             $userPrivilege = true;
         } else {
 
             $userPrivilege = false;
-        }
+        }*/
 
-        if ($userPrivilege === false) {
-
-
-
-
-
-            ////adding class if form is not for editing purpose
+        if ($userPrivilege === true) {
+			////adding class if form is not for editing purpose
 
             $page_editable = true;
 
@@ -505,7 +506,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
                 $_SESSION['search_id'] = $_SESSION['uid'];
             else if (trim($row1['table_type']) == 'child') {
-//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID"); 
+//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID");
                 $_SESSION['search_id'] = $_SESSION['parent_value'];
             } else
                 $_SESSION['search_id'] = '76'; /// for displaying one user
@@ -632,22 +633,22 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 				#Added By Dharmesh 2018-27-10#
 				$user_id  = !empty($_GET['search_id'])?$_GET['search_id']:$_SESSION['search_id'];
-                
+
 				if (trim($row1['table_type']) != 'transaction')
                     $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $user_id);
-					
+
 /* 				if (trim($row1['table_type']) != 'transaction')
                     $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_SESSION['search_id']); */
-				
+
             }
 
 
             /*
-             * 
-             * 
+             *
+             *
               /////////displaying the heading of tab page
-             * 
-             * 
+             *
+             *
              */
 
             $tab_name = explode("/", $row1['tab_name']);
@@ -657,7 +658,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             }
 
             /*
-             * 
+             *
              * *************************Generating session to caputure tab_name
              */
 
@@ -671,24 +672,24 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 $_SESSION['parent_url'] = $actual_link;
             }
             /*
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
+             *
+             *
+             *
+             *
+             *
+             *
+             *
              * *****************
              * *******************************
              * BREADCUMB for child lists
-             * 
+             *
              * **********
              * ********************
              * *************************
-             * 
-             * 
-             * 
-             * 
+             *
+             *
+             *
+             *
              */
 
 
@@ -709,10 +710,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
                 /*                 * **********BREADCRUMB
-                 * 
-                 * 
-                 * 
-                 * 
+                 *
+                 *
+                 *
+                 *
                  */
 
 
@@ -728,24 +729,24 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
                 /*                 * ***
-                 * 
-                 * 
+                 *
+                 *
                  * *********
                  * *************ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
-                 * 
+                 *
                  * *************
                  * ***********************
                  * *******
-                 * 
-                 * 
+                 *
+                 *
                  */
 
 
 
                 /*                 * **
-                 * 
+                 *
                  * Short solution for back to home page
-                 * 
+                 *
                  */
 
                 $home_test = explode("display", $link_to_return);
@@ -818,11 +819,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                 $actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
-                
 
 
-                echo "<div class='form-footer'>      
-                                                    
+
+                echo "<div class='form-footer'>
+
                         " . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
                         $deleteButton
                         $addButton
@@ -833,40 +834,40 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     </div>";
 
                 echo "<div style='clear:both'></div><hr>";
-                
+
                 ####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######
 //                if($_GET['addImport'] == 'true' && !empty($_SESSION['addImportParameters']) )
 //                {
-//                    
+//
 ////                    echo "<Pre>";
 ////                    print_r($_SESSION['addImportParameters']);
 ////                    print_r($_GET);
 ////                    echo "</pre>";
-//                    
-//                    
-//                    
+//
+//
+//
 //                    if(strtolower($_GET['addImportType']) == 'file')
 //                    {
 //                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
 //                            echo "<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' >";
 //                        echo "</div>";
 //                    }
-//                    else if(strtolower($_GET['addImportType']) == 'manual') 
+//                    else if(strtolower($_GET['addImportType']) == 'manual')
 //                    {
 //                        $customFunctionParameters = $_SESSION['addImportParameters'];
-//                        
-//                        array_splice($customFunctionParameters, 0, 3); 
-//                        
+//
+//                        array_splice($customFunctionParameters, 0, 3);
+//
 //                        $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
-//                        
+//
 //                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
 //                            echo "<br>Fields : " . implode(', ', $customFunctionParameters) . "<br>";
 //                            echo '<textarea name="addImportText" class="form-control" cols="100" required ></textarea>';
 //                        echo "</div>";
 //                    }
-//                    
-//                    
-//                    
+//
+//
+//
 //                }
 //                else
 //                {
@@ -876,9 +877,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     }//// end of while loop
                     //if ($_GET['checkFlag'] == 'true') {
 //                }
-                
 
-                
+
+
 
 
                 /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag' == 'true'])
@@ -888,17 +889,17 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                 // }
 
-                echo "<div class='form-footer'>     
-                    
+                echo "<div class='form-footer'>
+
                         " . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
                         $deleteButton
                         $addButton
                         $copyButton
-                        $updateSaveButton       
-                            
+                        $updateSaveButton
+
                         <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                     </div>
-                            
+
                     <!--</div>-->";###COMMENTED OUT AS IT DOESN"T HAVE OPENING <DIV> TAG
 
 
@@ -916,15 +917,15 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
                     /*
-                     * 
-                     * 
-                     * 
+                     *
+                     *
+                     *
                      * short solution for now to add separate fffr sytling for FFFR edit page.
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
+                     *
+                     *
+                     *
+                     *
+                     *
                      */
 
 
@@ -953,24 +954,24 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
                         /*                         * ***
-                         * 
-                         * 
+                         *
+                         *
                          * *********
                          * *************ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
-                         * 
+                         *
                          * *************
                          * ***********************
                          * *******
-                         * 
-                         * 
+                         *
+                         *
                          */
 
 
 
                         /*                         * **
-                         * 
+                         *
                          * Short solution for back to home page
-                         * 
+                         *
                          */
 
                         $home_test = explode("display", $link_to_return);
@@ -982,18 +983,18 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                             $breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
 //echo "<font color=orange>INSIDE get_ata_fd_records.php line 261</font><br>";
 
-                        echo "<div class='breadcrumb'> 
-                                <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>      
+                        echo "<div class='breadcrumb'>
+                                <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>
                                     " . editPagePagination($row1['list_extra_options'], $primary_key) . "
                               </div>";
                     }
-                    
+
                     ##VIEW OPERATION CUSTOM BUTTONS
                     if($operation == 'view_operations')
                     {
-                        echo "<div class='form-footer'>           
-                                      
-                                    " . (!empty($debug) ? 'View operation Buttons' : '') . "    
+                        echo "<div class='form-footer'>
+
+                                    " . (!empty($debug) ? 'View operation Buttons' : '') . "
                                     $deleteButton
                                     $addButton
                                     $copyButton
@@ -1001,7 +1002,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                                     <!--<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> -->
                                 </div>
-                                
+
                                 <div style='clear:both'></div>
                                 <hr>
 
@@ -1041,16 +1042,16 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                                 if ($tab_status != 'bars') {
 
-                                    echo "<div class='form-footer' >                                    
-                                                  
+                                    echo "<div class='form-footer' >
+
                                             " . (!empty($debug) ? 'Top DD_EDITABLE' : '') . "
                                             $deleteButton
                                             $addButton
                                             $copyButton
                                             $updateSaveButton
-                                                
+
                                             <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-                            
+
                                         </div>";
                                 }
                             }/// if for submit and cancel ends here
@@ -1081,7 +1082,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                     //print_r($urow);die;
 
                     while ($row = $rs2->fetch_assoc()) {
-                        //echo "<pre>"; print_r($row); 
+                        //echo "<pre>"; print_r($row);
                         formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
                     }//// end of while loop
                 } else {
@@ -1140,15 +1141,15 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                             //if( $row1['dd_editable'] != 0 ){
 
-                            echo "<div class='form-footer'>           
-                                      
-                                    " . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "    
+                            echo "<div class='form-footer'>
+
+                                    " . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "
                                     $deleteButton
                                     $addButton
                                     $copyButton
                                     $updateSaveButton
 
-                                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> 
+                                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                                 </div>";
 
                             // }
@@ -1164,7 +1165,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         } else {
 
             echo "<h3 style='color:red'>You don't have enough privilege to view contents</h3>";
-            ///page privilege if its false   
+            ///page privilege if its false
         }
     }//else ends here where tab_num=0 is not part of dd->display_page
 }

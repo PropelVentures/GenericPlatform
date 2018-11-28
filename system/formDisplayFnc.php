@@ -23,17 +23,14 @@
  * function dropdown($row, $urow = 'false', $fieldValue = 'false')
  *
  * function list_fragment($row, $urow = 'false', $fieldValue = 'false')
-<<<<<<< HEAD
-=======
- * 
+ *
  * function boolean_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
  *
  * function boolean_button($row, $formatArray, $urow = 'false', $fieldValue = 'false')
- * 
+ *
  * function number_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
- * 
+ *
  * function datepicker($row, $formatArray, $urow = 'false', $fieldValue = 'false')
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
  *
  *
  */
@@ -101,6 +98,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
         if (empty($row['format_type'])) {
             $row['format_type'] = 'text';
         }
+		$row['strict_disabled'] = '';
+		if(!itemEditable($row['editable'])){
+			$row['strict_disabled'] = 'disabled';
+		}
 
         $fieldValue = ($urow != 'false') ? $urow[$field] : '';
     }
@@ -111,8 +112,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     //////////////////////////////////////////////////////////////////
 
     $userPrivilege = false;
+	if(itemHasVisibility($row['visibility'])){
+		$userPrivilege = true;
+	}
 
-    if ($row['visibility'] >= 1) {
+    /*if ($row['visibility'] >= 1) {
 
         if ($_SESSION['user_privilege'] >= $row['privilege_level'] && $_SESSION['user_privilege'] < 9) {
 
@@ -127,20 +131,16 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
             $userPrivilege = false;
         }
     } else
-        $userPrivilege = false;
+        $userPrivilege = false;*/
     //$row[field_label_name] = $row[field_label_name] . $row['privilege_level'];
 
     if ($userPrivilege === true) {
-<<<<<<< HEAD
-        switch ($row['format_type']) {
-=======
 		$formatArray = explode("-",$row['format_type']);
         switch ($formatArray[0]) {
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
 
             case "richtext":
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
-                echo "<textarea class='ckeditor' name='$field' $rt_readonly>$fieldValue</textarea>";
+                echo "<textarea class='ckeditor' name='$field' $row[strict_disabled] $rt_readonly>$fieldValue</textarea>";
                 echo "</div>";
                 break;
 
@@ -169,7 +169,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
                     $value = dropdown($row, $urow = 'list_display', $crf_value);
 
-                    echo "<input type='$row[format_type]' name='$field' value='$value' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> <input type='hidden' name='$field' value='$crf_value' >";
+                    echo "<input type='$row[format_type]' name='$field' value='$value' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> <input type='hidden' name='$field' value='$crf_value' >";
 
 
                     echo "</div>";
@@ -178,13 +178,13 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "email":
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
-                echo "<input type='email' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> ";
+                echo "<input type='email' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> ";
                 echo "</div>";
                 break;
 
             case "textbox":
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
-                echo "<textarea name='$field' class='form-control' cols='$row[format_length]' $readonly>$fieldValue</textarea>";
+                echo "<textarea name='$field' class='form-control' cols='$row[format_length]' $row[strict_disabled] $readonly>$fieldValue</textarea>";
                 echo "</div>";
                 break;
 
@@ -198,11 +198,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "checkbox":
-<<<<<<< HEAD
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
-=======
                 echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
                 if ($urow != 'false')
                     checkbox($row, $urow, $page_editable);
                 else
@@ -259,20 +255,20 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "transaction_execute":
                 echo "<div class='new_form'>";
-                echo "<button type='button' class='btn btn-default transaction_execute' name='transaction_execute' id='$row[dict_id]'>$row[field_label_name]</button>";
+                echo "<button type='button' class='btn btn-default transaction_execute' $row[strict_disabled] name='transaction_execute' id='$row[dict_id]'>$row[field_label_name]</button>";
                 echo "</div>";
                 break;
 
             case "transaction_confirmation":
                 return "<div class='new_form'>
-                 <button type='button' class='btn btn-default transaction_confirmation' name='transaction_confirmation'>$row[field_label_name]</button>
+                 <button type='button' class='btn btn-default transaction_confirmation' $row[strict_disabled] name='transaction_confirmation'>$row[field_label_name]</button>
                 </div>";
                 break;
 
 
             case "transaction_cancel":
                 return "<div class='new_form'>
-                 <button type='button' class='btn btn-default transaction_cancel' name='transaction_cancel' data-dismiss='modal'>$row[field_label_name]</button>
+                 <button type='button' class='btn btn-default transaction_cancel' name='transaction_cancel' $row[strict_disabled] data-dismiss='modal'>$row[field_label_name]</button>
                 </div>";
                 break;
 
@@ -281,10 +277,6 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                     $row[field_label_name]
                 </div>";
                 break;
-<<<<<<< HEAD
-
-
-=======
 			case "boolean":
 				switch(@$formatArray[1]){
 					case "slider":
@@ -296,21 +288,21 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 						}
 						echo "</div>";
 					break;
-					
+
 					case "button":
 						echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
 							boolean_button($row,$formatArray,$urow, $page_editable);
 						echo "</div>";
-						
+
 					break;
-					
+
 					default:
 						echo "<div class='new_form'><label>$row[field_label_name]</label>";
-						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
 						echo "</div>";
 				}
 			break;
-			
+
 			case "number":
 				switch(@$formatArray[1]){
 					case "slider":
@@ -318,24 +310,23 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							number_slider($row,$formatArray,$urow, $page_editable);
 						echo "</div>";
 					break;
-					
+
 					default:
 						echo "<div class='new_form'><label>$row[field_label_name]</label>";
-						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
 						echo "</div>";
 				}
 			break;
-			
+
 			case "datepicker":
 				echo "<div class='new_form'><label>$row[field_label_name]</label>";
 					datepicker($row,$formatArray,$urow, $page_editable);
 				echo "</div>";
 			break;
-				
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
+
             default :
                 echo "<div class='new_form'><label>$row[field_label_name]</label>";
-                echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
                 echo "</div>";
         }///switch conditions end here
     }/////userprivilege ends here
@@ -361,7 +352,7 @@ function audio_upload($row, $urow = 'false', $image_display = 'false') {
 
 
 
-        if ($image_display == 'true' && $row['editable'] == 'true') {
+        if ($image_display == 'true' && $row['strict_disabled'] == '') {
 
             ///finding whether file is text file or audio wav file
 
@@ -489,7 +480,7 @@ function tagFnc($row, $urow = 'false', $image_display = 'false') {
     $auto_complete = implode(',', $next_level);
 
 
-    if ($image_display == 'true' && $row['editable'] == 'true') {
+    if ($image_display == 'true' && $row['strict_disabled'] == '') {
 
         echo "<script type='text/javascript'>
             $(document).ready(function () {
@@ -545,7 +536,7 @@ echo "<br> 5 - img_test = $img_test<br>";
 echo "<br> 6 - file_exists(img_test) = <br>"  . (file_exists($img_test) ? "Yes" : "No");
 die;
 */
-    if ($image_display == 'true' && $row['editable'] == 'true') {
+    if ($image_display == 'true' && $row['strict_disabled'] == '') {
         echo "<div class='left-content'>";
         $masterToolTip = "masterTooltip";
 
@@ -603,7 +594,7 @@ function pdf_upload($row, $urow = 'false', $image_display = 'false') {
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
     // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
 
-    if ($image_display == 'true' && $row['editable'] == 'true') {
+    if ($image_display == 'true' && $row['strict_disabled'] == '') {
         echo "<div class='pdf-content'>";
         $masterToolTip = "masterTooltip";
 
@@ -668,7 +659,7 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
     // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
 
-    if ($image_display == 'true' && $row['editable'] == 'true') {
+    if ($image_display == 'true' && $row['strict_disabled'] == '') {
         echo "<div class='pdf-content'> <a href='' title='" . pdfInline . "' class='pdf_inline_anchor'>" . pdfInline . "</a>";
         echo "  <img  class='user_thumb' alt='$row[generic_field_name]' style='display:none;' />";
     } else {
@@ -726,7 +717,7 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
     if ($_GET['addFlag'] == 'true')
         $row['dd_editable'] = '11';
 
-    if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false)
+    if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['strict_disabled']=='disabled')
         $readonly = 'readonly';
 
 
@@ -737,12 +728,12 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
 
     if ($urow != 'false') {
         if ($urow[$row['generic_field_name']] == '1')
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox' checked='checked'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox' checked='checked'>";
         else
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }else {
 
-        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
+        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }
 }
 
@@ -769,11 +760,11 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         $row['dd_editable'] = '11';
 
     if (trim($row['table_type']) != 'transaction') {
-        if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['editable'] == 'false')
+        if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['strict_disabled'] == 'disabled')
             $readonly = 'disabled="disabled"';
     }else{
 
-        if( $row['editable'] == 'false'){
+        if( $row['strict_disabled'] == 'disabled'){
 
             $readonly = 'disabled="disabled"';
         }
@@ -1002,8 +993,6 @@ function list_fragment($row2) {
 
     echo "</tbody></table>";
 }
-<<<<<<< HEAD
-=======
 
 
 /*
@@ -1017,7 +1006,7 @@ function boolean_slider($row, $formatArray, $urow = false, $page_editable = fals
     if ($_GET['addFlag'] == 'true'){
 		 $row['dd_editable'] = '11';
 	}
-	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['strict_disabled']== 'disabled'){
 		$disabled = 'disabled';
 	}
     if (!empty($row['required'])){
@@ -1036,7 +1025,7 @@ function boolean_slider($row, $formatArray, $urow = false, $page_editable = fals
 			} else {
 				echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]'>";
 			}
-	
+
 	echo 	'<span class="boolean_slider_span"></span>
 			</label>
 			<span><b>'.(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON').'</b></span>
@@ -1054,39 +1043,40 @@ function boolean_button($row, $formatArray, $urow = false, $page_editable = fals
     if ($_GET['addFlag'] == 'true'){
 		 $row['dd_editable'] = '11';
 	}
-	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['strict_disabled'] == 'disabled'){
 		$disabled = 'disabled';
 		$disabledClass = 'disable_btn';
 	}
+
     if (!empty($row['required'])){
 		$required = 'required';
 	}
 	echo "<input type='hidden' name='$row[generic_field_name]' value='0'>";
-	echo '<div class="boolean_button_box">'; 
+	echo '<div class="boolean_button_box">';
 	if ($urow != false) {
 		echo "<label class='boolean_button $disabledClass'>
 				<span>".(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF')."<span>
-				<input $disabled type='radio' name='$row[generic_field_name]' value='0' ".($urow[$row['generic_field_name']] == '0' ? 'checked="checked"':'').">
+				<input $disabled $row[strict_disabled] type='radio' name='$row[generic_field_name]' value='0' ".($urow[$row['generic_field_name']] == '0' ? 'checked="checked"':'').">
 				<span class='boolean_button_checkmark'></span>
 			</label>
 			<label class='boolean_button $disabledClass'>
 				<span>".(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON')."<span>
-				<input $disabled type='radio' name='$row[generic_field_name]' value='1' ".($urow[$row['generic_field_name']] == '1' ? 'checked="checked"':'').">
+				<input $disabled $row[strict_disabled] type='radio' name='$row[generic_field_name]' value='1' ".($urow[$row['generic_field_name']] == '1' ? 'checked="checked"':'').">
 				<span class='boolean_button_checkmark'></span>
 			</label>";
 	} else {
 		echo "<label class='boolean_button $disabledClass'>
 				<span>".(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF')."<span>
-				<input $disabled type='radio' name='$row[generic_field_name]' value='0'>
+				<input $disabled $row[strict_disabled] type='radio' name='$row[generic_field_name]' value='0'>
 				<span class='boolean_button_checkmark'></span>
 			</label>
 			<label class='boolean_button $disabledClass'>
 				<span>".(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON')."<span>
-				<input $disabled type='radio' name='$row[generic_field_name]' value='1'>
+				<input $disabled $row[strict_disabled] type='radio' name='$row[generic_field_name]' value='1'>
 				<span class='boolean_button_checkmark'></span>
 			</label>";
 	}
-	echo '</div>'; 
+	echo '</div>';
 }
 
 /*
@@ -1101,6 +1091,9 @@ function number_slider($row, $formatArray, $urow = false, $page_editable = false
 		 $row['dd_editable'] = '11';
 	}
 	if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false){
+		$disabled = 'true';
+	}
+	if($row['strict_disabled'] == 'disabled'){
 		$disabled = 'true';
 	}
     if (!empty($row['required'])){
@@ -1128,7 +1121,7 @@ function number_slider($row, $formatArray, $urow = false, $page_editable = false
 	echo "<input id='number_$row[generic_field_name]' type='hidden' name='$row[generic_field_name]'>";
 	echo "<div id='sliderCustom'>
 			<div id='uiSliderCustom' class='ui-slider-handle'></div>
-		</div>"; 
+		</div>";
 }
 
 /*
@@ -1157,7 +1150,6 @@ function datepicker($row, $formatArray, $urow = false, $page_editable = false) {
 				});
 			});
 		  </script>";
-	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $row[strict_disabled] $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
 }
 
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf

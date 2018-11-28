@@ -20,8 +20,6 @@ if (isset($_GET['tab']) || !empty($_GET['tab'])) {
 
     unset($_SESSION['tab']);
 }
-
-
 //echo($_SESSION['return_url']) . "<br>";
 //exit( $_SESSION['add_url_list']);
 ///// copy these two files for displaying navigation/////
@@ -39,147 +37,156 @@ if ($display_page == 'home') {
 
 
 <div class="container main-content-container">
+	<?php
+	/* CHECKING NAV HAS VISIBILITY  START*/
+	if(navHasVisibility()){ ?>
+		<!-- Left sidebar content Area -->
+		<?php
+		/*
+		 * Finding page layout by DD->tab_num
+		 */
 
-    <!-- Left sidebar content Area -->
-    <?php
-    /*
-     * Finding page layout by DD->tab_num
-     */
+		$con = connect();
 
-    $con = connect();
+		$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 
-    $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
+	//$right_sidebar = $left_sidebar = 'false';
 
-//$right_sidebar = $left_sidebar = 'false';
-
-    while ($row = $rs->fetch_assoc()) {
-
-
-        $r1 = explode('w', trim($row['tab_num']));
-
-        if (!empty($r1[1])) {
-
-            if ($r1[0] == 'R1')
-                $right_sidebar_width = $r1[1];
-            else
-                $left_sidebar_width = $r1[1];
-        }
+		while ($row = $rs->fetch_assoc()) {
 
 
-        if ($r1[0] == 'R1') {
+			$r1 = explode('w', trim($row['tab_num']));
 
-            $right_sidebar = 'right';
-        }
+			if (!empty($r1[1])) {
 
-        if ($r1[0] == 'L1') {
-
-            $left_sidebar = 'left';
-        }
-    }
-
-    if ($left_sidebar == 'left' && $right_sidebar == 'right') {
-
-        $both_sidebar = 'both';
-    }
+				if ($r1[0] == 'R1')
+					$right_sidebar_width = $r1[1];
+				else
+					$left_sidebar_width = $r1[1];
+			}
 
 
+			if ($r1[0] == 'R1') {
 
-    /*
-     * left sidebar code
-     */
+				$right_sidebar = 'right';
+			}
 
-    sidebar($left_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
+			if ($r1[0] == 'L1') {
+
+				$left_sidebar = 'left';
+			}
+		}
+
+		if ($left_sidebar == 'left' && $right_sidebar == 'right') {
+
+			$both_sidebar = 'both';
+		}
 
 
 
+		/*
+		 * left sidebar code
+		 */
 
-    /*
-     * displaying tab area
-     */
-
-    // $total_width = 0;
-
-    if ($_GET['child_list_active'] == 'isSet')
-        echo "<a href='#' class='goBackToParent'>click me</a>";
-
-    if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-
-        $total_width = 100 - ( $right_sidebar_width + $left_sidebar );
-
-        echo "<div class='center-container' style='width:$total_width%;float:left;' >";
-    } else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
-
-        $total_width = 100 - $right_sidebar_width;
-
-        echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
-    } else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-
-        $total_width = 100 - $left_sidebar;
-
-        echo "<div class='center-container' style='width:$total_width%;float:left;'>";
-    } else {
-        if ($both_sidebar == 'both') {
-            echo "<div class='col-lg-8 center-container'>";
-        } else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
-
-            echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
-        } else {
-            echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
-        }
-    }
-//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
-    ?>
+		sidebar($left_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
 
 
 
-    <!-- Tab Content area .. -->
-    <?php
-    if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
-        serial_layout($display_page, $style);
-    } else {
 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num='0'");
+		/*
+		 * displaying tab area
+		 */
 
-        $row = $rs->fetch_assoc();
-        if (!empty($row)) {
-            $tab_status = 'true';
+		// $total_width = 0;
 
-            $_SESSION['display2'] = $display_page;
+		if ($_GET['child_list_active'] == 'isSet')
+			echo "<a href='#' class='goBackToParent'>click me</a>";
 
-            Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
-        } else {
+		if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
 
-            $_SESSION['display2'] = '';
+			$total_width = 100 - ( $right_sidebar_width + $left_sidebar );
 
-            unset($_SESSION['display2']);
+			echo "<div class='center-container' style='width:$total_width%;float:left;' >";
+		} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
 
-            echo Get_Links($display_page);
+			$total_width = 100 - $right_sidebar_width;
 
-            global $tab;
+			echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
+		} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
 
-            $tab_status = 'false';
+			$total_width = 100 - $left_sidebar;
 
-            if (isset($_SESSION['tab'])) {
-                Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
+			echo "<div class='center-container' style='width:$total_width%;float:left;'>";
+		} else {
+			if ($both_sidebar == 'both') {
+				echo "<div class='col-lg-8 center-container'>";
+			} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
 
+				echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
 			} else {
-                Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
-            }
-        }/// tab_num else ends here
-    }//// page_layout
-    ?>
-    <div style="clear:both"></div>
-</div>
-
-<!-- Right sidebar content Area -->
+				echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
+			}
+		}
+	//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
+		?>
 
 
-<?php
-/*
- * Right sidebar code
- */
 
-sidebar($right_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+		<!-- Tab Content area .. -->
+		<?php
+		if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
+			serial_layout($display_page, $style);
+		} else {
+
+			$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num='0'");
+
+			$row = $rs->fetch_assoc();
+			if (!empty($row)) {
+				$tab_status = 'true';
+
+				$_SESSION['display2'] = $display_page;
+
+				Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+			} else {
+
+				$_SESSION['display2'] = '';
+
+				unset($_SESSION['display2']);
+
+				echo Get_Links($display_page);
+
+				global $tab;
+
+				$tab_status = 'false';
+
+				if (isset($_SESSION['tab'])) {
+					Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
+
+				} else {
+					Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+				}
+			}/// tab_num else ends here
+		}//// page_layout
+		?>
+		<div style="clear:both"></div>
+	</div>
+
+	<!-- Right sidebar content Area -->
+
+
+	<?php
+	/*
+	 * Right sidebar code
+	 */
+
+	sidebar($right_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+
+} else { ?>
+	<div class="center-body-message-box">
+		<h2><?php echo ERROR_403; ?></h2>
+	</div>
+<?php }
+/* CHECKING NAV HAS VISIBILITY  END*/
 ?>
 
 </div>

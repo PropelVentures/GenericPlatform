@@ -48,7 +48,10 @@ function Get_Links($display_page) {
 
     echo "<ul class='center-tab' role='tablist' >";
     while ($row = $rs->fetch_assoc()) {
-
+		if(!itemHasVisibility($row['dd_visibility'])){
+			continue;
+		}
+		//pr($row);
 
         $tab_name = explode("/", $row['tab_name']);
 
@@ -201,33 +204,30 @@ function Navigation($page, $menu_location = 'header') {
                 <?php
                 if (isUserLoggedin()) {
                     for ($i = 0; count($arr) > $i; $i++) {
-
-
-
-                        $label = $arr[$i]['item_label'];
-                        $item_target = trim($arr[$i]['item_target']);
-                        if ($item_target == '') {
-                            $item_target = 'main.php';
-                        }
-<<<<<<< HEAD
-
-                        if (strpos($item_target, 'http://') !== false) {
-                            $target = $item_target;
-                        } else {
-                            $target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
-                        }
-=======
-						// Remove all illegal characters from a url
-						$item_target = filter_var($item_target, FILTER_SANITIZE_URL);
-						// If Url is valid then et target as defined in DB
-						if (filter_var($item_target, FILTER_VALIDATE_URL)) {
-							$target = $item_target;
-						} elseif($item_target == "#" || strpos($arr[$i]['item_number'],".0")) {
-							$target = "javascript:void(0);";
-						} else {
-							$target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
+						$label = $arr[$i]['item_label'];
+						if(!itemHasVisibility($arr[$i]['item_visibility'])){
+							continue;
 						}
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
+                        if(!itemHasPrivilege($arr[$i]['item_privilege'])){
+							$target = "#";
+						} else {
+							$item_target = trim($arr[$i]['item_target']);
+							if ($item_target == '') {
+								$item_target = 'main.php';
+							}
+							// Remove all illegal characters from a url
+							$item_target = filter_var($item_target, FILTER_SANITIZE_URL);
+							// If Url is valid then et target as defined in DB
+							if (filter_var($item_target, FILTER_VALIDATE_URL)) {
+								$target = $item_target;
+							} elseif($item_target == "#" || strpos($arr[$i]['item_number'],".0")) {
+								$target = "javascript:void(0);";
+							} else {
+								$target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
+							}
+						}
+
+
                         $curr_item_number = explode('.', $arr[$i]['item_number']);
 
                         $next_item_number = explode('.', $arr[$i + 1]['item_number']);
@@ -258,17 +258,18 @@ function Navigation($page, $menu_location = 'header') {
 
                         // $userRec = get($_SESSION['select_table']['database_table_name'], $_SESSION['select_table']['keyfield'] . '=' . $_SESSION['uid']);
                         ///Checking item privilege with user privilege
-                        if ($_SESSION['user_privilege'] < $arr[$i]['item_privilege'] && $_SESSION['user_privilege'] <= 9) {
+
+                        /* if ($_SESSION['user_privilege'] < $arr[$i]['item_privilege'] && $_SESSION['user_privilege'] <= 9) {
 
                             $userPrivilege = 'inactiveLink';
                         } else {
 
                             $userPrivilege = '';
-                        }
+                        } */
 
                         //not displaying menu if user dont have admin privileges
 
-                        $adminPrivilege = false;
+                        /* $adminPrivilege = false;
 
                         $menuAdmin = false;
 
@@ -286,8 +287,8 @@ function Navigation($page, $menu_location = 'header') {
                             $showMenu = true;
                         } else {
                             $showMenu = false;
-                        }
-
+                        } */
+						$showMenu = true;
 
                         if (($curr_item_number[0] == $next_item_number[0]) && ( $curr_item_number[1] == 0 && $next_item_number[1] == 1 )) {
                         /// Menu name have sub menu
@@ -326,15 +327,10 @@ function Navigation($page, $menu_location = 'header') {
                                 echo "<li class='$enabled $visibility $userPrivilege' id='$sub_item_style'> <a href='$target' title='$title'>";
                                 if ($label == 'CURRENTUSERNAME') {
                                     echo $_SESSION[uname];
-<<<<<<< HEAD
-                                } else
-                                    echo $label;
-=======
                                 } elseif($arr[$i]['item_number'] != 0){
 									echo $label;
 								}
-                                   
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
+
                                 echo "</a></li>";
                             }
                         }

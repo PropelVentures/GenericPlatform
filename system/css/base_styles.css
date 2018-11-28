@@ -61,11 +61,7 @@ p{font-family: 'Open Sans', sans-serif; font-size:14px; line-height:24px;}
     font-size: 12pt;
     color:green;
 }
-<<<<<<< HEAD
-.new_form {display:inline-table; margin-bottom:20px; margin-right: 19px;}
-=======
 .new_form {display:inline-table; margin-bottom:20px; margin-right: 19px; vertical-align:top;}
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
 .new_form label{font-size:18px;}
 
 
@@ -214,8 +210,6 @@ List fragment style goes here
 .clearFunction{
 background:none;top:26px;float:right;position:relative;z-index:1;border:none;font-weight:bold;
 }
-<<<<<<< HEAD
-=======
 /* BOOLEAN SLIDER START */
 .boolean_slider input {  opacity:0;}
 .boolean_slider { display:inline-block; width:60px; height:30px; margin:8px; transform:translateY(50%); position:relative;}
@@ -259,7 +253,6 @@ input:checked + .boolean_slider_span {  box-shadow:0 0 0 2px limeGreen,0 0 2px l
 
 
 
->>>>>>> cbc968c550f50dcbb403cb80a03d701ef47d89cf
 
 
 

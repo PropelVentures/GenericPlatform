@@ -431,4 +431,49 @@ function send_mail_to($to, $subject, $message_to, $headers)
   }
 
  * ******Relationship management class@ends ******** */
+
+function userHasPrivilege(){
+	//var_dump(defined("USER_PRIVILEGE"));die;
+}
+
+function itemHasVisibility($visibility){
+	if(!defined("USER_PRIVILEGE")){
+		define("USER_PRIVILEGE",'NO');
+	}
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) ){
+		return true;
+	}
+	return false;
+}
+
+function itemHasPrivilege($privilege){
+	if(!defined("USER_PRIVILEGE")){
+		define("USER_PRIVILEGE",'NO');
+	}
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $privilege) || (USER_PRIVILEGE == 'NO' && $privilege > 0 ) ){
+		return true;
+	}
+	return false;
+}
+function itemEditable($editable){
+	if(!defined("USER_PRIVILEGE")){
+		define("USER_PRIVILEGE",'NO');
+	}
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $editable) || (USER_PRIVILEGE == 'NO' && $editable > 0 ) ){
+		return true;
+	}
+	return false;
+}
+
+function navHasVisibility(){
+	$con = connect();
+	$display_page = $_GET['display'];
+	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
+	$navigation = $nav->fetch_assoc();
+
+	if(empty($navigation) || $navigation['loginRequired'] == 'false'){
+		return true;
+	}
+	return itemHasVisibility($navigation['item_visibility']);
+}
 ?>
