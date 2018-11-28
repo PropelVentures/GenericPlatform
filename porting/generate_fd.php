@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
   `dropdown_alias` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`field_def_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1");
-    
-    
+
+
     $con->query("TRUNCATE TABLE $FDtbl");
-    
+
     $con_generic = connect_generic();
-    
+
 
     $dd = $con->query("SELECT * from $DDtbl");
 
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
             echo "Generating FD for table =" . $tbName . " and table_alias = $tblAlias<br>";
 
-           
+
             /*
               ///checking whether dd->database_table_name exists or not.
               $rs = $con->query("SHOW COLUMNS FROM $tbName");
@@ -92,32 +92,32 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
                     $end = $fields_used[1];
                 }else{
-                    
-                    
+
+
 
                     $end = $fields_used[0];
-                    
+
                 }
-                
+
             } else {
                 $start = 1;
 
                 $end = $rs->num_rows;
-                
-                
+
+
             }
             //else if (!empty($fields_used[0]) && empty($fields_used[1])) {
 //
 //        //// 10-  or only one row
 //
 //        if( isset($fields_used[1]) ){
-//            
+//
 //            exit('yes');
 //        }else{
-//            
+//
 //            exit('no');
 //        }
-//        
+//
 //        $start = 1;
 //
 //        $end = $fields_used[0];
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 //        $end = $rs->num_rows;
 //    }
             //echo $start . '<br>' . $end;die;
-            //*****///*** checking fd_initialization field value and dealing according to value 
+            //*****///*** checking fd_initialization field value and dealing according to value
             //print_r($row);die;
 
             if ($row['fd_initialization'] == 'delete' || empty($row['fd_initialization'])) {
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
                         $fdData['table_alias'] = $tblAlias;
 
                         //$fdData['generic_field_order'] = $i; previous
-                        //$fdData['display_field_order'] = $j; previous 
+                        //$fdData['display_field_order'] = $j; previous
                         $fdData['display_field_order'] = $i;
                         $j++;
                         ///////////////////////
@@ -312,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
                         unset($fdData);
                     }
-                }///end of start and i if 
+                }///end of start and i if
                 $i++;
             }///FD end of while
             //unset($j);
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
     /*
      * *********************
      * *********************************
-     * To Manage Login Page 
+     * To Manage Login Page
      * *********************
      * *********************************
      */
@@ -354,12 +354,12 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
 
         if ($i == 1) {
-          
+
             if (strpos($fdCol['Field'], 'name') !== false) {
                 $userName = $fdCol['Field'];
                 $i++;
             }
-            
+
         }
 
         if ($fdCol['Field'] == 'email') {
@@ -372,7 +372,7 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
             $con->query("update field_dictionary set generic_field_name='$userName', display_field_order=3,field_label_name='$userName', visibility=0,format_type='username' where field_def_id='$keyCount[2]'");
         }
-        
+
     }
 
     ///////Manage login page code ends here
@@ -393,21 +393,21 @@ function updateFD() {
 
     $con = connect($config);
 
-   
-    
+
+
     $con_generic = connect_generic();
-    
+
 
     $dd = $con->query("SELECT * from $DDtbl");
 
     while ($row = $dd->fetch_assoc()) {
 
-        
+
          if ($row['fd_initialization'] == 'update') {
 
                 $action = 'update';
-                
-                
+
+
         $tbName = $row['database_table_name'];
 
         $checkResult = $con->query("SHOW TABLES LIKE '" . $tbName . "'");
@@ -460,21 +460,12 @@ function updateFD() {
                         ////// DEFAULT VALUES FIRST///////////
 
                         $fdData['help_message'] = $APP_DEFAULT['FD']['help_message'];
-
                         $fdData['error_message'] = $APP_DEFAULT['FD']['error_message'];
-
                         $fdData['format_length'] = $APP_DEFAULT['FD']['format_length'];
-
                         $fdData['privilege_level'] = $APP_DEFAULT['FD']['privilege_level'];
-
                         $fdData['visibility'] = $APP_DEFAULT['FD']['visibility'];
-
-                        //$fdData['sub_tab_num'] = $DEFAULT['FD']['sub_tab_num'];
-
                         $fdData['dropdown_alias'] = $APP_DEFAULT['FD']['dropdown_alias'];
-
                         $fdData['required'] = $APP_DEFAULT['FD']['required'];
-
                         $fdData['editable'] = $APP_DEFAULT['FD']['editable'];
 
 
@@ -485,7 +476,7 @@ function updateFD() {
                         $fdData['table_alias'] = $tblAlias;
 
                         //$fdData['generic_field_order'] = $i; previous
-                        //$fdData['display_field_order'] = $j; previous 
+                        //$fdData['display_field_order'] = $j; previous
                         $fdData['display_field_order'] = $i;
                         $j++;
                         ///////////////////////
@@ -520,7 +511,7 @@ function updateFD() {
 
                             if ($label[1] == 'id')
                                 $fdData['field_identifier'] = 'KEYFIELD';
-                            
+
                             $fdData['privilege_level'] = '9';
                         }
 
@@ -581,8 +572,8 @@ function updateFD() {
 ////************** /////////////////////////
                         /////////////////////////////////////////////////
 ////////////////////Actuall FD insertion goes here//////////
-                        
-                       
+
+
 
                         if ($action == 'update') {
 
@@ -596,29 +587,29 @@ function updateFD() {
 
                                 insert($FDtbl, $fdData);
                             }
-                        } 
+                        }
 
                         ////******************************///////
 
                         unset($fdData);
                     }
-                }///end of start and i if 
+                }///end of start and i if
                 $i++;
             }///FD end of while
             //unset($j);
-            
+
              update($DDtbl, array("fd_initialization" => ""), array("dict_id" => $row['dict_id']));
         } else {
 
             echo "Table = " . $tbName . "  doesn't exist. <br>";
         }
-        
-       
+
+
          }
     }/// DD while ends here
 
 
-   
+
 
     echo "<pre> Field Definition Generated Successfully";
     $con->close();
@@ -627,7 +618,7 @@ function updateFD() {
 if (isset($_GET['action'])) {
 
     $_GET['action']();
-}    
+}
 
 
 

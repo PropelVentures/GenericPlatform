@@ -676,9 +676,9 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
         echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
         ;
 
-        $field_val = explode("-", $field_val);
+        $field_val1 = explode("-", $field_val);
 
-        echo "<div class='audio-upload-filename'>$field_val[1]</div>";
+        echo "<div class='audio-upload-filename'>$field_val1[1]</div>";
 
         echo "<input type='hidden' name='pdf[$row[generic_field_name]][imageName]' class='$row[generic_field_name]' value='$field_val'/>";
     } else {
@@ -723,10 +723,10 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
         if ($urow[$row['generic_field_name']] == '1')
             echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox' checked='checked'>";
         else
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }else {
 
-        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
     }
 }
 
