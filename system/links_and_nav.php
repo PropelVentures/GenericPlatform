@@ -209,12 +209,16 @@ function Navigation($page, $menu_location = 'header') {
                         if ($item_target == '') {
                             $item_target = 'main.php';
                         }
-
-                        if (strpos($item_target, 'http://') !== false) {
-                            $target = $item_target;
-                        } else {
-                            $target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
-                        }
+						// Remove all illegal characters from a url
+						$item_target = filter_var($item_target, FILTER_SANITIZE_URL);
+						// If Url is valid then et target as defined in DB
+						if (filter_var($item_target, FILTER_VALIDATE_URL)) {
+							$target = $item_target;
+						} elseif($item_target == "#" || strpos($arr[$i]['item_number'],".0")) {
+							$target = "javascript:void(0);";
+						} else {
+							$target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
+						}
                         $curr_item_number = explode('.', $arr[$i]['item_number']);
 
                         $next_item_number = explode('.', $arr[$i + 1]['item_number']);
@@ -313,8 +317,10 @@ function Navigation($page, $menu_location = 'header') {
                                 echo "<li class='$enabled $visibility $userPrivilege' id='$sub_item_style'> <a href='$target' title='$title'>";
                                 if ($label == 'CURRENTUSERNAME') {
                                     echo $_SESSION[uname];
-                                } else
-                                    echo $label;
+                                } elseif($arr[$i]['item_number'] != 0){
+									echo $label;
+								}
+                                   
                                 echo "</a></li>";
                             }
                         }
