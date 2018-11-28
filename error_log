@@ -1,0 +1,14 @@
+[26-Nov-2018 02:51:36 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/cjcornell/public_html/generic/system/formDisplayFnc.php:914
+Stack trace:
+#0 /home/cjcornell/public_html/generic/system/formDisplayFnc.php(145): list_fragment(Array)
+#1 /home/cjcornell/public_html/generic/system/get_data_fd_record.php(1085): formating_Update(Array, 'edit', Array, 'false', true)
+#2 /home/cjcornell/public_html/generic/system/main.php(163): Get_Data_FieldDictionary_Record('myaccount_2', 'MYACCOUNT', 'false')
+#3 {main}
+  thrown in /home/cjcornell/public_html/generic/system/formDisplayFnc.php on line 914
+[26-Nov-2018 02:51:55 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/cjcornell/public_html/generic/system/formDisplayFnc.php:914
+Stack trace:
+#0 /home/cjcornell/public_html/generic/system/formDisplayFnc.php(145): list_fragment(Array)
+#1 /home/cjcornell/public_html/generic/system/get_data_fd_record.php(1085): formating_Update(Array, 'edit', Array, 'false', true)
+#2 /home/cjcornell/public_html/generic/system/main.php(163): Get_Data_FieldDictionary_Record('myaccount_2', 'MYACCOUNT', 'false')
+#3 {main}
+  thrown in /home/cjcornell/public_html/generic/system/formDisplayFnc.php on line 914
