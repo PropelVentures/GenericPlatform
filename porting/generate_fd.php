@@ -9,6 +9,45 @@
 /// $con is set already in db.php file///
 
 
+/*
+For upcoming intelligent replacement
+??  Dropdown fields and cross refernce tabes
+TBD -
+extensive - create dropdown fields (DD recs, FD recs) from detection of cross ref fields and other critical fields (users, projects)
+then
+detect all fields in large FD list that have format_type=dropdown (or those that should_ - and insert the correct dropdown code in dropdown_alias)
+
+Also
+Detect
+FD fields that should be keywords ...
+assign approriate visibility, editable priv codes
+
+FD fields that (might) have special format_types or other formatting
+particularly
+- dropdowns
+- images, pdfs
+- larger text fields
+- smaller fields that should have truncated labels
+
+if a "descrip" fiield - make it a littl longer
+if a name field ... a certain length
+if an ID field ?
+number fields
+
+
+Special user fields that should be hidden unless super user
+passwords, resets
+auth code fields (FB etc)
+
+
+take note of "fields used"
+update DD record - to remove the fd_initializatin field ... or mark it as done with xxx or something
+
+
+
+*/
+
+
 
 echo "<h3>GENERATE Field Dictionary Table<h3>";
 
@@ -20,6 +59,238 @@ echo "<h4><a href='?action=updateFD'> CLICK HERE TO UPDATE Field Dictionary Tabl
 ///// FD functions starts here/////////
 /////////////////////////////////////////
 
+
+
+function updateFD() {
+
+    require('dictionaryConfig.php');
+
+    $con = connect($config);
+    $con_generic = connect_generic();
+    $dd = $con->query("SELECT * from $DDtbl");
+
+
+    while ($row = $dd->fetch_assoc()) {
+
+                $action = 'none';
+
+         if (empty($row['fd_initialization'])) {
+         }
+
+         elseif ($row['fd_initialization'] == 'delete' ) {
+
+		$dd_table_alias=$row['table_alias'];
+                $con->query("delete from $FDtbl where table_alias='$dd_table_alias'");
+                $action = 'update';
+            } else
+            if ($row['fd_initialization'] == 'update') {
+                $action = 'update';
+            }
+
+
+
+         if ($action == 'update') {
+
+        $tbName = $row['database_table_name'];
+
+        $checkResult = $con->query("SHOW TABLES LIKE '" . $tbName . "'");
+
+        if ($checkResult->num_rows == 1) {
+
+            echo "Generating FD for table =" . $tbName . "<br>";
+
+            $tblAlias = $row['table_alias'];
+            /*
+              ///checking whether dd->database_table_name exists or not.
+              $rs = $con->query("SHOW COLUMNS FROM $tbName");
+              echo "<pre>";
+              print_r($rs);
+              $fdCol = $rs->fetch_assoc();
+             */
+            $rs = $con->query("SHOW COLUMNS FROM $tbName");
+
+            $fields_used = $row['fields_used'];
+
+            if (!empty($fields_used)) {
+                $fields_used = explode('-', $fields_used);
+
+                $start = $end = '';
+
+                if (!empty($fields_used[0]) && !empty($fields_used[1])) {
+                    $start = $fields_used[0];
+
+                    $end = $fields_used[1];
+                }
+            } else {
+                $start = 1;
+
+                $end = $rs->num_rows;
+            }
+
+
+            $i = $j = 1;
+            while ($fdCol = $rs->fetch_assoc()) {
+
+
+                $field = $fdCol['Field'];
+                //exit($field);
+                if ($i >= $start) {
+
+                    if ($i <= $end) {
+                        ////// DEFAULT VALUES FIRST///////////
+
+                        $fdData['help_message'] = $APP_DEFAULT['FD']['help_message'];
+                        $fdData['error_message'] = $APP_DEFAULT['FD']['error_message'];
+                        $fdData['format_length'] = $APP_DEFAULT['FD']['format_length'];
+                        $fdData['privilege_level'] = $APP_DEFAULT['FD']['privilege_level'];
+                        $fdData['visibility'] = $APP_DEFAULT['FD']['visibility'];
+                        $fdData['dropdown_alias'] = $APP_DEFAULT['FD']['dropdown_alias'];
+                        $fdData['required'] = $APP_DEFAULT['FD']['required'];
+                        $fdData['editable'] = $APP_DEFAULT['FD']['editable'];
+
+
+                        ////////////
+
+                        $fdData['generic_field_name'] = $field;
+
+                        $fdData['table_alias'] = $tblAlias;
+
+                        //$fdData['generic_field_order'] = $i; previous
+                        //$fdData['display_field_order'] = $j; previous
+                        $fdData['display_field_order'] = $i;
+                        $j++;
+                        ///////////////////////
+                        /////////////////////////////////////////*********
+
+
+							////******** Special CASES  *******
+
+									$label = explode('_', $field);
+
+									////***** FOR FIELD_label_name ****
+
+									if (!empty($label[0]) && !empty($label[1])) {
+										$strLabel = implode(' ', $label);
+										$fdData['field_label_name'] = ucwords($strLabel);
+									}
+									else
+									{
+										$fdData['field_label_name'] = ucwords($label[0]);
+									}
+
+									/////////********** field_identifier=KEYFIELD ***********
+
+									if (!empty($label[0]) && !empty($label[1]))
+										{
+											if ($label[1] == 'id')
+											$fdData['field_identifier'] = 'KEYFIELD';
+											$fdData['privilege_level'] = '1';
+										}
+
+
+									//////////////////////////////////////////////////////////////
+									///**** DEALING WITH FORMAT_TYPE = IMAGE EXTRA ..*****/////
+									//$field = 'ddevelopmentphotoproject11';
+
+									$field = 'd' . $field;
+									$photo = strpos($field, 'photo'); //// return false if found else true
+									$image = strpos($field, 'image');
+									$profile = strpos($field, 'profile');
+			//                        $user = strpos($field, 'user');
+			//                        $product = strpos($field, 'product');
+			//                        $project = strpos($field, 'project');
+
+									$user = strpos($field, USER);
+									$product = strpos($field, PROJECT);
+									$project = strpos($field, PROJECT);
+
+                        if ((!empty($photo) || !empty($image)) && empty($user) && empty($profile) && empty($project) && empty($product)) {
+
+                            $fdData['format_type'] = 'image';
+                        } else if ((!empty($photo) || !empty($image)) && (!empty($user) || !empty($profile) ) && empty($project) && empty($product)) {
+
+
+                            preg_match_all('!\d+!', $field, $matches);
+
+                            $matches = array_filter($matches);
+
+                            if (empty($matches)) {
+
+                                $fdData['format_type'] = 'image';
+                            } else {
+
+                                $fdData['format_type'] = 'image';
+                            }
+                        } else if ((!empty($photo) || !empty($image)) && empty($user) && empty($profile) && ( empty($project) || empty($product))) {
+
+
+                            preg_match_all('!\d+!', $field, $matches);
+
+                            $matches = array_filter($matches);
+
+                            if (empty($matches)) {
+
+                                $fdData['format_type'] = 'image';
+                            } else {
+
+                                $fdData['format_type'] = 'image';
+                            }
+                        }
+
+////************** /////////////////////////
+                        /////////////////////////////////////////////////
+////////////////////Actuall FD insertion goes here//////////
+
+
+
+                        if ($action == 'update') {
+
+                            $fcheck = $con->query("select * from $FDtbl where table_alias='$fdData[table_alias]' and generic_field_name='$fdData[generic_field_name]'");
+
+                            $frow = $fcheck->fetch_assoc();
+
+                            if (!isset($frow)) {
+
+                                insert($FDtbl, $fdData);
+                            }
+                        }
+
+                        ////******************************///////
+
+                        unset($fdData);
+                    }
+                }///end of start and i if
+                $i++;
+            }///FD end of while
+            //unset($j);
+
+             update($DDtbl, array("fd_initialization" => ""), array("dict_id" => $row['dict_id']));
+        } else {
+
+            echo "Table = " . $tbName . "  doesn't exist. <br>";
+        }
+
+         }
+
+    }/// DD while ends here
+
+
+    echo "<pre> Field Definition Generated Successfully";
+    $con->close();
+}
+
+if (isset($_GET['action'])) {
+
+    $_GET['action']();
+}
+
+
+// **************************************************************************************************
+// **************************************************************************************************
+// **************************************************************************************************
+// **************************************************************************************************
+// **************************************************************************************************
+// **************************************************************************************************
 
 function newFD() {
 
@@ -384,243 +655,6 @@ CREATE TABLE IF NOT EXISTS `field_dictionary` (
 
 //////////newFD() ends here
 ////%%%%%%%%%%%%%%%%55///////
-
-
-
-function updateFD() {
-
-    require('dictionaryConfig.php');
-
-    $con = connect($config);
-
-
-
-    $con_generic = connect_generic();
-
-
-    $dd = $con->query("SELECT * from $DDtbl");
-
-    while ($row = $dd->fetch_assoc()) {
-
-
-         if ($row['fd_initialization'] == 'update') {
-
-                $action = 'update';
-
-
-        $tbName = $row['database_table_name'];
-
-        $checkResult = $con->query("SHOW TABLES LIKE '" . $tbName . "'");
-
-        if ($checkResult->num_rows == 1) {
-
-
-            echo "Generating FD for table =" . $tbName . "<br>";
-
-            $tblAlias = $row['table_alias'];
-            /*
-              ///checking whether dd->database_table_name exists or not.
-              $rs = $con->query("SHOW COLUMNS FROM $tbName");
-              echo "<pre>";
-              print_r($rs);
-              $fdCol = $rs->fetch_assoc();
-             */
-            $rs = $con->query("SHOW COLUMNS FROM $tbName");
-
-            $fields_used = $row['fields_used'];
-
-            if (!empty($fields_used)) {
-                $fields_used = explode('-', $fields_used);
-//    print_r($fields_used);die;
-
-                $start = $end = '';
-
-                if (!empty($fields_used[0]) && !empty($fields_used[1])) {
-//// 1-1
-                    $start = $fields_used[0];
-
-                    $end = $fields_used[1];
-                }
-            } else {
-                $start = 1;
-
-                $end = $rs->num_rows;
-            }
-
-
-            $i = $j = 1;
-            while ($fdCol = $rs->fetch_assoc()) {
-
-
-                $field = $fdCol['Field'];
-                //exit($field);
-                if ($i >= $start) {
-
-                    if ($i <= $end) {
-                        ////// DEFAULT VALUES FIRST///////////
-
-                        $fdData['help_message'] = $APP_DEFAULT['FD']['help_message'];
-                        $fdData['error_message'] = $APP_DEFAULT['FD']['error_message'];
-                        $fdData['format_length'] = $APP_DEFAULT['FD']['format_length'];
-                        $fdData['privilege_level'] = $APP_DEFAULT['FD']['privilege_level'];
-                        $fdData['visibility'] = $APP_DEFAULT['FD']['visibility'];
-                        $fdData['dropdown_alias'] = $APP_DEFAULT['FD']['dropdown_alias'];
-                        $fdData['required'] = $APP_DEFAULT['FD']['required'];
-                        $fdData['editable'] = $APP_DEFAULT['FD']['editable'];
-
-
-                        ////////////
-
-                        $fdData['generic_field_name'] = $field;
-
-                        $fdData['table_alias'] = $tblAlias;
-
-                        //$fdData['generic_field_order'] = $i; previous
-                        //$fdData['display_field_order'] = $j; previous
-                        $fdData['display_field_order'] = $i;
-                        $j++;
-                        ///////////////////////
-                        /////////////////////////////////////////*********
-                        ////******** Special CASES  *******/////////
-
-                        $label = explode('_', $field);
-
-
-
-
-
-
-
-                        ////***** FOR FIELD_label_name ****/////
-
-                        if (!empty($label[0]) && !empty($label[1])) {
-
-                            $strLabel = implode(' ', $label);
-
-                            $fdData['field_label_name'] = ucwords($strLabel);
-                        } else {
-
-                            $fdData['field_label_name'] = ucwords($label[0]);
-                        }
-
-///////////////////////////////////////////////////////////////////
-                        /////////********** field_identifier=KEYFIELD ***********////////
-
-
-                        if (!empty($label[0]) && !empty($label[1])) {
-
-                            if ($label[1] == 'id')
-                                $fdData['field_identifier'] = 'KEYFIELD';
-
-                            $fdData['privilege_level'] = '9';
-                        }
-
-
-                        //////////////////////////////////////////////////////////////
-                        ///**** DEALING WITH FORMAT_TYPE = IMAGE EXTRA ..*****/////
-                        //$field = 'ddevelopmentphotoproject11';
-
-                        $field = 'd' . $field;
-
-                        $photo = strpos($field, 'photo'); //// return false if found else true
-
-                        $image = strpos($field, 'image');
-
-                        $profile = strpos($field, 'profile');
-
-                        $user = strpos($field, 'user');
-
-                        $product = strpos($field, 'product');
-
-                        $project = strpos($field, 'project');
-
-
-
-                        if ((!empty($photo) || !empty($image)) && empty($user) && empty($profile) && empty($project) && empty($product)) {
-
-                            $fdData['format_type'] = 'image';
-                        } else if ((!empty($photo) || !empty($image)) && (!empty($user) || !empty($profile) ) && empty($project) && empty($product)) {
-
-
-                            preg_match_all('!\d+!', $field, $matches);
-
-                            $matches = array_filter($matches);
-
-                            if (empty($matches)) {
-
-                                $fdData['format_type'] = 'image';
-                            } else {
-
-                                $fdData['format_type'] = 'image';
-                            }
-                        } else if ((!empty($photo) || !empty($image)) && empty($user) && empty($profile) && ( empty($project) || empty($product))) {
-
-
-                            preg_match_all('!\d+!', $field, $matches);
-
-                            $matches = array_filter($matches);
-
-                            if (empty($matches)) {
-
-                                $fdData['format_type'] = 'image';
-                            } else {
-
-                                $fdData['format_type'] = 'image';
-                            }
-                        }
-
-////************** /////////////////////////
-                        /////////////////////////////////////////////////
-////////////////////Actuall FD insertion goes here//////////
-
-
-
-                        if ($action == 'update') {
-
-
-                            $fcheck = $con->query("select * from $FDtbl where table_alias='$fdData[table_alias]' and generic_field_name='$fdData[generic_field_name]'");
-
-                            $frow = $fcheck->fetch_assoc();
-//print_r($frow);die;
-
-                            if (!isset($frow)) {
-
-                                insert($FDtbl, $fdData);
-                            }
-                        }
-
-                        ////******************************///////
-
-                        unset($fdData);
-                    }
-                }///end of start and i if
-                $i++;
-            }///FD end of while
-            //unset($j);
-
-             update($DDtbl, array("fd_initialization" => ""), array("dict_id" => $row['dict_id']));
-        } else {
-
-            echo "Table = " . $tbName . "  doesn't exist. <br>";
-        }
-
-
-         }
-    }/// DD while ends here
-
-
-
-
-    echo "<pre> Field Definition Generated Successfully";
-    $con->close();
-}
-
-if (isset($_GET['action'])) {
-
-    $_GET['action']();
-}
-
-
 
 
 ////////////////

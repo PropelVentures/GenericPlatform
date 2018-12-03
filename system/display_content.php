@@ -135,7 +135,7 @@ function display_content($row) {
         ///rs use
         //if($tab_anchor == 'My Gallery')
         //  $tab_anchor= 'my_gallery';
-        echo "<section class='section-sep'><a name='$tab_anchor'></a><h1>$row[tab_name]</h1><!-- h1-content class not used-->";
+        echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
 
 
 
