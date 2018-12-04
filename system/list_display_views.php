@@ -1063,18 +1063,21 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
     /* if( $tab_anchor != 'false')
       $_SESSION['return_url'] = $_SESSION['return_url'] . "#$tab_anchor"; */
 
-    $listData = implode(" ", $listData);
+// *************************************
 
+// ****  these are the lines that format and display the test inside the Boxview list (cards)
+// we need to refine this ... because not every field needs a <br> after it
+// also we want to tag each field/line with some generic CSS so that
+// later we can (using list_style)  have control over the css formatting of the
+// first line of the text, and successive lines
 
-    /*
-     *
-     * adding span to give lift margin
-     */
+//    $listData = implode(" ", $listData);
+    $listData = implode("<br>", $listData);
 
-    echo "<span  class='list-data'>" . substr($listData, 0, 110) . "</span>";
+//  This is the
+    echo "<span  class='list-data'>" . substr($listData, 0, 90) . "</span>";
 
-
-
+// *************************************
 
 
     /*

@@ -130,8 +130,6 @@ if ($display_page == 'home') {
 	//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 
-
-
 		<!-- Tab Content area .. -->
 		<?php
 		if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {

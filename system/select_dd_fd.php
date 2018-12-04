@@ -2,11 +2,11 @@
 
 /*
  * USE FOR LOGIN PAGE
- * 
- * 
+ *
+ *
  * function Select_Data_FieldDictionary_Record($alias) {
  * *************************************
- * 
+ *
  * function formating_Select($row) {
  * ************************************
  */
@@ -15,7 +15,7 @@ function Select_Data_FieldDictionary_Record($alias) {
 
     $con = connect();
 
-    $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$alias' and table_type='users' order by field_dictionary.display_field_order");
+    $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$alias' and table_type='user' order by field_dictionary.display_field_order");
 
     $row = $rs->fetch_assoc();
 
@@ -24,7 +24,7 @@ function Select_Data_FieldDictionary_Record($alias) {
     $_SESSION['select_table']['keyfield'] = firstFieldName($row['database_table_name']);
 
 
-    $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_type='users' and data_dictionary.table_alias = '$alias'  order by field_dictionary.display_field_order");
+    $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_type='user' and data_dictionary.table_alias = '$alias'  order by field_dictionary.display_field_order");
 
 
 

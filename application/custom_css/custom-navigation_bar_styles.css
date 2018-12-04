@@ -35,3 +35,28 @@
     display: inline-block;
     margin-right: 10px;
 }
+
+#cj_test_nav1
+{
+color: red;
+background-color: black;
+}
+
+label.cj_test_nav2  
+{
+color: red;
+background-color: black;
+}
+
+input.cj_test_nav2  
+{
+color: green;
+background-color: blue;
+}
+
+.new_form.cj_test_nav2  
+{
+background-color: gray;
+padding: 20px;
+border: 4px;
+}
