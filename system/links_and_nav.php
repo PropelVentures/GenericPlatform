@@ -25,7 +25,7 @@ function Get_Links($display_page) {
 //$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $con = connect();
 
-    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and tab_num != 0   and tab_name != 'fffr_icon' order by tab_num");
+    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
     $i = 1;
 
     /*     * ********
@@ -79,6 +79,56 @@ function Get_Links($display_page) {
     echo "</ul>";
 }
 
+function Get_Tab_Links($display_page,$sidebar) {
+	$con = connect();
+	if($sidebar == 'left'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num ='S-L')");
+	} elseif($sidebar == 'right'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-R')");
+	} else {
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-C')");
+	}
+	$row = $rs->fetch_assoc();
+	if (!empty($row)) {
+		if ($_GET['edit'] == 'true'){
+			fffr_icons();
+		}
+		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+		if($tabQuery->num_rows > 0) { ?>
+			<ul class='vertical-tab <?php echo $sidebar; ?>' role='tablist'>
+				<?php 
+				while ($row = $tabQuery->fetch_assoc()) {
+					$tab_id = "#".$display_page.$row['dict_id'];
+					if(!itemHasVisibility($row['dd_visibility'])){
+						continue;
+					} ?>
+					<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
+						<a href="javascript:void(0);">
+							<?php echo $row['tab_name']; ?>
+						</a>
+					</li>
+				<?php 
+				} ?>
+			</ul>
+			<script>
+			$(document).ready(function(){
+				
+				$('.js_tab').click(function(){
+					$('.js_tab').removeClass('active');
+					$(this).addClass('active');
+					$('html, body').animate({
+						scrollTop: $($(this).attr('id')).offset().top - 70
+					}, 500);
+				});
+				$('.js_tab').first().addClass('active');
+			});
+			</script>
+	<?php 
+		}
+	} ?>
+<?php
+}
+
 /////////// get_links() ends here
 //////////////////////////////
 ///////////////////////
@@ -113,19 +163,30 @@ function Navigation($page, $menu_location = 'header') {
     }
     $item_style = $row['item_style'];
 
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' order by item_number");
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='true' ORDER BY item_number ASC");
 
+    $navItems = array();
     $arr = array();
     $i = 0;
     while ($row = $rs->fetch_assoc()) {
-
+		if(strpos($row['item_number'],".0")){
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		} elseif(strpos($row['item_number'],".")){
+			$navItems[floor($row['item_number'])]['children'][] = $row;
+		} else {
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		}
+		/* if(!itemHasVisibility($row['item_visibility'])){
+			continue;
+		}
         $arr[$i] = $row;
-
-        $i++;
+        $i++; */
     }
+	//pr($navItems);die;
 
-
-    for ($j = 0; count($arr) > $j; $j++) {
+    /*for ($j = 0; count($arr) > $j; $j++) {
         if(strtoupper($arr[$j]['display_page'])==strtoupper($_GET['display']) && empty($_GET['search_id'])){
             if($arr[$j]['item_number']==0){
             $pagename = $arr[$j]['display_page'];
@@ -140,18 +201,18 @@ function Navigation($page, $menu_location = 'header') {
             if( $arr[$j]['item_number']==0 && $arr[$j]['display_page']=='ALL'){
             $itemlable = $arr[$j]['item_label'];
             }
-     }
+     }*/
 
 //////html version of navigation will be displayed....
     ?>
     <script type='text/javascript'>
-        $(document).ready(function() {
+        /*$(document).ready(function() {
             <?php if($action=='only1') { ?>
             $('.<?= $pagename ?>').show();
             $('.ALL').hide();
             <?php } ?>
             $("li:contains('<?= $itemlable ?>')").remove();
-        });
+        });*/
     </script>
 
     <!-- Navigation starts here -->
@@ -203,13 +264,127 @@ function Navigation($page, $menu_location = 'header') {
 
                 <?php
                 if (isUserLoggedin()) {
-                    for ($i = 0; count($arr) > $i; $i++) {
-						$label = $arr[$i]['item_label'];
-						if(!itemHasVisibility($arr[$i]['item_visibility'])){
-							continue;
+					$menu = "";
+					if(!empty($navItems)){
+						foreach($navItems as $parent){
+							if(!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+								continue;
+							}
+							$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+							$title = $parent['item_help'];
+							$item_style = $parent['item_style'];
+							$item_icon = getNavItemIcon($parent['item_icon']);
+							$navTarget = getNavTarget($parent);
+							$target = $navTarget['target'];
+							$enable_class=$navTarget['enable_class'];
+							$target_blank = $navTarget['target_blank'];
+							if(!empty($parent['children'])){
+								
+								switch(strtolower($label)){
+										case "#line#":
+										$menu.=" <li >
+													<div class='saperator_line'></div>
+													<span class='caret'></span>
+												</li>
+												<ul class='dropdown-menu'>";
+										break;
+										case "#break#":
+										$menu.=" <li >
+													<br/>
+													<span class='caret'></span>
+												</li>
+												<ul class='dropdown-menu'>";
+										break;
+										case "#space#":
+										$menu.="<li >
+													<div class='margin_bottom_list'></div>
+													<span class='caret'></span>
+												</li>
+												<ul class='dropdown-menu'>";
+										break;
+										default:
+										$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
+												<a href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+													".$item_icon.getSaperator($label)."
+													<span class='caret'></span>
+												</a>
+												<ul class='dropdown-menu'>";
+										break;
+									}
+								
+								foreach($parent['children'] as $children){
+									if(!itemHasVisibility($children['item_visibility'])){
+										continue;
+									}
+									$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+									$title = $children['item_help'];
+									$item_style = $children['item_style'];
+									$item_icon = getNavItemIcon($children['item_icon']);
+									$navTarget = getNavTarget($children);
+									$target = $navTarget['target'];
+									$enable_class=$navTarget['enable_class'];
+									$target_blank = $navTarget['target_blank'];
+									#$label=$label.'#line#';
+									switch(strtolower($label)){
+										case "#line#":
+										$menu.=" <li >
+													<div class='saperator_line'></div>
+												</li>";
+										break;
+										case "#break#":
+										$menu.=" <li >
+													<br/>
+												</li>";
+										break;
+										case "#space#":
+										$menu.=" <li >
+													<div class='margin_bottom_list'></div>
+												</li>";
+										break;
+										default:
+										$menu.="<li class='$enable_class' id='$item_style'>
+													<a $target_blank href='$target' title='$title'>".
+														$item_icon.
+														getSaperator($label)."
+													</a>
+												</li>";
+										break;
+									}
+								}
+								$menu.= "</ul></li>";
+							} else {
+								switch(strtolower($label)){
+										case "#line#":
+										$menu.=" <li >
+													<div class='saperator_line'></div>
+												</li>";
+										break;
+										case "#break#":
+										$menu.=" <li >
+													<br/>
+												</li>";
+										break;
+										case "#space#":
+										$menu.=" <li >
+													<div class='margin_bottom_list'></div>
+												</li>";
+										break;
+										default:
+										$menu.="<li class='$enable_class' id='$sub_item_style'>
+													<a $target_blank href='$target' title='$title'>
+														".$item_icon.getSaperator($label)."
+													</a>
+												</li>";
+										break;
+									}
+							}
 						}
+					}
+					echo $menu;
+                    /*for ($i = 0; count($arr) > $i; $i++) {
+						$label = $arr[$i]['item_label'];
                         if(!itemHasPrivilege($arr[$i]['item_privilege'])){
-							$target = "#";
+							$target = "javascript:void(0);";
 						} else {
 							$item_target = trim($arr[$i]['item_target']);
 							if ($item_target == '') {
@@ -226,8 +401,8 @@ function Navigation($page, $menu_location = 'header') {
 								$target = BASE_URL_SYSTEM . $item_target . "?display=" . $arr[$i]['target_display_page'] . "&layout=" . $arr[$i]['page_layout_style'] . "&style=" . $arr[$i]['page_layout_style'];
 							}
 						}
-
-
+						
+						
                         $curr_item_number = explode('.', $arr[$i]['item_number']);
 
                         $next_item_number = explode('.', $arr[$i + 1]['item_number']);
@@ -248,7 +423,7 @@ function Navigation($page, $menu_location = 'header') {
                         //using for now
                         //$admin_enabled = 'enabled';
 
-                        $title = $arr[$i]['item_help'];
+                        /* $title = $arr[$i]['item_help'];
 
                         $sub_item_style = $arr[$i]['item_style'];
 
@@ -258,7 +433,7 @@ function Navigation($page, $menu_location = 'header') {
 
                         // $userRec = get($_SESSION['select_table']['database_table_name'], $_SESSION['select_table']['keyfield'] . '=' . $_SESSION['uid']);
                         ///Checking item privilege with user privilege
-
+						
                         /* if ($_SESSION['user_privilege'] < $arr[$i]['item_privilege'] && $_SESSION['user_privilege'] <= 9) {
 
                             $userPrivilege = 'inactiveLink';
@@ -288,7 +463,7 @@ function Navigation($page, $menu_location = 'header') {
                         } else {
                             $showMenu = false;
                         } */
-						$showMenu = true;
+						/*$showMenu = true;
 
                         if (($curr_item_number[0] == $next_item_number[0]) && ( $curr_item_number[1] == 0 && $next_item_number[1] == 1 )) {
                         /// Menu name have sub menu
@@ -330,11 +505,12 @@ function Navigation($page, $menu_location = 'header') {
                                 } elseif($arr[$i]['item_number'] != 0){
 									echo $label;
 								}
-
+                                   
                                 echo "</a></li>";
                             }
                         }
                     }/////////// for loop ends here///
+					*/
                 } else {
                 ?>
 
@@ -373,5 +549,154 @@ function Navigation($page, $menu_location = 'header') {
 
     <?php
 }
-
 ////////main navigation function ends here///
+
+function GetSideBarNavigation($display_page,$menu_location){
+	$con = connect();
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='true' ORDER BY item_number ASC");
+    $navItems = array();
+    $arr = array();
+    $i = 0;
+    while ($row = $rs->fetch_assoc()) {
+		if(strpos($row['item_number'],".0")){
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		} elseif(strpos($row['item_number'],".")){
+			$navItems[floor($row['item_number'])]['children'][] = $row;
+		} else {
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		}
+    }
+	//pr($navItems);
+	if (isUserLoggedin()) {
+		$menu = "";
+		if(!empty($navItems)){ ?>
+			<!-- Menu -->
+			<div class="side-menu <?php echo $menu_location; ?>">
+				<nav class="navbar navbar-default" role="navigation">
+					<!-- Main Menu -->
+					<div class="side-menu-container">
+						<ul class="nav navbar-nav <?php echo $menu_location; ?>">
+						<?php foreach($navItems as $parent){
+							if(!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+								continue;
+							}
+							$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+							$title = $parent['item_help'];
+							$item_style = $parent['item_style'];
+							$item_icon = getNavItemIcon($parent['item_icon']);
+							$navTarget = getNavTarget($parent);
+							$target = $navTarget['target'];
+							$enable_class=$navTarget['enable_class'];
+							$target_blank = $navTarget['target_blank'];
+							if(!empty($parent['children'])){
+								switch(strtolower($label)){
+									case "#line#":
+									$menu.=" <li>
+												<div class='saperator_line'></div>
+												<span class='caret'></span>
+											</li>";
+									break;
+									case "#break#":
+									$menu.=" <li >
+												<br/>
+												<span class='caret'></span>
+											</li>";
+									break;
+									case "#space#":
+									$menu.="<li>
+												<div class='margin_bottom_list'></div>
+												<span class='caret'></span>
+											</li>";
+									break;
+									default:
+									$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
+											<a href='#nav_".$parent['nav_id']."' class='dropdown-toggle' data-toggle='collapse' title='$title'>
+												".$item_icon.getSaperator($label)."
+												<span class='caret'></span>
+											</a>";
+									break;
+								}
+								$menu .= "<div id='nav_".$parent['nav_id']."' class='panel-collapse collapse'>
+												<div class='panel-body'>
+													<ul class='nav navbar-nav'>";
+								
+								foreach($parent['children'] as $children){
+									if(!itemHasVisibility($children['item_visibility'])){
+										continue;
+									}
+									$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+									$title = $children['item_help'];
+									$item_style = $children['item_style'];
+									$item_icon = getNavItemIcon($children['item_icon']);
+									$navTarget = getNavTarget($children);
+									$target = $navTarget['target'];
+									$enable_class=$navTarget['enable_class'];
+									$target_blank = $navTarget['target_blank'];
+									#$label=$label.'#line#';
+									switch(strtolower($label)){
+										case "#line#":
+										$menu.=" <li >
+													<div class='saperator_line'></div>
+												</li>";
+										break;
+										case "#break#":
+										$menu.=" <li >
+													<br/>
+												</li>";
+										break;
+										case "#space#":
+										$menu.=" <li >
+													<div class='margin_bottom_list'></div>
+												</li>";
+										break;
+										default:
+										$menu.="<li class='$enable_class' id='$item_style'>
+													<a $target_blank href='$target' title='$title'>".
+														$item_icon.
+														getSaperator($label)."
+													</a>
+												</li>";
+										break;
+									}
+								}
+								$menu.= "</ul></div></div>";
+							} else {
+								switch(strtolower($label)){
+									case "#line#":
+									$menu.=" <li >
+												<div class='saperator_line'></div>
+											</li>";
+									break;
+									case "#break#":
+									$menu.=" <li >
+												<br/>
+											</li>";
+									break;
+									case "#space#":
+									$menu.=" <li >
+												<div class='margin_bottom_list'></div>
+											</li>";
+									break;
+									default:
+									$menu.="<li class='$enable_class' id='$sub_item_style'>
+												<a $target_blank href='$target' title='$title'>
+													".$item_icon.getSaperator($label)."
+												</a>
+											</li>";
+									break;
+								}
+							}
+						} 
+						echo $menu;  
+						?>
+						</ul>
+					</div><!-- /.navbar-collapse -->
+				</nav>
+			</div>
+<?php 	}
+	}
+}
+?>
+
