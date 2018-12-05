@@ -13,19 +13,19 @@ $config['db_host'] = "localhost";
 
 #$config['db_name'] = "genericplatform";
 #$config['db_user'] = "genericinternal";
-#$config['db_password'] = "Upwork0814!!";
+#$config['db_password'] = "Lennin1009##";
 
 
 /*
 $config['db_name'] = "genericsandbox2";
 $config['db_user'] = "genericsandbox2";
-$config['db_password'] = "Upwork!081461!";
+$config['db_password'] = "Lennin1009##";
 */
 
 
 $config['db_name'] = "genericplatform";
 $config['db_user'] = "genericinternal";
-$config['db_password'] = "Upwork0814!!";
+$config['db_password'] = "Lennin1009##";
 
 
 $GLOBALS['db-host'] =  $config['db_host'];

@@ -40,7 +40,7 @@ define("REGISTRATION_MESSAGE2", "Register here.");
 define("LOGIN_MESSAGE1", "You just have to input your email id.Or ");
 define("LOGIN_MESSAGE2", "here");
 define("LOGIN_REQUIRED_MESSAGE", "Your not logged in. Make sure you are logged in.");
-define("LOGIN_REQUIRED_MESSAGE_WITH_URL", 'You are not logged in. Please <a href="' . BASE_URL . 'login.php">Log In</a> to comment.');
+define("LOGIN_REQUIRED_MESSAGE_WITH_URL", 'You are not logged in. Please <a href="' . BASE_URL.SYSTEM . 'login.php">Log In</a> to comment.');
 define("RETRIEVE_PASS", "Retrieve Password");
 
 /* * *Form labels for REGISTER page** */
@@ -51,7 +51,7 @@ define("USER_REPASSWORD_PLACEHOLDER", "Re-Password");
 define("USER_COUNTRY_PLACEHOLDER", "Enter Country");
 define("CREATE_ACCOUNT_BUTTON", "Create Account");
 define("CANCEL_BUTTON", "Cancel");
-define("EMAIL_ALREADY_EXISTS", "Registration not successful. Email Already Exsits.");
+define("EMAIL_ALREADY_EXISTS", "Registration not successful. Email Already Exists.");
 define("REGISTRATION_SUCCESS", "Registration successfull.");
 define("REGISTRATION_NOT_SUCCESS", "Registration not successfull");
 define("PROFILE_COMPLETE_MESSAGE", "Welcome. Please complete your profile");
