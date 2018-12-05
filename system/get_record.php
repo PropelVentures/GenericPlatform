@@ -26,7 +26,6 @@ function get_single_record($db_name, $pkey, $search) {
 
     $user = $con->query("select * from $db_name where $pkey='$search'");
 
-
     return $user->fetch_assoc();
 }
 

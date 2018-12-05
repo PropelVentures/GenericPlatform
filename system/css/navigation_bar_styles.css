@@ -28,9 +28,7 @@
 
 
 
-/******** TABS **********/
-
-
+/******** Center TABS **********/
 .center-tab {
     padding-left: 0;
     margin-bottom: 0;
@@ -52,8 +50,6 @@
     text-decoration: none;
     border-color: #eee #eee #ddd;
 }
-
-
 .center-tab .active  a,
 .center-tab .active  a:hover,
 .center-tab .active a:focus {
@@ -63,3 +59,35 @@
     border: 1px solid #ddd;
     border-bottom-color: transparent;
 }
+/******** Vertical TABS **********/
+.vertical-tab {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    display: block;
+}
+.vertical-tab li {
+    display: inline-block;
+}
+.vertical-tab  a {
+    display: block;
+    padding: 10px 15px;
+    background-color: #eee;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+}
+.vertical-tab a:hover,
+.vertical-tab a:focus {
+    text-decoration: none;
+    border-color: #eee #eee #ddd;
+}
+.vertical-tab .active  a,
+.vertical-tab .active  a:hover,
+.vertical-tab .active a:focus {
+    color: #555;
+    cursor: default;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+}
+.vertical-tab.center{ width: 35%;margin: auto;}

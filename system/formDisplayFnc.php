@@ -23,13 +23,13 @@
  * function dropdown($row, $urow = 'false', $fieldValue = 'false')
  *
  * function list_fragment($row, $urow = 'false', $fieldValue = 'false')
- *
+ * 
  * function boolean_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
  *
  * function boolean_button($row, $formatArray, $urow = 'false', $fieldValue = 'false')
- *
+ * 
  * function number_slider($row, $formatArray, $urow = 'false', $fieldValue = 'false')
- *
+ * 
  * function datepicker($row, $formatArray, $urow = 'false', $fieldValue = 'false')
  *
  *
@@ -55,7 +55,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 
     // for transaction pop up i have used this if statement
-
+	$sigle_line_alignment="";
     if ($method != 'transaction') {
         $urow_record = $urow;
 
@@ -89,7 +89,14 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 $rt_readonly = 'disabled';
 
                 $image_display = 'false';
-            }
+				if(!empty($row['view_operations'])){
+					$sigle_line_alignment=$row['view_operations'];
+				}
+            }else{
+				if(!empty($row['edit_operations'])){
+					$sigle_line_alignment=$row['edit_operations'];
+				}
+			}
         }
         if (!empty($row['required']))
             $required = 'required';
@@ -114,8 +121,8 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     $userPrivilege = false;
 	if(itemHasVisibility($row['visibility'])){
 		$userPrivilege = true;
-	}
-
+	} 
+	
     /*if ($row['visibility'] >= 1) {
 
         if ($_SESSION['user_privilege'] >= $row['privilege_level'] && $_SESSION['user_privilege'] < 9) {
@@ -139,71 +146,71 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
         switch ($formatArray[0]) {
 
             case "richtext":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 echo "<textarea class='ckeditor' name='$field' $row[strict_disabled] $rt_readonly>$fieldValue</textarea>";
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "dropdown":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 
                 if ($urow != 'false')
                     dropdown($row, $urow, $fieldValue = 'false', $page_editable);
                 else
                     dropdown($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "list_fragment":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 
                 if ($urow != 'false')
                     list_fragment($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "crf":
 
                 if ($method != 'add') {
-                    echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                    echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 
                     $value = dropdown($row, $urow = 'list_display', $crf_value);
 
                     echo "<input type='$row[format_type]' name='$field' value='$value' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> <input type='hidden' name='$field' value='$crf_value' >";
 
 
-                    echo "</div>";
+                    echo "</div></div>";
                 }
                 break;
 
             case "email":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 echo "<input type='email' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> ";
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "textbox":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 echo "<textarea name='$field' class='form-control' cols='$row[format_length]' $row[strict_disabled] $readonly>$fieldValue</textarea>";
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "tag":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     tagFnc($row, $urow, $image_display);
                 else
                     tagFnc($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "checkbox":
-                echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label class='boolen_label'>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     checkbox($row, $urow, $page_editable);
                 else
                     checkbox($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "new_line":
@@ -216,40 +223,40 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "image":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     image_upload($row, $urow, $image_display);
                 else
                     image_upload($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "pdf":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     pdf_upload($row, $urow, $image_display);
                 else
                     pdf_upload($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
 
             case "pdf_inline":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     pdf_inline($row, $urow, $image_display);
                 else
                     pdf_inline($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
             case "audio":
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     audio_upload($row, $urow, $image_display);
                 else
                     audio_upload($row);
-                echo "</div>";
+                echo "</div></div>";
                 break;
 
 
@@ -280,54 +287,54 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 			case "boolean":
 				switch(@$formatArray[1]){
 					case "slider":
-						echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+						echo "<div class='new_form $sigle_line_alignment'><div><label class='boolen_label'>$row[field_label_name]</label>";
 						if ($urow != 'false'){
 							boolean_slider($row,$formatArray,$urow, $page_editable);
 						} else {
 							boolean_slider($row,$formatArray);
 						}
-						echo "</div>";
+						echo "</div></div>";
 					break;
-
+					
 					case "button":
-						echo "<div class='new_form'><label class='boolen_label'>$row[field_label_name]</label>";
+						echo "<div class='new_form $sigle_line_alignment'><div><label class='boolen_label'>$row[field_label_name]</label>";
 							boolean_button($row,$formatArray,$urow, $page_editable);
-						echo "</div>";
-
+						echo "</div></div>";
+						
 					break;
-
+					
 					default:
-						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+						echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
-						echo "</div>";
+						echo "</div></div>";
 				}
 			break;
-
+			
 			case "number":
 				switch(@$formatArray[1]){
 					case "slider":
-						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+						echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 							number_slider($row,$formatArray,$urow, $page_editable);
-						echo "</div>";
+						echo "</div></div>";
 					break;
-
+					
 					default:
-						echo "<div class='new_form'><label>$row[field_label_name]</label>";
+						echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
-						echo "</div>";
+						echo "</div></div>";
 				}
 			break;
-
+			
 			case "datepicker":
-				echo "<div class='new_form'><label>$row[field_label_name]</label>";
+				echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 					datepicker($row,$formatArray,$urow, $page_editable);
-				echo "</div>";
+				echo "</div></div>";
 			break;
-
+				
             default :
-                echo "<div class='new_form'><label>$row[field_label_name]</label>";
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
-                echo "</div>";
+                echo "</div></div>";
         }///switch conditions end here
     }/////userprivilege ends here
 }
@@ -1025,7 +1032,7 @@ function boolean_slider($row, $formatArray, $urow = false, $page_editable = fals
 			} else {
 				echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]'>";
 			}
-
+	
 	echo 	'<span class="boolean_slider_span"></span>
 			</label>
 			<span><b>'.(isset($formatArray[3]) ? strtoupper($formatArray[3]) : 'ON').'</b></span>
@@ -1047,12 +1054,12 @@ function boolean_button($row, $formatArray, $urow = false, $page_editable = fals
 		$disabled = 'disabled';
 		$disabledClass = 'disable_btn';
 	}
-
+	
     if (!empty($row['required'])){
 		$required = 'required';
 	}
 	echo "<input type='hidden' name='$row[generic_field_name]' value='0'>";
-	echo '<div class="boolean_button_box">';
+	echo '<div class="boolean_button_box">'; 
 	if ($urow != false) {
 		echo "<label class='boolean_button $disabledClass'>
 				<span>".(isset($formatArray[2]) ? strtoupper($formatArray[2]) : 'OFF')."<span>
@@ -1076,7 +1083,7 @@ function boolean_button($row, $formatArray, $urow = false, $page_editable = fals
 				<span class='boolean_button_checkmark'></span>
 			</label>";
 	}
-	echo '</div>';
+	echo '</div>'; 
 }
 
 /*
@@ -1121,7 +1128,7 @@ function number_slider($row, $formatArray, $urow = false, $page_editable = false
 	echo "<input id='number_$row[generic_field_name]' type='hidden' name='$row[generic_field_name]'>";
 	echo "<div id='sliderCustom'>
 			<div id='uiSliderCustom' class='ui-slider-handle'></div>
-		</div>";
+		</div>"; 
 }
 
 /*

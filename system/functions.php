@@ -431,7 +431,7 @@ function send_mail_to($to, $subject, $message_to, $headers)
   }
 
  * ******Relationship management class@ends ******** */
-
+ 
 function userHasPrivilege(){
 	//var_dump(defined("USER_PRIVILEGE"));die;
 }
@@ -470,10 +470,114 @@ function navHasVisibility(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-
+	
 	if(empty($navigation) || $navigation['loginRequired'] == 'false'){
 		return true;
 	}
 	return itemHasVisibility($navigation['item_visibility']);
+}
+
+function itemHasEnable($enable){
+	if(!defined("USER_PRIVILEGE")){
+		define("USER_PRIVILEGE",'NO');
+	}
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $enable) || (USER_PRIVILEGE == 'NO' && $enable > 0 ) ){
+		return true;
+	}
+	return false;
+}
+function getSaperator($label=''){
+	$hash_start=strpos($label,'#');
+	$hash_end=strpos($label,'#',$hash_start+1);
+	$saperator_name = "";
+	if(!empty($hash_start) && !empty($hash_end)){
+		$saperator_name=substr($label,$hash_start+1,$hash_end-$hash_start-1);
+	} 
+	switch($saperator_name){
+		case "line":
+			$label=str_replace("#$saperator_name#","<div class='saperator_line'></div>",$label);
+			break;
+		case "LINE":
+			$label=str_replace("#$saperator_name#","<div class='saperator_line'></div>",$label);
+			break;
+		case "break":
+			$label=str_replace("#$saperator_name#","<br/>",$label);
+			break;
+		case "BREAK":
+			$label=str_replace("#$saperator_name#","<br/>",$label);
+			break;
+		case "space":
+			$label=str_replace("#$saperator_name#","&nbsp&nbsp",$label);
+			break;
+		case "SPACE":
+			$label=str_replace("#$saperator_name#","&nbsp&nbsp",$label);
+			break;
+	}
+	return $label;
+	
+	/* if(!empty($hash_start) && !empty($hash_end)){
+		$saperator_name=substr($label,$hash_start+1,$hash_end-$hash_start-1);
+	} 
+	switch(strtolower($saperator_name)){
+		case "line":
+			$html_saperator="<div class='saperator_li'></div>";
+			$label=str_replace("#line#","",strtolower($label));
+			break;
+		case "break":
+			$html_saperator="<br/>";
+			$label=str_replace("#break#","",strtolower($label));
+			break;
+		default:
+			$html_saperator = "";
+	}
+	return [
+		"label"=>$label,
+		"saperator"=>$html_saperator
+	]; */
+}
+
+function getNavTarget($row){#echo "<pre>";print_r($row);die;
+	$target_blank = "";
+	if(!itemHasPrivilege($row['item_privilege'])){
+		$target = "javascript:void(0);";
+		$enable_class = "disabled ";
+	}else if( !itemHasEnable($row['enabled']) ){
+		$target = "javascript:void(0);";
+		$enable_class = "disabled ";
+	} else {
+		$enable_class = "enabled ";
+		$item_target = trim($row['item_target']);
+		if ($item_target == '') {
+			$item_target = 'main.php';
+		}
+		// Remove all illegal characters from a url
+		$item_target = filter_var($item_target, FILTER_SANITIZE_URL);
+		// If Url is valid then et target as defined in DB
+		if (filter_var($item_target, FILTER_VALIDATE_URL)) {
+			$target = $item_target;
+			$target_blank ="target='_blank'";
+		} elseif($item_target == "#" || strpos($row['item_number'],".0")) {
+			$target = "javascript:void(0);";
+		} else {
+			$target = BASE_URL_SYSTEM . $item_target . "?display=" . $row['target_display_page'] . "&layout=" . $row['page_layout_style'] . "&style=" . $row['page_layout_style'];
+		}
+	}
+	
+	return [
+		'target' => $target,
+		'target_blank' => $target_blank,
+		'enable_class'=>$enable_class
+	];
+}
+
+function getNavItemIcon($item_icon){
+	if(empty($item_icon)){
+		return "";
+	}
+	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
+		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
+	}
+	return "";
+	
 }
 ?>

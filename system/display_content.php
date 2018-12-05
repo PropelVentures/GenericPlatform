@@ -45,7 +45,7 @@ function display_content($row) {
 
         $userPrivilege = false;
     }*/
-
+	
 	$userPrivilege = false;
 	if(itemHasPrivilege($row1['dd_privilege_level'])){
 		$userPrivilege = true;
@@ -135,7 +135,9 @@ function display_content($row) {
         ///rs use
         //if($tab_anchor == 'My Gallery')
         //  $tab_anchor= 'my_gallery';
-        echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
+		$tab_id = $row['display_page'].$row['dict_id'];
+		echo "<div id='$tab_id' >";
+        echo "<sectionclass='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
 
 
 
@@ -344,7 +346,7 @@ function display_content($row) {
                     //profile-image }
                 }
 
-                echo "<div style='clear:both'></div></form></section><!--<div class='h1-sep'><span></span></div>-->";
+                echo "<div style='clear:both'></div></form></section></div><!--<div class='h1-sep'><span></span></div>-->";
             }
         }
     } else {

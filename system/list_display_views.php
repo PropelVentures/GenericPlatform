@@ -92,7 +92,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
 	//Added BY Dharmesh 2018-10-12
 	$list_pagination = listpageviews($row['list_pagination']);
-	//print_r($list_views); exit;
+	//pr($list_pagination);
 	//Code End//
 
 
@@ -116,7 +116,10 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
 
-    #echo "<pre>";print_r($ret_array);echo "</pre>";
+	$ret_array['pagination'] = ( (isset($list_pagination[0]) && !empty($list_pagination[0]) ) ? $list_pagination[0] : 8);
+	
+	
+	#echo "<pre>";print_r($ret_array);echo "</pre>";
     #die;
 
 
@@ -640,9 +643,22 @@ table.search( '' ).columns().search( '' ).draw();
             if ($list->num_rows != 0)
             {
 			$i=0;
-
-                while ($listRecord = $list->fetch_assoc()) {
-
+			/* By Shaily Start*/
+			$count = 1;
+			$limit = $list->num_rows;
+			if(isset($list_pagination[1])){
+				if(strpos($list_pagination[1],'#') !== false){
+					preg_match_all('!\d+!', $list_pagination[1], $limitPage);
+					$limit = @$limitPage[0][0] * $list_pagination[0];
+				}
+			}
+			/* By Shaily End*/
+            while ($listRecord = $list->fetch_assoc()) {
+				/* By Shaily Start*/
+				if($count > $limit){
+					break;
+				}
+				/* By Shaily End*/
 				foreach($list_pagination as $k=>$v){
 				//echo $v[1][0];
 					if(strpos($v, '#') !== FALSE)
@@ -904,6 +920,7 @@ table.search( '' ).columns().search( '' ).draw();
                 } else {
                     echo "</tr>";
                 }
+				$count++;
             }//// end of while loop
             }
 
@@ -920,8 +937,14 @@ table.search( '' ).columns().search( '' ).draw();
             } */
 
 			//Added By Dharmesh 2018-10-10//
-			} else if (isset($list_pagination) && !empty($list_pagination)) {
-
+			} else {
+				if (!isset($list_pagination[0]) || empty($list_pagination[0])){
+					$list_pagination[0] = 8 ;
+				}
+				if (!isset($list_pagination[1]) || empty($list_pagination[1])){
+					$list_pagination[1] = "#".( ceil($list->num_rows/$list_pagination[0]) ) ;
+				}
+				//echo "<pre>";print_r($list_pagination);echo "</pre>";
                 /*
                  *
                  * Pagination Function goes here
@@ -1072,12 +1095,15 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 // first line of the text, and successive lines
 
 //    $listData = implode(" ", $listData);
-    $listData = implode("<br>", $listData);
+	$listData = implode("<br>", $listData);
 
 //  This is the
-    echo "<span  class='list-data'>" . substr($listData, 0, 90) . "</span>";
+	echo "<span  class='list-data'>" . substr($listData, 0, 90) . "</span>";
 
 // *************************************
+
+
+
 
 
     /*
