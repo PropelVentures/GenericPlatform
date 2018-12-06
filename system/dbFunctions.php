@@ -272,6 +272,93 @@ function lastKey($tblName, $pkey, $clause) {
     return $row[$pkey];
 }
 
+
+/**
+ * secure
+ * 
+ * @param string $value
+ * @param string $type
+ * @param boolean $quoted
+ * @return string
+ */
+function secure($value, $type = "", $quoted = true) {
+    global $con;
+    if($value !== 'null') {
+        // [1] Sanitize //
+        /* Escape all (single-quote, double quote, backslash, NULs) */
+        if(get_magic_quotes_gpc()) {
+            $value = stripslashes($value);
+        }
+        /* Convert all applicable characters to HTML entities */
+        $value = htmlentities($value, ENT_QUOTES, 'utf-8');
+        // [2] Safe SQL //
+        $value = $con->real_escape_string($value);
+        switch ($type) {
+            case 'int':
+                $value = ($quoted)? "'".intval($value)."'" : intval($value);
+                break;
+            case 'datetime':
+                $value = ($quoted)? "'".set_datetime($value)."'" : set_datetime($value);
+                break;
+            case 'search':
+                if($quoted) {
+                    $value = (!is_empty($value))? "'%".$value."%'" : "''";
+                } else {
+                    $value = (!is_empty($value))? "'%%".$value."%%'" : "''";
+                }
+                break; 
+				
+			case 'NULL':
+                $value = NULL;
+                break;
+            default:
+                $value = (!is_empty($value))? "'".$value."'" : "''";
+                break;
+        }
+    }
+    return $value;
+}
+
+/**
+ * is_empty
+ * 
+ * @param string $value
+ * @return boolean
+ */
+function is_empty($value) {
+    if(strlen(trim(preg_replace('/\xc2\xa0/',' ',$value))) == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/* ------------------------------- */
+/* Date */
+/* ------------------------------- */
+
+/**
+ * set_datetime
+ * 
+ * @param string $date
+ * @return string
+ */
+function set_datetime($date) {
+    return date("Y-m-d H:i:s", strtotime($date));
+}
+
+
+/**
+ * get_datetime
+ * 
+ * @param string $date
+ * @return string
+ */
+function get_datetime($date) {
+    return date("m/d/Y g:i A", strtotime($date));
+}
+
 $con = connect();
 
 //print_r($con->query("select * from users"));die;

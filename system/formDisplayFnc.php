@@ -117,11 +117,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     ///////////////////////////////////////
     ///////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
-
     $userPrivilege = false;
-	if(itemHasVisibility($row['visibility'])){
+	if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
 		$userPrivilege = true;
-	} 
+	}
+	
 	
     /*if ($row['visibility'] >= 1) {
 

@@ -49,6 +49,11 @@ if(!empty($config['db_name'])){
 }else{
 	unset($_SESSION['config']);
 }
-
+/* Print function */
+function pr($data){
+	echo "<pre>";
+		print_r($data);
+	echo "</pre>";
+}
 require_once("system-defines.php");
 ?>

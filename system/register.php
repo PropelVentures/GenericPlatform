@@ -1,4 +1,5 @@
-    <?php
+<?php
+include_once("functions_loader.php");
 session_start();
 
 /*

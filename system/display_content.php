@@ -47,11 +47,8 @@ function display_content($row) {
     }*/
 	
 	$userPrivilege = false;
-	if(itemHasPrivilege($row1['dd_privilege_level'])){
+	if(itemHasVisibility($row['dd_visibility']) && itemHasPrivilege($row['dd_privilege_level'])){
 		$userPrivilege = true;
-	}
-	if(!itemHasVisibility($row1['dd_visibility'])){
-		$userPrivilege = false;
 	}
 
     if ($userPrivilege === true) {

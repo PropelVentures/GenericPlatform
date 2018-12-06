@@ -799,43 +799,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'login') {
     $value1 = $_POST[$loginKeys[0]];
 
     $value2 = $_POST[$loginKeys[1]];
+	if(!empty($value1) && !empty($value2)){
+		$userName = $_SESSION['select_table']['username'];
 
-    $userName = $_SESSION['select_table']['username'];
+		//exit("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
 
-    //exit("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
+		$rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
 
-    $rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
-
-    $row = $rs->fetch_assoc();
-
-
-    if ($row) {
-
-        $_SESSION['uid'] = $row[$pKey];
-
-        $_SESSION['uname'] = $row[$_SESSION['select_table']['username']];
-
-        $_SESSION['user_privilege'] = $row[user_privilege_level];
-
-        if (isset($_SESSION['callBackPage'])) {
+		$row = $rs->fetch_assoc();
 
 
-            echo "<META http-equiv='refresh' content='0;URL=" . $_SESSION['callBackPage'] . "'>";
+		if ($row) {
 
-            unset($_SESSION['callBackPage']);
-            exit();
-        } else {
+			$_SESSION['uid'] = $row[$pKey];
 
-            FlashMessage::add(PROFILE_COMPLETE_MESSAGE);
-            echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL . "index.php'>";
-            exit();
-        }
-    } else {
+			$_SESSION['uname'] = $row[$_SESSION['select_table']['username']];
 
-        FlashMessage::add('UserName or Password Incorrect.');
-        echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
-        exit();
-    }
+			$_SESSION['user_privilege'] = $row[user_privilege_level];
+
+			if (isset($_SESSION['callBackPage'])) {
+
+
+				echo "<META http-equiv='refresh' content='0;URL=" . $_SESSION['callBackPage'] . "'>";
+
+				unset($_SESSION['callBackPage']);
+				exit();
+			} else {
+
+				FlashMessage::add(PROFILE_COMPLETE_MESSAGE);
+				echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL . "index.php'>";
+				exit();
+			}
+		} else {
+
+			FlashMessage::add('UserName or Password Incorrect.');
+			echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+			exit();
+		}
+	} else {
+		FlashMessage::add('UserName or Password Incorrect.');
+		echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+		exit();
+	}
 }
 
 

@@ -617,10 +617,9 @@ table.search( '' ).columns().search( '' ).draw();
                 $tbRs = $con->query($tbQry);
                 ///fetching table headings
                 while ($tbRow = $tbRs->fetch_assoc()) {
-
-                    if ($_SESSION['user_privilege'] >= $tbRow[privilege_level] && $tbRow[format_type] != 'list_fragment') {
-                        echo "<th>$tbRow[field_label_name]</th>";
-                    }
+					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
+						echo "<th>$tbRow[field_label_name]</th>";
+					}
                 }
                 echo "</tr></thead><tbody>";
             } else if (isset($ret_array['pagination']) && !empty($ret_array['pagination'])) {
@@ -843,8 +842,9 @@ table.search( '' ).columns().search( '' ).draw();
 
 
                                     while ($row = $rs->fetch_assoc()) {
-
-                                        $listData[] = strip_tags($listRecord[$row[generic_field_name]]);
+										if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+											$listData[] = strip_tags($listRecord[$row['generic_field_name']]);
+										}
                                     }
 
                                     /*
@@ -897,10 +897,9 @@ table.search( '' ).columns().search( '' ).draw();
                                         //will temprory truncate
 
                                         $fieldValue = substr($fieldValue, 0, 30);
-
-                                        if ($_SESSION['user_privilege'] >= $row[privilege_level] && $tbRow[format_type] != 'list_fragment')
-                                            echo "<td>$fieldValue</td>";
-
+										if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){
+											echo "<td>$fieldValue</td>";
+										}
 									}
                                     if ($table_type == 'child') {
 

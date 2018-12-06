@@ -19,16 +19,13 @@
  */
 
 function Get_Links($display_page) {
-
     $_SESSION['display'] = $display_page;
     global $tab;
-//$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $con = connect();
-
-    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' AND tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
     $i = 1;
 
-    /*     * ********
+    /* *********
      * *************
      * *******************Adding FFFR ICONS HERE
      * *********************************************
@@ -56,22 +53,23 @@ function Get_Links($display_page) {
         $tab_name = explode("/", $row['tab_name']);
 
         $row['tab_name'] = trim($tab_name[0]);
-
+		$list_style = $row['list_style'];
         if ($i == 1 && !( isset($_SESSION['tab']) )) {
 //$_SESSION['first_tab'] = $row[table_alias];
 //            if (!isset($_SESSION['first_tab']))
 //                echo "<script>window.location='$actual_link';
             $tab = $row[table_alias];
+			
             $_SESSION['tab'] = $tab;
 
 
-            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
+            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
         } else if ($_SESSION['tab'] == $row[table_alias] && $_GET['tabNum'] == $row['tab_num']) {
 
-            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
+            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
         } else {
 
-            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class'>$row[tab_name]</a></li>";
+            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
         }
         $i++;
     }
@@ -79,31 +77,24 @@ function Get_Links($display_page) {
     echo "</ul>";
 }
 
-function Get_Tab_Links($display_page,$sidebar) {
-	$con = connect();
-	if($sidebar == 'left'){
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num ='S-L')");
-	} elseif($sidebar == 'right'){
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-R')");
-	} else {
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-C')");
-	}
-	$row = $rs->fetch_assoc();
+function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 	if (!empty($row)) {
 		if ($_GET['edit'] == 'true'){
 			fffr_icons();
 		}
-		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+		$con = connect();
+		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' AND tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
 		if($tabQuery->num_rows > 0) { ?>
-			<ul class='vertical-tab <?php echo $sidebar; ?>' role='tablist'>
+			<ul class='<?php echo $ulClass.$sidebar; ?>' role='tablist'>
 				<?php 
 				while ($row = $tabQuery->fetch_assoc()) {
+					$list_style = $row['list_style'];
 					$tab_id = "#".$display_page.$row['dict_id'];
 					if(!itemHasVisibility($row['dd_visibility'])){
 						continue;
 					} ?>
 					<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
-						<a href="javascript:void(0);">
+						<a id="<?php echo $list_style; ?>" href="javascript:void(0);">
 							<?php echo $row['tab_name']; ?>
 						</a>
 					</li>
@@ -112,7 +103,6 @@ function Get_Tab_Links($display_page,$sidebar) {
 			</ul>
 			<script>
 			$(document).ready(function(){
-				
 				$('.js_tab').click(function(){
 					$('.js_tab').removeClass('active');
 					$(this).addClass('active');
@@ -125,9 +115,26 @@ function Get_Tab_Links($display_page,$sidebar) {
 			</script>
 	<?php 
 		}
-	} ?>
-<?php
+	}
 }
+
+function Get_Tab_Links($display_page,$sidebar) {
+	$con = connect();
+	if($sidebar == 'left'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num ='S-L')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row);
+	} elseif($sidebar == 'right'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-R')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row);
+	} else {
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-C')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row,$ulClass='center-tab');
+	}
+}
+
 
 /////////// get_links() ends here
 //////////////////////////////

@@ -24,7 +24,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
     if (empty($_GET['tabNum'])) {
 
-        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C') and tab_name != 'fffr_icon' order by tab_num");
+        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
         $row = $rs->fetch_assoc();
         $_GET['tabNum'] = $row['tab_num'];
     }
@@ -43,7 +43,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
      */
     if ($tab_status == 'true') {
 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
         while ($row = $rs->fetch_assoc()) {
 
             /////display_content.php////
@@ -52,7 +52,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
     } else {
 
 
-        /*         * *****************
+        /* ******************
          * *****************************************
          * *****************************************************************************
          * **************
