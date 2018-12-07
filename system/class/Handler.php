@@ -56,9 +56,116 @@ class Handler{
 			throw new Exception("Invalid DD ID");
 		}
 		$ddRecord = $ddQuery->fetch_assoc();
-		$url = BASE_URL."system/main.php?display=".$ddRecord['display_page'];
+		$url = BASE_URL."system/main.php?";
+		$display_page = 'home';
+		if($ddRecord['display_page']){
+			$display_page = $ddRecord['display_page'];
+		}
+		if(isset($_GET['product_id']) && !empty($_GET['product_id'])){
+			$url .= self::_appendUrlForParentOrChildPage($display_page,$ddRecord);
+		} else {
+			$url .= self::_appendUrlForDisplayPageOrTab($display_page,$ddRecord);
+		}
+		
+		$url .= self::_setEditOrView();
+		
+		$url .= self::_appendLayoutAndStyle($display_page);
+		
+		$url .= self::_appendAnchor($display_page,$ddRecord);
+		
+		self::_setReferer($ddRecord);
+		
 		header("Location:$url");
+		
 		exit;
+	}
+	
+	private function _appendUrlForDisplayPageOrTab($display_page,$ddRecord){
+		$checkTab = $this->con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
+		if($checkTab->num_rows > 0){
+			// That means all tab data will be shown on single page_layout_style
+			return "display=$display_page";
+		}
+		return "display=$display_page&tab=".$ddRecord['table_alias']."&tabNum=".$ddRecord['tab_num'];
+	}
+	
+	private function _appendUrlForParentOrChildPage($display_page,$ddRecord){
+		$listSelect = trim($ddRecord['list_select']);
+		$listSelectArray = array();
+		$primarykey = firstFieldName($ddRecord['database_table_name']);
+		$table_type = trim($ddRecord['table_type']);
+		$table_name = trim($ddRecord['database_table_name']);
+		if(!empty($listSelect)){
+			$listSelectSeprator = explode(';', $listSelect);
+            foreach ($listSelectSeprator as $key=>$list) {
+				list($tab,$tabNum,$displayPage) = explode(",", $list,3);
+				switch($key){
+					case 0:
+						$arrayKey = 'ListView';
+						break;
+					case 1:
+						$arrayKey = 'BoxView';
+						break;
+					default:
+						$arrayKey = "$key";
+				}
+				$listSelectArray[$arrayKey]['tab'] =  $tab;
+				$listSelectArray[$arrayKey]['tabNum'] =  $tabNum;
+				$listSelectArray[$arrayKey]['displayPage'] =  $displayPage;
+            }
+		}
+		if(!empty($listSelectArray)){
+			$params = $listSelectArray['ListView'];
+			return "display=".$params['displayPage']."&tab=".$params['tab']."&tabNum=".$params['tabNum']."&ta=".$params['tab']."&search_id=".$_GET['product_id']."&checkFlag=true&table_type=".$table_type;
+		}
+		return "";
+
+	}
+	
+	private function _setEditOrView(){
+		if(isset($_GET['edit']) && $_GET['edit'] == true){
+			return "&edit=true";
+		}
+		return "";
+	}
+	
+	private function _appendLayoutAndStyle($display_page){
+		$nav = $this->con->query("SELECT * FROM navigation where target_display_page='$display_page");
+		$layout = $itemStyle = "";
+		if($nav->num_rows > 0){
+			$navRecord = $nav->fetch_assoc();
+			$layout = $navRecord['page_layout_style'];
+			$itemStyle = $navRecord['item_style'];
+		}
+		return "&layout=$layout&style=$itemStyle";
+	}
+	
+	private function _appendAnchor($display_page,$ddRecord){
+		$checkTab = $this->con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
+		if($checkTab->num_rows > 0){
+			// That means all tab data will be shown on single page_layout_style
+			return "#".$display_page.$ddRecord['dict_id'];
+		}
+		return "";
+	}
+	
+	private function _setReferer($ddRecord){
+		//unset($_SESSION['child_return_url']);
+		//unset($_SESSION['return_url']);
+		$table_type = trim($ddRecord['table_type']);
+		$table_name = trim($ddRecord['database_table_name']);
+		$refererUrl = BASE_URL."system/main.php?";
+		if ($table_type == 'child') {
+			$ddParentQuery = $this->con->query("Select * FROM data_dictionary WHERE database_table_name=".secure($ddRecord['parent_table']));
+			if($ddParentQuery->num_rows > 0){
+				$ddParentRecord = $ddParentQuery->fetch_assoc();
+				$refererUrl .= self::_appendUrlForDisplayPageOrTab($ddParentRecord['display_page'],$ddParentRecord);
+				$refererUrl .= self::_appendLayoutAndStyle($ddParentRecord['display_page']);
+			}
+			$_SESSION['child_return_url'] = $refererUrl;
+		} else {
+			//$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		}
 	}
 }
 ?>
