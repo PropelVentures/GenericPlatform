@@ -63,13 +63,16 @@ function Get_Links($display_page) {
             $_SESSION['tab'] = $tab;
 
 
-            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            //echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
         } else if ($_SESSION['tab'] == $row[table_alias] && $_GET['tabNum'] == $row['tab_num']) {
 
-            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            //echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
         } else {
 
-            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            //echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+            echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class'>$row[tab_name]</a></li>";
         }
         $i++;
     }
@@ -94,7 +97,10 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 						continue;
 					} ?>
 					<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
-						<a id="<?php echo $list_style; ?>" href="javascript:void(0);">
+						<!--<a id="<?php //echo $list_style; ?>" href="javascript:void(0);">
+							<?php //echo $row['tab_name']; ?>
+						</a>-->
+						<a href="javascript:void(0);">
 							<?php echo $row['tab_name']; ?>
 						</a>
 					</li>
