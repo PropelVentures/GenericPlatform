@@ -61,7 +61,7 @@ class Handler{
 		if($ddRecord['display_page']){
 			$display_page = $ddRecord['display_page'];
 		}
-		if(isset($_GET['product_id']) && !empty($_GET['product_id'])){
+		if(isset($_GET['search_id']) && !empty($_GET['search_id'])){
 			$url .= self::_appendUrlForParentOrChildPage($display_page,$ddRecord);
 		} else {
 			$url .= self::_appendUrlForDisplayPageOrTab($display_page,$ddRecord);
@@ -116,7 +116,7 @@ class Handler{
 		}
 		if(!empty($listSelectArray)){
 			$params = $listSelectArray['ListView'];
-			return "display=".$params['displayPage']."&tab=".$params['tab']."&tabNum=".$params['tabNum']."&ta=".$params['tab']."&search_id=".$_GET['product_id']."&checkFlag=true&table_type=".$table_type;
+			return "display=".$params['displayPage']."&tab=".$params['tab']."&tabNum=".$params['tabNum']."&ta=".$params['tab']."&search_id=".$_GET['search_id']."&checkFlag=true&table_type=".$table_type;
 		}
 		return "";
 
