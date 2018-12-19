@@ -229,6 +229,12 @@ define("transFail", "Transaction Fail, Please Try again!");
 /**************** ERROR CODE *********************/
 define("ERROR_403","You don't have enough privilege to view contents");
 
+/******************MAP CONSTANT****************************/
+define("GOOGLE_MAP_API_KEY" , "AIzaSyB_RG_AlKVthUJnPJ_I73siI_YhkrIhcOk");
+define("MAP_CENTER_LATITUDE" , 28.628454); //float value
+define("MAP_CENTER_LONGITUDE" , 77.376945); //float value
+define("MAP_ZOOM" , 9); //integer
+
 
 
 

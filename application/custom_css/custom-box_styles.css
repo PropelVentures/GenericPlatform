@@ -29,7 +29,7 @@ box-shadow:1px 1px 3px lightgray;
 .boxView  {
 box-shadow: 1px 1px 1px #888888;
  background-color: white;
-width: 23% !important;
+width: 23%;
 /* height: 300px; */
 min-width:200px;
 position: relative;
@@ -52,8 +52,6 @@ background-position: center;
 border-bottom: 1px solid rgba(0,0,0,0.08);
 
 }
-
-
 
 
 
@@ -127,7 +125,7 @@ BoxView Pagination and Show All button Classes/styles Details
 {
 /*    margin-left: 100px;  */
 background-color: yellow;
-width: 90% ;
+/* width: 90% ; */
 
 
 /* height: 400px; */

@@ -304,18 +304,10 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
 
 function addData()
 {
-
-    #exit("INSIDE addData()");
-
     if (array_key_exists('field_name_unique', $_POST)) {
-
         unset($_POST['field_name_unique']);
-
-        //var_dump($_POST);
     }
-
     if (array_key_exists('old_audio', $_POST)) {
-
         unset($_POST['old_audio']);
     }
 
@@ -695,10 +687,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
         }
     }
 
-
-//print_r($_POST);die;
-    //exit($_SESSION['dict_id']);
-
+    /*pr($_SESSION['update_table2']['database_table_name']);
+	pr($_SESSION['update_table2']['keyfield']);
+	pr($_SESSION['search_id2']);
+	pr($_SESSION['dict_id']);
+	pr($_POST);die; */
     $status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
 

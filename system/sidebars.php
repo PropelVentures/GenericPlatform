@@ -23,8 +23,14 @@ function sidebar($sidebar, $both_sidebar, $display_page, $sidebar_width) {
 		/* Tab Navigation Start*/ 
 		Get_Tab_Links($display_page,'right');
 		/* Tab Navigation End*/ 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num LIKE 'R%' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' and tab_num LIKE 'R%' order by tab_num");
         while ($row = $rs->fetch_assoc()) {
+			/* Check From table_type == header1 or header2 Start */
+			//ShowTableTypeHeaderContent($display_page,$row['tab_num']);
+			/* Check For table_type == header1 or header2 End */
+			/* Check From table_type == subheader1 or subheader2 Start */
+			//ShowTableTypeSubHeaderContent($display_page,$row['tab_num']);
+			/* Check For table_type == subheader1 or subheader2 End */
             Get_Data_FieldDictionary_Record($row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
         }
         echo "</div>";
@@ -44,8 +50,14 @@ function sidebar($sidebar, $both_sidebar, $display_page, $sidebar_width) {
 		/* Tab Navigation Start*/ 
 		Get_Tab_Links($display_page,'left');
 		/* Tab Navigation End*/ 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num LIKE 'L%' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' and tab_num LIKE 'L%' order by tab_num");
         while ($row = $rs->fetch_assoc()) {
+			/* Check From table_type == header1 or header2 Start */
+			//ShowTableTypeHeaderContent($display_page,$row['tab_num']);
+			/* Check For table_type == header1 or header2 End */
+			/* Check From table_type == subheader1 or subheader2 Start */
+			//ShowTableTypeSubHeaderContent($display_page,$row['tab_num']);
+			/* Check For table_type == subheader1 or subheader2 End */
             Get_Data_FieldDictionary_Record($row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
         }
         echo "</div>";

@@ -558,22 +558,380 @@ table.search( '' ).columns().search( '' ).draw();
                 $_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             }//// if record is zero... ends here
 			
-			switch($listView){
+			/* switch($listView){
 				case 'mapView':
-					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderMapView.php
+					//renderMapView();
 					break;
 				
 				case 'boxView':
 					include_once('renderBoxView.php');
-					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					//renderBoxView();
 					break;
 					
 				default:
 					include_once('renderListView.php');
-					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
+					renderListView($row,$tbQry,$list,$qry,$list_pagination); // renderListView.php
 					break;
-			} ?>
+			} */
+            if ($listView != 'boxView') {
+
+                /*
+                 *
+                 *
+                 *
+                 * *******
+                 * *************DataTables widget code goes here *********
+                 * ********
+                 * *******************
+                 * ****************************
+                 *
+                 *
+                 */
+
+                echo "<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'><table id='example' class='display nowrap compact' cellspacing='0' width='100%'>
+                        <thead>
+                            <tr class='tr-heading'>
+                                <th class='tbl-action'><span style='visibility:hidden;'>12<span></th>";
+
+                $tbRs = $con->query($tbQry);
+                ///fetching table headings
+                while ($tbRow = $tbRs->fetch_assoc()) {
+					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
+						echo "<th>$tbRow[field_label_name]</th>";
+					}
+                }
+                echo "</tr></thead><tbody>";
+            } else /*if (isset($ret_array['pagination']) && !empty($ret_array['pagination']))*/ {
+
+                //// BoxView Pagination code inserted here
+
+
+                echo "
+
+                    <!-- Content div. The child elements will be used for paginating(they don't have to be all the same,
+                            you can use divs, paragraphs, spans, or whatever you like mixed together). '-->
+                    <div class='boxViewContainer' id='content$tab_num'>
+
+                        <!-- the input fields that will hold the variables we will use -->
+                        <input type='hidden' class='current_page' />
+                        <input type='hidden' class='show_per_page' />
+                    ";
+            }
+
+            if ($list->num_rows != 0)
+            {
+			$i=0;
+			/* By Shaily Start*/
+			$count = 1;
+			$limit = $list->num_rows;
+			if(isset($list_pagination[1])){
+				if(strpos($list_pagination[1],'#') !== false){
+					preg_match_all('!\d+!', $list_pagination[1], $limitPage);
+					$limit = @$limitPage[0][0] * $list_pagination[0];
+				}
+			}
+			/* By Shaily End*/
+            while ($listRecord = $list->fetch_assoc()) {
+				/* By Shaily Start*/
+				if($count > $limit){
+					break;
+				}
+				/* By Shaily End*/
+				foreach($list_pagination as $k=>$v){
+				//echo $v[1][0];
+					if(strpos($v, '#') !== FALSE)
+					{
+						preg_match_all('!\d+!',$v, $no_of_pages);
+						$no_of_pages = $no_of_pages[0][0];
+						break;
+					}else {
+						$no_of_pages = 0;
+					}
+				}
+				//echo $i;
+				if(count($list_pagination)==1) {
+					$list_pagination_no = $list_pagination[0];
+				}else{
+					$list_pagination_no = $list_pagination[0];
+				}
+
+				unset($_SESSION['list_pagination']);
+				if(!empty($list_pagination_no) && !empty($no_of_pages)){
+					$_SESSION['list_pagination'] = array($list_pagination_no,$no_of_pages);
+				}elseif(!empty($list_pagination_no && empty($no_of_pages))){
+					$_SESSION['list_pagination'] = array($list_pagination_no);
+				}
+
+                $rs = $con->query($qry);
+
+                if ($listView == 'boxView') {
+                ?>
+                    <div class="<?php echo ($horizontalScroll ? 'horizontalScroll boxView':'boxView'); ?>  <?php echo (!empty($list_style) ? $list_style : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+                <?php
+                }///boxview ends here
+
+                        if (!empty($list_select) || $table_type == 'child') {
+
+
+                            if (strpos($list_select, '()')) {
+
+                                exit('function calls');
+                            } else
+                            if (strpos($list_select, '.php')) {
+
+                                exit('php file has been called');
+                            } else {
+
+
+                                //    print_r($list_select_arr);die;
+
+                                $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
+                                $navList = $nav->fetch_assoc();
+
+                                /// Extracting action ,when user click on edit button or on list
+                                if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
+
+                                    if (count($list_select_arr[0]) == 2) {
+                                        $target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+
+
+                                        /// add button url
+                                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+                                    } else {
+                                        $target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+
+                                        /// add button url
+                                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+                                    }
+                                }
+
+
+                                /// Extracting action, when user click on boxView Image of list
+                                if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) {
+
+
+                                    if (count($list_select_arr[1]) == 2) {
+                                        $target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+                                    } else {
+
+                                        $target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+                                    }
+                                }
+
+
+                                /*
+                                 *
+                                 * Value putting in table lists
+                                 *
+                                 * *****
+                                 * **********
+                                 * ***************
+                                 * *********************
+                                 * ************************
+                                 *
+                                 *
+                                 *
+                                 */
+                                if ($listView != 'boxView') {
+
+                                    // $target_url2 = $target_url . "#$tab_anchor";
+
+                                    echo "<tr id='$target_url&edit=true#$tab_anchor' class='boxview-tr'>
+                                                <td class='dt-body-center'><!--<a href='$target_url&edit=true#$tab_anchor' title='Edit' class='btn btn-default' style='color: #E6B800' >
+                                                <span class='glyphicon glyphicon-edit'></span>
+                                            </a>-->";
+
+
+                                    $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
+
+
+
+                                    /*
+                                     * displaying checkboxes
+                                     * checking in database if checklest is there
+                                     */
+
+
+                                    if ($list_views['checklist'] == 'true') {
+
+                                        echo "<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='$checkbox_id' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>";
+
+                                        echo "<input type='hidden' name='dict_id[]' value='$dict_id' >";
+                                    }
+
+
+
+                                    /*
+                                     * Putting Delete icon on left/right side of lists
+                                     */
+
+                                    /*
+                                      if (isset($ret_array['single_delete_array']) && !empty($ret_array['single_delete_array'])) {
+
+                                      $sing_del_style = $ret_array['single_delete_array']['style'];
+
+                                      echo " <a  class='glyphicon glyphicon-remove list-del $sing_del_style' title='Delete' style='color:#FF3300' id='$checkbox_id' name='$dict_id'>
+
+                                      </a>";
+                                      }
+                                     *
+                                     */
+
+                                    /*
+                                     * Putting Copy icon on left/Right side of lists
+
+
+
+                                      if (isset($ret_array['single_copy_array']) && !empty($ret_array['single_copy_array'])) {
+
+                                      $sing_del_style = $ret_array['single_copy_array']['style'];
+
+                                      echo "
+                                      <a class='btn btn-default' title='Copy' >
+                                      <span class='list-copy $sing_del_style' title='Delete' id='$checkbox_id' name='$row[dict_id]'>
+                                      <img src='" . BASE_IMAGES_URL . "copy.ico' width='15' height='15'>
+                                      </span>
+                                      </a>
+                                      ";
+
+                                      }
+
+                                     */
+
+                                    /////////// for popup menu handling span tag goes here ****************
+
+                                    echo "<span class='list-del' id='$checkbox_id' name='$dict_id' ></span>";
+                                    ////data td ends here
+
+                                    echo "</td>";
+                                }
+//                                        if ($listView != 'boxView') {
+//
+//
+//                                        }
+
+                                if ($listView == 'boxView') {
+
+                                    /*
+                                     * @while loop
+                                     * get FD info and put data into @lisdata array
+                                     */
+
+                                    $listData = array();
+
+
+                                    while ($row = $rs->fetch_assoc()) {
+										if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+											$listData[] = strip_tags($listRecord[$row['generic_field_name']]);
+										}
+                                    }
+
+                                    /*
+                                     * setting up an array to pass to listViews function
+                                     */
+
+
+                                    //$listPara = array("listData" =>$listData, "table_type" =>$table_type, "target_url" );
+
+                                    /*
+                                     * @listViews function
+                                     *
+                                     * give bOX LIST UI and data inside lists
+                                     */
+
+
+
+                                    listViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+                                } else {
+                                    /*
+                                     *
+                                     *
+                                     * ******
+                                     * *************************
+                                     * ******************************
+                                     * ***********************************FETCHING DATA AND PUTING IN CORRESPONDING TDS
+                                     * **************
+                                     * *************************
+                                     * ******************************************************************
+                                     *
+                                     */
+                                    /////table view starts here
+                                    //fetching data from corresponding table
+
+                                    while ($row = $rs->fetch_assoc()) {
+										//if($listView!='BoxView') {
+
+										//}
+                                        $fieldValue = $listRecord[$row[generic_field_name]];
+
+
+                                        if (!empty($row[dropdown_alias])) {
+
+
+                                            $fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
+                                        }
+
+
+
+                                        //will temprory truncate
+
+                                        $fieldValue = substr($fieldValue, 0, 30);
+										if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){
+											echo "<td>$fieldValue</td>";
+										}
+									}
+                                    if ($table_type == 'child') {
+
+                                        $_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                                    } else {
+
+                                        $_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                                    }
+                                }
+                            }///end of else if
+                        }/// end of mainIF
+
+                if ($listView == 'boxView') {
+                ?>
+                    </div>
+                <?php
+                } else {
+                    echo "</tr>";
+                }
+				$count++;
+            }//// end of while loop
+            }
+
+            if ($listView != 'boxView') {
+                echo "</tbody></table> ";
+/*             } else if (isset($ret_array['pagination']) && !empty($ret_array['pagination'])) {
+
+                /*
+                 *
+                 * Pagination Function goes here
+                 */
+
+             /*   echo boxViewPagination($ret_array['pagination'], $tab_num, $list_select_arr);
+            } */
+
+			//Added By Dharmesh 2018-10-10//
+			} else {
+				/*
+				 *
+				 * Pagination Function goes here
+				 */
+				if(isset($list_pagination[2]) && $list_pagination[2] == 'hscroll'){
+					boxViewHscroll($list_pagination, $tab_num, $list_select_arr);
+				} else {
+					echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
+				}
+				
+            }
+			//Code End//
+			//echo $ret_array['pagination'];
+
+?>
+
         </form>
     </div>
 

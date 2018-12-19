@@ -63,6 +63,8 @@ class Handler{
 		}
 		if(isset($_GET['search_id']) && !empty($_GET['search_id'])){
 			$url .= self::_appendUrlForParentOrChildPage($display_page,$ddRecord);
+		} if(isset($_GET['add']) && $_GET['add'] == true){
+			$url .= self::_appendUrlForAddRecord($display_page,$ddRecord);
 		} else {
 			$url .= self::_appendUrlForDisplayPageOrTab($display_page,$ddRecord);
 		}
@@ -75,6 +77,8 @@ class Handler{
 		
 		self::_setReferer($ddRecord);
 		
+		self::_setSessionAddUrl($url,$ddRecord);
+
 		header("Location:$url");
 		
 		exit;
@@ -122,6 +126,39 @@ class Handler{
 
 	}
 	
+	private function _appendUrlForAddRecord($display_page,$ddRecord){
+		$listSelect = trim($ddRecord['list_select']);
+		$listSelectArray = array();
+		$primarykey = firstFieldName($ddRecord['database_table_name']);
+		$table_type = trim($ddRecord['table_type']);
+		$table_name = trim($ddRecord['database_table_name']);
+		if(!empty($listSelect)){
+			$listSelectSeprator = explode(';', $listSelect);
+            foreach ($listSelectSeprator as $key=>$list) {
+				list($tab,$tabNum,$displayPage) = explode(",", $list,3);
+				switch($key){
+					case 0:
+						$arrayKey = 'ListView';
+						break;
+					case 1:
+						$arrayKey = 'BoxView';
+						break;
+					default:
+						$arrayKey = "$key";
+				}
+				$listSelectArray[$arrayKey]['tab'] =  $tab;
+				$listSelectArray[$arrayKey]['tabNum'] =  $tabNum;
+				$listSelectArray[$arrayKey]['displayPage'] =  $displayPage;
+            }
+		}
+		if(!empty($listSelectArray)){
+			$params = $listSelectArray['ListView'];
+			return "display=".$params['displayPage']."&tab=".$params['tab']."&tabNum=".$params['tabNum']."&ta=".$params['tab']."&addFlag=true&checkFlag=true&table_type=".$table_type;
+		}
+		return "";
+
+	}
+	
 	private function _setEditOrView(){
 		if(isset($_GET['edit']) && $_GET['edit'] == true){
 			return "&edit=true";
@@ -130,7 +167,7 @@ class Handler{
 	}
 	
 	private function _appendLayoutAndStyle($display_page){
-		$nav = $this->con->query("SELECT * FROM navigation where target_display_page='$display_page");
+		$nav = $this->con->query("SELECT * FROM navigation where target_display_page='$display_page'");
 		$layout = $itemStyle = "";
 		if($nav->num_rows > 0){
 			$navRecord = $nav->fetch_assoc();
@@ -165,6 +202,15 @@ class Handler{
 			$_SESSION['child_return_url'] = $refererUrl;
 		} else {
 			//$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		}
+	}
+	
+	private function _setSessionAddUrl($url,$ddRecord){
+		$_SESSION['add_url_list'] = $url;
+		$_SESSION['dict_id'] = $ddRecord['dict_id'];
+		$_SESSION['update_table2']['database_table_name'] = $ddRecord['database_table_name'];
+		if(isset($_GET['parent_id']) && !empty($_GET['parent_id'])){
+			$_SESSION['parent_value'] = $_GET['parent_id'];
 		}
 	}
 }

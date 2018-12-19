@@ -134,7 +134,7 @@ function display_content($row) {
         //  $tab_anchor= 'my_gallery';
 		$tab_id = $row['display_page'].$row['dict_id'];
 		echo "<div id='$tab_id' >";
-        echo "<sectionclass='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
+        echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
 
 
 
