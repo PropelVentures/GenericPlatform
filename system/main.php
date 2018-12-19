@@ -274,7 +274,7 @@
 	$(document).ready(function () {
 		//Added By Dharmesh 2018-10-17//
 		<?php if(!empty($pagination_no)) {?>
-			$.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
+			/* $.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
 			$.fn.DataTable.ext.pager.numbers_no_ellipses = function(page, pages){
 				var numbers = [];
 				var buttons = $.fn.DataTable.ext.pager.numbers_length;
@@ -304,7 +304,7 @@
 				numbers.DT_el = 'span';
 				//return ["first","previous", numbers , "next", "last" ];
 				return [ numbers  ];
-			};
+			}; */
 			var pagingType = 'full_numbers';
 			<?php }else { ?>
 			var pagingType = 'full_numbers';
