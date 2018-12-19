@@ -580,4 +580,125 @@ function getNavItemIcon($item_icon){
 	return "";
 	
 }
+
+function getDDUrl($list_select){
+	$list_select = trim($list_select);
+	if (empty($list_select)) {
+		return "";
+	}
+	// Remove all illegal characters from a url
+	$list_select = filter_var($list_select, FILTER_SANITIZE_URL);
+	// If Url is valid then et target as defined in DB
+	if (filter_var($list_select, FILTER_VALIDATE_URL)) {
+		return $list_select;
+	} else {
+		$con = connect();
+		$ddQuery = $con->query("SELECT * FROM data_dictionary where dict_id='$list_select'");
+		if($ddQuery->num_rows >0 ){
+			$ddRecord = $ddQuery->fetch_assoc();
+			$nav = $this->con->query("SELECT * FROM navigation where target_display_page='".$ddRecord['display_page']."'");
+			$layout = $itemStyle = "";
+			if($nav->num_rows > 0){
+				$navRecord = $nav->fetch_assoc();
+				$layout = $navRecord['page_layout_style'];
+				$itemStyle = $navRecord['item_style'];
+			}
+			return BASE_URL_SYSTEM ."main.php?display=" . $ddRecord['display_page'] . "&layout=$layout&style=$itemStyle";
+		}
+		return "";
+	}
+}
+
+function parseListExtraOption($listExtraOptions,$inPx=false){
+	$height = "";
+	$width = "100%";
+	$align = 'left';
+	$divClass = 'left_cont';
+	$listExtraOptions = trim($listExtraOptions);
+	if(!empty($listExtraOptions)){
+		$params = explode(";",$listExtraOptions);
+		if(!empty($params)){
+			foreach($params as $param){
+				list($key,$value) = explode("=",$param);
+				switch($key){
+					case 'height':
+						$height = $value."px";
+						break;
+					case 'width':
+						$width = $value.($inPx ? 'px':"%");
+						break;
+					case 'align':
+						if($value == 'left'){
+							$divClass = 'left_cont';
+						} elseif($value == 'right'){
+							$divClass = 'right_cont';
+						} elseif($value == 'center'){
+							$divClass = 'center_cont';
+						}
+						$align = $value;
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+	return [$height,$width,$align,$divClass];
+}
+
+function getSliderImages($description){
+	$description =  trim($description);
+	if(empty($description)){
+		return array();
+	}
+	$sliders = array();
+	$images = explode(';',$description);
+	foreach($images as $image){
+		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$image)){
+			$sliders[] = BASE_URL_APP."banner-images/".$image;
+		}
+	}
+	return $sliders;
+}
+
+function getImages($description){
+	$description =  trim($description);
+	if(empty($description)){
+		return array();
+	}
+	$sliders = array();
+	$images = explode(';',$description);
+	foreach($images as $image){
+		if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$image)){
+			$sliders[] = BASE_URL_SYSTEM."system_images/".$image;
+		}
+	}
+	return $sliders;
+}
+
+function getBannerImages($description){
+	$description =  trim($description);
+	if(empty($description)){
+		return '';
+	}
+	if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$description)){
+		return BASE_URL_APP."banner-images/".$description;
+	}
+	return "";
+}
+
+function getIframeUrl($description){
+	$description =  trim($description);
+	if(empty($description)){
+		return '';
+	}
+	// Remove all illegal characters from a url
+	$description = filter_var($description, FILTER_SANITIZE_URL);
+	// If Url is valid then et target as defined in DB
+	if (filter_var($description, FILTER_VALIDATE_URL)) {
+		return $description;
+	} else {
+		return "";
+	}
+}
 ?>

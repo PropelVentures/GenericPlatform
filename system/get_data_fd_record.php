@@ -24,7 +24,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
     if (empty($_GET['tabNum'])) {
 
-        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C') and tab_name != 'fffr_icon' order by tab_num");
+        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
         $row = $rs->fetch_assoc();
         $_GET['tabNum'] = $row['tab_num'];
     }
@@ -43,16 +43,37 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
      */
     if ($tab_status == 'true') {
 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
         while ($row = $rs->fetch_assoc()) {
-
-            /////display_content.php////
-            display_content($row);
+			switch($row['table_type']){
+				case "header":
+					ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
+					break;
+				case 'subheader':
+					ShowTableTypeSubHeaderContent($row['display_page'],$row['tab_num']);
+					break;
+				case 'slider':
+					ShowTableTypeSlider($row['display_page'],$row['tab_num']);
+					break;
+				case 'banner':
+					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
+					break;
+				case 'content':
+					ShowTableTypeContent($row['display_page'],$row['tab_num']);
+					break;
+				case 'image':
+					ShowTableTypeImage($row['display_page'],$row['tab_num']);
+					break;
+				default:
+					/////display_content.php////
+					display_content($row);
+					break;
+			}
         }
     } else {
 
 
-        /*         * *****************
+        /* ******************
          * *****************************************
          * *****************************************************************************
          * **************
@@ -175,7 +196,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         /// ADD BUTTON
 
         if (!empty($add_array) ) {
-            $addButton = "<button type='button' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
+            $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
         }
         
         ##CUSTOM FUNCTION BUTTON##
@@ -826,10 +847,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 echo "<div class='form-footer'>      
                                                     
                         " . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
-                        $deleteButton
-                        $addButton
-                        $copyButton
                         $updateSaveButton
+						$copyButton
+						$addButton
+						$deleteButton
 
                         <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                     </div>";
@@ -893,10 +914,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 echo "<div class='form-footer'>     
                     
                         " . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
-                        $deleteButton
-                        $addButton
-                        $copyButton
-                        $updateSaveButton       
+                        $updateSaveButton
+						$copyButton
+						$addButton
+						$deleteButton
                             
                         <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                     </div>
@@ -996,10 +1017,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                         echo "<div class='form-footer'>           
                                       
                                     " . (!empty($debug) ? 'View operation Buttons' : '') . "    
-                                    $deleteButton
-                                    $addButton
-                                    $copyButton
                                     $updateSaveButton
+									$copyButton
+									$addButton
+									$deleteButton
 
                                     <!--<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> -->
                                 </div>
@@ -1046,10 +1067,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                                     echo "<div class='form-footer' >                                    
                                                   
                                             " . (!empty($debug) ? 'Top DD_EDITABLE' : '') . "
-                                            $deleteButton
-                                            $addButton
-                                            $copyButton
                                             $updateSaveButton
+											$copyButton
+											$addButton
+											$deleteButton
                                                 
                                             <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
                             
@@ -1145,10 +1166,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                             echo "<div class='form-footer'>           
                                       
                                     " . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "    
-                                    $deleteButton
-                                    $addButton
-                                    $copyButton
                                     $updateSaveButton
+									$copyButton
+									$addButton
+									$deleteButton
 
                                     <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> 
                                 </div>";

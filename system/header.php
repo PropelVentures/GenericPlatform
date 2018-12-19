@@ -38,6 +38,7 @@ if($_GET['source'] == 'api'){
 
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>carousel.css" type="text/css">
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>font-awesome.css" type="text/css">
+        <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>jquery.bxslider.min.css" type="text/css">
 
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>style.css" type="text/css">
         <link rel="stylesheet" href="<?php echo BASE_CSS_URL ?>common-responsive.css" type="text/css">
@@ -51,6 +52,7 @@ if($_GET['source'] == 'api'){
         <link rel="stylesheet" href="<?php echo BASE_URL_SYSTEM ?>star-rating/star-rating.css" media="all"  type="text/css" />
         <script src="<?php echo BASE_JS_URL ?>jquery-1.11.1.min.js"></script>
         <script src="<?php echo BASE_JS_URL ?>jquery-ui.js"></script>
+        <script src="<?php echo BASE_JS_URL ?>jquery.bxslider.min.js"></script>
         <script src="<?php echo BASE_JS_URL ?>jquery.mobile-events.js"></script>
 
          <script src="<?php echo BASE_JS_URL ?>tag-it.min.js"></script>
@@ -80,9 +82,11 @@ if($_GET['source'] == 'api'){
 
          <script src="<?= BASE_JS_URL ?>pdfLoader.js"></script>
         <script src="<?= BASE_JS_URL ?>imageLoader.js"></script>
-
-
-        <!-- CAPSTONE: Override Uploadcare text -->
+		<!-- CAPSTONE: Override Uploadcare text -->
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAP_API_KEY; ?>"></script>
+		<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+		</script>
+        
         <script type="text/javascript">
 
             UPLOADCARE_PUBLIC_KEY = '4c3637988f9b93d343e8';

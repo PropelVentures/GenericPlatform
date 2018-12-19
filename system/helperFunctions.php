@@ -369,9 +369,6 @@ function listExtraOptions($list_extra_options, $listOperations = false) {
     {
         $operationsVarArray = getOperationsData($listOperations, 'list_operations');
 
-//        echo "<Pre>";
-//        print_r($operationsVarArray);die;
-
         list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
             $customFunctionArray,
             $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array) = $operationsVarArray;
@@ -391,7 +388,7 @@ function listExtraOptions($list_extra_options, $listOperations = false) {
         "editPagePagination" => $editPagePagination, "numberLabel" => $numberLabel, "pattern" => $pattern
     );
 
-//     print_r($listOptionsArray);
+	//pr($listOptionsArray);
     return $listOptionsArray;
 }
 
@@ -442,13 +439,7 @@ function parseCsvParameters($csvAndParenthesisParameters)
     $params = array_filter(explode(";", $csvAndParenthesisParameters) );
 
     foreach ($params as $param) {
-
         $param = trim($param);
-
-//        echo "<pre>";
-//        print_r($param);
-//        echo "</pre><br><br>";
-
         // Handle custom functions by checking ending parenthesis `)`
         if(strpos($param, ')') !== false)
         {
@@ -484,9 +475,6 @@ function parseCsvParameters($csvAndParenthesisParameters)
         else
         {
             $csvParamDataArray[] = explode(',', $param);
-//            echo "<pre>";
-//            print_r($csvParamDataArray);
-//            echo "</pre>";
         }
     }
 
@@ -501,7 +489,6 @@ function parseCsvParameters($csvAndParenthesisParameters)
  */
 function getOperationsData($operations, $operationType = 'list_operations') {
     $operationsKeywordArray = array_filter(explode(']', $operations) );
-
     $actions = array();
 
     foreach($operationsKeywordArray as $operationsKeywordData)
@@ -535,93 +522,88 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 
         switch (strtolower(trim($keywordOperation) ) ) {
             case 'popup': {
+				if($operationType !== 'list_operations')
+					break;
 
-                    if($operationType !== 'list_operations')
-                        break;
+				$popupmenu = 'true';##Required for Popups to work
 
-                    $popupmenu = 'true';##Required for Popups to work
+				foreach ($actionData as $actionKey => $actionValue) {
+					if($actionKey === 'customFunction')
+					{
+						$customFunctionArray = handleCustomFunctionActions($actionValue);
+					}
+					else
+					{
+						##SET LABEL TO DEFAULT ACTION NAME IF SINGLE PARAM FORMAT IS USED i.e. add; will result in Add button
+						if(empty($actionValue[1]) )
+							$actionValue[1] = ucfirst ($actionValue[0]);
 
-                    foreach ($actionData as $actionKey => $actionValue) {
-                        if($actionKey === 'customFunction')
-                        {
-                            $customFunctionArray = handleCustomFunctionActions($actionValue);
-                        }
-                        else
-                        {
-                            ##SET LABEL TO DEFAULT ACTION NAME IF SINGLE PARAM FORMAT IS USED i.e. add; will result in Add button
-                            if(empty($actionValue[1]) )
-                                $actionValue[1] = ucfirst ($actionValue[0]);
+						switch (strtolower(trim($actionValue[0]) ) ) {
 
-                            switch (strtolower(trim($actionValue[0]) ) ) {
+							case 'delete':
+								$popup_delete_array = popup_delete(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'copy':
+								$popup_copy_array = popup_copy(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'add':
+								$popup_add_array = popup_add(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'openchild':
+								$popup_openChild_array = popup_openChild(trim($actionValue[1]), trim($actionValue[2]));
+								break;
 
-                                case 'delete':
-                                    $popup_delete_array = popup_delete(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'copy':
-                                    $popup_copy_array = popup_copy(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'add':
-                                    $popup_add_array = popup_add(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'openchild':
-                                    $popup_openChild_array = popup_openChild(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-
-                                default:
-                            }
-                        }
-                    }
-
-                }
-                break;
+							default:
+						}
+					}
+				}
+				break;
+			}
+			
             case 'topmenu': {
+				foreach ($actionData as $actionKey => $actionValue) {
+					if($actionKey === 'customFunction')
+					{
+						$customFunctionArray = handleCustomFunctionActions($actionValue);
+					}
+					else
+					{
+						##SET LABEL TO DEFAULT ACTION NAME IF SINGLE PARAM FORMAT IS USED i.e. add; will result in Add button
+						if(empty($actionValue[1]) )
+							$actionValue[1] = ucfirst ($actionValue[0]);
 
-                    foreach ($actionData as $actionKey => $actionValue) {
+						switch (strtolower(trim($actionValue[0]) ) ) {
+							case 'delete':
+								$del_array = list_delete(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'copy':
+								$copy_array = list_copy(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'add':
+								$add_array = list_add(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'single_delete':
+								$single_delete_array = single_delete(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+							case 'single_copy':
+								$single_copy_array = single_copy(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+//                          case 'addimport':
+//                               $addImportArray = addImport(trim($actionValue[1]), trim($actionValue[2]) );
 
+							case 'submit':
+								$submit_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
+								break;
 
-                        if($actionKey === 'customFunction')
-                        {
-                            $customFunctionArray = handleCustomFunctionActions($actionValue);
-                        }
-                        else
-                        {
-                            ##SET LABEL TO DEFAULT ACTION NAME IF SINGLE PARAM FORMAT IS USED i.e. add; will result in Add button
-                            if(empty($actionValue[1]) )
-                                $actionValue[1] = ucfirst ($actionValue[0]);
+							default:
+						}
 
-                            switch (strtolower(trim($actionValue[0]) ) ) {
-                                case 'delete':
-                                    $del_array = list_delete(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'copy':
-                                    $copy_array = list_copy(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'add':
-                                    $add_array = list_add(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'single_delete':
-                                    $single_delete_array = single_delete(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-                                case 'single_copy':
-                                    $single_copy_array = single_copy(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-//                                case 'addimport':
-//                                    $addImportArray = addImport(trim($actionValue[1]), trim($actionValue[2]) );
+					}
 
-                                case 'submit':
-                                    $submit_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
-                                    break;
-
-                                default:
-                            }
-
-                        }
-
-                    }
-
-                }
-                break;
-
+				}
+				break;
+			}
+			
             default:
         }
 
@@ -983,6 +965,60 @@ function listFilter($listFilter, $search) {
     return $sqlClause;
 }
 
+/* boxView hScroll Start */
+function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
+	<a href="javascript:void(0);" class="prev_slider" onclick="plusDivs(-<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10094;</a>
+	<a href="javascript:void(0);" class="next_slider" onclick="plusDivs(+<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10095;</a>
+	
+	</div>
+	
+	<?php
+	if (!empty($list_select_arr[2][0])) {
+		echo "<a href='" . BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[2][2] . "&tab=" . $list_select_arr[2][0] . "&tabNum=" . $list_select_arr[2][1] . "' class='show_all ' id='test-super'>" . SHOW_ALL . "</a>";
+	}
+	
+	if(isset($pagination[1])){
+		if(strpos($pagination[1],'#') !== false){
+			preg_match_all('!\d+!', $pagination[1], $limitPage);
+			$limit = @$limitPage[0][0] * $pagination[0];
+		}
+	}
+	?>
+	
+	<script>
+	var tab_num = <?php echo $tab_num; ?>;
+	var limit = <?php echo $limit; ?>;
+	var per_page = <?php echo $pagination[0]; ?>;
+	if(typeof slideIndex == 'undefined'){
+		var slideIndex = [];
+	}
+	slideIndex[tab_num] = per_page;
+	showDivs(slideIndex[tab_num],per_page,tab_num);
+
+	function plusDivs(per_page,tab_num) {
+		slideIndex[tab_num] += per_page;
+		showDivs(slideIndex[tab_num],per_page , tab_num);
+	}
+
+	function showDivs(n,per_page,tab_num) {
+		var i;
+		var box = $("#content"+tab_num+" .boxView");
+		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)} 
+		if (n < Math.abs(per_page)) {slideIndex[tab_num] = box.length} ;
+		for (i = 0; i < box.length; i++) {
+			box[i].classList.remove("showDiv"+tab_num);
+			box[i].style.display = "none";
+		}
+		for(item=slideIndex[tab_num] - Math.abs(per_page); item < slideIndex[tab_num]; item++){
+			box[item].classList.add("hideDiv"+tab_num);
+			box[item].style.display = "block"; 
+		}
+	}
+	</script>
+<?php
+}
+/* boxView hScroll End */
+
 /* * ***
  * **************BoxView Pagination function which call jquery function code
  * Goes here
@@ -990,6 +1026,7 @@ function listFilter($listFilter, $search) {
  * ************************************
  *
  */
+
 
 function boxViewPagination($pagination, $tab_num, $list_select_arr) {
 
@@ -1188,6 +1225,34 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
 }
 //////boxView functions end here
 
+// Not in use;
+function callBxSlider($tab_num,$list_pagination){
+	$slideWidth = "200";
+	if(isset($list_pagination[1]) && !empty($list_pagination[1])){
+		$slideWidth = $list_pagination[1];
+	}
+	?>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#content<?php echo $tab_num; ?>').bxSlider({
+				pager : false,
+				minSlides: 1,
+				maxSlides: 4,
+				slideWidth: <?php echo $slideWidth; ?>,
+				moveSlides: 3,
+				//slideMargin: 20,
+				//adaptiveHeight: true,
+				//shrinkItems: true,
+				/* onSliderLoad: function () {
+					$('#content<?php echo $tab_num; ?>').css("visibility", "visible");
+				}, */
+			});
+		});
+	</script>
+<?php 
+}
 
 
 

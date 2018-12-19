@@ -19,16 +19,16 @@
  */
 
 function Get_Links($display_page) {
-
+	/* Check From table_type == header1 or header2 Start */
+	ShowTableTypeHeaderContent($display_page);
+	/* Check For table_type == header1 or header2 End */
     $_SESSION['display'] = $display_page;
     global $tab;
-//$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $con = connect();
-
-    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+    $rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' AND tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
     $i = 1;
 
-    /*     * ********
+    /* *********
      * *************
      * *******************Adding FFFR ICONS HERE
      * *********************************************
@@ -56,53 +56,65 @@ function Get_Links($display_page) {
         $tab_name = explode("/", $row['tab_name']);
 
         $row['tab_name'] = trim($tab_name[0]);
-
+		$list_style = $row['list_style'];
         if ($i == 1 && !( isset($_SESSION['tab']) )) {
 //$_SESSION['first_tab'] = $row[table_alias];
 //            if (!isset($_SESSION['first_tab']))
 //                echo "<script>window.location='$actual_link';
             $tab = $row[table_alias];
+			
             $_SESSION['tab'] = $tab;
 
 
+            //echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
             echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
         } else if ($_SESSION['tab'] == $row[table_alias] && $_GET['tabNum'] == $row['tab_num']) {
 
+            //echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
             echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
         } else {
 
+            //echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
             echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class'>$row[tab_name]</a></li>";
         }
         $i++;
     }
 
     echo "</ul>";
+	
+	/* Check From table_type == subheader1 or subheader2 Start */
+	ShowTableTypeSubHeaderContent($display_page);
+	/* Check For table_type == subheader1 or subheader2 End */
+	
+	ShowTableTypeSlider($display_page);
+	
+	ShowTableTypeBanner($display_page);
+	
+	ShowTableTypeContent($display_page);
+	
+	ShowTableTypeImage($display_page);
 }
 
-function Get_Tab_Links($display_page,$sidebar) {
-	$con = connect();
-	if($sidebar == 'left'){
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num ='S-L')");
-	} elseif($sidebar == 'right'){
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-R')");
-	} else {
-		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-C')");
-	}
-	$row = $rs->fetch_assoc();
+function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 	if (!empty($row)) {
 		if ($_GET['edit'] == 'true'){
 			fffr_icons();
 		}
-		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' and (tab_num !='0' AND tab_num != 'S-0' AND tab_num != 'S-L' AND tab_num != 'S-R' AND tab_num != 'S-C')  and tab_name != 'fffr_icon' order by tab_num");
+		$con = connect();
+		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' AND tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
 		if($tabQuery->num_rows > 0) { ?>
-			<ul class='vertical-tab <?php echo $sidebar; ?>' role='tablist'>
+			<ul class='<?php echo $ulClass.$sidebar; ?>' role='tablist'>
 				<?php 
 				while ($row = $tabQuery->fetch_assoc()) {
+					$list_style = $row['list_style'];
 					$tab_id = "#".$display_page.$row['dict_id'];
 					if(!itemHasVisibility($row['dd_visibility'])){
 						continue;
 					} ?>
 					<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
+						<!--<a id="<?php //echo $list_style; ?>" href="javascript:void(0);">
+							<?php //echo $row['tab_name']; ?>
+						</a>-->
 						<a href="javascript:void(0);">
 							<?php echo $row['tab_name']; ?>
 						</a>
@@ -112,7 +124,6 @@ function Get_Tab_Links($display_page,$sidebar) {
 			</ul>
 			<script>
 			$(document).ready(function(){
-				
 				$('.js_tab').click(function(){
 					$('.js_tab').removeClass('active');
 					$(this).addClass('active');
@@ -125,9 +136,26 @@ function Get_Tab_Links($display_page,$sidebar) {
 			</script>
 	<?php 
 		}
-	} ?>
-<?php
+	}
 }
+
+function Get_Tab_Links($display_page,$sidebar) {
+	$con = connect();
+	if($sidebar == 'left'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num ='S-L')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row);
+	} elseif($sidebar == 'right'){
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-R')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row);
+	} else {
+		$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='S-C')");
+		$row = $rs->fetch_assoc();
+		generateTabs($display_page,$row,$ulClass='center-tab');
+	}
+}
+
 
 /////////// get_links() ends here
 //////////////////////////////
@@ -696,6 +724,248 @@ function GetSideBarNavigation($display_page,$menu_location){
 				</nav>
 			</div>
 <?php 	}
+	}
+}
+
+function ShowTableTypeHeaderContent($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'header%' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'header%' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$header = $row['description'];
+				$listStyle = $row['list_style'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
+				<h1 id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+					<?php echo $header; ?>
+				</h1>
+			<?php
+			}
+		}
+	}
+}
+
+function ShowTableTypeSubHeaderContent($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'subheader%' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'subheader%' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$header = $row['description'];
+				$listStyle = $row['list_style'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
+				<h2 id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+					<?php echo $header; ?>
+				</h2>
+			<?php
+			}
+		}
+	}
+}
+
+function ShowTableTypeBanner($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'banner' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'banner' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$banner = getBannerImages($row['description']);
+				$listStyle = $row['list_style'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); 
+				if(!empty($banner)) { ?>
+					<div class="<?php echo $divClass; ?>">
+						<div id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;">
+							<section class='section-sep'>
+								<img style="width:100%;height:<?php echo $height; ?>;" src="<?php echo $banner; ?>">
+							</section>
+						</div>
+					</div>
+					<?php	
+				}
+			}
+		}
+	}
+}
+
+function ShowTableTypeContent($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'content' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'content' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$iframeUrl = getIframeUrl($row['description']);
+				$listStyle = $row['list_style'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); 
+				if(!empty($iframeUrl)) { ?>
+					<div class="<?php echo $divClass; ?>">
+						<iframe id="<?php echo $listStyle; ?>" align="<?php echo $align; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" src="<?php echo $iframeUrl; ?>"></iframe>
+					</div>
+					<?php	
+				}
+			}
+		}
+	}
+}
+
+
+
+function ShowTableTypeSlider($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type='slider' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type='slider' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$sliders = getSliderImages($row['description']);
+				$listStyle = $row['list_style'];
+				//$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
+				if(!empty($sliders)){ ?>
+					<div class="<?php echo $divClass; ?>">
+						<div id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;" class="slider">
+							<div id="myCarousel" style="height:<?php echo $height; ?>;" class="carousel slide" data-ride="carousel">
+								<!-- Indicators -->
+								<ol class="carousel-indicators">
+									<?php foreach($sliders as $key=>$slider){ ?>
+										<li data-target="#myCarousel" data-slide-to="<?php echo $key; ?>" class="<?php echo ($key==0 ?'active':''); ?>"></li>
+									<?php } ?>
+								</ol>
+								<div class="carousel-inner">
+									<?php foreach($sliders as $key=>$slider){ ?>
+										<div style="height:<?php echo $height; ?>;" class="item <?php echo ($key==0 ?'active':''); ?>">
+											<img style="height:<?php echo $height; ?>;" src="<?php echo $slider; ?>" alt="" class="img-responsive">
+											<!--<div class="container">
+												<div class="carousel-caption slide2">
+													<h1><?php //echo HOME_SLIDER_TITLE2 ?></h1>
+													<p><?php //echo HOME_SLIDER_CONTENT2 ?></p>
+													<p><a class="btn btn-lg btn-primary" href="#" role="button"><?php //echo HOME_SLIDER_BUTTON_TEXT2 ?></a></p>
+												</div>
+											</div>-->
+										</div>
+									<?php } ?>
+								</div>
+								<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev"> <span class="glyphicon glyphicon-chevron-left"></span></a> <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next"> <span class="glyphicon glyphicon-chevron-right"></span></a>
+							</div>
+							<!-- /.carousel -->
+						</div>
+					</div>
+					<?php	
+				}
+			}
+		}
+	}
+}
+
+function ShowTableTypeImage($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type='image' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type='image' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$images = getImages($row['description']);
+				$listStyle = $row['list_style'];
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options'],true);
+				if(!empty($images)){ ?>
+					<?php foreach($images as $key=>$image){ ?>
+						<img src="<?php echo $image; ?>" id="<?php echo $listStyle; ?>" style="margin:10px;height:<?php echo $height; ?>;width:<?php echo $width; ?>;"></li>
+					<?php } ?>
+				<?php
+				}
+			}
+		}
 	}
 }
 ?>

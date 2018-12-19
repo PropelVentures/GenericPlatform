@@ -304,18 +304,10 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
 
 function addData()
 {
-
-    #exit("INSIDE addData()");
-
     if (array_key_exists('field_name_unique', $_POST)) {
-
         unset($_POST['field_name_unique']);
-
-        //var_dump($_POST);
     }
-
     if (array_key_exists('old_audio', $_POST)) {
-
         unset($_POST['old_audio']);
     }
 
@@ -695,10 +687,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
         }
     }
 
-
-//print_r($_POST);die;
-    //exit($_SESSION['dict_id']);
-
+    /*pr($_SESSION['update_table2']['database_table_name']);
+	pr($_SESSION['update_table2']['keyfield']);
+	pr($_SESSION['search_id2']);
+	pr($_SESSION['dict_id']);
+	pr($_POST);die; */
     $status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
 
@@ -799,43 +792,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'login') {
     $value1 = $_POST[$loginKeys[0]];
 
     $value2 = $_POST[$loginKeys[1]];
+	if(!empty($value1) && !empty($value2)){
+		$userName = $_SESSION['select_table']['username'];
 
-    $userName = $_SESSION['select_table']['username'];
+		//exit("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
 
-    //exit("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
+		$rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
 
-    $rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' or $userName = '$value1' and $loginKeys[1] = '$value2' ");
-
-    $row = $rs->fetch_assoc();
-
-
-    if ($row) {
-
-        $_SESSION['uid'] = $row[$pKey];
-
-        $_SESSION['uname'] = $row[$_SESSION['select_table']['username']];
-
-        $_SESSION['user_privilege'] = $row[user_privilege_level];
-
-        if (isset($_SESSION['callBackPage'])) {
+		$row = $rs->fetch_assoc();
 
 
-            echo "<META http-equiv='refresh' content='0;URL=" . $_SESSION['callBackPage'] . "'>";
+		if ($row) {
 
-            unset($_SESSION['callBackPage']);
-            exit();
-        } else {
+			$_SESSION['uid'] = $row[$pKey];
 
-            FlashMessage::add(PROFILE_COMPLETE_MESSAGE);
-            echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL . "index.php'>";
-            exit();
-        }
-    } else {
+			$_SESSION['uname'] = $row[$_SESSION['select_table']['username']];
 
-        FlashMessage::add('UserName or Password Incorrect.');
-        echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
-        exit();
-    }
+			$_SESSION['user_privilege'] = $row[user_privilege_level];
+
+			if (isset($_SESSION['callBackPage'])) {
+
+
+				echo "<META http-equiv='refresh' content='0;URL=" . $_SESSION['callBackPage'] . "'>";
+
+				unset($_SESSION['callBackPage']);
+				exit();
+			} else {
+
+				FlashMessage::add(PROFILE_COMPLETE_MESSAGE);
+				echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL . "index.php'>";
+				exit();
+			}
+		} else {
+
+			FlashMessage::add('UserName or Password Incorrect.');
+			echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+			exit();
+		}
+	} else {
+		FlashMessage::add('UserName or Password Incorrect.');
+		echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+		exit();
+	}
 }
 
 
