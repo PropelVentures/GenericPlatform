@@ -698,9 +698,41 @@ function listvalues($setlistviews) {
 
 function listpageviews($setpageviews) {
 
-    $pageviews = explode(',', $setpageviews);
+    $pageviews = array_filter( array_map('trim', explode(',', $setpageviews)) );
 
     return $pageviews;
+}
+
+/* To Do:-
+ * Get List Select Array
+ * For Target Url & trim each values after explode
+ */
+function getListSelectParams($list_select){
+	$list_select_arr = array();
+	$list_select_sep = array_filter( array_map('trim', explode(';', $list_select)) );
+	foreach ($list_select_sep as $listArray) {
+		$list_select_arr[] = array_filter( array_map('trim', explode(',', $listArray)) );
+	}
+	return $list_select_arr;
+}
+
+/* To Do:-
+ * Get Alignment Class
+ * For Edit & View Operation
+ * @params To check 
+ * single_line_left , single_line_right, single_line_center 
+ */
+function getAlignmentClass($operation){
+	$operations = array_filter( array_map('trim', explode(';', $operation)) );
+	if(in_array('single_line_left',$operations)){
+		return 'single_line_left';
+	}
+	if(in_array('single_line_right',$operations)){
+		return 'single_line_right';
+	}
+	if(in_array('single_line_center',$operations)){
+		return 'single_line_center';
+	}
 }
 
 

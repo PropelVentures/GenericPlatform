@@ -90,11 +90,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
                 $image_display = 'false';
 				if(!empty($row['view_operations'])){
-					$sigle_line_alignment=$row['view_operations'];
+					$sigle_line_alignment = getAlignmentClass($row['view_operations']);
 				}
             }else{
 				if(!empty($row['edit_operations'])){
-					$sigle_line_alignment=$row['edit_operations'];
+					$sigle_line_alignment = getAlignmentClass($row['edit_operations']);
 				}
 			}
         }

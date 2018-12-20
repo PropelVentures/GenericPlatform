@@ -13,7 +13,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $rs = $con->query($qry);
     $row = $rs->fetch_assoc();
     $listCheck = 'yes';
-    $list_sort = explode(',', $row['list_sort']);
+    $list_sort = array_filter( array_map('trim', explode(',', $row['list_sort'])) );
 	
     ####SET SESSION VAR FOR HOLDING TABLE_TYPE='parent' data_dictionary.`keyfield` and its relevant value for that keyfield column if it exists in the table#########
     $keyfield = $row['keyfield'];
@@ -254,7 +254,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             }
         } else {
 
-            $fields = explode(",", $row[list_fields]);
+            $fields = array_filter( array_map('trim',explode(",", $row['list_fields'])) ); 
 
             $fieldsFinal = '';
             foreach ($fields as $f) {
@@ -529,18 +529,9 @@ table.search( '' ).columns().search( '' ).draw();
              * ********
              * ******************DD->list_select values
              */
-
-            $list_select_sep = explode(';', $list_select);
-
-            foreach ($list_select_sep as $listArray) {
-
-                $list_select_arr[] = explode(",", $listArray);
-            }
-
-
-
-
-            if ($list->num_rows == 0) {
+			$list_select_arr = getListSelectParams($list_select);
+            
+			if ($list->num_rows == 0) {
 				$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
                 $navList = $nav->fetch_assoc();
                 /// Extracting action ,when user click on edit button or on list

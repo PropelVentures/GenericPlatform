@@ -8,11 +8,7 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
     $table_name = trim($row['database_table_name']);
     $list_fields = trim($row['list_fields']);
     $dict_id = $row['dict_id'];
-	$list_select_arr = array();
-	$list_select_sep = explode(';', $list_select);
-	foreach ($list_select_sep as $listArray) {
-		$list_select_arr[] = explode(",", $listArray);
-	}
+	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<div class='boxViewContainer' id='content<?php echo $tab_num; ?>'>
 		<!-- the input fields that will hold the variables we will use -->
@@ -67,6 +63,7 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 						 */
 						$listData = array();
 						while ($row = $rs->fetch_assoc()) {
+							$row['generic_field_name'] =  trim($row['generic_field_name']);
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
 								$listData[] = strip_tags($listRecord[$row['generic_field_name']]);
 							}

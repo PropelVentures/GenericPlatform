@@ -8,11 +8,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
     $table_name = trim($row['database_table_name']);
     $list_fields = trim($row['list_fields']);
     $dict_id = $row['dict_id'];
-	$list_select_arr = array();
-	$list_select_sep = explode(';', $list_select);
-	foreach ($list_select_sep as $listArray) {
-		$list_select_arr[] = explode(",", $listArray);
-	}
+	$list_select_arr = getListSelectParams($list_select);
 	$mapData= array();
 	if ($list->num_rows > 0) {
 		$i=0;
@@ -63,6 +59,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 					$tempLatLong['lat'] = '';
 					$tempLatLong['lng'] = '';
 					while ($row = $rs->fetch_assoc()) {
+						$row['generic_field_name'] =  trim($row['generic_field_name']);
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
 							if($row['format_type'] == 'GPS_latitude'){
 								$tempLatLong['lat'] = $listRecord[$row['generic_field_name']];
@@ -79,14 +76,11 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 						$tempLatLong['target_url2'] = $target_url2;
 						$mapData[] = $tempLatLong;
 					}
-					//$latLng = array_filter($latLng);
-					//pr($listData);
 				}
 			}/// end of mainIF ?>
 		<?php
 		$count++;
 		}
-		//pr($mapData);
 		} else { ?>
 		<div> No record found!</div>
 	<?php } ?>
@@ -100,10 +94,9 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 				center: {lat: <?php echo MAP_CENTER_LATITUDE; ?>, lng: <?php echo MAP_CENTER_LONGITUDE; ?>}
 			});
 			<?php foreach($mapData as $key=>$data){ ?>
-				var listData = '<?php echo implode('<br>',$data['list_data']); ?>';
+				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
 				var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
 					position:new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>),
-					//icon:'<?php if($provider[0]['selected']){ echo  WWW_BASE.'img/selected_users.png';} else { echo WWW_BASE.'img/plus.png';} ?>',
 					id: '<?php echo $key ?>',
 					title: "<?php echo ucwords(@$data['list_data'][0]); ?>",
 					label: "<?php echo substr(@$data['list_data'][0],0,1); ?>",
