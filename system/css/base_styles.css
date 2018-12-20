@@ -346,6 +346,8 @@ input:checked + .boolean_slider_span {  box-shadow:0 0 0 2px limeGreen,0 0 2px l
     align-content: center;
 }
 .single_line_left{display:flex;justify-content:flex-start;}
+.single_line_right{display:flex;justify-content:flex-end;}
+.single_line_center{display:flex;justify-content:center;}
 .left-sidebar,.right-sidebar{padding:20px 0 0 0;}
 
 .center_cont{display:flex; justify-content:center;}

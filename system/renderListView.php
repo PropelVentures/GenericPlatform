@@ -8,11 +8,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
     $table_name = trim($row['database_table_name']);
     $list_fields = trim($row['list_fields']);
     $dict_id = $row['dict_id'];
-	$list_select_arr = array();
-	$list_select_sep = explode(';', $list_select);
-	foreach ($list_select_sep as $listArray) {
-		$list_select_arr[] = explode(",", $listArray);
-	}
+	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<table id='example' class='display nowrap compact' cellspacing='0' width='100%'>
