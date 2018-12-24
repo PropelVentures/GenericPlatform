@@ -1,0 +1,8 @@
+INSERT INTO `navigation` (`nav_id`, `display_page`, `menu_location`, `item_number`, `item_label`, `item_target`, `target_display_page`, `loginRequired`, `item_help`, `item_style`, `item_privilege`, `item_icon`, `item_visibility`, `admin_level`, `enabled`, `menu_orientation`, `page_layout_style`) VALUES (NULL, 'ALL', 'header', '1', 'Login', 'main.php', 'genericlogin', 'false', '', '', '1', '', '1', '1', '1', 'HORIZONTAL', '');
+
+
+INSERT INTO `navigation` (`nav_id`, `display_page`, `menu_location`, `item_number`, `item_label`, `item_target`, `target_display_page`, `loginRequired`, `item_help`, `item_style`, `item_privilege`, `item_icon`, `item_visibility`, `admin_level`, `enabled`, `menu_orientation`, `page_layout_style`) VALUES (NULL, 'ALL', 'header', '2', 'Signup', 'main.php', 'genericsignup', 'false', '', '', '1', '', '1', '1', '1', 'HORIZONTAL', '');
+
+
+
+INSERT INTO `field_dictionary` (`field_def_id`, `table_alias`, `generic_field_name`, `display_field_order`, `field_identifier`, `format_type`, `format_length`, `field_label_name`, `field_style`, `visibility`, `privilege_level`, `editable`, `required`, `error_message`, `help_message`, `dropdown_alias`) VALUES (NULL, 'genericlogin', 'email', '1', 'KEYFIELD', 'email', '', 'Email', '', '1', '9', '5', '0', '', '', ''), (NULL, 'genericlogin', 'password', '2', NULL, 'password', '', 'Password', '', '1', '5', '5', '0', '', '', ''), (NULL, 'genericlogin', 'uname', '3', NULL, 'username', '', 'Your Name', '', '0', '5', '5', '0', '', '', '');

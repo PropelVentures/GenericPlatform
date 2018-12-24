@@ -235,6 +235,9 @@ define("MAP_CENTER_LATITUDE" , 28.628454); //float value
 define("MAP_CENTER_LONGITUDE" , 77.376945); //float value
 define("MAP_ZOOM" , 9); //integer
 
+/********************SOCIAL CREDENTIALS********************/
+define("FACEBOOK_APP_ID" , "372901176588464");
+
 
 
 

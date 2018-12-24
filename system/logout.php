@@ -6,4 +6,4 @@
         
 	@session_destroy();
 	
-	echo "<script>window.location='login.php';</script>";
+	echo "<script>window.location='../index.php';</script>";

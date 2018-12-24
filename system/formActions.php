@@ -486,275 +486,243 @@ function addData()
 
 /*
  *
- *
- *
- *
- *
- *
  * Update function STARTS here
- *
- *
- *
- *
- *
- *
- *
- *
+ * Also check table type to call function;
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-
-
-//    echo "<pre>";
-//    print_r($_POST);
-//    print_r($_SESSION);
-//    die;
-
-
-    if (array_key_exists('old_audio', $_POST)) {
-
-        unset($_POST['old_audio']);
-    }
-
-
-
-    // echo "<pre>";
-    //print_r($_POST);
-    //exit();
-
-    /*     * **** for pdf files ********** */
-
-    foreach ($_POST['pdf'] as $img => $img2) {
-        // print_r($img);
-        //print_r($img2['imageName']);
-        //print_r($img2['uploadcare']);
-
-
-        if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-
-            $ret = uploadPdfFile($img2['uploadcare'], $img2['imageName']);
-
-            $oldImage = $_POST[$img]['img_extra'];
-
-            if (!empty($ret['image'])) {
-
-                unset($_POST['pdf'][$img]);
-
-                //var_dump($_POST);
-
-                $_POST[$img] = $ret['image'];
-            }
-
-            //if user want to replace current image
-
-            if (!empty($oldImage)) {
-
-                @unlink(USER_UPLOADS . "pdf/$oldImage");
-
-
-                //unset($_POST[$img]);
-            }
-            //if user didn't touch the with images
-        } else {
-
-//if user clicks on remove current image
-            if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-
-                if (!empty($_POST[$img]['img_extra'])) {
-
-                    @unlink(USER_UPLOADS . "pdf/$img2[imageName]");
-
-
-
-
-                    unset($_POST['pdf'][$img]);
-
-                    $_POST[$img] = '';
-                } else {
-
-                    unset($_POST['pdf'][$img]);
-                }
-            } else {
-
-                unset($_POST['pdf'][$img]);
-            }
-        }
-    }
-//deleting array which is used for holding imgu values
-    if (empty($_POST['pdf']))
-        unset($_POST['pdf']);
-
-
-
-
-
-    /*     * ***For images********** */
-
-    foreach ($_POST['imgu'] as $img => $img2) {
-        // print_r($img);
-        //print_r($img2['imageName']);
-        //print_r($img2['uploadcare']);
-
-
-        if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-
-            $ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
-
-            $oldImage = $_POST[$img]['img_extra'];
-
-            if (!empty($ret['image'])) {
-
-                unset($_POST['imgu'][$img]);
-
-                //var_dump($_POST);
-
-                $_POST[$img] = $ret['image'];
-            }
-
-            //if user want to replace current image
-
-            if (!empty($oldImage)) {
-
-                @unlink(USER_UPLOADS . "$oldImage");
-
-                @unlink(USER_UPLOADS . "thumbs/$oldImage");
-
-                //unset($_POST[$img]);
-            }
-            //if user didn't touch the with images
-        } else {
-
-//if user clicks on remove current image
-            if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-
-                if (!empty($_POST[$img]['img_extra'])) {
-
-                    @unlink(USER_UPLOADS . "$img2[imageName]");
-
-                    @unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
-
-
-                    unset($_POST['imgu'][$img]);
-
-                    $_POST[$img] = '';
-                } else {
-
-                    unset($_POST['imgu'][$img]);
-                }
-            } else {
-
-                unset($_POST['imgu'][$img]);
-            }
-        }
-    }
-//deleting array which is used for holding imgu values
-    if (empty($_POST['imgu']))
-        unset($_POST['imgu']);
-
-    //echo "<pre>";
-    //print_r($_POST);
-    //exit();
-    //echo '<br><br>';
-
-
-
-    foreach ($_FILES as $file => $file2) {
-
-
-        //checking if audio file is not empty
-        if (!empty($_FILES[$file]['name'])) {
-
-            $file_name = uploadAudioFile($file2);
-            // if file successfully uploaded to target dir
-            if (!empty($file_name)) {
-
-                $_POST[$file] = $file_name;
-            }
-        } else {
-
-            $_POST[$file] = '';
-        }
-
-        //Dealing with database now
-        $row = getWhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
-
-        $oldFile = $row[0][$file];
-
-        if ($oldFile != "") {
-            if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
-                @unlink(USER_UPLOADS . "audio/" . $oldFile);
-            }
-        }
-    }
-
-    /*pr($_SESSION['update_table2']['database_table_name']);
-	pr($_SESSION['update_table2']['keyfield']);
-	pr($_SESSION['search_id2']);
-	pr($_SESSION['dict_id']);
-	pr($_POST);die; */
-    $status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
-
-
-//die("shiv");
-    update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
-//die("shiv update 2");
-    //echo ($_SESSION['return_url2']);
-    //if ($check == 1) {
-
-
-    if ($_GET['checkFlag'] == 'true') {
-
-        if ($_GET['table_type'] == 'child')
-            $link_to_return = $_SESSION['child_return_url2'];
-        else
-            $link_to_return = $_SESSION['return_url2'];
-
-
-        if ($_GET['fnc'] != 'onepage') {
-
-            //exit($link_to_return);
-            if($status === true)
-                echo "<script>window.location='$link_to_return';</script>";
-            else
-            {
-                echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
-            }
-        } else {
-            if($status === true)
-                echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]';</script>";
-            else
-            {
-                echo "<script> alert(\"$status\"); window.location='$link_to_return$_SESSION[anchor_tag]'; </script>";
-            }
-        }
-    } else {
-
-
-        if (!empty($_SESSION['display2'])) {
-
-            $_SESSION[display] = $_SESSION['display2'];
-        }
-
-        if ($_GET['fnc'] != 'onepage') {
-            if($status === true)
-                echo "<script>window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]';</script>";
-            else
-            {
-                echo "<script> alert(\"$status\"); window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]'; </script>";
-            }
-        } else {
-            if($status === true)
-                echo "<script>window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]';</script>";
-            else
-            {
-                echo "<script> alert(\"$status\"); window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]'; </script>";
-            }
-        }
-    }
-    // } else
-    // echo('update error');
+	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
+	switch($_GET['table_type']){
+		case 'login':
+			callToLogin();
+			break;
+			
+		case 'facebooklogin':
+			echo json_encode(facebookLogin());
+			break;
+		default:
+			if (array_key_exists('old_audio', $_POST)) {
+				unset($_POST['old_audio']);
+			}
+			/****** for pdf files ********** */
+			foreach ($_POST['pdf'] as $img => $img2) {
+				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+					$ret = uploadPdfFile($img2['uploadcare'], $img2['imageName']);
+					$oldImage = $_POST[$img]['img_extra'];
+					if (!empty($ret['image'])) {
+						unset($_POST['pdf'][$img]);
+						$_POST[$img] = $ret['image'];
+					}
+					//if user want to replace current image
+					if (!empty($oldImage)) {
+						@unlink(USER_UPLOADS . "pdf/$oldImage");
+					}
+					//if user didn't touch the with images
+				} else {
+					//if user clicks on remove current image
+					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+						if (!empty($_POST[$img]['img_extra'])) {
+							@unlink(USER_UPLOADS . "pdf/$img2[imageName]");
+							unset($_POST['pdf'][$img]);
+							$_POST[$img] = '';
+						} else {
+							unset($_POST['pdf'][$img]);
+						}
+					} else {
+						unset($_POST['pdf'][$img]);
+					}
+				}
+			}
+			//deleting array which is used for holding imgu values
+			if (empty($_POST['pdf']))
+				unset($_POST['pdf']);
+
+			/*****For images********** */
+			foreach ($_POST['imgu'] as $img => $img2) {
+				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+					$ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
+					$oldImage = $_POST[$img]['img_extra'];
+					if (!empty($ret['image'])) {
+						unset($_POST['imgu'][$img]);
+						$_POST[$img] = $ret['image'];
+					}
+					//if user want to replace current image
+					if (!empty($oldImage)) {
+						@unlink(USER_UPLOADS . "$oldImage");
+						@unlink(USER_UPLOADS . "thumbs/$oldImage");
+					}
+					//if user didn't touch the with images
+				} else {
+					//if user clicks on remove current image
+					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+						if (!empty($_POST[$img]['img_extra'])) {
+							@unlink(USER_UPLOADS . "$img2[imageName]");
+							@unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
+							unset($_POST['imgu'][$img]);
+							$_POST[$img] = '';
+						} else {
+							unset($_POST['imgu'][$img]);
+						}
+					} else {
+						unset($_POST['imgu'][$img]);
+					}
+				}
+			}
+			//deleting array which is used for holding imgu values
+			if (empty($_POST['imgu']))
+				unset($_POST['imgu']);
+
+			foreach ($_FILES as $file => $file2) {
+				//checking if audio file is not empty
+				if (!empty($_FILES[$file]['name'])) {
+					$file_name = uploadAudioFile($file2);
+					// if file successfully uploaded to target dir
+					if (!empty($file_name)) {
+						$_POST[$file] = $file_name;
+					}
+				} else {
+					$_POST[$file] = '';
+				}
+				//Dealing with database now
+				$row = getWhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+				$oldFile = $row[0][$file];
+				if ($oldFile != "") {
+					if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
+						@unlink(USER_UPLOADS . "audio/" . $oldFile);
+					}
+				}
+			}
+			$status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+
+			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
+			
+			if ($_GET['checkFlag'] == 'true') {
+				if ($_GET['table_type'] == 'child')
+					$link_to_return = $_SESSION['child_return_url2'];
+				else
+					$link_to_return = $_SESSION['return_url2'];
+
+				if ($_GET['fnc'] != 'onepage') {
+					//exit($link_to_return);
+					if($status === true)
+						echo "<script>window.location='$link_to_return';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
+					}
+				} else {
+					if($status === true)
+						echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$link_to_return$_SESSION[anchor_tag]'; </script>";
+					}
+				}
+			} else {
+				if (!empty($_SESSION['display2'])) {
+					$_SESSION[display] = $_SESSION['display2'];
+				}
+				if ($_GET['fnc'] != 'onepage') {
+					if($status === true)
+						echo "<script>window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]'; </script>";
+					}
+				} else {
+					if($status === true)
+						echo "<script>window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]'; </script>";
+					}
+				}
+			}
+		break;
+	}
+	exit;
 }
 
+/*
+ * // To Do: Login Function functionality
+ *
+ */
+function callToLogin(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$query = "SELECT * FROM $table WHERE ";
+		$emailValue = $_POST[$_SESSION['user_field_email']];
+		$passValue = $_POST[$_SESSION['user_field_password']];
+		if(!empty($emailValue) && !empty($passValue)){
+			$query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+			$query .= " AND $_SESSION[user_field_password] = '$passValue'" ;
+			$userQuery = $con->query($query) OR $message = mysqli_error($con);
+			if($userQuery->num_rows > 0){
+				$user = $userQuery->fetch_assoc();
+				$_SESSION['uid'] = $user[$primaryKey];
+				$_SESSION['user_privilege'] = $user['user_privilege_level'];
+				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+				$message = '';
+				//$message = PROFILE_COMPLETE_MESSAGE;
+				$returnUrl = BASE_URL."index.php";
+			} else {
+				$message = "Invalid Email/Password";
+			}
+		}
+	}
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
+
+/*
+ * // To Do: Login Function functionality
+ *
+ */
+function facebookLogin(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		return [
+			'message' => "Comming soon",
+			'returnUrl' =>$returnUrl
+		];
+		// TO be done
+		$facebookIdValue = $_POST['id'];
+		$emailValue = $_POST[$_SESSION['user_field_email']];
+		//$check = "SELECT * FROM $table WHERE $_SESSION[user_field_email] = '$emailValue'";
+		$query = "SELECT * FROM $table WHERE ";
+		$passValue = $_POST[$_SESSION['user_field_password']];
+		if(!empty($emailValue) && !empty($passValue)){
+			$query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+			$query .= " AND $_SESSION[user_field_password] = '$passValue'" ;
+			$userQuery = $con->query($query) OR $message = mysqli_error($con);
+			if($userQuery->num_rows > 0){
+				$user = $userQuery->fetch_assoc();
+				$_SESSION['uid'] = $user[$primaryKey];
+				$_SESSION['user_privilege'] = $user['user_privilege_level'];
+				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+				$message = '';
+				//$message = PROFILE_COMPLETE_MESSAGE;
+				$returnUrl = BASE_URL."index.php";
+			} else {
+				$message = "Invalid Email/Password";
+			}
+		}
+	}
+	return [
+		'message' => $message,
+		'returnUrl' =>$returnUrl
+	];
+}
 
 
 
@@ -787,7 +755,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'login') {
     $con = connect();
 
     $loginKeys = array_keys($_POST);
-
 
     $value1 = $_POST[$loginKeys[0]];
 
@@ -824,14 +791,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'login') {
 				exit();
 			}
 		} else {
-
 			FlashMessage::add('UserName or Password Incorrect.');
 			echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
 			exit();
 		}
 	} else {
+		//pr($_POST['uri']);
 		FlashMessage::add('UserName or Password Incorrect.');
 		echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+		exit();
+	}
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'genericlogin') {
+
+
+    $tbl = $_SESSION['select_table']['database_table_name'];
+
+    $pKey = $_SESSION['select_table']['keyfield'];
+
+    $con = connect();
+
+    $loginKeys = array_keys($_POST);
+
+    $value1 = $_POST[$loginKeys[0]];
+
+    $value2 = $_POST[$loginKeys[1]];
+	
+	if(!empty($value1) && !empty($value2)){
+		$rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' and $loginKeys[1] = '$value2' ");
+		$row = $rs->fetch_assoc();
+		if ($row) {
+
+			$_SESSION['uid'] = $row[$pKey];
+
+			$_SESSION['uname'] = $row[$_SESSION['select_table']['username']];
+
+			$_SESSION['user_privilege'] = $row[user_privilege_level];
+
+			if (isset($_SESSION['callBackPage'])) {
+
+
+				echo "<META http-equiv='refresh' content='0;URL=" . $_SESSION['callBackPage'] . "'>";
+
+				unset($_SESSION['callBackPage']);
+				exit();
+			} else {
+
+				FlashMessage::add(PROFILE_COMPLETE_MESSAGE);
+				echo BASE_URL;die;
+				header("Location:".BASE_URL);
+				exit();
+			}
+		} else {
+			FlashMessage::add('UserName or Password Incorrect.');
+			header("Location:".$_POST['uri']);
+			exit();
+		}
+	} else {
+		FlashMessage::add('UserName or Password Incorrect.');
+		header("Location:".$_POST['uri']);
 		exit();
 	}
 }
