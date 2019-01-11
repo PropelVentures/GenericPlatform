@@ -497,9 +497,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 			callToLogin();
 			break;
 			
+		case 'signup':
+			callToSignup();
+			break;
+			
 		case 'facebooklogin':
 			echo json_encode(facebookLogin());
 			break;
+			
+		case 'linkedinlogin':
+			echo json_encode(linkedInLogin());
+			break;
+			
+		case 'linkedinimportprofile':
+			echo json_encode(importProfileFromLinkedIn());
+			break;
+		
+		case 'forgotpassword':
+			forgotPassword();
+			break;
+			
+		case 'reset_password':
+			resetPassword();
+			break;
+		
+		case 'change_password':
+			changePassword();
+			break;
+			
 		default:
 			if (array_key_exists('old_audio', $_POST)) {
 				unset($_POST['old_audio']);
@@ -655,22 +680,32 @@ function callToLogin(){
 	$returnUrl = $_SESSION['return_url2'];
 	if(!empty($_POST)){
 		$query = "SELECT * FROM $table WHERE ";
-		$emailValue = $_POST[$_SESSION['user_field_email']];
-		$passValue = $_POST[$_SESSION['user_field_password']];
-		if(!empty($emailValue) && !empty($passValue)){
-			$query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+		$emailValue = trim($_POST[$_SESSION['user_field_email']]);
+		$usernameValue = trim($_POST[$_SESSION['user_field_uname']]);
+		$passValue = trim($_POST[$_SESSION['user_field_password']]);
+		if( (!empty($emailValue) || !empty($usernameValue) ) && !empty($passValue)){
+			$passValue = md5($passValue);
+			if($emailValue){
+				$query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+			} elseif($usernameValue){
+				$query .= "$_SESSION[user_field_uname] = '$usernameValue'" ;
+			}
 			$query .= " AND $_SESSION[user_field_password] = '$passValue'" ;
 			$userQuery = $con->query($query) OR $message = mysqli_error($con);
 			if($userQuery->num_rows > 0){
 				$user = $userQuery->fetch_assoc();
-				$_SESSION['uid'] = $user[$primaryKey];
-				$_SESSION['user_privilege'] = $user['user_privilege_level'];
-				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
-				$message = '';
-				//$message = PROFILE_COMPLETE_MESSAGE;
-				$returnUrl = BASE_URL."index.php";
+				if($user['isActive'] == 1){
+					$_SESSION['uid'] = $user[$primaryKey];
+					$_SESSION['user_privilege'] = $user['user_privilege_level'];
+					$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+					$message = '';
+					//$message = PROFILE_COMPLETE_MESSAGE;
+					$returnUrl = BASE_URL."index.php";
+				} else {
+					$message = "Your account is Inactive. Please contact to administrator";
+				}
 			} else {
-				$message = "Invalid Email/Password";
+				$message = "Invalid Username/Email or Password";
 			}
 		}
 	}
@@ -679,7 +714,269 @@ function callToLogin(){
 	}
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
+/*
+ * // To Do: Login Function functionality
+ *
+ */
+function callToSignup(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$emailField = $_SESSION['user_field_email'];
+		$passField = $_SESSION['user_field_password'];
+		$unameField = $_SESSION['user_field_uname'];
+		
+		$emailValue = trim($_POST[$_SESSION['user_field_email']]);
+		$passValue = trim($_POST[$_SESSION['user_field_password']]);
+		$unameValue = trim($_POST[$_SESSION['user_field_uname']]);
+		if(!empty($emailValue) && !empty($passValue) && !empty($unameValue)){
+			$checkEmailUnique = $con->query("SELECT * FROM $table WHERE $emailField = '$emailValue'");
+			if($checkEmailUnique->num_rows > 0){
+				$message = "Email address already exist.";
+				echo "<script>alert('$message');</script>";
+				echo "<script>window.location='".$returnUrl."';</script>";
+				return;
+			}
+			$checkUsernameUnique = $con->query("SELECT * FROM $table WHERE $unameField = '$unameValue'");
+			if($checkUsernameUnique->num_rows > 0){
+				$message = "Username already exist.";
+				echo "<script>alert('$message');</script>";
+				echo "<script>window.location='".$returnUrl."';</script>";
+				return;
+			}
+			$_POST = array_map("trim", $_POST);
+			$data = $_POST;
+			$data[$passField] = md5($data[$passField]);
+			$data['user_privilege_level'] = 5;
+			$data['isActive'] = 0;
+			$data['token'] = uniqid();
+			$data['timeout'] = date('Y-m-d H:i:s',strtotime('+1 day'));
+			$user_id = insert($table,$data);
+			$status = sendVerificationEmail($data);
+			if($status == true){
+				$message = "Please verify your email address sent to your email";
+				$returnUrl = BASE_URL."index.php";
+			} else {
+				$message = $status;
+			}
+		}
+		
+	}
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
 
+/*
+ * // To Do: forgotPassword Function
+ *
+ */
+function forgotPassword(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$emailField = $_SESSION['user_field_email'];
+		$emailValue = trim($_POST[$_SESSION['user_field_email']]);
+		if(!empty($emailValue)){
+			$checkEmail = $con->query("SELECT * FROM $table WHERE $emailField = '$emailValue'");
+			if($checkEmail->num_rows == 0){
+				$message = "Email address is not registered with us.";
+				echo "<script>alert('$message');</script>";
+				echo "<script>window.location='".$returnUrl."';</script>";
+				return;
+			}
+			$user = $checkEmail->fetch_assoc();
+			if($user['isActive'] == 1){
+				$data['token'] = uniqid();
+				$data['timeout'] = date('Y-m-d H:i:s',strtotime('+1 day'));
+				$where = array($emailField => $emailValue);
+				update($table,$data,$where);
+				$status = sendResetLinkEmail($data,$emailValue);
+				if($status == true){
+					$message = "Please check your email with reset password link.";
+					$returnUrl = BASE_URL."index.php";
+				} else {
+					$message = $status;
+				}
+			} else {
+				$message = "Your account is Inactive. Please contact to administrator";
+			}
+		}
+		
+	}
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
+
+/*
+ * // To Do: resetPassword Function
+ *
+ */
+function resetPassword(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+	$token = $_SESSION['reset_token'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$checkToken = $con->query("SELECT * FROM $table WHERE token = '$token' AND timeout > '".date('Y-m-d H:i:s')."'");
+		if($checkToken->num_rows > 0){
+			$passwordField = $_SESSION['user_field_password'];
+			$confirmPasswordField = $_SESSION['user_field_confirm_password'];
+			$passwordValue = trim($_POST[$passwordField]);
+			$confirmPasswordValue = trim($_POST[$confirmPasswordField]);
+			if(empty($passwordValue)){
+				$message = "Please enter new password.";
+			} elseif(empty($confirmPasswordValue)){
+				$message = "Please confirm your password.";
+			} elseif($passwordValue != $confirmPasswordValue){
+				$message = "Your passwords do not match. Please type carefully.";
+			} else {
+				$user = $checkToken->fetch_assoc();
+				$passwordValue = md5($passwordValue);
+				$update = $con->query("UPDATE $table SET $passwordField='$passwordValue' , token=NULL ,timeout=NULL WHERE token = '$token'");
+				unset($_SESSION['reset_token']);
+				$message = "Your password has been changed. Please login.";
+				$returnUrl = BASE_URL."index.php";
+			}
+		} else {
+			$returnUrl = BASE_URL."index.php";
+			$message = "Invalid or expired token. Please check your email or try again.";
+		}
+	}
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
+
+/*
+ * // To Do: change Password Function
+ *
+ */
+function changePassword(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+	$token = $_SESSION['reset_token'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $user_id = $_SESSION['uid'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$userQuery = $con->query("SELECT * FROM $table WHERE $primaryKey = '$user_id'");
+		if($userQuery->num_rows > 0){
+			$oldPasswordField = $_SESSION['user_field_old_password'];
+			$passwordField = $_SESSION['user_field_password'];
+			$confirmPasswordField = $_SESSION['user_field_confirm_password'];
+			$oldPasswordValue = trim($_POST[$oldPasswordField]);
+			$passwordValue = trim($_POST[$passwordField]);
+			$confirmPasswordValue = trim($_POST[$confirmPasswordField]);
+			if(empty($oldPasswordValue)){
+				$message = "Please enter old password.";
+			} elseif(empty($passwordValue)){
+				$message = "Please enter your new password.";
+			} elseif(empty($confirmPasswordValue)){
+				$message = "Please confirm your password.";
+			} elseif($passwordValue != $confirmPasswordValue){
+				$message = "Your passwords do not match. Please type carefully.";
+			} else {
+				$user = $userQuery->fetch_assoc();
+				if(md5($oldPasswordValue) != $user[$passwordField]){
+					$message = "Your old password is incorrect. Please try again.";
+				} else {
+					$passwordValue = md5($passwordValue);
+					$update = $con->query("UPDATE $table SET $passwordField='$passwordValue' WHERE $primaryKey = '$user_id'");
+					$message = "Your password has been changed.";
+					$returnUrl = BASE_URL."index.php";
+				}
+			}
+		} else {
+			$returnUrl = BASE_URL."index.php";
+			$message = "Invalid user. Please check your email or try again.";
+		}
+	}
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
+
+
+function sendResetLinkEmail($data,$email){
+	$returnUrl = $_SESSION['return_url2'];
+	$to = $email;
+	$token = $data['token'];
+	$table = $_SESSION['update_table2']['database_table_name'];
+	$url = BASE_URL_SYSTEM."main.php?action=reset_email&table=$table&token=$token";
+	$subject = "Reset Password | Generic Platform";
+	$message = "<html><head><title>Reset Password</title></head><body>";
+	$message .= "Hi,<br/>";
+	$message .= "Please click <a href='".$url."'>here</a> to reset your password or visit the below link.</br>";
+	$message .= "$url";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	//$headers .= 'Cc: myboss@example.com' . "\r\n";
+
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
+
+function sendVerificationEmail($data){
+	$returnUrl = $_SESSION['return_url2'];
+	$to = $data[$_SESSION['user_field_email']];
+	$token = $data['token'];
+	$table = $_SESSION['update_table2']['database_table_name'];
+	$url = BASE_URL_SYSTEM."main.php?action=verify_registration_email&table=$table&token=$token";
+	$subject = "Email Verification | Generic Platform";
+	$message = "<html><head><title>Email Verification</title></head><body>";
+	$message .= "Hi,<br/>";
+	$message .= "Please click <a href='".$url."'>here</a> to verify your email address or visit the below link.</br>";
+	$message .= "$url";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	//$headers .= 'Cc: myboss@example.com' . "\r\n";
+
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
 /*
  * // To Do: Login Function functionality
  *
@@ -691,31 +988,164 @@ function facebookLogin(){
 	$message = "Please enter required fields";
 	$returnUrl = $_SESSION['return_url2'];
 	if(!empty($_POST)){
-		return [
-			'message' => "Comming soon",
-			'returnUrl' =>$returnUrl
-		];
-		// TO be done
 		$facebookIdValue = $_POST['id'];
-		$emailValue = $_POST[$_SESSION['user_field_email']];
-		//$check = "SELECT * FROM $table WHERE $_SESSION[user_field_email] = '$emailValue'";
-		$query = "SELECT * FROM $table WHERE ";
-		$passValue = $_POST[$_SESSION['user_field_password']];
-		if(!empty($emailValue) && !empty($passValue)){
-			$query .= "$_SESSION[user_field_email] = '$emailValue'" ;
-			$query .= " AND $_SESSION[user_field_password] = '$passValue'" ;
-			$userQuery = $con->query($query) OR $message = mysqli_error($con);
-			if($userQuery->num_rows > 0){
-				$user = $userQuery->fetch_assoc();
+		$emailField = $_SESSION['user_field_email'];
+		$unameField = $_SESSION['user_field_uname'];
+		$emailValue = $_POST['email'];
+		$passField = $_SESSION['user_field_password'];
+		if(!empty($emailValue)){
+			// Check If email already exist. If exist then create a new session of that user
+			$check = "SELECT * FROM $table WHERE $emailField = '$emailValue'";
+			$checkQuery = $con->query($check);
+			$data[$emailField] = $emailValue;
+			$data['oauth_provider'] = 'Facebook';
+			$data['facebook_account'] = $facebookIdValue;
+			if($checkQuery->num_rows > 0){
+				$user = $checkQuery->fetch_assoc();
+				$where = array($primaryKey => $user[$primaryKey]);
+				update($table,$data,$where);
+				$user = get($table,"$primaryKey=$user[$primaryKey]");
+			} else {
+				// Insert new record in users table
+				$uname = explode("@",$emailValue)[0];
+				$data[$unameField] = $uname.time();
+				$data['user_privilege_level'] = 5;
+				$user_id = insert($table,$data);
+				$user = get($table,"$primaryKey=$user_id");
+			}
+			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
 				$_SESSION['user_privilege'] = $user['user_privilege_level'];
 				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
 				$message = '';
-				//$message = PROFILE_COMPLETE_MESSAGE;
 				$returnUrl = BASE_URL."index.php";
 			} else {
-				$message = "Invalid Email/Password";
+				$message = "Your account is Inactive. Please contact to administrator";
 			}
+		}
+	}
+	return [
+		'message' => $message,
+		'returnUrl' =>$returnUrl
+	];
+}
+
+/*
+ * // To Do: Login Function functionality
+ *
+ */
+function linkedInLogin(){
+	$table = $_SESSION['update_table2']['database_table_name'];
+    $primaryKey = $_SESSION['update_table2']['keyfield'];
+    $con = connect();
+	$message = "Please enter required fields";
+	$returnUrl = $_SESSION['return_url2'];
+	if(!empty($_POST)){
+		$linkedInIdValue = $_POST['id'];
+		$emailField = $_SESSION['user_field_email'];
+		$unameField = $_SESSION['user_field_uname'];
+		$emailValue = $_POST['emailAddress'];
+		$passField = $_SESSION['user_field_password'];
+		if(!empty($emailValue)){
+			// Check If email already exist. If exist then create a new session of that user
+			$check = "SELECT * FROM $table WHERE $emailField = '$emailValue'";
+			$checkQuery = $con->query($check);
+			$data[$emailField] = $emailValue;
+			$data['oauth_provider'] = 'linkedIn';
+			if($checkQuery->num_rows > 0){
+				$user = $checkQuery->fetch_assoc();
+				$where = array($primaryKey => $user[$primaryKey]);
+				update($table,$data,$where);
+				$user = get($table,"$primaryKey=$user[$primaryKey]");
+			} else {
+				// Insert new record in users table
+				$uname = explode("@",$emailValue)[0];
+				$data[$unameField] = $uname.time();
+				$data['user_privilege_level'] = 5;
+				$user_id = insert($table,$data);
+				$user = get($table,"$primaryKey=$user_id");
+			}
+			if($user['isActive'] == 1){
+				$_SESSION['uid'] = $user[$primaryKey];
+				$_SESSION['user_privilege'] = $user['user_privilege_level'];
+				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+				$message = '';
+				$returnUrl = BASE_URL."index.php";
+			} else {
+				$message = "Your account is Inactive. Please contact to administrator";
+			}
+		}
+	}
+	return [
+		'message' => $message,
+		'returnUrl' =>$returnUrl
+	];
+}
+
+/*
+ * // To Do: Import Profile From LinkedIn
+ *
+ */
+function importProfileFromLinkedIn(){
+	$display_page = $_GET['display_page'];
+	$returnUrl = BASE_URL."index.php";
+	$message = "";
+	$con = connect();
+	$query = "SELECT * FROM field_dictionary 
+					INNER JOIN data_dictionary ON (data_dictionary.`table_alias` = field_dictionary.`table_alias`)
+					where data_dictionary.table_alias = '$display_page' ORDER BY field_dictionary.display_field_order";
+	$ddQuery = $con->query($query);
+	if($ddQuery->num_rows > 0){
+		
+		$data = array();
+		while($ddRecord = $ddQuery->fetch_assoc()){
+			$table = $ddRecord['database_table_name'];
+			$primaryKey = $ddRecord['keyfield'];
+			$fieldIdentifier = trim($ddRecord['field_identifier']);
+			switch($fieldIdentifier){
+				case 'firstname':
+					$data[$ddRecord['generic_field_name']] = $_POST['firstName'];
+					break;
+					
+				case 'lastname':
+					$data[$ddRecord['generic_field_name']] = $_POST['lastName'];
+					break;
+					
+				case 'country':
+					$address = explode(",",$_POST['location']['name']);
+					$data[$ddRecord['generic_field_name']] = @$address[1];
+					break;
+					
+				case 'about':
+					$data[$ddRecord['generic_field_name']] = $_POST['headline'];
+					break;
+					
+				case 'profileimage':
+					if(isset($_POST['pictureUrl']) && !empty($_POST['pictureUrl'])){
+						$content = file_get_contents($_POST['pictureUrl']);
+						//Store in the filesystem.
+						$image_name = uniqid().".jpg";
+						$fp = fopen(USER_UPLOADS.$image_name, "w");
+						fwrite($fp, $content);
+						fclose($fp);
+						$data[$ddRecord['generic_field_name']] = $image_name;
+					}
+					break;
+					
+				case 'description':
+					$data[$ddRecord['generic_field_name']] = $_POST['summary'];
+					break;
+			}
+		}
+		$user = get($table,"$primaryKey=$_SESSION[uid]");
+		if(!empty($user) && $user['oauth_provider'] == 'linkedIn'){
+			if(!empty($data)){
+				$where = array($primaryKey => $_SESSION['uid']);
+				update($table,$data,$where);
+				$message = 'Profie Imported successfully.';
+			}
+		} else {
+			$message = 'Your account is not signed up through LinkedIn.';
 		}
 	}
 	return [
@@ -853,6 +1283,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'genericlogin') 
 		header("Location:".$_POST['uri']);
 		exit();
 	}
+}
+
+
+/**
+ * Verify Token and update status to active
+ *
+ **/
+if($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['action']) && $_GET['action'] == 'verify_registration_email'){
+	verifyEmail();
+}
+
+function verifyEmail(){
+	$con = connect();
+	$returnUrl = BASE_URL."index.php";
+	$token = trim($_GET['token']);
+	$table = trim($_GET['table']);
+	$checkToken = $con->query("SELECT * FROM $table WHERE token = '$token' AND timeout > '".date('Y-m-d H:i:s')."'");
+	if($checkToken->num_rows > 0){
+		$update = $con->query("UPDATE $table SET token=NULL ,timeout=NULL,isActive=1 WHERE token = '$token'");
+		$message = "Your email has been verified.";
+	} else {
+		$message = "Invalid or expired token. Please check your email or try again.";
+	}
+	
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['action']) && $_GET['action'] == 'reset_email'){
+	redirectToResetPassword();
+}
+
+function redirectToResetPassword(){
+	$con = connect();
+	$returnUrl = BASE_URL."index.php";
+	$token = trim($_GET['token']);
+	$table = trim($_GET['table']);
+	$checkToken = $con->query("SELECT * FROM $table WHERE token = '$token' AND timeout > '".date('Y-m-d H:i:s')."'");
+	if($checkToken->num_rows > 0){
+		$dataDictionary = get('data_dictionary',"table_type='reset_password'");
+		$display_page = $dataDictionary['display_page'];
+		$navigation = get('navigation',"target_display_page='$display_page'");
+		$layout = $itemStyle = "";
+		if(!empty($navigation)){
+			$layout = $navigation['page_layout_style'];
+			$itemStyle = $navigation['item_style'];
+		}
+		$_SESSION['reset_token'] = $token;
+		$returnUrl = BASE_URL_SYSTEM."main.php?display=$display_page&layout=$layout&style=$itemStyle";
+		
+	} else {
+		$message = "Invalid or expired token. Please check your email or try again.";
+	}
+	
+	if($message){
+		echo "<script>alert('$message');</script>";
+	}
+	echo "<script>window.location='".$returnUrl."';</script>";
 }
 
 

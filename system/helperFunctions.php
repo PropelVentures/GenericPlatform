@@ -47,7 +47,7 @@ function parseFieldType($row) {
 
     $field_type = explode("(", $field_type);
 
-    $field_length = '';
+    $field_length = '40';
 
     if ($field_type[0] == 'varchar') {
 
@@ -613,6 +613,10 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 								$google_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
 								
+							case 'linkedin_auth':
+								$linkedin_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+								
 							default:
 						}
 
@@ -631,7 +635,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
             $popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
             $customFunctionArray,
             $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array,
-            $submit_array,$facebook_array,$google_array
+            $submit_array,$facebook_array,$google_array,$linkedin_array
         );
 
 }
@@ -1529,4 +1533,86 @@ function generateGoogleButton($google_array){
 		</script>
 	<?php 
 	return $googleButton;
+}
+
+function generateLinkedinButton($linkedin_array){
+	$linkedinButton = "<a onclick='onLinkedInLoad()' class='btn btn-primary update-btn " . $linkedin_array['style'] . "'>
+							<span class='fa fa-linkedin'></span>
+							".$linkedin_array['value']."
+						</a> &nbsp;"; ?>
+	<script type="text/javascript" src="//platform.linkedin.com/in.js">
+		api_key		: <?php echo LINKEDIN_APP_ID. PHP_EOL; ?>
+		authorize	: true
+		scope		: r_basicprofile r_emailaddress
+	</script>
+	<script>
+		// Setup an event listener to make an API call once auth is complete
+		function onLinkedInLoad() {
+			IN.UI.Authorize().place();   
+			IN.Event.on(IN, "auth", getProfileData());
+			//IN.Event.on(IN, "auth", function () { getProfileData(); }); 
+			//IN.Event.on(IN, "logout", function () { onLogout(); });
+		} 
+		// Use the API call wrapper to request the member's profile data
+		function getProfileData() {
+			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address").result(displayProfileData).error(onError);
+		}
+		// Handle the successful return from the API call
+		function displayProfileData(data){
+			var user = data.values[0];
+			
+			console.log(user);
+			/* document.getElementById("picture").innerHTML = '<img src="'+user.pictureUrl+'" />';
+			document.getElementById("name").innerHTML = user.firstName+' '+user.lastName;
+			document.getElementById("intro").innerHTML = user.headline;
+			document.getElementById("email").innerHTML = user.emailAddress;
+			document.getElementById("location").innerHTML = user.location.name;
+			document.getElementById("link").innerHTML = '<a href="'+user.publicProfileUrl+'" target="_blank">Visit profile</a>';
+			document.getElementById('profileData').style.display = 'block'; */
+			// Save user data
+			saveUserData(user);
+		}
+		
+		// Save user data to the database
+		function saveUserData(userData){
+			$.ajax({
+				type: 'POST',
+				url: '?action=update&table_type=linkedinLogin',
+				dataType: 'json',
+				//data: { email : userData.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
+				data: userData,
+				beforeSend: function(xhr) {
+					
+				},
+				success: function(response){
+					if(response.message){
+						alert(response.message);
+						window.location.href = response.returnUrl;
+					} else {
+						window.location.href = response.returnUrl;
+					}
+				},
+				error: function(xhr, status, error) {
+					alert("Something went wrong. Please try again.");
+				}
+			});
+		}
+
+		// Handle an error response from the API call
+		function onError(error) {
+			console.log(error);
+		}
+		
+		// Destroy the session of linkedin
+		function logout(){
+			IN.User.logout(removeProfileData);
+		}
+		
+		// Remove profile data from page
+		function removeProfileData(){
+			//document.getElementById('profileData').remove();
+		}
+		</script>
+	<?php 
+	return $linkedinButton;
 }

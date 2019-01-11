@@ -25,8 +25,11 @@ function get_single_record($db_name, $pkey, $search) {
 //exit("select * from $db_name where $pkey='$search'");
 
     $user = $con->query("select * from $db_name where $pkey='$search'");
-
-    return $user->fetch_assoc();
+	if($user>num_rows){
+		return $user->fetch_assoc();
+	}
+	return array();
+    
 }
 
 /**

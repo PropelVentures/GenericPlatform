@@ -103,6 +103,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         }
 
         $row1 = $rs->fetch_assoc();
+
         $_SESSION['list_pagination'] = $row1['list_pagination'];
 		$tableType = trim(strtolower($row1['table_type']));
         ///////// for displaying image container
@@ -157,7 +158,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 					$single_copy_array,
 					$submit_array,
 					$facebook_array,
-					$google_array
+					$google_array,
+					$linkedin_array
 				)  = $operationsVarArray;      
                 
             }
@@ -168,6 +170,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 		
 		if(!empty($google_array)){
 			$googleButton = generateGoogleButton($google_array);
+		}
+		
+		if(!empty($linkedin_array)){
+			$linkedinButton = generateLinkedinButton($linkedin_array);
 		}
         /// setting for  Save/Update button
         if (!empty($submit_array) ) {
@@ -515,7 +521,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 	//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID"); 
 					$_SESSION['search_id'] = $_SESSION['parent_value'];
 				} else
-					$_SESSION['search_id'] = '76'; /// for displaying one user
+					$_SESSION['search_id'] = $_SESSION['uid']; /// for displaying one user
 
 
 					/* if (isset($_GET['search_id']) && !empty($_GET['search_id'])) {
@@ -825,7 +831,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 					$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
-					
+					$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+					if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
+						$cancelButton = "";// empty
+					}
 
 
 					echo "<div class='form-footer'>      
@@ -834,11 +843,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 							$updateSaveButton
 							$facebookButton
 							$googleButton
+							$linkedinButton
 							$copyButton
 							$addButton
 							$deleteButton
-
-							<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
+							$cancelButton
 						</div>";
 
 					echo "<div style='clear:both'></div><hr>";
@@ -902,11 +911,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 							$updateSaveButton
 							$facebookButton
 							$googleButton
+							$linkedinButton
 							$copyButton
 							$addButton
 							$deleteButton
-								
-							<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
+							$cancelButton
 						</div>
 								
 						<!--</div>-->";###COMMENTED OUT AS IT DOESN"T HAVE OPENING <DIV> TAG
@@ -924,6 +933,18 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 								break;
 							case 'login':
 								$table_type = 'login';
+								break;
+							case 'signup':
+								$table_type = 'signup';
+								break;
+							case 'forgotpassword':
+								$table_type = 'forgotpassword';
+								break;
+							case 'reset_password':
+								$table_type = 'reset_password';
+								break;
+							case 'change_password':
+								$table_type = 'change_password';
 								break;
 							default:
 								$table_type = 'parent';
@@ -1011,6 +1032,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 										$updateSaveButton
 										$facebookButton
 										$googleButton
+										$linkedinButton
 										$copyButton
 										$addButton
 										$deleteButton
@@ -1054,7 +1076,12 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 									}
 
 									$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
-
+									
+									$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+									
+									if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+										$cancelButton = "";// empty
+									}
 									if ($tab_status != 'bars') {
 
 										echo "<div class='form-footer' >                                    
@@ -1063,12 +1090,11 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 												$updateSaveButton
 												$facebookButton
 												$googleButton
+												$linkedinButton
 												$copyButton
 												$addButton
 												$deleteButton
-													
-												<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-								
+												$cancelButton
 											</div>";
 									}
 								}/// if for submit and cancel ends here
@@ -1097,7 +1123,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 						}
 
 						while ($row = $rs2->fetch_assoc()) {
-							if($table_type == 'login'){
+							if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
 								$row['format_type'] =  trim($row['format_type']);
 								if($row['format_type'] == 'email'){
 									$_SESSION['user_field_email'] = $row['generic_field_name'];
@@ -1107,6 +1133,12 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 								}
 								if($row['format_type'] == 'password'){
 									$_SESSION['user_field_password'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'confirm_password'){
+									$_SESSION['user_field_confirm_password'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'old_password'){
+									$_SESSION['user_field_old_password'] = $row['generic_field_name'];
 								}
 								$urow = array();
 							}
@@ -1167,18 +1199,23 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 								$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
 								//if( $row1['dd_editable'] != 0 ){
-
+								
+								$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+								if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+									$cancelButton = "";// empty
+								}
+								
 								echo "<div class='form-footer'>           
 										  
 										" . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "    
 										$updateSaveButton
 										$facebookButton
 										$googleButton
+										$linkedinButton
 										$copyButton
 										$addButton
 										$deleteButton
-
-										<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> 
+										$cancelButton
 									</div>";
 
 								// }

@@ -337,6 +337,18 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 					datepicker($row,$formatArray,$urow, $page_editable);
 				echo "</div></div>";
 			break;
+			
+			case "confirm_password":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "</div></div>";
+			break;
+			
+			case "old_password":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "</div></div>";
+			break;
 				
             default :
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
