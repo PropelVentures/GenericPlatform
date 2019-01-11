@@ -239,8 +239,8 @@ define("MAP_ZOOM" , 9); //integer
 //define("FACEBOOK_APP_ID" , "372901176588464");
 define("FACEBOOK_APP_ID" , "1602880633344065");
 define("GOOGLE_CLIENT_ID" , "33458340737-u50tq5ut3oijde7ufdemf7p37osqnsiu.apps.googleusercontent.com");
-//define("LINKEDIN_APP_ID" , "86j4ktoqu4eouz");
-define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
+define("LINKEDIN_APP_ID" , "86j4ktoqu4eouz");
+//define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
 
 
 
