@@ -79,8 +79,12 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
         if ($_GET['addFlag'] == 'true')
             $row['dd_editable'] = '11';
-
-
+		
+		// Show Empty Field for Login
+		$TABLE_TYPE = trim(strtoupper($row['table_type']));
+		if(in_array($TABLE_TYPE,array('LOGIN'))){
+			$row['dd_editable'] = '11';
+		}		
         if (trim($row['table_type']) != 'transaction') {
             if ($row['dd_editable'] != '11' || $row['editable'] == 'false' || $page_editable == false) {
 
@@ -106,10 +110,9 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
             $row['format_type'] = 'text';
         }
 		$row['strict_disabled'] = '';
-		if(!itemEditable($row['editable'])){
+		if(!loginNotRequired() && !itemEditable($row['editable'])){
 			$row['strict_disabled'] = 'disabled';
 		}
-
         $fieldValue = ($urow != 'false') ? $urow[$field] : '';
     }
     //////////////
@@ -119,6 +122,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     //////////////////////////////////////////////////////////////////
     $userPrivilege = false;
 	if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+		$userPrivilege = true;
+	}
+	
+	if(loginNotRequired()){
 		$userPrivilege = true;
 	}
 	
@@ -329,6 +336,18 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 				echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 					datepicker($row,$formatArray,$urow, $page_editable);
 				echo "</div></div>";
+			break;
+			
+			case "confirm_password":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "</div></div>";
+			break;
+			
+			case "old_password":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "</div></div>";
 			break;
 				
             default :
@@ -979,21 +998,19 @@ function list_fragment($row2) {
      */
 
     echo "<tbody>";
-    while ($rec = $query->fetch_assoc()) {
-
-
-        echo "<tr>";
-
-        $i = 1;
-        foreach ($rec as $val) {
-
-
-            echo "<td class='list_td$i' >$val</td>";
-
-            $i++;
-        }
-        echo "</tr>";
-    }
+	if($query->num_rows > 0){
+		while ($rec = $query->fetch_assoc()) {
+			echo "<tr>";
+			$i = 1;
+			foreach ($rec as $val) {
+				echo "<td class='list_td$i' >$val</td>";
+				$i++;
+			}
+			echo "</tr>";
+		}
+	}else {
+		echo "<tr><td align='center' colspan='".count($labels)."'>No Record Found</td></tr>";
+	}
 
 
     ///////table ends here

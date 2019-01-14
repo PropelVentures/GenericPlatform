@@ -89,6 +89,8 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 			} else {
 				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
 			}
-		} ?>	
-<?php
+		} else { ?>
+	</div>
+		<?php 
+	}
 } ?>

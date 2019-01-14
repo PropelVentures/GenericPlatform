@@ -149,8 +149,10 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			var markerCluster = new MarkerClusterer(map, markers, options);
 		}
 		
-		$(function(){ 
-			initMap();
+		$(function(){
+		   $(window).load(function(){
+				initMap();
+		   });
 		});
 		</script>
 		

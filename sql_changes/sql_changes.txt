@@ -1,5 +1,8 @@
 1. ALTER TABLE `product` ADD `lat` VARCHAR(100) NOT NULL AFTER `transaction_user_privs`;
 2. ALTER TABLE `product` ADD `lng` VARCHAR(100) NOT NULL AFTER `lat`;
 
+ALTER TABLE `user` ADD `token` VARCHAR(255) NULL DEFAULT NULL AFTER `user_privilege_level`, ADD `timeout` DATETIME NULL DEFAULT NULL AFTER `token`;
+
+
 3. INSERT INTO `field_dictionary` (`field_def_id`, `table_alias`, `generic_field_name`, `display_field_order`, `field_identifier`, `format_type`, `format_length`, `field_label_name`, `field_style`, `visibility`, `privilege_level`, `editable`, `required`, `error_message`, `help_message`, `dropdown_alias`) VALUES (NULL, 'products', 'lat', '30', NULL, 'GPS_latitude', '', 'Latitude', '', '1', '5', '5', '0', '', '', '');
 4. INSERT INTO `field_dictionary` (`field_def_id`, `table_alias`, `generic_field_name`, `display_field_order`, `field_identifier`, `format_type`, `format_length`, `field_label_name`, `field_style`, `visibility`, `privilege_level`, `editable`, `required`, `error_message`, `help_message`, `dropdown_alias`) VALUES (NULL, 'products', 'lng', '30', NULL, 'GPS_longitude', '', 'Longitude', '', '1', '5', '5', '0', '', '', '');

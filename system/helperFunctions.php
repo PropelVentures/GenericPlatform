@@ -47,7 +47,7 @@ function parseFieldType($row) {
 
     $field_type = explode("(", $field_type);
 
-    $field_length = '';
+    $field_length = '40';
 
     if ($field_type[0] == 'varchar') {
 
@@ -67,6 +67,16 @@ function parseFieldType($row) {
     }
 
     return $field_length;
+}
+
+function getColumnsNames($table){
+	$con = connect();
+	$columns = array();
+	$query = $con->query("SHOW COLUMNS FROM $table");
+	while($row = $query->fetch_assoc()){
+		$columns[] = $row['Field'];
+	}
+	return $columns;
 }
 
 /*
@@ -594,7 +604,19 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 							case 'submit':
 								$submit_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-
+								
+							case 'facebook_auth':
+								$facebook_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+								
+							case 'google_auth':
+								$google_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+								
+							case 'linkedin_auth':
+								$linkedin_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
+								break;
+								
 							default:
 						}
 
@@ -613,7 +635,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
             $popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
             $customFunctionArray,
             $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array,
-            $submit_array
+            $submit_array,$facebook_array,$google_array,$linkedin_array
         );
 
 }
@@ -1039,9 +1061,11 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 		if (n < Math.abs(per_page)) {slideIndex[tab_num] = box.length} ;
 		for (i = 0; i < box.length; i++) {
 			box[i].classList.remove("showDiv"+tab_num);
+			box[i].classList.add("showDiv"+tab_num);
 			box[i].style.display = "none";
 		}
-		for(item=slideIndex[tab_num] - Math.abs(per_page); item < slideIndex[tab_num]; item++){
+		var start = parseInt(slideIndex[tab_num] - Math.abs(per_page));
+		for(var item = start; item < slideIndex[tab_num]; item++){
 			box[item].classList.add("hideDiv"+tab_num);
 			box[item].style.display = "block"; 
 		}
@@ -1370,4 +1394,225 @@ function popup_add($label, $look) {
 function popup_openChild($label, $look) {
 
     return array("label" => $label, "style" => $look);
+}
+
+function submitOptions($label, $look) {
+    return array("value" => $label, "style" => $look);
+}
+
+function generateFacebookButton($facebook_array){
+	$facebookButton = "<a onclick='fbLogin();' class='btn btn-primary update-btn " . $facebook_array['style'] . "'>
+					<span class='fa fa-facebook'></span>
+					".$facebook_array['value']."
+				</a> &nbsp;"; ?>
+	<script>
+	window.fbAsyncInit = function() {
+		// FB JavaScript SDK configuration and setup
+		FB.init({
+			appId      : '<?php echo FACEBOOK_APP_ID; ?>', // FB App ID
+			cookie     : true,  // enable cookies to allow the server to access the session
+			xfbml      : true,  // parse social plugins on this page
+			version    : 'v2.8' // use graph api version 2.8
+		});
+		
+		// Check whether the user already logged in
+		/* FB.getLoginStatus(function(response) {
+			if (response.status === 'connected') {
+				//display user data
+				//getFbUserData();
+			}
+		}); */
+	};
+
+	// Load the JavaScript SDK asynchronously
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "//connect.facebook.net/en_US/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+
+	// Facebook login with JavaScript SDK
+	function fbLogin() {
+		FB.login(function (response) {
+			if (response.authResponse) {
+				// Get and display the user profile data
+				getFbUserData();
+			} else {
+				alert('User cancelled signup or did not fully authorize.');
+			}
+		}, {scope: 'email'});
+	}
+
+	// Fetch the user profile data from facebook
+	function getFbUserData(){
+		FB.api('/me', {locale: 'en_US', fields: 'id,first_name,last_name,email,link,gender,locale,picture'},
+		function (response) {
+			$.ajax({
+				type: 'POST',
+				url: '?action=update&table_type=facebookLogin',
+				dataType: 'json',
+				data: response,
+				beforeSend: function(xhr) {
+					
+				},
+				success: function(response){
+					if(response.message){
+						alert(response.message);
+						window.location.href = response.returnUrl;
+					} else {
+						window.location.href = response.returnUrl;
+					}
+				},
+				error: function(xhr, status, error) {
+					alert("Something went wrong. Please try again.");
+				}
+			});
+		});
+	}
+	</script>
+	<?php
+	return $facebookButton;
+}
+
+function generateGoogleButton($google_array){
+	$googleButton = "<a id='googleSignup' class='btn btn-primary update-btn " . $google_array['style'] . "'>
+							<span class='fa fa-google'></span>
+							".$google_array['value']."
+						</a> &nbsp;"; ?>
+	<script src="https://apis.google.com/js/api:client.js"></script>
+	<script>
+		var googleUser = {};
+		var googleSignup = function() {
+			gapi.load('auth2', function(){
+				// Retrieve the singleton for the GoogleAuth library and set up the client.
+				auth2 = gapi.auth2.init({
+					client_id: '<?php echo GOOGLE_CLIENT_ID; ?>',
+					cookiepolicy: 'single_host_origin',
+					//callback : 'googleCallback',
+					scope: 'profile email',
+					//approvalprompt:'force',
+					//scope : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
+				});
+				attachSignin(document.getElementById('googleSignup'));
+			});
+		};
+
+		function attachSignin(element) {
+			auth2.attachClickHandler(element, {},
+				function(googleUser) {
+					$.ajax({
+						type: 'POST',
+						url: '?action=update&table_type=googleLogin',
+						dataType: 'json',
+						data: { email : googleUser.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
+						beforeSend: function(xhr) {
+							
+						},
+						success: function(response){
+							if(response.message){
+								alert(response.message);
+								window.location.href = response.returnUrl;
+							} else {
+								window.location.href = response.returnUrl;
+							}
+						},
+						error: function(xhr, status, error) {
+							alert("Something went wrong. Please try again.");
+						}
+					});
+				}, function(error) {
+					//JSON.stringify(error.error, undefined, 2)
+					alert(error.error);
+				}
+			);
+		}
+		
+		googleSignup();
+		</script>
+	<?php 
+	return $googleButton;
+}
+
+function generateLinkedinButton($linkedin_array){
+	$linkedinButton = "<a onclick='onLinkedInLoad()' class='btn btn-primary update-btn " . $linkedin_array['style'] . "'>
+							<span class='fa fa-linkedin'></span>
+							".$linkedin_array['value']."
+						</a> &nbsp;"; ?>
+	<script type="text/javascript" src="//platform.linkedin.com/in.js">
+		api_key		: <?php echo LINKEDIN_APP_ID. PHP_EOL; ?>
+		authorize	: true
+		scope		: r_basicprofile r_emailaddress
+	</script>
+	<script>
+		// Setup an event listener to make an API call once auth is complete
+		function onLinkedInLoad() {
+			IN.UI.Authorize().place();   
+			IN.Event.on(IN, "auth", getProfileData());
+			//IN.Event.on(IN, "auth", function () { getProfileData(); }); 
+			//IN.Event.on(IN, "logout", function () { onLogout(); });
+		} 
+		// Use the API call wrapper to request the member's profile data
+		function getProfileData() {
+			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address").result(displayProfileData).error(onError);
+		}
+		// Handle the successful return from the API call
+		function displayProfileData(data){
+			var user = data.values[0];
+			
+			console.log(user);
+			/* document.getElementById("picture").innerHTML = '<img src="'+user.pictureUrl+'" />';
+			document.getElementById("name").innerHTML = user.firstName+' '+user.lastName;
+			document.getElementById("intro").innerHTML = user.headline;
+			document.getElementById("email").innerHTML = user.emailAddress;
+			document.getElementById("location").innerHTML = user.location.name;
+			document.getElementById("link").innerHTML = '<a href="'+user.publicProfileUrl+'" target="_blank">Visit profile</a>';
+			document.getElementById('profileData').style.display = 'block'; */
+			// Save user data
+			saveUserData(user);
+		}
+		
+		// Save user data to the database
+		function saveUserData(userData){
+			$.ajax({
+				type: 'POST',
+				url: '?action=update&table_type=linkedinLogin',
+				dataType: 'json',
+				//data: { email : userData.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
+				data: userData,
+				beforeSend: function(xhr) {
+					
+				},
+				success: function(response){
+					if(response.message){
+						alert(response.message);
+						window.location.href = response.returnUrl;
+					} else {
+						window.location.href = response.returnUrl;
+					}
+				},
+				error: function(xhr, status, error) {
+					alert("Something went wrong. Please try again.");
+				}
+			});
+		}
+
+		// Handle an error response from the API call
+		function onError(error) {
+			console.log(error);
+		}
+		
+		// Destroy the session of linkedin
+		function logout(){
+			IN.User.logout(removeProfileData);
+		}
+		
+		// Remove profile data from page
+		function removeProfileData(){
+			//document.getElementById('profileData').remove();
+		}
+		</script>
+	<?php 
+	return $linkedinButton;
 }
