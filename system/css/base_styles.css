@@ -1,0 +1,416 @@
+body{font-family: 'Galdeano', sans-serif;}
+p{font-family: 'Open Sans', sans-serif; font-size:14px; line-height:24px;}
+.clr{clear:both;}
+
+.navbar-right{margin:0;}
+/********* Main template Content classes *******/
+.main-content-container{margin-top:90px;margin-bottom: 30px;}
+.center-container{border:1px solid #e7e7e7; padding:20px; font-size:16px;background-color: white;}
+
+
+
+/********* Main template Content classes Ends here*******/
+
+
+/* h1 {color:orange;} */
+
+/**** applied when user didn't click edit button or fields are not for edit purpose***/
+
+
+.page_not_editable .form-control{border: none;
+                                 box-shadow: none;
+}
+
+
+/*********** PROFILE PAGE CLASS **************/
+
+.profile_page .new_form .form-control,.profile_page .form-control[disabled],
+.profile_page .form-control[readonly]{
+    padding-left: 0;
+    border: none;
+    box-shadow: none;
+    background-color: white;opacity: 1;
+    cursor: default;
+    color:red;
+}
+
+.profile_page .new_form label{font-weight: bold;
+}
+
+
+
+.tab-header{font-size: 18px;}
+
+/* Side Navigation CSS Start */
+.side-menu {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	border-right: 1px solid #e7e7e7;
+}
+.side-menu .navbar {
+	border: none;
+}
+.side-menu .navbar-header {
+	width: 100%;
+	border-bottom: 1px solid #e7e7e7;
+}
+.side-menu .navbar-nav{width:100%;}
+.side-menu .navbar-nav .active a {
+	background-color: transparent;
+	margin-right: -1px;
+	border-right: 5px solid #e7e7e7;
+}
+.side-menu .navbar-nav li {
+	display: block;
+	width: 100%;
+	/* border-bottom: 1px solid #e7e7e7; */
+}
+.side-menu .navbar-nav li a {
+	padding: 3px 20px;
+	line-height:1.4285714;
+}
+.side-menu .navbar-nav li a .glyphicon {
+	padding-right: 10px;
+}
+/*.side-menu .drop_down {
+	border: 0;
+	margin-bottom: 0;
+	border-radius: 0;
+	background-color: transparent;
+	box-shadow: none;
+}
+.side-menu .drop_down .caret {
+	float: right;
+	margin: 9px 5px 0;
+}
+.side-menu .drop_down .indicator {
+	float: right;
+}
+ .side-menu .drop_down > a {
+	border-bottom: 1px solid #e7e7e7;
+} */
+.side-menu .drop_down .panel-body {
+	padding: 0;
+	background-color: #f3f3f3;
+}
+.side-menu .drop_down .panel-body .navbar-nav {
+	width: 100%;
+}
+.side-menu .drop_down .panel-body .navbar-nav li {
+	padding-left: 15px;
+	border-bottom: 1px solid #e7e7e7;
+}
+.side-menu .drop_down .panel-body .navbar-nav li:last-child {
+	border-bottom: none;
+}
+.side-menu .drop_down .panel-body .panel > a {
+	margin-left: -20px;
+	padding-left: 35px;
+}
+.side-menu .drop_down .panel-body .panel-body {
+	margin-left: -15px;
+}
+.side-menu .drop_down .panel-body .panel-body li {
+	padding-left: 30px;
+}
+.side-menu .drop_down .panel-body .panel-body li:last-child {
+	border-bottom: 1px solid #e7e7e7;
+}
+/* Main body section */
+.side-body {
+	margin-left: 310px;
+}
+
+
+.side-menu.body-center{text-align:center;}
+.side-menu.body-center .navbar{display:inline-block; width:300px; text-align:left;}
+.side-menu-container .panel-body{padding:0 15px;}
+
+/* yasir cSs starts here*/
+
+.list-span{}
+
+
+
+#nav_test_1 li a{
+    /* added by CJ to test */
+    color: orange;
+    font-weight: 800;
+    font-size: 16pt;
+}
+
+#nav_test_1 li a:hover{background-color: yellow;}
+
+#nav_test_1 li ul li a{
+    font-size: 12pt;
+    color:green;
+}
+.new_form {display:inline-table; margin-bottom:20px; margin-right: 19px; vertical-align:top;}
+.new_form label{font-size:18px;}
+
+
+#single-menu-class a{color:red;}
+
+
+
+
+
+
+.h1-sep{
+
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.h1-sep span{
+
+    border-style: dotted;
+
+    border-bottom-width: 1px;
+
+    border-color: #333;
+
+    display: block;
+}
+
+.content-h1{
+
+    background-color: #EEEEEE;
+
+    padding-left: 10px;
+}
+.test-class2  {
+    color: green;
+    font-weight: 800;
+    margin-bottom: 75px;
+}
+
+.test-class2 fieldset legend{color: red;}
+
+.test-class2  li a{
+    /* added by CJ to test */
+    color: red !important;
+    font-weight: 800;
+    font-size: 22pt;
+
+}
+
+
+/*****IMAGE DIV CSS****/
+
+.left-content, pdf-content{width:150px;}
+
+.left-content-clone, pdf-content-clone{width:150px;}
+
+
+
+/*****Tooltip style goes here *****/
+
+#tooltip {
+    display:none;
+    position:absolute;
+    border:1px solid #333;
+    background-color:#161616;
+    border-radius:5px;
+    padding:10px;
+    color:#fff;
+    font-size:12px Arial;
+}
+
+
+/*** backtoTop style ***/
+
+
+.scrollToTop{
+    width:100px;
+    height:130px;
+    padding:10px;
+    text-align:center;
+
+    font-weight: bold;
+    color: #444;
+    text-decoration: none;
+    position:fixed;
+    bottom:40px;
+    right:40px;
+    display:none;
+    background: url('../system_images/arrow.png') no-repeat -8px 20px;
+    opacity: .5;
+    -webkit-transition: opacity .3s 0s;
+    -moz-transition: opacity .3s 0s;
+    transition: opacity .3s 0s;
+
+}
+.scrollToTop:hover{
+    text-decoration:none;
+    opacity: 1;
+}
+
+/***** for making link unclikable******/
+
+.inactiveLink {
+    pointer-events: none;
+    cursor: default;
+}
+
+
+#form-footer{padding-bottom:5px;padding-top:5px;}
+
+
+
+.test2{display:inline;}
+
+
+
+.pdfInline{
+
+    width: 600px;
+    height: 400px;
+}
+
+
+.pdf_inline_anchor{display: block;}
+
+
+
+/****
+List fragment style goes here
+
+*********/
+
+.list_fragment{
+
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+
+/* for clearing the search/filter box over the lists  */
+
+.new_form .form-control.checkbox{
+ 
+ height:20px !important;
+ width:40px !important;
+}
+.clearFunction{
+background:none;top:26px;float:right;position:relative;z-index:1;border:none;font-weight:bold;
+}
+/* BOOLEAN SLIDER START */
+.boolean_slider input {  opacity:0;}
+.boolean_slider { display:inline-block; width:60px; height:30px; margin:8px; transform:translateY(50%); position:relative;}
+.boolean_slider .boolean_slider_span { position:absolute; top:0; bottom:0; left:0; right:0; border-radius:30px; box-shadow:0 0 0 2px #777, 0 0 4px #777; cursor:pointer; border:4px solid transparent; overflow:hidden; transition:.4s;}
+.boolean_slider .boolean_slider_span:before { position:absolute; content:""; width:100%; height:100%; background:#777; border-radius:30px;  transform:translateX(-30px);  transition:.4s;}
+input:checked + .boolean_slider_span:before { transform:translateX(30px); background:limeGreen;}
+input:checked + .boolean_slider_span {  box-shadow:0 0 0 2px limeGreen,0 0 2px limeGreen;}
+.boolen_label{float:left; width:100%;}
+.boolean_slider_box{ height:34px; line-height:36px;}
+.boolean_slider_box span{float:left; line-height:36px;}
+.boolean_slider_box .boolean_slider{float:left; margin:-12px 8px 0;}
+.boolean_slider_box .boolean_slider input[type=checkbox][disabled] + .boolean_slider_span {cursor:not-allowed;opacity:0.7;}
+/* BOOLEAN SLIDER END */
+
+/* BOOLEAN BUTTON START */
+.boolean_button_box{height:34px; line-height:36px;}
+.boolean_button {position: relative; padding-left: 35px; margin:0 15px 0 12px; cursor: pointer; font-size: 22px;  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
+.boolean_button	input[type=radio][disabled] + .boolean_button_checkmark, .disable_btn{cursor:not-allowed;opacity:0.7;}
+/* Hide the browser's default radio button */
+.boolean_button input { position: absolute; opacity: 0; cursor: pointer;}
+/* Create a custom radio button */
+.boolean_button_checkmark { position: absolute;top: 6px; left: 0; height: 25px; width: 25px; background-color: #eee; border-radius: 50%; border:1px solid #b1b1b1;}
+/* On mouse-over, add a grey background color */
+.boolean_button:hover input ~ .boolean_button_checkmark { background-color: #ccc;}
+/* When the radio button is checked, add a blue background */
+.boolean_button input:checked ~ .boolean_button_checkmark { background-color: limeGreen;}
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.boolean_button_checkmark:after { content: ""; position: absolute;display: none;}
+/* Show the indicator (dot/circle) when checked */
+.boolean_button input:checked ~ .boolean_button_checkmark:after { display: block;}
+/* Style the indicator (dot/circle) */
+.boolean_button .boolean_button_checkmark:after {top: 6px; left: 6px; width: 11px; height: 11px; border-radius: 50%; background: white;}
+
+/* BOOLEAN BUTTON END */
+
+/* NUMBER SLIDER START*/
+#sliderCustom{margin-top: 12px;}
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{opacity:0.7;cursor: not-allowed;  background-color: #eee;}
+#uiSliderCustom{width: 3em; height: 1.6em; top: 50%; margin-top: -.8em; text-align: center;  line-height: 1.6em;}
+/* NUMBER SLIDER END*/
+
+.center-body-message-box {
+	color:red;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+.single_line_left{display:flex;justify-content:flex-start;}
+.single_line_right{display:flex;justify-content:flex-end;}
+.single_line_center{display:flex;justify-content:center;}
+.left-sidebar,.right-sidebar{padding:20px 0 0 0;}
+
+.center_cont{display:flex; justify-content:center;}
+.left_cont{display:flex; justify-content:flex-start;}
+.right_cont{display:flex; justify-content:flex-end;}
+
+.boxViewContainer{  position: relative;margin: auto;width:100%;float:left;}
+/* Next & previous buttons */
+.prev_slider, .next_slider {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: #000;
+  background: #b6b7b9;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  text-decoration:none;
+}
+/* Position the "next button" to the right */
+.next_slider {
+  right: -32px;
+  border-radius: 3px 0 0 3px;
+}
+.prev_slider {
+  left: -21px;
+  border-radius: 3px 0 0 3px;
+}
+/* On hover, add a black background color with a little bit see-through */
+.prev_slider:hover, .next_slider:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+/* Fading animation */
+.boxView {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes boxView {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes boxView {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+/* mapView */
+.mapView{
+	height: 500px;
+	width:100%;
+	float:left;
+}
+
+
+
+
+
+

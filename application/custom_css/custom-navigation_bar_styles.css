@@ -1,0 +1,69 @@
+
+
+/*********Navigation has mostly bootstrap classes. some classes below are modified for the header and logo*****/
+.navbar{
+/*
+ white-space: nowrap;
+   overflow-x:auto;
+     overflow-y: hidden;
+*/
+}
+.navbar-brand{}
+.navbar-default{}
+
+.logo, .logo-login{}
+.logo span, .logo-login span{}
+
+.logo.center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin: auto;
+    width: 400px;
+}
+.logo.right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.navbar-brand  {
+    display: inline-block;
+    height: auto;
+}
+.navbar-brand > img {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+
+#cj_test_nav1
+{
+color: red;
+background-color: black;
+}
+
+.cj_test_nav1
+{
+color: red;
+background-color: black;
+}
+
+label.cj_test_nav2  
+{
+color: red;
+background-color: black;
+}
+
+input.cj_test_nav2  
+{
+color: green;
+background-color: blue;
+}
+
+.new_form.cj_test_nav2  
+{
+background-color: gray;
+padding: 20px;
+border: 4px;
+}

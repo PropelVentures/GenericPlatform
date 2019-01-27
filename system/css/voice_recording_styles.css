@@ -1,0 +1,83 @@
+.rem-img-size{font-size:90% !important;}
+
+.audio-css audio{display:block;}
+.audio-upload-filename{color:red;}
+
+
+/***************buttons of voice style goes here *********/
+.button_panel{margin-top:2px;}
+.button{
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px 5px;
+    padding: 5px 12px;
+    cursor: pointer;
+    outline: none;
+    font-size: 13px;
+    text-decoration: none;
+    text-align: center;
+    color:#fff;
+    background-color: #4D90FE;
+    background-image: linear-gradient(top,#4D90FE, #4787ED);
+    background-image: -ms-linear-gradient(top,#4D90FE, #4787ED);
+    background-image: -o-linear-gradient(top,#4D90FE, #4787ED);
+    background-image: linear-gradient(top,#4D90FE, #4787ED);
+    border: 1px solid #4787ED;
+    box-shadow: 0 1px 3px #BFBFBF;
+}
+a.button{
+    color: #fff;
+}
+.button:hover{
+    box-shadow: inset 0px 1px 1px #8C8C8C;
+}
+.button.disabled{
+    box-shadow:none;
+    opacity:0.7;
+}
+
+.button span{visibility: hidden;}
+
+/*********
+********************/
+
+
+/*****record blinking text css ***/
+.recording_msg{
+
+    color:red;
+    font-weight: bold;
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    -moz-animation-name: blinker;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+
+    animation-name: blinker;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+
+@-moz-keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes blinker {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}

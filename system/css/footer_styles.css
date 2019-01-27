@@ -1,0 +1,23 @@
+
+/*************Footer***********/
+.footer{background:#000; padding:20px 0}
+.footer{margin-bottom:0;}
+.footer p{ width:40%; padding-top:10px;}
+
+.social{ width:50%;}
+.social ul{float:right; margin-top:10px;}
+.social li{float:left;}
+.social li a{display:block; text-decoration:none; width:24px; height:24px; border-radius:2px; background:#666666; line-height:28px; text-align:center; color:#fff; margin-right:10px; font-size:16px;}
+.social li a:hover{color:#fff;}
+
+.fb:hover{background:#1e4389;}
+.tweet:hover{background:#00adef;}
+.g-plus:hover{background:#d5492b;}
+.you-tube:hover{background:#eb2329;}
+
+
+/*****************Bottom-area*******************/
+.bottom-area{background:#fff; padding:20px; margin-bottom:0; margin-top:40px; text-align:center;}
+.bottom-area h3{font-size:28px;}
+.bottom-area p{font-size:14px; width:80%; margin:auto; margin-bottom:15px;}
+
