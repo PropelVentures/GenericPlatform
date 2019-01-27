@@ -17,7 +17,7 @@ if($nav->num_rows > 0){
 		function onLinkedInLoad() {
 			IN.UI.Authorize().place();
 			IN.Event.on(IN, "auth", getProfileData);
-		} 
+		}
 		// Use the API call wrapper to request the member's profile data
 		function getProfileData() {
 			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address","summary").result(displayProfileData).error(onError);
@@ -37,7 +37,7 @@ if($nav->num_rows > 0){
 				dataType: 'json',
 				data: userData,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){

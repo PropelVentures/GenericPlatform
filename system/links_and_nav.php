@@ -601,4 +601,3 @@ function ShowTableTypeIcon($display_page,$tabNum=''){
 	}
 }
 ?>
-

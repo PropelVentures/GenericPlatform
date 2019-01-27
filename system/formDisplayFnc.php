@@ -1177,4 +1177,3 @@ function datepicker($row, $formatArray, $urow = false, $page_editable = false) {
 		  </script>";
 	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $row[strict_disabled] $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
 }
-

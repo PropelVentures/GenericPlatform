@@ -439,6 +439,182 @@ function addData()
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
+	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
+	switch($_GET['table_type']){
+		case 'login':
+			callToLogin();
+			break;
+
+		case 'signup':
+			callToSignup();
+			break;
+
+		case 'facebooklogin':
+			echo json_encode(facebookLogin());
+			break;
+
+		case 'linkedinlogin':
+			echo json_encode(linkedInLogin());
+			break;
+
+		case 'linkedinimportprofile':
+			echo json_encode(importProfileFromLinkedIn());
+			break;
+
+		case 'forgotpassword':
+			forgotPassword();
+			break;
+
+		case 'reset_password':
+			resetPassword();
+			break;
+
+		case 'change_password':
+			changePassword();
+			break;
+
+		default:
+			if (array_key_exists('old_audio', $_POST)) {
+				unset($_POST['old_audio']);
+			}
+			/****** for pdf files ********** */
+			foreach ($_POST['pdf'] as $img => $img2) {
+				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+					$ret = uploadPdfFile($img2['uploadcare'], $img2['imageName']);
+					$oldImage = $_POST[$img]['img_extra'];
+					if (!empty($ret['image'])) {
+						unset($_POST['pdf'][$img]);
+						$_POST[$img] = $ret['image'];
+					}
+					//if user want to replace current image
+					if (!empty($oldImage)) {
+						@unlink(USER_UPLOADS . "pdf/$oldImage");
+					}
+					//if user didn't touch the with images
+				} else {
+					//if user clicks on remove current image
+					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+						if (!empty($_POST[$img]['img_extra'])) {
+							@unlink(USER_UPLOADS . "pdf/$img2[imageName]");
+							unset($_POST['pdf'][$img]);
+							$_POST[$img] = '';
+						} else {
+							unset($_POST['pdf'][$img]);
+						}
+					} else {
+						unset($_POST['pdf'][$img]);
+					}
+				}
+			}
+			//deleting array which is used for holding imgu values
+			if (empty($_POST['pdf']))
+				unset($_POST['pdf']);
+
+			/*****For images********** */
+			foreach ($_POST['imgu'] as $img => $img2) {
+				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+					$ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
+					$oldImage = $_POST[$img]['img_extra'];
+					if (!empty($ret['image'])) {
+						unset($_POST['imgu'][$img]);
+						$_POST[$img] = $ret['image'];
+					}
+					//if user want to replace current image
+					if (!empty($oldImage)) {
+						@unlink(USER_UPLOADS . "$oldImage");
+						@unlink(USER_UPLOADS . "thumbs/$oldImage");
+					}
+					//if user didn't touch the with images
+				} else {
+					//if user clicks on remove current image
+					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+						if (!empty($_POST[$img]['img_extra'])) {
+							@unlink(USER_UPLOADS . "$img2[imageName]");
+							@unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
+							unset($_POST['imgu'][$img]);
+							$_POST[$img] = '';
+						} else {
+							unset($_POST['imgu'][$img]);
+						}
+					} else {
+						unset($_POST['imgu'][$img]);
+					}
+				}
+			}
+			//deleting array which is used for holding imgu values
+			if (empty($_POST['imgu']))
+				unset($_POST['imgu']);
+
+			foreach ($_FILES as $file => $file2) {
+				//checking if audio file is not empty
+				if (!empty($_FILES[$file]['name'])) {
+					$file_name = uploadAudioFile($file2);
+					// if file successfully uploaded to target dir
+					if (!empty($file_name)) {
+						$_POST[$file] = $file_name;
+					}
+				} else {
+					$_POST[$file] = '';
+				}
+				//Dealing with database now
+				$row = getWhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+				$oldFile = $row[0][$file];
+				if ($oldFile != "") {
+					if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
+						@unlink(USER_UPLOADS . "audio/" . $oldFile);
+					}
+				}
+			}
+			$status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+
+			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
+
+			if ($_GET['checkFlag'] == 'true') {
+				if ($_GET['table_type'] == 'child')
+					$link_to_return = $_SESSION['child_return_url2'];
+				else
+					$link_to_return = $_SESSION['return_url2'];
+
+				if ($_GET['fnc'] != 'onepage') {
+					//exit($link_to_return);
+					if($status === true)
+						echo "<script>window.location='$link_to_return';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
+					}
+				} else {
+					if($status === true)
+						echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$link_to_return$_SESSION[anchor_tag]'; </script>";
+					}
+				}
+			} else {
+				if (!empty($_SESSION['display2'])) {
+					$_SESSION[display] = $_SESSION['display2'];
+				}
+				if ($_GET['fnc'] != 'onepage') {
+					if($status === true)
+						echo "<script>window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]'; </script>";
+					}
+				} else {
+					if($status === true)
+						echo "<script>window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]';</script>";
+					else
+					{
+						echo "<script> alert(\"$status\"); window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]'; </script>";
+					}
+				}
+			}
+		break;
+	}
+	exit;
+}
 
 	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
 	switch($_GET['table_type']){
@@ -1423,4 +1599,3 @@ function getLatLong($formatedAddress){
 	//Return latitude and longitude of the given address
 	return $arr;
 }
-

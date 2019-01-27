@@ -1,4 +1,4 @@
-<?php 
+<?php
 function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array, $mapAddress){
 	$con = connect();
 	$list_select = trim($row['list_select']);
@@ -55,7 +55,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 					 * get FD info and put data into @lisdata array
 					 */
 					$listData = array();
-					
+
 					$tempLatLong['lat'] = '';
 					$tempLatLong['lng'] = '';
 					while ($row = $rs->fetch_assoc()) {
@@ -107,7 +107,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 				zoom: <?php echo MAP_ZOOM; ?>,
 				center: {lat: <?php echo MAP_CENTER_LATITUDE; ?>, lng: <?php echo MAP_CENTER_LONGITUDE; ?>}
 			});
-			
+
 			<?php foreach($mapData as $key=>$data){ ?>
 				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
 				var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
@@ -117,48 +117,48 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 					label: "<?php echo substr(@$data['list_data'][0],0,1); ?>",
 				});
 				marker_obj_<?php echo $key; ?>.setMap(map);
-				
+
 				markers.push(marker_obj_<?php echo $key; ?>); //creating array for cluster
-				
+
 				markersForBound.push(new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>));
-				
+
 				var window_<?php echo $key; ?> = new google.maps.InfoWindow({
 				  content:"<div>"+listData+"</div>"
 				});
-					
+
 				/*For manage click event start*/
 				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'click', function() {
 					window_<?php echo $key; ?>.open(map,marker_obj_<?php echo $key; ?>);
 				});
 				/*For manage click event end*/
-				
+
 				/*For mouseover event start*/
 				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'mouseover', function() {
 					window_<?php echo $key; ?>.open(map,marker_obj_<?php echo $key; ?>);
 				});
 				/*For mouseover event end*/
-				
+
 				/*For mouseout event start*/
 				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'mouseout', function() {
 					window_<?php echo $key; ?>.close();
 				});
 				/*For mouseout event end*/
-				
+
 				/*For manage dblclick event start*/
-				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, "dblclick", function (e) { 
+				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, "dblclick", function (e) {
 					window.location.href = '<?php echo $data['target_url']; ?>';
 				});
 				/*For manage dblclick event end*/
-				
+
 				/*For manage rightclick event start*/
 				/* google.maps.event.addListener(marker_obj_<?php echo $key; ?>, "rightclick", function(event) {
 					$(".custom-menu").finish().toggle(100)
 				}); */
 				/*For manage rightclick event start*/
-				
+
 			<?php
 			} ?>
-			
+
 			/* var bounds = new google.maps.LatLngBounds();
 			var markers = locations.map(function(location, i) {
 				bounds.extend(location);
@@ -168,28 +168,28 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 					label: labels[i % labels.length]
 				});
 			}); */
-			
+
 			var bounds = new google.maps.LatLngBounds();
 			$.each(markersForBound,function(index,value){
 				bounds.extend(value);
 			});
 			map.fitBounds(bounds);
-		
-   
+
+
 			var options = {
 				imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
 			};
 
 			var markerCluster = new MarkerClusterer(map, markers, options);
 		}
-		
+
 		$(function(){
 		   $(window).load(function(){
 				initMap<?php echo $dict_id; ?>();
 		   });
 		});
 		</script>
-		
+
 	<?php } else { ?>
 		<h3 style='color:red;margin:15px;'> No record present </h3>
 	<?php } ?>
