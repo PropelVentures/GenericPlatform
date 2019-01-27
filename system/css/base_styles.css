@@ -2,7 +2,7 @@ body{font-family: 'Galdeano', sans-serif;}
 p{font-family: 'Open Sans', sans-serif; font-size:14px; line-height:24px;}
 .clr{clear:both;}
 
-
+.navbar-right{margin:0;}
 /********* Main template Content classes *******/
 .main-content-container{margin-top:90px;margin-bottom: 30px;}
 .center-container{border:1px solid #e7e7e7; padding:20px; font-size:16px;background-color: white;}
@@ -408,7 +408,6 @@ input:checked + .boolean_slider_span {  box-shadow:0 0 0 2px limeGreen,0 0 2px l
 	width:100%;
 	float:left;
 }
-
 
 
 

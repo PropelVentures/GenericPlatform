@@ -1,4 +1,4 @@
-<?php 
+<?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$con = connect();
 	$list_select = trim($row['list_select']);
@@ -11,7 +11,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
-	<table id='example' class='display nowrap compact' cellspacing='0' width='100%'>
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>
 		<thead>
 			<tr class='tr-heading'>
 				<th class='tbl-action'><span style='visibility:hidden;'>12<span></th>
@@ -25,7 +25,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
             </tr>
 		</thead>
 		<tbody>
-			<?php 
+			<?php
 			if ($list->num_rows > 0) {
 				$i=0;
 				$count = 1;
@@ -71,7 +71,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 									<?php $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
 									/*
 									 * displaying checkboxes
-									 * checking in database if checklest is there
+									 * checking in database if checklist is there
 									 */
 									if ($list_views['checklist'] == 'true') { ?>
 										<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='<?php $checkbox_id ;?>' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>
@@ -79,7 +79,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 									<?php } ?>
 									<span class='list-del' id='<?php echo $checkbox_id; ?>' name='<?php echo $dict_id; ?>'></span>
 								</td>
-						<?php 
+						<?php
 						}
 						/*
 						 *
@@ -104,7 +104,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 							$fieldValue = substr($fieldValue, 0, 30);
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
 								<td> <?php echo $fieldValue; ?></td>
-							<?php 
+							<?php
 							}
 						}
 						if ($table_type == 'child') {
@@ -120,6 +120,99 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 			} ?>
 		</tbody>
 	</table>
-		
+	<?php
+		global $popup_menu;
+		if ($popup_menu['popupmenu'] == 'true') {
+			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+			$_SESSION['popup_munu_array'][] = $popup_menu;
+		}
+	?>
+	<script>
+		<?php $page_no = $list_pagination[0]; ?>
+		$('#table_<?php echo $dict_id;?>').DataTable({
+			"pageLength": <?php echo $page_no; ?>,
+            "scrollX": true,
+			"pagingType": 'full_numbers',
+			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
+			"bStateSave": true,
+		});
+
+		//Fixing the bug for default pagination values for the datatable//
+		<?php $page_no = empty($page_no)?10:$page_no; ?>
+
+		setTimeout(function(){;
+			$('select[name="table_<?php echo $dict_id;?>_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
+			$("select[name=table_<?php echo $dict_id;?>_length]").trigger('change');
+		}, 1000);
+
+		/* Sorting function on SORT button click */
+		/* action perform by list_select button on click */
+		/*
+			* *****
+			* *************
+			* ******************MAKING TR CLICKABLE AND TAKIGN TO EDIT PAGE........
+			* ........................
+			* ............................................
+			* .......................................................
+		*/
+		$('#table_<?php echo $dict_id;?> tbody').on('click', 'tr td:not(:first-child)', function () {
+			event.stopImmediatePropagation();
+			if ($(this).hasClass('tabholdEvent')) {
+				return false;
+				} else {
+				window.location = $(this).parent().attr('id');
+			}
+		});
+		/* $('#table_<?php echo $dict_id;?>').on('click', 'tbody tr td:not(:first-child)', function () {
+			if ($(this).hasClass('tabholdEvent')) {
+			return false;
+			} else {
+			window.location = $(this).attr('id');
+			}
+		}); */
+		/*
+			* it calls when right click on single line list
+		*/
+		var popup_del;
+		var dict_id;
+		// Trigger action when the contexmenu is about to be shown
+		/// it will be shown for boxView
+		if (mobileDetector().any()) {
+			$("#table_<?php echo $dict_id;?> tbody").on("taphold", 'tr', function (event) {
+				// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
+				var xPos = event.originalEvent.touches[0].pageX;
+				var yPos = event.originalEvent.touches[0].pageY;
+				$(this).addClass('tabholdEvent');
+				popup_del = $(this).find('.list-del').attr('id');
+				dict_id = $(this).find('.list-del').attr('name');
+				//alert(popup_del);
+				// Avoid the real one
+				event.preventDefault();
+				// Show contextmenu
+				$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+				// In the right position (the mouse)
+				css({
+					top: yPos + "px",
+					left: xPos + "px"
+				});
+			});
+		} else {
+			////context MEnu will be shown for TableView
+			$("#table_<?php echo $dict_id;?> tbody").on("contextmenu", 'tr', function (event) {
+				popup_del = $(this).find('.list-del').attr('id');
+				dict_id = $(this).find('.list-del').attr('name');
+				//console.log(dict_id);
+				// Avoid the real one
+				event.preventDefault();
+				// Show contextmenu
+				$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+				// In the right position (the mouse)
+				css({
+					top: event.pageY + "px",
+					left: event.pageX + "px"
+				});
+			});
+		}
+	</script>
 <?php
 } ?>

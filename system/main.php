@@ -10,6 +10,7 @@
 		$_SESSION['tab'] = '';
 		unset($_SESSION['tab']);
 	}
+	unset($_SESSION['popup_munu_array']);
 	//echo($_SESSION['return_url']) . "<br>";
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
@@ -79,8 +80,35 @@
 			if ($left_sidebar == 'left' && $right_sidebar == 'right') {
 				$both_sidebar = 'both';
 			}
+			
 			/*
-				* left sidebar code
+			 * Check If middle content exist
+			 * If not exist then check the width of aone and asign the other
+			 * or if width not exist then divide 50% each
+			 */
+			$middleContentExist = true;
+			$checkMiddleContentQuery = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'  and tab_num REGEXP '^[0-9]+$' AND tab_num >'0'");
+			if($checkMiddleContentQuery->num_rows == 0 ){
+				$middleContentExist = false;
+				if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					// do nothing
+				} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+					$left_sidebar_width = 100 - $right_sidebar_width;
+				} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$right_sidebar_width = 100 - $left_sidebar_width;
+				} else {
+					if ($both_sidebar == 'both') {
+						$left_sidebar_width = $right_sidebar_width = 50;
+					} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+						$left_sidebar_width = $right_sidebar_width = 50;
+					} else {
+						$left_sidebar_width = $right_sidebar_width = 0;
+					}
+				}
+			}
+			
+			/*
+			* left sidebar code
 			*/
 			sidebar($left_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
 			/*
@@ -89,24 +117,28 @@
 			// $total_width = 0;
 			if ($_GET['child_list_active'] == 'isSet')
 			echo "<a href='#' class='goBackToParent'>click me</a>";
-			if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-				$total_width = 100 - ( $right_sidebar_width + $left_sidebar );
-				echo "<div class='center-container' style='width:$total_width%;float:left;' >";
-			} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
-				$total_width = 100 - $right_sidebar_width;
-				echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
-			} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-				$total_width = 100 - $left_sidebar;
-				echo "<div class='center-container' style='width:$total_width%;float:left;'>";
-			} else {
-				if ($both_sidebar == 'both') {
-					echo "<div class='col-lg-8 center-container'>";
-				} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
-					echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
+		
+			if($middleContentExist){
+				if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$total_width = 100 - ( $right_sidebar_width + $left_sidebar );
+					echo "<div class='center-container' style='width:$total_width%;float:left;' >";
+				} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+					$total_width = 100 - $right_sidebar_width;
+					echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
+				} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$total_width = 100 - $left_sidebar;
+					echo "<div class='center-container' style='width:$total_width%;float:left;'>";
 				} else {
-					echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
+					if ($both_sidebar == 'both') {
+						echo "<div class='col-lg-8 center-container'>";
+					} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+						echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
+					} else {
+						echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
+					}
 				}
 			}
+				
 			//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 		<!-- Tab Content area .. -->
@@ -125,7 +157,9 @@
 					/* Tab Navigation Start*/ 
 					Get_Tab_Links($display_page,'center');
 					/* Tab Navigation End*/ 
-					Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+					if($middleContentExist){
+						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+					}
 				} else {
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
@@ -135,16 +169,20 @@
 					echo Get_Links($display_page);
 					global $tab;
 					$tab_status = 'false';
-					if (isset($_SESSION['tab'])) {
-						Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
-					} else {
-						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
-					}
+					if($middleContentExist){
+						if (isset($_SESSION['tab'])) {
+							Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
+						} else {
+							Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+						}
+						}
 				}/// tab_num else ends here
 			}//// page_layout
 		?>
-		<div style="clear:both"></div>
+	<?php if($middleContentExist){ ?>
+	<div style="clear:both"></div>
 	</div>
+	<?php } ?>
 	<!-- Right sidebar content Area -->
 	<?php
 		/*
@@ -224,114 +262,48 @@
 </ul>
 <?php
 	/*
-		* Popup Menu codes starts here
+	* Popup Menu codes starts here
 	*/
-	global $popup_menu;
-
-	if ($popup_menu['popupmenu'] == 'true') {
-		echo "<ul class='custom-menu'>";
-		if (isset($popup_menu['popup_delete']) && !empty($popup_menu['popup_delete'])) {
-			echo "<li data-action='delete'  class='" . $popup_menu['popup_delete']['style'] . "'>" . $popup_menu['popup_delete']['label'] . "</li>";
+	if(!empty($_SESSION['popup_munu_array'])){
+		foreach($_SESSION['popup_munu_array'] as $popup_menu){
+			if ($popup_menu['popupmenu'] == 'true') {
+				echo "<ul id='".$popup_menu['popup_menu_id']."' class='custom-menu'>";
+				if (isset($popup_menu['popup_delete']) && !empty($popup_menu['popup_delete'])) {
+					echo "<li data-action='delete'  class='" . $popup_menu['popup_delete']['style'] . "'>" . $popup_menu['popup_delete']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_add']) && !empty($popup_menu['popup_add'])) {
+					echo "<li data-action='add'  class='" . $popup_menu['popup_add']['style'] . "'>" . $popup_menu['popup_add']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_copy']) && !empty($popup_menu['popup_copy'])) {
+					echo "<li data-action='copy'  class='" . $popup_menu['popup_copy']['style'] . "'>" . $popup_menu['popup_copy']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_openChild']) && !empty($popup_menu['popup_openChild'])) {
+					echo "<li data-action='openChild'  class='" . $popup_menu['popup_openChild']['style'] . "'>" . $popup_menu['popup_openChild']['label'] . "</li>";
+				}
+				echo "</ul>";
+			}
 		}
-		if (isset($popup_menu['popup_add']) && !empty($popup_menu['popup_add'])) {
-			echo "<li data-action='add'  class='" . $popup_menu['popup_add']['style'] . "'>" . $popup_menu['popup_add']['label'] . "</li>";
-		}
-		if (isset($popup_menu['popup_copy']) && !empty($popup_menu['popup_copy'])) {
-			echo "<li data-action='copy'  class='" . $popup_menu['popup_copy']['style'] . "'>" . $popup_menu['popup_copy']['label'] . "</li>";
-		}
-		if (isset($popup_menu['popup_openChild']) && !empty($popup_menu['popup_openChild'])) {
-			echo "<li data-action='openChild'  class='" . $popup_menu['popup_openChild']['style'] . "'>" . $popup_menu['popup_openChild']['label'] . "</li>";
-		}
-		// echo "<br>got here<br><br>"; die;
-		echo "</ul>";
 	}
 ?>
 <a href="#" class="scrollToTop">Scroll To Top</a>
-<?php
-	/* $page_no = '';
-		$pagination_no = explode(';',$_SESSION['list_pagination']);
-		for($j=0;$j<count($pagination_no);$j++)
-		{
-		$newvar =  explode(',',$pagination_no[$j]);
-		//echo strpos(trim($newvar[0]),'pagination')."<br>";
-		if(strpos(trim($newvar[0]),'pagination')=='0')
-		{
-		//echo "hello";
-		$page_no = $newvar[1]; break;
-		}
-	} */
-	#Added By Dharmesh 2018-10-17#
-	//Setting the Pagination Number and Records per Page
-	if(empty($_GET['edit'])){
-		$page_no = @$_SESSION['list_pagination'][0];
-		$pagination_no = !empty($_SESSION['list_pagination'][1])?$_SESSION['list_pagination'][1]:0;
-		if($page_no == 'hscroll'){
-			$page_no = 0;
-		}
-	}
-?>
+<!-- Css To Fix center tab on top -->
+<style>.center_tab_fix{position:fixed; top:75px; z-index:9; border-bottom:1px solid #e7e7e7; left:0; padding-left:calc(50% - 550px); width:100%; background:#fff;}</style>
 <script>
+	<!-- Script To Fix center tab on top -->
+	$(window).scroll(function() {    
+		var scroll = $(window).scrollTop();
+		if (scroll >= 30) {
+			$(".center-tab-fixed").addClass("center_tab_fix");
+		} else {
+			$(".center-tab-fixed").removeClass("center_tab_fix");
+		}
+	});
 	$(document).ready(function () {
-		//Added By Dharmesh 2018-10-17//
-		<?php if(!empty($pagination_no)) {?>
-			/* $.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
-			$.fn.DataTable.ext.pager.numbers_no_ellipses = function(page, pages){
-				var numbers = [];
-				var buttons = $.fn.DataTable.ext.pager.numbers_length;
-				var half = Math.floor( buttons / 2 );
-				var _range = function ( len, start ){
-					var end;
-					if ( typeof start === "undefined" ){
-						start = 0;
-						end = len;
-						} else {
-						end = start;
-						start = len;
-					}
-					var out = [];
-					for ( var i = start ; i < end; i++ ){ out.push(i); }
-					return out;
-				};
-				if ( pages <= buttons ) {
-					numbers = _range( 0, pages );
-					} else if ( page <= half ) {
-					numbers = _range( 0, buttons);
-					}  else if ( page >= pages - 1 - half ) {
-					numbers = _range( 0, pages );
-					} else {
-					numbers = _range( 0, buttons);
-				}
-				numbers.DT_el = 'span';
-				//return ["first","previous", numbers , "next", "last" ];
-				return [ numbers  ];
-			}; */
-			var pagingType = 'full_numbers';
-			<?php }else { ?>
-			var pagingType = 'full_numbers';
-		<?php } ?>
-		//Code End//
-		var dTable = $('.display').DataTable({
-            "scrollX": true,
-			"pagingType": pagingType,
-			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			"bStateSave": true,
-		});
-		//Fixing the bug for default pagination values for the datatable//
-		<?php $page_no = empty($page_no)?10:$page_no; ?>
-		setTimeout(function(){
-			//Setting the time to
-			//$("select[name='example_length'] option[text='ALL']").attr("selected","selected") ;
-			$('select[name="example_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
-			$("select[name=example_length]").trigger('change');
-		}, 1000);
-        //// to stop from going to edit screen//
-        /* $('.list-checkbox').on('click', function () {
-            //event.stopImmediatePropagation();
-		}); */
         /*
-			*
-			* Selecting all checkboxes
-			*
+		**
+		*
+		* Selecting all checkboxes
+		*
 		*/
         $('#selectAll').click(function (event) {  //on click
             if (this.checked) { // check select status
@@ -345,7 +317,8 @@
 			}
 		});
 		///when click on delete button////
-        $(".action-delete").on('click', function () {
+        $(".action-delete").on('click', function (event) {
+			event.preventDefault();
             if (confirm("<?= deleteConfirm ?>") == true) {
                 $("#checkHidden").val('delete');
                 $('#list-form').ajaxForm(function (data) {
@@ -359,23 +332,26 @@
 		});
         ///// when click on delete icon
         $(".list-del").click(function (event) {
-            if (confirm("ok") == true) {
+			event.preventDefault();
+            if (confirm("<?= deleteConfirm ?>") == true) {
                 var del_id = $(this).attr('id');
                 var dict_id = $(this).attr('name');
+                var fnc = $(this).attr('fnc');
                 $.ajax({
                     method: "GET",
                     url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                    data: {list_delete: del_id, check_action: "delete", dict_id: dict_id}
+                    data: {list_delete: del_id, check_action: "delete", dict_id: dict_id, fnc: fnc}
 				})
-				.done(function (msg) {
-					location.reload();
+				.done(function (returnUrl) {
+					window.location.href=returnUrl;
 				});
-				} else {
+			} else {
                 event.stopImmediatePropagation();
 			}
 		});
 		///copy button .. multi select
-        $(".action-copy").on('click', function () {
+        $(".action-copy").on('click', function (event) {
+			event.preventDefault();
             if (confirm("<?= copyConfirm ?>") == true) {
                 $("#checkHidden").val('copy');
                 $('#list-form').ajaxForm(function (data) {
@@ -387,24 +363,26 @@
 			}
 		});
         //// single copy icon
-        $(".list-copy").click(function () {
+        $(".list-copy").click(function (event) {
+			event.preventDefault();
             if (confirm("Are you sure ,You want to Copy the Record!") == true) {
                 var del_id = $(this).attr('id');
                 var dict_id = $(this).attr('name');
+				var fnc = $(this).attr('fnc');
                 $.ajax({
                     method: "GET",
                     url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                    data: {list_copy: del_id, check_action: "copy", dict_id: dict_id}
+                    data: {list_copy: del_id, check_action: "copy", dict_id: dict_id, fnc: fnc}
 				})
-				.done(function (msg) {
-					location.reload();
+				.done(function (returnUrl) {
+					window.location.href=returnUrl;
 				});
 			}
 		});
 		/******************* ADD BUTTON CODE **********************************/
 		$(".action-add").click(function (event) {
 			event.preventDefault();
-			window.location.href = '<?= $_SESSION['add_url_list'] ?>';
+			//window.location.href = '<?= $_SESSION['add_url_list'] ?>';
 		});
 		/*
 			var test = 'something ';
@@ -413,74 +391,7 @@
 			alert(test);
 			});
 		*/
-		/* Sorting function on SORT button click */
-		/* action perform by list_select button on click */
-		/*
-			* *****
-			* *************
-			* ******************MAKING TR CLICKABLE AND TAKIGN TO EDIT PAGE........
-			* ........................
-			* ............................................
-			* .......................................................
-		*/
-		$('#example tbody').on('click', 'tr td:not(:first-child)', function () {
-			event.stopImmediatePropagation();
-			if ($(this).hasClass('tabholdEvent')) {
-				return false;
-				} else {
-				window.location = $(this).parent().attr('id');
-			}
-		});
-		/* 		        $('#example').on('click', 'tbody tr td:not(:first-child)', function () {
-			if ($(this).hasClass('tabholdEvent')) {
-			return false;
-			} else {
-			window.location = $(this).attr('id');
-			}
-		}); */
-		/*
-			* it calls when right click on single line list
-		*/
-		var popup_del;
-		var dict_id;
-		// Trigger action when the contexmenu is about to be shown
-		/// it will be shown for boxView
-		if (mobileDetector().any()) {
-			$("#example tbody").on("taphold", 'tr', function (event) {
-				// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
-				var xPos = event.originalEvent.touches[0].pageX;
-				var yPos = event.originalEvent.touches[0].pageY;
-				$(this).addClass('tabholdEvent');
-				popup_del = $(this).find('.list-del').attr('id');
-				dict_id = $(this).find('.list-del').attr('name');
-				//alert(popup_del);
-				// Avoid the real one
-				event.preventDefault();
-				// Show contextmenu
-				$(".custom-menu").finish().toggle(100).
-				// In the right position (the mouse)
-				css({
-					top: yPos + "px",
-					left: xPos + "px"
-				});
-			});
-		} else {
-			////context MEnu will be shown for TableView
-			$("#example tbody").on("contextmenu", 'tr', function (event) {
-				popup_del = $(this).find('.list-del').attr('id');
-				dict_id = $(this).find('.list-del').attr('name');
-				//console.log(dict_id);
-				// Avoid the real one
-				event.preventDefault();
-				// Show contextmenu
-				$(".custom-menu").finish().toggle(100).
-				// In the right position (the mouse)
-				css({
-					top: event.pageY + "px",
-					left: event.pageX + "px"
-				});
-			});
-		}
+		
 		// If the document is clicked somewhere
 		$(document).bind("mousedown", function (e) {
 			// If the clicked element is not the menu

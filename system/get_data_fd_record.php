@@ -2,18 +2,10 @@
 
 function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
 
-//    echo "<pre>";
-//    print_r($_REQUEST);
-//    print_r($_SESSION);
-//    die;
-    
-    
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
     $con = connect();
-
     ///setting form editable if user click on list for editing purpose
-
     if (!empty($_GET['edit']) && $_GET['edit'] == 'true') {
 
         $con->query("update data_dictionary set dd_editable='1' where display_page=$_GET[display]");
@@ -24,7 +16,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
     if (empty($_GET['tabNum'])) {
 
-        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+        $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader|image|icon' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
         $row = $rs->fetch_assoc();
         $_GET['tabNum'] = $row['tab_num'];
     }
@@ -39,19 +31,13 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
      * ********************************************************
      * *******************************************************************************
      * ****************************************************************************
-     * 
+     *
      */
     if ($tab_status == 'true') {
 
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
         while ($row = $rs->fetch_assoc()) {
 			switch($row['table_type']){
-				case "header":
-					ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
-					break;
-				case 'subheader':
-					ShowTableTypeSubHeaderContent($row['display_page'],$row['tab_num']);
-					break;
 				case 'slider':
 					ShowTableTypeSlider($row['display_page'],$row['tab_num']);
 					break;
@@ -63,6 +49,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 					break;
 				case 'image':
 					ShowTableTypeImage($row['display_page'],$row['tab_num']);
+					break;
+				case 'icon':
+					ShowTableTypeIcon($row['display_page'],$row['tab_num']);
 					break;
 				default:
 					/////display_content.php////
@@ -82,7 +71,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          * ********************************************************
          * *******************************************************************************
          * ****************************************************************************
-         * 
+         *
          */
 
         if ($tab_status == 'bars') {
@@ -103,13 +92,13 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         }
 
         $row1 = $rs->fetch_assoc();
-		//pr($row1);
+
+		$addUrlInner = getRecordAddUrlInner($row1);
+
         $_SESSION['list_pagination'] = $row1['list_pagination'];
+		$tableType = trim(strtolower($row1['table_type']));
         ///////// for displaying image container
         $image_display = 'true';
-        
-//        echo "<pre>";
-//        print_r($row1);die;
 
         /* profile-image
           if (trim($row1['table_type']) == 'profile-image') {
@@ -119,353 +108,104 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
           unset($_SESSION['profile-image']);
           } */
-        
-        
+
+
         ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######STARTS########################################################################################
-        
+
         ##Debuging which buttons are in use:
         $debug = false;##True will display texts in the button area.
-        
+
         if ($editable == 'true') {
             if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id']) ) || $_GET['edit'] == 'true' || !empty($_GET['addFlag']) ) {
-                
+
                 $operationsVarArray = array();
                 $operation = '';
-                
+
                 ##DD.edit_operation
-                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1) 
+                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
                 {
                     $operation = 'edit_operations';
-                            
+
                     if(!empty(trim($row1['edit_operations']) ) )
                         $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
                 }
                 else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
                 {
                     $operation = 'view_operations';
-                    
+
                     if(!empty(trim($row1['view_operations']) ) )
                         $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
                 }
-                 
-//                echo "<pre>\$operation:$operation:<br>";
-//                print_r($row1);
-//                echo "</pre>";
-//                var_dump($operationsVarArray);
-//                echo "</pre>";
-                
-                list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
+                list($popupmenu,
+					$popup_delete_array,
+					$popup_copy_array,
+					$popup_add_array,
+					$popup_openChild_array,
                     $customFunctionArray,
-                    $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array, $submit_array) = $operationsVarArray;      
-                
+                    $del_array,
+					$copy_array,
+					$add_array,
+					$single_delete_array,
+					$single_copy_array,
+					$submit_array,
+					$facebook_array,
+					$google_array,
+					$linkedin_array,
+					$save_add_array
+				)  = $operationsVarArray;
+
             }
         }
-        
-//        echo "<pre>";
-//        print_r($customFunctionArray);
-//        echo "</pre>";
-        
+		if(!empty($facebook_array)){
+			$facebookButton = generateFacebookButton($facebook_array);
+		}
+
+		if(!empty($google_array)){
+			$googleButton = generateGoogleButton($google_array);
+		}
+
+		if(!empty($linkedin_array)){
+			$linkedinButton = generateLinkedinButton($linkedin_array);
+		}
         /// setting for  Save/Update button
         if (!empty($submit_array) ) {
             $updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
-        }
-        else if($operation == 'edit_operations')
-        {
+        } else if($operation == 'edit_operations') {
             if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
                 $updateSaveButton = "<input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' /> &nbsp;";
-            }
-            else
-            {
+            } else {
                 $updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
-            }            
-        }
-        else if($operation == 'view_operations')
-        {
+            }
+        } else if($operation == 'view_operations') {
             #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
         }
-        
+
+		/// setting for  save add button
+		if (!empty($save_add_array) ) {
+			$_SESSION['save_add_url'] = $addUrlInner;
+			$saveAddButton = "<button type='submit' name='save_add_record' class='btn " . $save_add_array['style'] ."'>" . $save_add_array['label'] . "</button> &nbsp;";
+		}
+
         /// setting for  delete button
         if (!empty($del_array) ) {
-            $deleteButton = "<button type='submit' class='btn action-delete " . $del_array['style'] . "' name='delete' >" . $del_array['label'] . "</button> &nbsp;";
-        }
+			$deleteButton = "<button type='submit' class='btn list-del " . $del_array['style'] . "' name='$row1[dict_id]' id='$_GET[search_id]' >" . $del_array['label'] . "</button> &nbsp;";
+		}
 
         //// setting for  copy button
         if (!empty($copy_array) ) {
-            $copyButton = "<button type='submit' class='btn action-copy " . $copy_array['style'] . "' name='copy' >" . $copy_array['label'] . "</button> &nbsp;";
+            $copyButton = "<button type='submit' class='btn list-copy " . $copy_array['style'] . "'  name='$row1[dict_id]' id='$_GET[search_id]'>" . $copy_array['label'] . "</button> &nbsp;";
         }
-        /// ADD BUTTON
 
+        /// ADD BUTTON
         if (!empty($add_array) ) {
             $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
         }
-        
+
         ##CUSTOM FUNCTION BUTTON##
-        if (!empty($customFunctionArray) ) {
-            
-//            echo "<pre>";
-//            print_r($_SESSION);
-//            echo "</pre>";
-            
-            echo "<br/>";
-            foreach($customFunctionArray as $keyCustomFunction => $customFunction)
-            {    
+		generateCustomFunctionArray($customFunctionArray); // in codeCommonFunction.php
 
-                ##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
-                if(strtolower($customFunction['function']) == 'addimport')
-                {
-                    ##FOR TESTING AND DEBUG,SHOULD BE REMOVED###
-                    #$customFunction['params'] = 'add import` import multiple data` ` user_id` pname1` description` product_name';##THIRD param iS CI OR CP | TI OR TP##
-
-                    ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######STARTS####
-                    $customFunctionParams = $customFunction['params'];
-                    $customFunctionParams = explode("`", $customFunctionParams);
-                    $customFunctionParams = array_map('trim', $customFunctionParams);  
-
-                    $customFunctionThirdParameter = $customFunctionParams['2'];
-
-                    ###SET SESSION var for holding addimport function parameters######
-                    $_SESSION['addImportParameters'] = $customFunctionParams;
-
-//                            echo "<font color=red>\$customFunction['params']:$customFunction[params] ::::::\$customFunctionThirdParameter:$customFunctionThirdParameter</font><br>";
-//                            echo "<pre>";
-//                            print_r($_SESSION['addImportParameters']);
-//                            echo "</pre>";
-
-                    $addImportLink = $_SESSION['add_url_list'] . '&addImport=true';                            
-
-                    $buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';                                
-                    $buttonHtmlManualImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=manual' . '" data-prompt_action="importManual" >Manual Import</a>';
-                    #<a data-dismiss="modal" data-toggle="modal" href="#lost">Click</a>
-
-                    $buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';                                
-                    $buttonHtmlManualImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportManualModal" data-prompt_action="importManual" >Manual Import</a>';
-
-                    $importPromptMessage = 'Import from CSV File, or Manual Import?';  
-
-                    ###DEFAULT IMPORT TYPE = P i.e. prompt after every import###
-                    $importButtonActionType = 'P';
-
-                    if(stripos($customFunctionThirdParameter, 'I') !== false)
-                    {
-                        $importButtonActionType = 'I';
-                        $importPromptMessage = 'Import from CSV File?';
-                        $buttonHtmlManualImport = '';
-                    }
-
-//                            if(stripos($customFunctionThirdParameter, 'P') !== false )
-//                            {
-//                                $importButtonActionType = 'P';                              
-//                            }
-//                            else if(stripos($customFunctionThirdParameter, 'I') !== false)
-//                            {
-//                                $importButtonActionType = 'I';
-//                                $importPromptMessage = 'Import from CSV File?';
-//                                $buttonHtmlManualImport = '';
-//                            }
-//                            else
-//                            {
-//                                $importButtonActionType = 'P';
-//                            }
-                    ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######ENDS######
-                    #<!-- Button trigger modal -->
-                    echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
-                        data-function_params='{$customFunction['params']}' name='add_import' data-import_type='$importButtonActionType'
-                        data-toggle='modal' data-target='#addimportModal'>" . $customFunction['label'] . "</button>";
-
-                    ?>                         
-
-
-                    <!-- addimport prompt Modal -->
-                    <div class="modal fade" id="addimportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="myModalLabel">Import</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <?= $importPromptMessage; ?>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <?= $buttonHtmlFileImport; ?>
-                                    <?= $buttonHtmlManualImport; ?>
-                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- addimport Status Success/Error Modal -->
-                    <div class="modal fade" id="addimportStatusModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="myModalLabel">Import Status</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <?php
-
-                                    $statusText = "Completed... ";
-
-                                    if(!empty($_SESSION['SuccessAddImport']) )
-                                    {
-                                        $statusText .= count($_SESSION['SuccessAddImport']) . " records processed. ";
-                                    }
-                                    if(!empty($_SESSION['errorsAddImport']) )
-                                    {
-                                        $statusText .= count($_SESSION['errorsAddImport']) . " records did not process due to errors.";
-                                    }
-
-                                    echo $statusText;
-
-                                    ?>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                                            
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                    <script>
-                    jQuery(document).ready(function($){
-
-                        //##SUCCESS/ERROR MODAL DISPLAYED ON REDIRECT USING SESSION##
-                        //###NEED TO UNSET THE addimport SESSION for STATUS SINCE THIS FILE IS GETTING CALLED TWICE FOR SOME REASON, SO USED AJAX TO UNSET THOSE####
-                        $.ajax({
-                            method: "POST",
-                            url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                            data: {action: 'addimport_session_unset'}
-                        })
-                        <?php
-                        if(!empty($_SESSION['errorsAddImport']) || !empty($_SESSION['SuccessAddImport']) )
-                        {
-                            echo "$('#addimportStatusModal').modal('show');";
-                        }
-                        #unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
-                        ?>
-                    });
-                    </script>    
-                    <?php
-                }
-                else
-                {
-                    echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
-                        data-function_params='{$customFunction['params']}' name='custom_function_$keyCustomFunction' >" . $customFunction['label'] . "</button>";
-                    ?>
-                    <script>
-                    jQuery(document).ready(function($){
-                        $('#list-form').on('click', '.actionCustomfunction', function(event){
-
-                            if (confirm( $(this).text() ) == true) {
-
-                                $.ajax({
-                                    method: "POST",
-                                    url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                                    data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
-                                })
-                                .done(function (msg) {
-                                    alert('Success');
-                                    //location.reload();
-                                });
-
-                            } else {
-                                event.stopImmediatePropagation();
-                            }
-                        });
-                    });
-                    </script>    
-            <?php
-                }
-
-            }
-            
-            ?>
-            <!--####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######-->
-            <!--File modal addimport-->
-            <div class="modal fade" id="addimportFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Import from CSV File</h4>
-                        </div>
-
-                        <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
-
-                            <div class="modal-body">                        
-
-                                <div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
-                                    <input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' />
-                                </div>  
-
-                            </div>
-                            <div class="modal-footer" style="border-top: none;">
-                                <div class='new_form col-sm-12 text-right'>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </div>
-                            </div>
-
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-
-            <!--Manual import modal addimport-->
-            <div class="modal fade" id="addimportManualModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Import</h4>
-                        </div>
-
-                        <form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
-
-                            <div class="modal-body">
-
-                                <?php
-                                #if(strtolower($_GET['addImportType']) == 'manual') 
-                                {
-                                    $customFunctionParameters = $_SESSION['addImportParameters'];
-
-                                    array_splice($customFunctionParameters, 0, 3); 
-
-                                    $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
-                                    ###$_SESSION['addImportParameters']['1'] == description###
-                                }
-                                ?>
-
-                                <div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
-                                    <br>Fields : <?= implode(', ', $customFunctionParameters); ?> <br>
-                                    <textarea name="addImportText" class="form-control" cols="100" required ></textarea>
-                                </div>                        
-
-                            </div>
-                            <div class="modal-footer" style="border-top: none;">
-                                <div class='new_form col-sm-12 text-right'>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            </div>        
-            <?php
-            
-        }     
-        
         ####NEW 3 PARAM BUTTON PARAMETER FROM DD.view_operations|DD.edit_operations#######ENDS##########################################################################################
-        
+
 
         /*         * *****************
          * *****************************************
@@ -476,7 +216,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          * ********************************************************
          * *******************************************************************************
          * ****************************************************************************
-         * 
+         *
          */
 
 		//pr($row1);
@@ -487,707 +227,660 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 		if(!itemHasVisibility($row1['dd_visibility'])){
 			$userPrivilege = false;
 		}
-        /*if ($_SESSION['user_privilege'] < $row1['dd_privilege_level'] && $_SESSION['user_privilege'] <= 9) {
-
-            $userPrivilege = true;
-        } else {
-
-            $userPrivilege = false;
-        }*/
-
+		if(loginNotRequired()){
+			$userPrivilege = true;
+		}
         if ($userPrivilege === true) {
 			////adding class if form is not for editing purpose
+				$page_editable = true;
 
-            $page_editable = true;
+				if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
+					$page_editable = false;
+					if (!empty($row1['list_style'])){
+						$style = $row1['list_style'] . ' page_not_editable';
+					} else {
+						$style = 'page_not_editable';
+					}
+				} elseif ($row1['page_editable'] == 2) {
+					$page_editable = false;
+					if (!empty($row1['list_style'])){
+						$style = $row1['list_style'] . ' profile_page';
+					} else {
+						$style = 'profile_page';
+					}
+				}else {
+					if (!empty($row1['list_style'])){
+						$style = $row1['list_style'] . ' simple_edit_page';
+					} else {
+						$style = 'simple_edit_page';
+					}
+				}
 
-            if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
+				if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
+					$_SESSION['search_id'] = $_SESSION['uid'];
+				else if (trim($row1['table_type']) == 'child') {
+	//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID");
+					$_SESSION['search_id'] = $_SESSION['parent_value'];
+				} else
+					$_SESSION['search_id'] = $_SESSION['uid']; /// for displaying one user
 
 
-                $page_editable = false;
+					/* if (isset($_GET['search_id']) && !empty($_GET['search_id'])) {
 
-                if (!empty($row1['list_style']))
-                    $style = $row1['list_style'] . ' page_not_editable';
-                else
-                    $style = 'page_not_editable';
-            }else if ($row1['page_editable'] == 2) {
+					  // $_SESSION['search_id'] = $_GET['search_id'];
+					} */
 
-                $page_editable = false;
+				if (isset($_GET['id']) && $_GET['id'] != '') {
+					$_SESSION['search_id'] = $_GET['id'];
+					//$_SESSION['update_table']['keyfield'] = 'id';
+				}
 
-                if (!empty($row1['list_style']))
-                    $style = $row1['list_style'] . ' profile_page';
-                else
-                    $style = 'profile_page';
-            }else {
 
-                if (!empty($row1['list_style']))
-                    $style = $row1['list_style'] . ' simple_edit_page';
-                else
-                    $style = 'simple_edit_page';
-            }
 
-            if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
-                $_SESSION['search_id'] = $_SESSION['uid'];
-            else if (trim($row1['table_type']) == 'child') {
-//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID"); 
-                $_SESSION['search_id'] = $_SESSION['parent_value'];
-            } else
-                $_SESSION['search_id'] = '76'; /// for displaying one user
+				$_SESSION['update_table']['database_table_name'] = $row1['database_table_name'];
 
+				$primary_key = firstFieldName($row1['database_table_name']);
 
-                /* if (isset($_GET['search_id']) && !empty($_GET['search_id'])) {
 
-                  // $_SESSION['search_id'] = $_GET['search_id'];
-                } */
+				$_SESSION['update_table']['keyfield'] = $primary_key;
 
-            if (isset($_GET['id']) && $_GET['id'] != '') {
-                $_SESSION['search_id'] = $_GET['id'];
-                //$_SESSION['update_table']['keyfield'] = 'id';
-            }
 
+				if (trim($row1['table_type']) == 'parent') {
 
 
-            $_SESSION['update_table']['database_table_name'] = $row1['database_table_name'];
+					$_SESSION['update_table']['child_parent_key'] = (!empty($row1['keyfield']) ? $row1['keyfield'] : $_SESSION['update_table']['keyfield'] );
 
-            $primary_key = firstFieldName($row1['database_table_name']);
 
+					$_SESSION['update_table']['child_parent_key_diff'] = (!empty($row1['keyfield']) ? 'true' : 'false');
+				}
 
-            $_SESSION['update_table']['keyfield'] = $primary_key;
+				/*             * ****** for update or ADD *** */
 
 
-            if (trim($row1['table_type']) == 'parent') {
 
+				if ($row1['dd_editable'] == '11') {
 
-                $_SESSION['update_table']['child_parent_key'] = (!empty($row1['keyfield']) ? $row1['keyfield'] : $_SESSION['update_table']['keyfield'] );
 
 
-                $_SESSION['update_table']['child_parent_key_diff'] = (!empty($row1['keyfield']) ? 'true' : 'false');
-            }
+					$_SESSION['dict_id'] = $row1['dict_id'];
 
-            /*             * ****** for update or ADD *** */
+					//$_SESSION['table_alias_image'] = $row1['table_alias'];
 
+					if (!empty($_GET['search_id']))
+						$_SESSION['search_id2'] = $_GET['search_id'];
+					else
+						$_SESSION['search_id2'] = $_SESSION['search_id'];
 
+					$_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
 
-            if ($row1['dd_editable'] == '11') {
+					$_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
 
 
+					if (trim($row1['table_type']) == 'parent') {
 
-                $_SESSION['dict_id'] = $row1['dict_id'];
 
-                //$_SESSION['table_alias_image'] = $row1['table_alias'];
+						$_SESSION['update_table2']['child_parent_key'] = (!empty($row1['keyfield']) ? $row1['keyfield'] : $_SESSION['update_table']['keyfield']);
 
-                if (!empty($_GET['search_id']))
-                    $_SESSION['search_id2'] = $_GET['search_id'];
-                else
-                    $_SESSION['search_id2'] = $_SESSION['search_id'];
 
-                $_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
+						$_SESSION['update_table2']['child_parent_key_diff'] = (!empty($row1['keyfield']) ? 'true' : 'false');
+					}
+					//////updating tab_anchor for home pages
 
-                $_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
+					$_SESSION['anchor_tag'] = "#" . trim($row1['tab_name']);
 
+					if ($_GET['checkFlag'] == 'true') {
 
-                if (trim($row1['table_type']) == 'parent') {
+						if ($_GET['table_type'] == 'child')
+							$_SESSION['child_return_url2'] = $_SESSION['child_return_url'];
+						else
+							$_SESSION['return_url2'] = $_SESSION['return_url'];
+					} else {
+						$_SESSION['return_url2'] = $actual_link;
+					}
+					//$_SESSION['table_alias'] = $row1['table_alias'];
+				}
+				###FIXES THE SESSION HOLDING INSERT TALBE NAME NOT SETTING UP WHEN DD.dd_editable != 11###
+				else
+				{
+					$_SESSION['dict_id'] = $row1['dict_id'];
 
+					//$_SESSION['table_alias_image'] = $row1['table_alias'];
 
-                    $_SESSION['update_table2']['child_parent_key'] = (!empty($row1['keyfield']) ? $row1['keyfield'] : $_SESSION['update_table']['keyfield']);
+					if (!empty($_GET['search_id']))
+						$_SESSION['search_id2'] = $_GET['search_id'];
+					else
+						$_SESSION['search_id2'] = $_SESSION['search_id'];
 
+					$_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
 
-                    $_SESSION['update_table2']['child_parent_key_diff'] = (!empty($row1['keyfield']) ? 'true' : 'false');
-                }
-                //////updating tab_anchor for home pages
+					$_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
+				}
 
-                $_SESSION['anchor_tag'] = "#" . trim($row1['tab_name']);
 
-                if ($_GET['checkFlag'] == 'true') {
+				if (!empty($_GET['ta']) && $_GET['ta'] == $row1['table_alias'] && !empty($_GET['search_id'])) {
 
-                    if ($_GET['table_type'] == 'child')
-                        $_SESSION['child_return_url2'] = $_SESSION['child_return_url'];
-                    else
-                        $_SESSION['return_url2'] = $_SESSION['return_url'];
-                } else {
-                    $_SESSION['return_url2'] = $actual_link;
-                }
-                //$_SESSION['table_alias'] = $row1['table_alias'];
-            }
-            ###FIXES THE SESSION HOLDING INSERT TALBE NAME NOT SETTING UP WHEN DD.dd_editable != 11###
-            else
-            {
-                $_SESSION['dict_id'] = $row1['dict_id'];
+					if ($_GET['table_type'] == 'parent') {
 
-                //$_SESSION['table_alias_image'] = $row1['table_alias'];
 
-                if (!empty($_GET['search_id']))
-                    $_SESSION['search_id2'] = $_GET['search_id'];
-                else
-                    $_SESSION['search_id2'] = $_SESSION['search_id'];
+						if ($_SESSION['update_table']['child_parent_key_diff'] == 'true') {
 
-                $_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
+							$child_parent_value = getWhere($row1['database_table_name'], array($_SESSION['update_table']['keyfield'] => $_GET['search_id']));
 
-                $_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
-            }
 
+							$_SESSION['parent_value'] = $child_parent_value[0][$_SESSION[update_table][child_parent_key]];
+						} else {
 
-            if (!empty($_GET['ta']) && $_GET['ta'] == $row1['table_alias'] && !empty($_GET['search_id'])) {
 
-                if ($_GET['table_type'] == 'parent') {
+							$_SESSION['parent_value'] = $_GET['search_id'];
+						}
+					}
 
 
-                    if ($_SESSION['update_table']['child_parent_key_diff'] == 'true') {
 
-                        $child_parent_value = getWhere($row1['database_table_name'], array($_SESSION['update_table']['keyfield'] => $_GET['search_id']));
+					$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['search_id']);
+				} else {
 
+					/*
+					 * This check is deploying for Transaction feature.
+					 */
 
-                        $_SESSION['parent_value'] = $child_parent_value[0][$_SESSION[update_table][child_parent_key]];
-                    } else {
+					#Added By Dharmesh 2018-27-10#
+					$user_id  = !empty($_GET['search_id'])?$_GET['search_id']:$_SESSION['search_id'];
 
+					if (trim($row1['table_type']) != 'transaction')
+						$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $user_id);
 
-                        $_SESSION['parent_value'] = $_GET['search_id'];
-                    }
-                }
+	/* 				if (trim($row1['table_type']) != 'transaction')
+						$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_SESSION['search_id']); */
 
+				}
 
 
-                $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['search_id']);
-            } else {
+				/*
+				 *
+				 *
+				  /////////displaying the heading of tab page
+				 *
+				 *
+				 */
 
-                /*
-                 * This check is deploying for Transaction feature.
-                 */
+				$tab_name = explode("/", $row1['tab_name']);
 
-				#Added By Dharmesh 2018-27-10#
-				$user_id  = !empty($_GET['search_id'])?$_GET['search_id']:$_SESSION['search_id'];
-                
-				if (trim($row1['table_type']) != 'transaction')
-                    $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $user_id);
-					
-/* 				if (trim($row1['table_type']) != 'transaction')
-                    $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_SESSION['search_id']); */
-				
-            }
+				if (!empty(trim($tab_name[1]))) {
+					echo "<h1 class='tab-header'>$tab_name[1]</h1>";
+				}
 
+				/*
+				 *
+				 * *************************Generating session to caputure tab_name
+				 */
 
-            /*
-             * 
-             * 
-              /////////displaying the heading of tab page
-             * 
-             * 
-             */
+				$_SESSION['list_tab_name'] = $tab_name[0];
 
-            $tab_name = explode("/", $row1['tab_name']);
+				/////generating session for capturing parent List tabname
 
-            if (!empty(trim($tab_name[1]))) {
-                echo "<h1 class='tab-header'>$tab_name[1]</h1>";
-            }
+				if ($row1['table_type'] == 'parent') {
+					$_SESSION['parent_list_tabname'] = $tab_name[0];
 
-            /*
-             * 
-             * *************************Generating session to caputure tab_name
-             */
+					$_SESSION['parent_url'] = $actual_link;
+				}
+				/*
+				 *
+				 *
+				 *
+				 *
+				 *
+				 *
+				 *
+				 * *****************
+				 * *******************************
+				 * BREADCUMB for child lists
+				 *
+				 * **********
+				 * ********************
+				 * *************************
+				 *
+				 *
+				 *
+				 *
+				 */
 
-            $_SESSION['list_tab_name'] = $tab_name[0];
 
-            /////generating session for capturing parent List tabname
+				if ((( $row1['list_views'] != 'NULL' || $row1['list_views'] != '' ) && trim($row1['table_type']) == 'child' && $_GET['edit'] != 'true' ) && $_GET['addFlag'] != 'true') {
 
-            if ($row1['table_type'] == 'parent') {
-                $_SESSION['parent_list_tabname'] = $tab_name[0];
 
-                $_SESSION['parent_url'] = $actual_link;
-            }
-            /*
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * *****************
-             * *******************************
-             * BREADCUMB for child lists
-             * 
-             * **********
-             * ********************
-             * *************************
-             * 
-             * 
-             * 
-             * 
-             */
+					echo "<br><ol class='breadcrumb'>
+								<li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$_SESSION[parent_list_tabname]</span> List</a></li>
+							  </ol>";
+				}
 
 
-            if ((( $row1['list_views'] != 'NULL' || $row1['list_views'] != '' ) && trim($row1['table_type']) == 'child' && $_GET['edit'] != 'true' ) && $_GET['addFlag'] != 'true') {
+				/*             * ******************
+				 * ************************ADDING Form flags code goes here
+				 * ************************
+				 */
+				if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
 
+					if (empty($save_add_array) ) {
+						unset($_SESSION['save_add_url']);
+					}
 
-                echo "<br><ol class='breadcrumb'>
-                            <li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$_SESSION[parent_list_tabname]</span> List</a></li>
-                          </ol>";
-            }
+					/***
+					 * ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
+					 *
+					 * Short solution for back to home page
+					 */
+					generateBreadcrumbsAndBackPageForAdd($row1,$onePage=false); // in codeCommonFunction.php
 
 
-            /*             * ******************
-             * ************************ADDING Form flags code goes here
-             * ************************
-             */
-            if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
+					$style = $row1['list_style'];
 
+					$_SESSION['dict_id'] = $row1['dict_id'];
 
-                /*                 * **********BREADCRUMB
-                 * 
-                 * 
-                 * 
-                 * 
-                 */
+					if (!empty($_GET['search_id']))
+						$_SESSION['search_id2'] = $_GET['search_id'];
+					else
+						$_SESSION['search_id2'] = $_SESSION['search_id'];
 
 
+					$_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
 
+					$_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
 
 
+					if ($_GET['checkFlag'] == 'true') {
+						###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
+						echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-true'><br>";
+					} else {
+						$_SESSION['return_url2'] = $actual_link;
 
-                if ($_GET['table_type'] == 'child')
-                    $link_to_return = $_SESSION['child_return_url'];
-                else
-                    $link_to_return = $_SESSION['return_url'];
+						echo "<form action='?action=add&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-false'><br>";
+					}
 
 
+					if ($_GET['checkFlag'] == 'true') {
 
-                /*                 * ***
-                 * 
-                 * 
-                 * *********
-                 * *************ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
-                 * 
-                 * *************
-                 * ***********************
-                 * *******
-                 * 
-                 * 
-                 */
+						if ($_GET['table_type'] == 'child')
+							$link_to_return = $_SESSION['child_return_url'];
+						else
+							$link_to_return = $_SESSION['return_url'];
 
+						$actual_link = $link_to_return;
 
+						//   $cancel_value = formCancel;
+					}
 
-                /*                 * **
-                 * 
-                 * Short solution for back to home page
-                 * 
-                 */
+					$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
-                $home_test = explode("display", $link_to_return);
+					$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+					if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
+						$cancelButton = "";// empty
+					}
 
-                //print_r($home_test);die;
 
-                if ($home_test[1] == '=home')
-                    $breadcrumb_display = " Back To <span>Home</span> Page";
-                else
-                    $breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
+					echo "<div class='form-footer'>
 
-                echo "<br>
-                    <div class='breadcrumb'>
-                        <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>
-                    </div>";
+							" . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
+							$updateSaveButton
+							$saveAddButton
+							$facebookButton
+							$googleButton
+							$linkedinButton
+							$copyButton
+							$addButton
+							$deleteButton
+							$cancelButton
+						</div>";
+
+					echo "<div style='clear:both'></div><hr>";
+
+					####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######
+	//                if($_GET['addImport'] == 'true' && !empty($_SESSION['addImportParameters']) )
+	//                {
+	//
+	////                    echo "<Pre>";
+	////                    print_r($_SESSION['addImportParameters']);
+	////                    print_r($_GET);
+	////                    echo "</pre>";
+	//
+	//
+	//
+	//                    if(strtolower($_GET['addImportType']) == 'file')
+	//                    {
+	//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
+	//                            echo "<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' >";
+	//                        echo "</div>";
+	//                    }
+	//                    else if(strtolower($_GET['addImportType']) == 'manual')
+	//                    {
+	//                        $customFunctionParameters = $_SESSION['addImportParameters'];
+	//
+	//                        array_splice($customFunctionParameters, 0, 3);
+	//
+	//                        $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
+	//
+	//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
+	//                            echo "<br>Fields : " . implode(', ', $customFunctionParameters) . "<br>";
+	//                            echo '<textarea name="addImportText" class="form-control" cols="100" required ></textarea>';
+	//                        echo "</div>";
+	//                    }
+	//
+	//
+	//
+	//                }
+	//                else
+	//                {
+						while ($row = $rs2->fetch_assoc()) {
+							formating_Update($row, $method = 'add', $urow);
+						}//// end of while loop
+						//if ($_GET['checkFlag'] == 'true') {
+	//                }
 
 
+
+
+
+					/* if ($_GET['table_type'] == 'child' && $_GET['checkFlag' == 'true'])
+					  $actual_link = $_SESSION['add_url_list'] . "&button=cancel";
+					  else */
+
 
-                /*                 * ********************************** */
+					// }
+
+					echo "<div class='form-footer'>
 
+							" . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
+							$updateSaveButton
+							$saveAddButton
+							$facebookButton
+							$googleButton
+							$linkedinButton
+							$copyButton
+							$addButton
+							$deleteButton
+							$cancelButton
+						</div>
+
+						<!--</div>-->";###COMMENTED OUT AS IT DOESN"T HAVE OPENING <DIV> TAG
+
 
-                $style = $row1['list_style'];
+					echo "<div style='clear:both'></div></form>";
+				} else {
+					if (( ( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') && $row1['table_type'] != 'content') {
 
-                $_SESSION['dict_id'] = $row1['dict_id'];
+						$row1['table_type'] = trim(strtolower($row1['table_type']));
+						switch($row1['table_type']){
+							case 'child':
+								$table_type = 'child';
+								break;
+							case 'login':
+								$table_type = 'login';
+								break;
+							case 'signup':
+								$table_type = 'signup';
+								break;
+							case 'forgotpassword':
+								$table_type = 'forgotpassword';
+								break;
+							case 'reset_password':
+								$table_type = 'reset_password';
+								break;
+							case 'change_password':
+								$table_type = 'change_password';
+								break;
+							default:
+								$table_type = 'parent';
+								break;
+						}
+						/*
+						 *
+						 *
+						 *
+						 * short solution for now to add separate fffr sytling for FFFR edit page.
+						 *
+						 *
+						 *
+						 *
+						 *
+						 */
 
-                if (!empty($_GET['search_id']))
-                    $_SESSION['search_id2'] = $_GET['search_id'];
-                else
-                    $_SESSION['search_id2'] = $_SESSION['search_id'];
 
 
 
-                $_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
 
-                $_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
 
+
+						if (isset($_SESSION['return_url']) || isset($_SESSION['child_return_url']) && $_GET['checkFlag'] == 'true') {
+							echo "<form action='?action=update&checkFlag=true&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+						} else {
+							echo "<form action='?action=update&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+						}
 
-                if ($_GET['checkFlag'] == 'true') {
-                    /*
-                      if ($_GET['table_type'] == 'child')
-                      $_SESSION['child_return_url2'] = $_SESSION['child_return_url'];
-                      else
-                      $_SESSION['return_url2'] = $_SESSION['return_url'];
 
-                     */
+						///// To show image uploader buttons
 
+						/***
+						 * ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
+						 *
+						 * Short solution for back to home page
+						 */
+						generateBreadcrumbsAndBackPage($row1,$primary_key,$onePage=false); // in codeCommonFunction.php
 
-                    // $style = trim($style);
+						##VIEW OPERATION CUSTOM BUTTONS
+						if($operation == 'view_operations')
+						{
+							echo "<div class='form-footer'>
 
-                    ###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
-                    echo "<form action='$_SESSION[add_url_list]&action=add' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-true'><br>";
-                } else {
-                    $_SESSION['return_url2'] = $actual_link;
-
-                    echo "<form action='?action=add&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-false'><br>";
-                }
-
-
-                if ($_GET['checkFlag'] == 'true') {
-
-                    if ($_GET['table_type'] == 'child')
-                        $link_to_return = $_SESSION['child_return_url'];
-                    else
-                        $link_to_return = $_SESSION['return_url'];
-
-                    $actual_link = $link_to_return;
-
-                    //   $cancel_value = formCancel;
-                }
-
-                $actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
-
-                
-
-
-                echo "<div class='form-footer'>      
-                                                    
-                        " . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
-                        $updateSaveButton
-						$copyButton
-						$addButton
-						$deleteButton
-
-                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-                    </div>";
-
-                echo "<div style='clear:both'></div><hr>";
-                
-                ####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######
-//                if($_GET['addImport'] == 'true' && !empty($_SESSION['addImportParameters']) )
-//                {
-//                    
-////                    echo "<Pre>";
-////                    print_r($_SESSION['addImportParameters']);
-////                    print_r($_GET);
-////                    echo "</pre>";
-//                    
-//                    
-//                    
-//                    if(strtolower($_GET['addImportType']) == 'file')
-//                    {
-//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
-//                            echo "<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' >";
-//                        echo "</div>";
-//                    }
-//                    else if(strtolower($_GET['addImportType']) == 'manual') 
-//                    {
-//                        $customFunctionParameters = $_SESSION['addImportParameters'];
-//                        
-//                        array_splice($customFunctionParameters, 0, 3); 
-//                        
-//                        $customFunctionParameters = array_map('ucwords', $customFunctionParameters);
-//                        
-//                        echo "<div class='new_form'><label>" . ucwords($_SESSION['addImportParameters']['1']) . "</label>";###$_SESSION['addImportParameters']['1'] == description###
-//                            echo "<br>Fields : " . implode(', ', $customFunctionParameters) . "<br>";
-//                            echo '<textarea name="addImportText" class="form-control" cols="100" required ></textarea>';
-//                        echo "</div>";
-//                    }
-//                    
-//                    
-//                    
-//                }
-//                else
-//                {
-                    while ($row = $rs2->fetch_assoc()) {
-
-                        formating_Update($row, $method = 'add', $urow);
-                    }//// end of while loop
-                    //if ($_GET['checkFlag'] == 'true') {
-//                }
-                
-
-                
-
-
-                /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag' == 'true'])
-                  $actual_link = $_SESSION['add_url_list'] . "&button=cancel";
-                  else */
-
-
-                // }
-
-                echo "<div class='form-footer'>     
-                    
-                        " . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
-                        $updateSaveButton
-						$copyButton
-						$addButton
-						$deleteButton
-                            
-                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-                    </div>
-                            
-                    <!--</div>-->";###COMMENTED OUT AS IT DOESN"T HAVE OPENING <DIV> TAG
-
-
-                echo "<div style='clear:both'></div></form>";
-            } else {
-
-                if (( ( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') && $row1['table_type'] != 'content') {
-
-
-                    if ($row1['table_type'] == 'child')
-                        $table_type = 'child';
-                    else
-                        $table_type = 'parent';
-
-
-
-                    /*
-                     * 
-                     * 
-                     * 
-                     * short solution for now to add separate fffr sytling for FFFR edit page.
-                     * 
-                     * 
-                     * 
-                     * 
-                     * 
-                     */
-
-
-
-
-
-
-
-                    if (isset($_SESSION['return_url']) || isset($_SESSION['child_return_url']) && $_GET['checkFlag'] == 'true') {
-                        echo "<form action='?action=update&checkFlag=true&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
-                    } else {
-                        echo "<form action='?action=update&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
-                    }
-
-
-                    ///// To show image uploader buttons
-
-                    if ($_GET['checkFlag'] == 'true' && $row1['dd_editable'] == 11) {
-
-
-                        if ($_GET['table_type'] == 'child')
-                            $link_to_return = $_SESSION['child_return_url'];
-                        else
-                            $link_to_return = $_SESSION['return_url'];
-
-
-
-                        /*                         * ***
-                         * 
-                         * 
-                         * *********
-                         * *************ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
-                         * 
-                         * *************
-                         * ***********************
-                         * *******
-                         * 
-                         * 
-                         */
-
-
-
-                        /*                         * **
-                         * 
-                         * Short solution for back to home page
-                         * 
-                         */
-
-                        $home_test = explode("display", $link_to_return);
-
-                        //print_r($home_test);die;
-                        if ($home_test[1] == '=home')
-                            $breadcrumb_display = " Back To <span>Home</span> Page";
-                        else
-                            $breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
-//echo "<font color=orange>INSIDE get_ata_fd_records.php line 261</font><br>";
-
-                        echo "<div class='breadcrumb'> 
-                                <a href='$link_to_return&button=cancel&table_type=$row1[table_type]" . ( $_GET['fnc'] == 'onepage' ? '&fnc=onepage' : '' ) . "' class='back-to-list'> $breadcrumb_display</a>      
-                                    " . editPagePagination($row1['list_extra_options'], $primary_key) . "
-                              </div>";
-                    }
-                    
-                    ##VIEW OPERATION CUSTOM BUTTONS
-                    if($operation == 'view_operations')
-                    {
-                        echo "<div class='form-footer'>           
-                                      
-                                    " . (!empty($debug) ? 'View operation Buttons' : '') . "    
-                                    $updateSaveButton
-									$copyButton
-									$addButton
-									$deleteButton
-
-                                    <!--<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> -->
-                                </div>
-                                
-                                <div style='clear:both'></div>
-                                <hr>
-
-                                ";
-                    }
-
-                    /*
-                     * ****
-                     * *********
-                     * **************
-                     * *****************Displaying save/cancel button on top of form
-                     * ***************************
-                     * *************************************************
-                     */
-
-                    if ($editable == 'true') {
-                        if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') {
-
-
-
-
-                            if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
-
-                                if ($_GET['checkFlag'] == 'true') {
-
-                                    if ($_GET['table_type'] == 'child')
-                                        $link_to_return = $_SESSION['child_return_url'];
-                                    else
-                                        $link_to_return = $_SESSION['return_url'];
-
-                                    $actual_link = $link_to_return;
-
-                                    //   $cancel_value = formCancel;
-                                }
-
-                                $actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
-
-                                if ($tab_status != 'bars') {
-
-                                    echo "<div class='form-footer' >                                    
-                                                  
-                                            " . (!empty($debug) ? 'Top DD_EDITABLE' : '') . "
-                                            $updateSaveButton
-											$copyButton
-											$addButton
-											$deleteButton
-                                                
-                                            <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-                            
-                                        </div>";
-                                }
-                            }/// if for submit and cancel ends here
-                            // profile-image }
-                        }
-                        if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
-                            echo "<div style='clear:both'></div><hr>";
-                        }
-                    }
-
-
-                    /*                     * ************************************************** */
-                    /*                     * ************************************************** */
-                    /*                     * ************************************************** */
-                    /*                     * ************************************************** */
-
-
-                    if ($row1['dd_editable'] == 1 && $row1['page_editable'] == 1) {
-                        echo "<button type='button' class='btn btn-default pull-right edit-btn' id='$row1[dict_id]'>" . EDIT . "</button>";
-
-                        $image_display = 'false';
-                    }
-
-
-                    if (isset($_GET['id'])) {
-                        $urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
-                    }
-                    //print_r($urow);die;
-
-                    while ($row = $rs2->fetch_assoc()) {
-                        //echo "<pre>"; print_r($row); 
-                        formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
-                    }//// end of while loop
-                } else {
-                    //// fetching child list
-                    // if ($row1['list_views'] == 'NULL' || $row1['list_views'] == '') {
-                    /////////////
-                    ////////////////
-                    //  echo "<form action='?action=update&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
-                    // Child_List($qry);
-                    // } else {
-
-                    if (trim($row1['table_type']) == 'content') {
-
-
-                        if (strpos(trim($row1['description']), "ttp://")) {
-
-                            $url = trim($row1['description']);
-
-                            echo "<iframe src='$url'></iframe>";
-                        } else {
-                            echo "<div class='$row1[list_style]'>$row1[description]</div>";
-                        }
-                    } else {
-                        #echo ("INSIDE FD RECORD.PHP called list_display()<br> ");
-//                        echo "<pre>";
-//                        print_r($_SESSION); die;
-                        list_display($qry, $row1['tab_num']); //// list displays
-
-                        echo "<div style='clear:both'></div>";
-                    }
-// }
-                }
-                /// formating ends here  ///
-
-                if ($editable == 'true') {
-                    if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') {
-                        // if (empty($_SESSION['profile-image'])) {
-                        ///when edit form is not list
-                        //  $cancel_value = 'Cancel';
-
-                        if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
-
-                            if ($_GET['checkFlag'] == 'true') {
-
-                                if ($_GET['table_type'] == 'child')
-                                    $link_to_return = $_SESSION['child_return_url'];
-                                else
-                                    $link_to_return = $_SESSION['return_url'];
-
-                                $actual_link = $link_to_return;
-
-                                //$cancel_value = 'Cancel';
-                            }
-
-                            $actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
-
-                            //if( $row1['dd_editable'] != 0 ){
-
-                            echo "<div class='form-footer'>           
-                                      
-                                    " . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "    
-                                    $updateSaveButton
-									$copyButton
-									$addButton
-									$deleteButton
-
-                                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> 
-                                </div>";
-
-                            // }
-                        }/// if for submit and cancel ends here
-                        // profile-image }
-                    }
-
-                    echo "<div style='clear:both'></div></form>";
-                }
-            }
-
+										" . (!empty($debug) ? 'View operation Buttons' : '') . "
+										$updateSaveButton
+										$saveAddButton
+										$facebookButton
+										$googleButton
+										$linkedinButton
+										$copyButton
+										$addButton
+										$deleteButton
+
+										<!--<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a> -->
+									</div>
+
+									<div style='clear:both'></div>
+									<hr>
+
+									";
+						}
+
+						/*
+						 * ****
+						 * *********
+						 * **************
+						 * *****************Displaying save/cancel button on top of form
+						 * ***************************
+						 * *************************************************
+						 */
+
+						if ($editable == 'true') {
+							if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') {
+
+
+
+
+								if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+
+									if ($_GET['checkFlag'] == 'true') {
+
+										if ($_GET['table_type'] == 'child')
+											$link_to_return = $_SESSION['child_return_url'];
+										else
+											$link_to_return = $_SESSION['return_url'];
+
+										$actual_link = $link_to_return;
+
+										//   $cancel_value = formCancel;
+									}
+
+									$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
+
+									$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+
+									if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+										$cancelButton = "";// empty
+									}
+									if ($tab_status != 'bars') {
+
+										echo "<div class='form-footer' >
+
+												" . (!empty($debug) ? 'Top DD_EDITABLE' : '') . "
+												$updateSaveButton
+												$saveAddButton
+												$facebookButton
+												$googleButton
+												$linkedinButton
+												$copyButton
+												$addButton
+												$deleteButton
+												$cancelButton
+											</div>";
+									}
+								}/// if for submit and cancel ends here
+								// profile-image }
+							}
+							if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+								echo "<div style='clear:both'></div><hr>";
+							}
+						}
+
+
+						/* *************************************************** */
+						/* *************************************************** */
+						/* *************************************************** */
+						/* *************************************************** */
+
+
+						if ($row1['dd_editable'] == 1 && $row1['page_editable'] == 1) {
+							echo "<button type='button' class='btn btn-default pull-right edit-btn' id='$row1[dict_id]'>" . EDIT . "</button>";
+
+							$image_display = 'false';
+						}
+
+						if (isset($_GET['id'])) {
+							$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
+						}
+
+						while ($row = $rs2->fetch_assoc()) {
+							if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+								$row['format_type'] =  trim($row['format_type']);
+								if($row['format_type'] == 'email'){
+									$_SESSION['user_field_email'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'uname'){
+									$_SESSION['user_field_uname'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'password'){
+									$_SESSION['user_field_password'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'confirm_password'){
+									$_SESSION['user_field_confirm_password'] = $row['generic_field_name'];
+								}
+								if($row['format_type'] == 'old_password'){
+									$_SESSION['user_field_old_password'] = $row['generic_field_name'];
+								}
+								$urow = array();
+							}
+							formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
+						}//// end of while loop
+					} else {
+						//// fetching child list
+						// if ($row1['list_views'] == 'NULL' || $row1['list_views'] == '') {
+						/////////////
+						////////////////
+						//  echo "<form action='?action=update&tabNum=$_GET[tabNum]' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+						// Child_List($qry);
+						// } else {
+
+						if (trim($row1['table_type']) == 'content') {
+
+
+							if (strpos(trim($row1['description']), "ttp://")) {
+
+								$url = trim($row1['description']);
+
+								echo "<iframe src='$url'></iframe>";
+							} else {
+								echo "<div class='$row1[list_style]'>$row1[description]</div>";
+							}
+						} else {
+							#echo ("INSIDE FD RECORD.PHP called list_display()<br> ");
+	//                        echo "<pre>";
+	//                        print_r($_SESSION); die;
+							list_display($qry, $row1['tab_num']); //// list displays
+
+							echo "<div style='clear:both'></div>";
+						}
+	// }
+					}
+					/// formating ends here  ///
+
+					if ($editable == 'true') {
+						if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || $_GET['edit'] == 'true') {
+							// if (empty($_SESSION['profile-image'])) {
+							///when edit form is not list
+							//  $cancel_value = 'Cancel';
+
+							if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+
+								if ($_GET['checkFlag'] == 'true') {
+
+									if ($_GET['table_type'] == 'child')
+										$link_to_return = $_SESSION['child_return_url'];
+									else
+										$link_to_return = $_SESSION['return_url'];
+
+									$actual_link = $link_to_return;
+
+									//$cancel_value = 'Cancel';
+								}
+
+								$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
+
+								//if( $row1['dd_editable'] != 0 ){
+
+								$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+								if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+									$cancelButton = "";// empty
+								}
+
+								echo "<div class='form-footer'>
+
+										" . (!empty($debug) ? 'Bottom DD_EDITABLE' : '') . "
+										$updateSaveButton
+										$saveAddButton
+										$facebookButton
+										$googleButton
+										$linkedinButton
+										$copyButton
+										$addButton
+										$deleteButton
+										$cancelButton
+									</div>";
+
+								// }
+							}/// if for submit and cancel ends here
+							// profile-image }
+						}
+
+						echo "<div style='clear:both'></div></form>";
+					}
+				}
+
+				//break;
+			// SWITCH END
+			//}
             ////////page privilege if true
         } else {
 
             echo "<h3 style='color:red'>You don't have enough privilege to view contents</h3>";
-            ///page privilege if its false   
+            ///page privilege if its false
         }
     }//else ends here where tab_num=0 is not part of dd->display_page
 }

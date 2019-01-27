@@ -32,11 +32,25 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_name'] = "genericsandbox4";
 	$config['db_user'] = "genericsandbox4";
 	$config['db_password'] = "Lennin1009##";
+
+} elseif($_SERVER['HTTP_HOST'] == 'generic.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericplatform";
+	$config['db_user'] = "genericinternal";
+	$config['db_password'] = "Lennin1009##";
+
+} elseif($_SERVER['HTTP_HOST'] == 'cyrano.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "CyranoProduction";
+	$config['db_user'] = "CyranoProduction";
+	$config['db_password'] = "Upwork081461!";
+
 } else {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericplatform";
 	$config['db_user'] = "genericinternal";
 	$config['db_password'] = "Lennin1009##";
+
 }
 
 $GLOBALS['db-host'] =  $config['db_host'];

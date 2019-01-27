@@ -4,9 +4,12 @@
 
 /********* BOXVIEW ***********/
 
-.boxView{}
+.boxView{
+	}
 
-.boxView img{}
+.boxView img{
+
+}
 
 
 .boxView:hover
@@ -37,6 +40,8 @@ margin-top:10px;
 
 
 
+
+
 /* new ideas from republic.co  */
 border-radius: 4px;
 -webkit-transition: all 0.2s ease-in-out;
@@ -50,6 +55,10 @@ background-color: #eeeeee;
 background-size: cover;
 background-position: center;
 border-bottom: 1px solid rgba(0,0,0,0.08);
+
+#oval
+
+
 
 }
 

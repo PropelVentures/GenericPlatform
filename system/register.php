@@ -74,7 +74,7 @@ if (isUserLoggedin())
                 <?php
                 if (USER_TYPES_ENABLED && USER_TYPES_SELF_SELECT)
                 {
-                  $obj = new CustomHtml;
+//                  $obj = new CustomHtml;
                   $obj->getDropDown('user_type');
                 }
                 ?>

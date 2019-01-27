@@ -200,6 +200,30 @@ function firstFieldName($tableName) {
     return $row['Field'];
 }
 
+/*
+ * ****
+ * ************************
+ * ************************
+ *
+ * @function getColumnNamee
+ *
+ * ********
+ * *************
+ * ******************************************
+ */
+
+function getColumnNames($tableName) {
+    $con = connect();
+    $res = $con->query("SHOW COLUMNS FROM $tableName");
+	$data = array();
+	if($res->num_rows){
+		while($row = $res->fetch_assoc()){
+			$data[$row['Field']] = $row['Field'];
+		}
+	}
+    return $data;
+}
+
 function nextKey($tblName, $pkey, $current_id, $clause) {
 
 

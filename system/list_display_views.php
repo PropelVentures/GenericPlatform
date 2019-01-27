@@ -14,7 +14,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $row = $rs->fetch_assoc();
     $listCheck = 'yes';
     $list_sort = array_filter( array_map('trim', explode(',', $row['list_sort'])) );
-	
+
     ####SET SESSION VAR FOR HOLDING TABLE_TYPE='parent' data_dictionary.`keyfield` and its relevant value for that keyfield column if it exists in the table#########
     $keyfield = $row['keyfield'];
     if (strtolower(trim($row['table_type']) ) == 'parent' && !empty($keyfield) )
@@ -46,9 +46,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     else
         $search_key = $_SESSION['search_id'];
 
-
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $list_sort[0], $listCheck);
     } else {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $listSort = 'false', $listCheck);
@@ -57,9 +55,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $listView = trim($row['list_views']);
 	//Added BY Dharmesh 2018-10-07
 	$list_views = listvalues($row['list_views']);
-	//print_r($list_views); exit;
 	//Code End//
-
 	//Added BY Dharmesh 2018-10-12
 	$list_pagination = listpageviews($row['list_pagination']);
 	if (!isset($list_pagination[0]) || empty($list_pagination[0])){
@@ -70,14 +66,11 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	}
 	//Code End//
 
-
     /*
      * @function listExtraOptions
      *
      * Fetching list_extra_options
      */
-
-#echo "<font color=green>callling listExtraOptions for list process</font><br/>";
 
     #array('list_operations' => $row['list_operations'], 'edit_operations' => $row['edit_operations'], 'view_operations' => $row['view_operations'] );
 
@@ -91,59 +84,40 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
 
-	//$ret_array['pagination'] = ( (isset($list_pagination[0]) && !empty($list_pagination[0]) ) ? $list_pagination[0] : 8);
-	
-	
-	#echo "<pre>";print_r($ret_array);echo "</pre>";
-    #die;
-
-
-
     global $popup_menu;
 
-    $popup_menu = array("popupmenu" => $ret_array['popupmenu'], "popup_delete" => $ret_array['popup_delete'], "popup_copy" => $ret_array['popup_copy'], "popup_add" => $ret_array['popup_add'], "popup_openChild" => $ret_array['popup_openChild']);
+    $popup_menu = array(
+		"popupmenu" => $ret_array['popupmenu'],
+		"popup_delete" => $ret_array['popup_delete'],
+		"popup_copy" => $ret_array['popup_copy'],
+		"popup_add" => $ret_array['popup_add'],
+		"popup_openChild" => $ret_array['popup_openChild']
+	);
 
-//echo "<pre>";
-//var_dump($popup_menu);
-//echo "</pre>"; die;
-
-    if (count($list_sort) > 1 && ($listView == 'boxView' || $listView == 'boxView')) {
-?>
-
+    if (count($list_sort) > 1 && ($listView == 'boxView' || $listView == 'boxView')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby">
             <h3>Sort by </h3>
-
             <span>
                 <div class="btn-group select2">
-
                     <button type="button" class="btn btn-danger main-select2" id="sort_popular_users_value">
-                        ---Select----</button>
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span>
-
-                    <span class="sr-only">Toggle navigation</span> </button>
+						---Select----
+					</button>
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+						<span class="caret"></span>
+						<span class="sr-only">Toggle navigation</span>
+					</button>
                     <ul class="dropdown-menu" role="menu" id="sort_popular_users">
-
                         <?php
                         $tbl = $row['table_alias'];
-
                         if (!empty($_GET['sort']) && empty($_GET['orderFlag'])) {
-
                             $orderFlag = 'down';
                         } else if (!empty($_GET['sort']) && $_GET['orderFlag'] == 'down') {
-
                             $orderFlag = 'up';
                         } else if (!empty($_GET['sort']) && $_GET['orderFlag'] == 'up') {
-
                             $orderFlag = 'down';
                         }
-
-                        //$orderFlag = $_GET['orderFlag'];
-
                         $order = "<span class='glyphicon glyphicon-chevron-up'></span>";
-
-
                         foreach ($list_sort as $val) {
-
                             if ($val != $_GET['sort']) {
                                 $order = "<span class='glyphicon'></span>";
                             } else {
@@ -159,106 +133,50 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                         $order = "<span class='glyphicon'></span>";
                                 }
                             }
-
                             $q = $con->query("select field_label_name from field_dictionary where generic_field_name='$val' and table_alias='$tbl'");
                             $fdField = $q->fetch_assoc();
-
                             echo "<li id='sort-li' data-value='$val'>
                                     <a>$fdField[field_label_name]$order</a>
                                 </li>";
                         }
                         ?>
-
-
                     </ul>
-
-
                 </div>
             </span>
         </div>
-
-
 <?php
     } ////list sort if ends here
 
-
-    /*     * ******* setting DisplayView icons **** *//////
-    /*
-      $listView = str_replace('*', '', $listView);
-
-      //print_r($listView);die;
-
-      if (count($listView) != 1) {
-      echo "<div class='col-6 col-sm-6 col-lg-6 grid-type'>";
-
-      foreach ($listView as $v) {
-
-      $v = trim($v);
-
-      if ($v == "listView") {
-
-      echo "<span id='listView' class='glyphicon glyphicon-align-right'></span>";
-      } else if ($v == "boxView") {
-
-      echo "<span id='boxView' class='glyphicon glyphicon-th-large'></span>";
-      } else if ($v == "thumbView") {
-
-      echo "<span id='thumbView' class='glyphicon glyphicon-th-list'></span>";
-      }
-      }
-
-
-      echo " <span></span></div>";
-      }
-     */
+    /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
-
+	$table_type = trim($row['table_type']);
+	$list_select_arr = getListSelectParams($list_select);
+	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
     $list_style = $row['list_style'];
-
     $keyfield = firstFieldName($row['database_table_name']);
-
-    $table_type = trim($row['table_type']);
-
     $table_name = trim($row['database_table_name']);
-
     $list_fields = trim($row['list_fields']);
-
     $dict_id = $row['dict_id'];
-
     //////for boxView
     // $boxView_dd = $row;
-
-
     /*
      * getting image field name from FD
      */
-
     $fdRS = $con->query("SELECT generic_field_name FROM `field_dictionary` WHERE table_alias='$row[table_alias]' and format_type like '%image%' limit 1");
-
     $imageField = $fdRS->fetch_assoc();
 
-
-
-
-    /**     * *** checking list_fields **** */
+    /****** checking list_fields **** */
     if (!empty($list_fields)) {
-
-
-
         if (preg_match('/^\d+\.?\d*$/', $row['list_fields'])) {
-
             if ($tab_num == 'false') {
                 $tbQry = $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$row[table_alias]' and data_dictionary.display_page='$row[display_page]' and tab_num='$_GET[tabNum]'  order by field_dictionary.display_field_order LIMIT " . $row['list_fields'];
             } else {
                 $tbQry = $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$row[table_alias]' and data_dictionary.display_page='$row[display_page]' and tab_num='$tab_num'  order by field_dictionary.display_field_order LIMIT " . $row['list_fields'];
             }
         } else {
-
-            $fields = array_filter( array_map('trim',explode(",", $row['list_fields'])) ); 
-
+            $fields = array_filter( array_map('trim',explode(",", $row['list_fields'])) );
             $fieldsFinal = '';
             foreach ($fields as $f) {
-
                 if (empty($fieldsFinal))
                     $fieldsFinal = "'" . $f . "'";
                 else
@@ -277,24 +195,18 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             $tbQry = $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$row[table_alias]' and data_dictionary.display_page='$row[display_page]' and tab_num='$tab_num'  order by field_dictionary.display_field_order";
         }
     }
-
     //exit($tbQry);
     ?>
-
-
-
-<script>
-function clearFunction() {
-    document.getElementById("list-form").reset();
-var table = $('#example').DataTable();
-table.search( '' ).columns().search( '' ).draw();
-}
-
-</script>
-
-
+	<script>
+	function clearFunction() {
+		document.getElementById("list-form").reset();
+		var table = $('#example').DataTable();
+		table.search( '' ).columns().search( '' ).draw();
+	}
+	</script>
     <div class="row" id="popular_users" >
         <form name="list-form" id="list-form" action="ajax-actions.php" method="post">
+			<?php if(!empty(array_filter($ret_array))) { ?>
             <div id='checklist-div'>
                 <?php
                 if ($list_views['checklist'] == 'true') {
@@ -302,10 +214,13 @@ table.search( '' ).columns().search( '' ).draw();
                             <input type='checkbox' id='selectAll'> &nbsp;<strong>Select All </strong>
                         &nbsp;&nbsp;";
 				}
+
+
 				/// ADD BUTTON
-                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
-                    echo "<button type='submit' class='btn action-add " . $ret_array['add_array']['style'] . "' name='add' >" . $ret_array['add_array']['label'] . "</button>";
-                }
+                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) { ?>
+                    <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
+                <?php
+				}
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
@@ -320,7 +235,7 @@ table.search( '' ).columns().search( '' ).draw();
                     }
                     echo "";
                 }/// checklist if ends here
-                
+
 
                 ##CUSTOM FUNCTION BUTTON##
                 if (!empty($ret_array['custom_function_array']) ) {
@@ -521,7 +436,7 @@ table.search( '' ).columns().search( '' ).draw();
                 /// select checkbox div ends here
                 ?>
             </div>
-            <br>
+			<?php } ?>
             <?php
 
             /*
@@ -529,8 +444,8 @@ table.search( '' ).columns().search( '' ).draw();
              * ********
              * ******************DD->list_select values
              */
-			$list_select_arr = getListSelectParams($list_select);
-            
+
+
 			if ($list->num_rows == 0) {
 				$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
                 $navList = $nav->fetch_assoc();
@@ -548,18 +463,23 @@ table.search( '' ).columns().search( '' ).draw();
                 }
                 $_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             }//// if record is zero... ends here
-			
+
 			switch($listView){
 				case 'mapView':
 					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderMapView.php
+					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
 					break;
-				
+
+				case 'mapAddress':
+					include_once('renderMapView.php');
+					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+					break;
+
 				case 'boxView':
 					include_once('renderBoxView.php');
 					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
-					
+
 				default:
 					include_once('renderListView.php');
 					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
@@ -658,92 +578,56 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
      *
      * displaying of image in list
      */
-
-	//$listRecord =array_slice($listRecord, 0, 50, true);
-
-
     $tbl_img = $listRecord[$imageField['generic_field_name']];
-
-
     $filename = USER_UPLOADS . "" . $tbl_img;
-
-
-
-
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
     if (!empty($tbl_img) && file_exists($filename)) {
-
-        echo "        <img src='" . USER_UPLOADS . "$tbl_img' alt='' class='img-responsive'></a>";
+        echo "<img src='" . USER_UPLOADS . "$tbl_img' alt='' class='img-responsive'></a>";
     } else {
-
         echo "<img src='" . USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
     }
-
-
-    // echo "</a>";now rapping the text too. before it was only image
+	// *************************************
+    /*
+     * displaying Edit button
+     */
+    if (!empty($list_select_arr[0][0])) {
+        if ($_SESSION['user_privilege'] > 8) {
+            echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+        } else {
+            if (!empty($user_field)) {
+                //exit($_SESSION['uid']);
+                if ($listRecord[$user_field] == $_SESSION['uid']) {
+                    echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+                }
+            } else {
+//                echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+            }
+        }
+    }
 
     if ($_GET['table_type'] == 'child') {
-
         $_SESSION['child_return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     } else {
         ////parent link
         $_SESSION['return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
 
+	// *************************************
+	// ****  these are the lines that format and display the test inside the Boxview list (cards)
+	// we need to refine this ... because not every field needs a <br> after it
+	// also we want to tag each field/line with some generic CSS so that
+	// later we can (using list_style)  have control over the css formatting of the
+	// first line of the text, and successive lines
+	$listData = array_filter($listData);
 
-    /* if( $tab_anchor != 'false')
-      $_SESSION['return_url'] = $_SESSION['return_url'] . "#$tab_anchor"; */
-
-// *************************************
-
-// ****  these are the lines that format and display the test inside the Boxview list (cards)
-// we need to refine this ... because not every field needs a <br> after it
-// also we want to tag each field/line with some generic CSS so that
-// later we can (using list_style)  have control over the css formatting of the
-// first line of the text, and successive lines
-
-//    $listData = implode(" ", $listData);
-	$listData = implode("<br>", array_filter($listData));
-
-//  This is the
-	echo "<span  class='list-data'>" . substr($listData, 0, 90) . "</span>";
-
-// *************************************
-
-
-
-
-
-    /*
-     * displaying Edit button
-     */
-
-
-
-    if (!empty($list_select_arr[0][0])) {
-
-
-
-
-        if ($_SESSION['user_privilege'] > 8) {
-
-            echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
-        } else {
-
-            if (!empty($user_field)) {
-
-                //exit($_SESSION['uid']);
-
-                if ($listRecord[$user_field] == $_SESSION['uid']) {
-
-                    echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
-                }
-            } else {
-
-                echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
-            }
-        }
-    }
+	//  This is the
+	echo "<div class='boxView_content list-data'>";
+		if(!empty($listData)){
+			foreach($listData as $data){
+				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
+			}
+		}
+	echo "</div>";
 }
 
 ///end of listViews function

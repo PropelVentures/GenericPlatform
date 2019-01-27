@@ -1,5 +1,5 @@
 <?php 
-function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array){
+function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array, $mapAddress){
 	$con = connect();
 	$list_select = trim($row['list_select']);
 	$list_style = $row['list_style'];
@@ -60,13 +60,26 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 					$tempLatLong['lng'] = '';
 					while ($row = $rs->fetch_assoc()) {
 						$row['generic_field_name'] =  trim($row['generic_field_name']);
+						$row['format_type'] =  trim(strtolower($row['format_type']));
+						$row['field_identifier'] =  trim(strtolower($row['field_identifier']));
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
-							if($row['format_type'] == 'GPS_latitude'){
-								$tempLatLong['lat'] = $listRecord[$row['generic_field_name']];
-							}elseif($row['format_type'] == 'GPS_longitude'){
-								$tempLatLong['lng'] = $listRecord[$row['generic_field_name']];
+							// For mapAddress base latitude and longitude
+							if($mapAddress){
+								if($row['format_type'] == 'base_latitude' || $row['field_identifier'] == 'base_latitude'){
+									$tempLatLong['lat'] = $listRecord[$row['generic_field_name']];
+								}elseif($row['format_type'] == 'base_longitude' || $row['field_identifier'] == 'base_longitude'){
+									$tempLatLong['lng'] = $listRecord[$row['generic_field_name']];
+								} else {
+									$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
+								}
 							} else {
-								$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
+								if($row['format_type'] == 'gps_latitude' || $row['field_identifier'] == 'gps_latitude'){
+									$tempLatLong['lat'] = $listRecord[$row['generic_field_name']];
+								}elseif($row['format_type'] == 'gps_longitude' || $row['field_identifier'] == 'gps_longitude'){
+									$tempLatLong['lng'] = $listRecord[$row['generic_field_name']];
+								} else {
+									$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
+								}
 							}
 						}
 					}
@@ -87,12 +100,14 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 	<?php if(!empty($mapData)) { ?>
 		<div id="map_<?php echo $dict_id; ?>" class="mapView <?php echo (!empty($list_style) ? $list_style : '') ?>" ></div>
 		<script>
-		function initMap() {
+		function initMap<?php echo $dict_id; ?>() {
 			var markers = [];
+			var markersForBound = [];
 			var map = new google.maps.Map(document.getElementById("<?php echo 'map_'.$dict_id; ?>"), {
 				zoom: <?php echo MAP_ZOOM; ?>,
 				center: {lat: <?php echo MAP_CENTER_LATITUDE; ?>, lng: <?php echo MAP_CENTER_LONGITUDE; ?>}
 			});
+			
 			<?php foreach($mapData as $key=>$data){ ?>
 				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
 				var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
@@ -104,6 +119,8 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 				marker_obj_<?php echo $key; ?>.setMap(map);
 				
 				markers.push(marker_obj_<?php echo $key; ?>); //creating array for cluster
+				
+				markersForBound.push(new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>));
 				
 				var window_<?php echo $key; ?> = new google.maps.InfoWindow({
 				  content:"<div>"+listData+"</div>"
@@ -142,6 +159,23 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			<?php
 			} ?>
 			
+			/* var bounds = new google.maps.LatLngBounds();
+			var markers = locations.map(function(location, i) {
+				bounds.extend(location);
+				map.fitBounds(bounds);
+				return new google.maps.Marker({
+					position: location,
+					label: labels[i % labels.length]
+				});
+			}); */
+			
+			var bounds = new google.maps.LatLngBounds();
+			$.each(markersForBound,function(index,value){
+				bounds.extend(value);
+			});
+			map.fitBounds(bounds);
+		
+   
 			var options = {
 				imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
 			};
@@ -149,13 +183,15 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			var markerCluster = new MarkerClusterer(map, markers, options);
 		}
 		
-		$(function(){ 
-			initMap();
+		$(function(){
+		   $(window).load(function(){
+				initMap<?php echo $dict_id; ?>();
+		   });
 		});
 		</script>
 		
 	<?php } else { ?>
-		<h3 style='color:red'> No record present </h3>
+		<h3 style='color:red;margin:15px;'> No record present </h3>
 	<?php } ?>
 <?php
 } ?>
