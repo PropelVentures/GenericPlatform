@@ -66,6 +66,17 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 					 */
 					$listData = array();
 					while ($row = $rs->fetch_assoc()) {
+						//Code Change for Task 5.4.22 Palak Start
+						$flag = false;
+								if($row['ignore_in_lists'] != 1){
+									$flag = true;
+									$row['generic_field_name'] =  trim($row['generic_field_name']);
+								}else{
+									$flag = false;
+								}
+						//$row['generic_field_name'] =  trim($row['generic_field_name']);
+						if($flag == true){	
+						//Code Change for Task 5.4.22 Palak End
 						$row['generic_field_name'] =  trim($row['generic_field_name']);
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
 							$tmpData = array();
@@ -76,6 +87,9 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 								$listData[] = $tmpData;
 							}
 						}
+						 //Code Change for Task 5.4.22 Palak Start
+						}
+						//Code Change for Task 5.4.22 Palak End
 					}
 					/*
 					 * @listViews function

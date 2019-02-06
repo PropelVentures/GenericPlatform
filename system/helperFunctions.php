@@ -511,7 +511,9 @@ function getOperationsData($operations, $operationType = 'list_operations') {
         else if(stripos($operationsKeywordData, 'topmenu[') !== false )
         {
             $actions['topmenu'] = trim(str_ireplace ('topmenu[', '', $operationsKeywordData) );
+			/*Code Change Start Task ID 5.6.4*/	
             $actions['topmenu'] = parseCsvParameters($actions['topmenu']);
+			/*Code Change End Task ID 5.6.4*/	
         }
 
     }

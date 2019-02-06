@@ -11,15 +11,25 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>
+	<!--Code Changes for Task 5.4.77 Start-->
+	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1' cellspacing='0' width='100%'>
+	<!--Code Changes for Task 5.4.77 End-->	
 		<thead>
 			<tr class='tr-heading'>
 				<th class='tbl-action'><span style='visibility:hidden;'>12<span></th>
 				<?php $tbRs = $con->query($tbQry);
 				while ($tbRow = $tbRs->fetch_assoc()) {
-					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){ ?>
+					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){ 
+					    //Code Change for Task 5.4.22 Start
+						if($tbRow['ignore_in_lists'] != 1){
+						//Code Change for Task 5.4.22 End
+					  ?>
 						<th><?php echo $tbRow['field_label_name']; ?></th>
 					<?php
+						//Code Change for Task 5.4.22 Start
+						}
+						//Code Change for Task 5.4.22 End
 					}
                 } ?>
             </tr>
@@ -96,16 +106,31 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 						/////table view starts here
 						//fetching data from corresponding table
 						while ($row = $rs->fetch_assoc()) {
-							$fieldValue = $listRecord[$row[generic_field_name]];
+							//Code Change for Task 5.4.22 Start
+								$flag = false;
+								if($row['ignore_in_lists'] != 1){
+									$flag = true;
+									$fieldValue = $listRecord[$row[generic_field_name]];
+								}else{
+									$flag = false;
+								}
+								//$fieldValue = $listRecord[$row[generic_field_name]];
+							//Code Change for Task 5.4.22 End
 							if (!empty($row[dropdown_alias])) {
 								$fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
 							}
 							//will temprory truncate
 							$fieldValue = substr($fieldValue, 0, 30);
+							//Code Change for Task 5.4.22 Start
+							if($flag == true){	
+							//Code Change for Task 5.4.22 End
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
 								<td> <?php echo $fieldValue; ?></td>
 							<?php
 							}
+							//Code Change for Task 5.4.22 Start
+						  }
+						  //Code Change for Task 5.4.22 End
 						}
 						if ($table_type == 'child') {
 							$_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";

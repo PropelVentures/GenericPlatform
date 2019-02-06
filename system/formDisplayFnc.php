@@ -154,8 +154,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "richtext":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<textarea class='ckeditor' name='$field' $row[strict_disabled] $rt_readonly>$fieldValue</textarea>";
-                echo "</div></div>";
+				/*Code Start for Task 5.4.20*/
+                echo "<textarea class='ckeditor' cols='$row[format_length]' name='$field' $row[strict_disabled] $rt_readonly>$fieldValue</textarea>";
+                /*Code End for Task 5.4.20*/
+				echo "</div></div>";
                 break;
 
             case "dropdown":
@@ -351,9 +353,25 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 			break;
 
             default :
-                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
-                echo "</div></div>";
+                /*Code Start for Task 5.4.112*/
+				if(("$row[format_type]" == "text")){
+					if(!empty("$row[format_length]")){
+						$params = explode(",","$row[format_length]");
+						}
+				}
+				if(isset($params)){
+					$height = $params['1'].'em';
+					$width = $params['0'];
+					$style = "style='height:$height;'";
+					echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $style size=$width class='form-control'>";
+					echo "</div></div>";
+			/*Code Start for Task 5.4.112*/
+				}else{
+					echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]'  class='form-control'>";
+					echo "</div></div>";
+				}
         }///switch conditions end here
     }/////userprivilege ends here
 }
@@ -684,6 +702,19 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
     $field_val = $urow[$row[generic_field_name]];
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
     // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
+	
+	/*Code Start for Task 5.4.112*/
+				if("$row[format_type]" == "pdf_inline"){
+					if(!empty("$row[format_length]")){
+						$params = explode(",","$row[format_length]");
+						}
+				}
+				if(isset($params)){
+					$height = $params['1'].'px';
+					$width = $params['0'];
+					$style = "style='height:$height;'";
+				}
+	/*Code End for Task 5.4.112*/
 
     if ($image_display == 'true' && $row['strict_disabled'] == '') {
         echo "<div class='pdf-content'> <a href='' title='" . pdfInline . "' class='pdf_inline_anchor'>" . pdfInline . "</a>";
@@ -705,10 +736,11 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
       } */
 
     if (!empty($urow[$row[generic_field_name]])) {
-
-        echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
-        ;
-
+		/*Code Changes Start for Task 5.4.20*/
+        //echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline'></embed> "
+        echo "<embed  src='" . USER_UPLOADS . "pdf/$field_val' type='application/pdf' class='pdfInline' $style size=$width></embed> "
+		;
+		/*Code Changes End for Task 5.4.20*/
         $field_val1 = explode("-", $field_val);
 
         echo "<div class='audio-upload-filename'>$field_val1[1]</div>";

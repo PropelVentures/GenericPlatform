@@ -75,12 +75,44 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     #array('list_operations' => $row['list_operations'], 'edit_operations' => $row['edit_operations'], 'view_operations' => $row['view_operations'] );
 
     ##CHECK DD.list_select if empty then its for single page/profile view then we check DD.dd_editable=11 for page editable(dd_editable=1 for view only). If list_select is not empty its for a list page.
-    if(!empty($row['list_select']) )
+    /*Code Change Start Task ID 5.6.4*/
+	/*if(!empty($row['list_select']) )
         $buttonOptions = $row['list_operations'];
     else if($row['dd_editable'] == '11' )
         $buttonOptions = $row['edit_operations'];
     else if($row['dd_editable'] == '1' )
-        $buttonOptions = $row['view_operations'];
+        $buttonOptions = $row['view_operations'];*/
+	
+	if(!empty($row['list_select']) ){
+			if((empty($row['list_operations'])) || ($row['list_operations'] == NULL)){
+				$sql1 = $con->query("SELECT list_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
+				$list_operations = $sql1->fetch_assoc();
+				$buttonOptions = $list_operations['list_operations'];
+				//$displaypage = $row['display_page'];
+				//$buttonOptions = check_dd_defaults($displaypage);				
+			}else{
+				$buttonOptions = $row['list_operations'];
+			}
+    }else if($row['dd_editable'] == '11' ){
+		if((empty($row['edit_operations'])) || ($row['edit_operations'] == NULL)){
+				$sql1 = $con->query("SELECT edit_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
+				$edit_operations = $sql1->fetch_assoc();
+				$buttonOptions = $edit_operations['edit_operations'];
+		}else{
+				$buttonOptions = $row['edit_operations'];
+		}
+		//$buttonOptions = $row['edit_operations'];
+    }else if($row['dd_editable'] == '1' ){
+       	if((empty($row['view_operations'])) || ($row['view_operations'] == NULL)){
+				$sql1 = $con->query("SELECT view_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
+				$view_operations = $sql1->fetch_assoc();
+				$buttonOptions = $view_operations['view_operations'];
+		}else{
+				$buttonOptions = $row['view_operations'];
+		}
+		//$buttonOptions = $row['view_operations'];
+	}
+	/*Code Change End Task ID 5.6.4*/
 
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
 
@@ -200,7 +232,10 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	<script>
 	function clearFunction() {
 		document.getElementById("list-form").reset();
-		var table = $('#example').DataTable();
+		/*Palak Task 5.4.77 Changes Start
+		var table = $('#example').DataTable();*/
+		var table = $('.clear1').DataTable();
+		/*Palak Changes End*/
 		table.search( '' ).columns().search( '' ).draw();
 	}
 	</script>

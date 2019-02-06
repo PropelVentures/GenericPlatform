@@ -125,16 +125,40 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
                 {
                     $operation = 'edit_operations';
+					
+					/*Code Change Start Task ID 5.6.4*/
+					if((empty($row1['edit_operations'])) || ($row1['edit_operations'] == NULL)){
+						$sql1 = $con->query("SELECT edit_operations FROM data_dictionary where data_dictionary.display_page='$row1[display_page]' and data_dictionary.table_alias='default'");
+						$edit_operations = $sql1->fetch_assoc();
+					}
+					/*Code Change End Task ID 5.6.4*/	
 
-                    if(!empty(trim($row1['edit_operations']) ) )
+                    if(!empty(trim($row1['edit_operations']) ) ){
                         $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
+					/*Code Change Start Task ID 5.6.4*/	
+					}else{
+							$operationsVarArray = getOperationsData($edit_operations['edit_operations'], 'edit_operations');
+					}
+					/*Code Change End Task ID 5.6.4*/	
                 }
                 else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
                 {
                     $operation = 'view_operations';
+					
+					/*Code Change Start Task ID 5.6.4*/
+					if((empty($row1['view_operations'])) || ($row1['view_operations'] == NULL)){
+						$sql1 = $con->query("SELECT view_operations FROM data_dictionary where data_dictionary.display_page='$row1[display_page]' and data_dictionary.table_alias='default'");
+						$view_operations = $sql1->fetch_assoc();
+					}
+					/*Code Change End Task ID 5.6.4*/	
 
-                    if(!empty(trim($row1['view_operations']) ) )
+                    if(!empty(trim($row1['view_operations']) ) ){
                         $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
+					/*Code Change Start Task ID 5.6.4*/	
+					}else{
+							$operationsVarArray = getOperationsData($view_operations['view_operations'], 'view_operations');
+					}
+					/*Code Change Start Task ID 5.6.4*/	
                 }
                 list($popupmenu,
 					$popup_delete_array,

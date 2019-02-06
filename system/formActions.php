@@ -189,9 +189,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
                         {
                             $successCsvRows[$csvRowNumber] = "CSV Row imported Successfully.";
                         }
-
-
-                    }
+					/*Code Changes for Task 5.4.108 start*/
+					}elseif(count($csvRowData)>0){
+							//echo "skip empty record";
+					}
+					/*Code Changes for Task 5.4.108 end*/
                     else
                     {
                         $errorCsvRows[$csvRowNumber] = "Either field count didn't match or some other error occured while importing from CSV.";
@@ -253,9 +255,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
                 {
                     $successTextRows[$textRowNumber] = "Manual Row data imported Successfully.";
                 }
-
-
-            }
+				/*Code Changes for Task 5.4.108 start*/
+            }elseif(count($importTextRowFeildsData)>0){
+					//echo "skip empty record";
+			}
+			/*Code Changes for Task 5.4.108 end*/
             else
             {
                 $errorTextRows[$textRowNumber] = "Either field count didn't match or some other error occured while importing from Manual input.";
