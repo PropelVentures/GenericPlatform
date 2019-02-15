@@ -782,7 +782,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
 						if ($row1['dd_editable'] == 1 && $row1['page_editable'] == 1) {
-							echo "<button type='button' class='btn btn-default pull-right edit-btn' id='$row1[dict_id]'>" . EDIT . "</button>";
+							echo "<button type='button' class='edit-btn btn btn-default pull-right' id='$row1[dict_id]'>" . EDIT . "</button>";
 
 							$image_display = 'false';
 						}

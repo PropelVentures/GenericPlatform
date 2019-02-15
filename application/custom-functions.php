@@ -64,7 +64,6 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'exe
         $fd_collector[] = "<input type='hidden' name='insertRecord' class='insertRecord' value='$arr[user_id],$arr[owner_id],$arr[project_id],$arr[transactionType],$arr[amount],$arr[transaction_datetime]' />";
 
 
-
         exit(json_encode($fd_collector));
 
 

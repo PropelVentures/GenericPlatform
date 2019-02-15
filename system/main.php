@@ -288,7 +288,7 @@
 <a href="#" class="scrollToTop">Scroll To Top</a>
 <!-- Css To Fix center tab on top -->
 <style>.center_tab_fix{position:fixed; top:75px; z-index:9; border-bottom:1px solid #e7e7e7; left:0; padding-left:calc(50% - 550px); width:100%; background:#fff;}</style>
-<script>
+<script type="text/javascript">
 	<!-- Script To Fix center tab on top -->
 	$(window).scroll(function() {    
 		var scroll = $(window).scrollTop();
@@ -298,8 +298,11 @@
 			$(".center-tab-fixed").removeClass("center_tab_fix");
 		}
 	});
-	$(document).ready(function () {
-        /*
+	/*Code Changes by Palak*/
+	$(document).ready(function(){
+	//$(document).ready(function () {
+	/*Code Changes by Palak*/	
+	   /*
 		**
 		*
 		* Selecting all checkboxes
@@ -556,8 +559,13 @@
 		/******************************************************/
 		/************** Enabling submit and cancel button *******/
 		/********** *****************************************/
+		
 		$(".edit-btn").click(function () {
 			var id = $(this).attr('id');
+			/*Code Changes by Palak*/
+			//alert(id);
+			//var form_edit = 'changed';
+			/*Code Changes by Palak*/
 			$.ajax({
 				method: "GET",
 				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",

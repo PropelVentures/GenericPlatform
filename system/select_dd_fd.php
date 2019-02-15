@@ -45,7 +45,9 @@ function formating_Select($row) {
 
     $readonly = '';
     $required = '';
-
+	echo "pre";
+	print_r($row);
+	die();
 
 
     if ($row['editable'] == 'false')

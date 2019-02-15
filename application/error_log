@@ -1,0 +1,24 @@
+[08-Feb-2019 16:01:00 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
+[08-Feb-2019 16:01:06 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
+[08-Feb-2019 16:01:24 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
+[08-Feb-2019 16:01:29 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
+[08-Feb-2019 16:01:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
+[08-Feb-2019 16:07:36 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function getWhere() in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox2/application/custom-functions.php on line 25
