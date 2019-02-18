@@ -238,6 +238,7 @@ function Navigation($page, $menu_location = 'header') {
 					$navItems = getNavItems($page,$menu_location,'false');
 					$loginRequired = false;
 					?>
+					<!--
 					<li>
 						<a href="<?php echo BASE_URL_SYSTEM ?>login.php" class="top-btns btn-primary login"><i class="fa fa-sign-in"></i>
 							<?php echo LOGIN_MENU ?>
@@ -248,6 +249,8 @@ function Navigation($page, $menu_location = 'header') {
 							<?php echo SIGNUP_MENU ?>
 						</a>
 					</li>
+					--!>
+
 				<?php
 				}
 				echo $menu = generateTopNavigation($navItems,$loginRequired);

@@ -17,18 +17,17 @@ section.section-sep:nth-child(odd) {
     float: left;
     margin: 30px 20px 30px 20px;
     width: 33.33333%;
-    border: 10px solid #fcfcfc;
-    border-radius: 15% 0% 15% 0%;
+    border: 1px solid #3db0da;
+    border-radius: 0px;
     padding: 0px;
     cursor: pointer;
-    min-height: 310px;
+    min-height: 400px;
     word-wrap: break-word;
     max-width: 240px;
-    background: #fcfcfc;
-    -webkit-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    -moz-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    transition: 0.3s;
+    background: white;
+    -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -57,7 +56,7 @@ section.section-sep:nth-child(odd) {
     .boxView {
         width: 90%;
         max-width: 90%;
-        min-height: 570px;
+        min-height: 600px;
     }
 
 }
@@ -66,7 +65,7 @@ section.section-sep:nth-child(odd) {
     .boxView {
         width: 90%;
         max-width: 90%;
-        min-height: 390px;
+        min-height: 450px;
     }
 
 }
@@ -81,32 +80,40 @@ section.section-sep:nth-child(odd) {
 }
 
 .boxView:hover {
-    border: 5px solid #fcfcfc;
-    -webkit-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
-    -moz-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
-    box-shadow: 0px 1px 1px 2px rgb(210, 136, 28, 0.9);
+    border: 1px solid #178fbb;
+    -webkit-box-shadow: 1px 0px 13px 0px rgba(61, 176, 218, 0.69);
+    -moz-box-shadow: 1px 0px 13px 0px rgba(61, 176, 218, 0.69);
+    box-shadow: 1px 0px 13px 0px rgba(61, 176, 218, 0.69);
 }
 
 .boxView .boxView_line:first-child {
-    padding-top: 0px;
-    margin-top: 0px;
-    font-size: 17px;
+    padding-top: 15px;
+    font-size: 18px;
     font-weight: 900;
     text-transform: uppercase;
-    color: #d2881c;
 
 }
 
 .boxView .boxView_line:last-child {
-    font-size: 15px;
+    border-top: 2px solid #3db0da;
+    border-bottom: 1px solid #3db0da;
+    font-size: 14px;
     font-weight: 90000;
-    padding-top: 5px;
-    padding-bottom: 0px;
-    color: #767676;
-    ;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #2587ab;
     position: absolute;
     bottom: 0px;
     width: 100%;
+
+    background: rgba(169, 223, 242, 1);
+    background: -moz-linear-gradient(-45deg, rgba(169, 223, 242, 1) 0%, rgba(210, 245, 255, 1) 50%, rgba(169, 223, 242, 1) 100%);
+    background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(169, 223, 242, 1)), color-stop(50%, rgba(210, 245, 255, 1)), color-stop(100%, rgba(169, 223, 242, 1)));
+    background: -webkit-linear-gradient(-45deg, rgba(169, 223, 242, 1) 0%, rgba(210, 245, 255, 1) 50%, rgba(169, 223, 242, 1) 100%);
+    background: -o-linear-gradient(-45deg, rgba(169, 223, 242, 1) 0%, rgba(210, 245, 255, 1) 50%, rgba(169, 223, 242, 1) 100%);
+    background: -ms-linear-gradient(-45deg, rgba(169, 223, 242, 1) 0%, rgba(210, 245, 255, 1) 50%, rgba(169, 223, 242, 1) 100%);
+    background: linear-gradient(135deg, rgba(169, 223, 242, 1) 0%, rgba(210, 245, 255, 1) 50%, rgba(169, 223, 242, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a9dff2', endColorstr='#a9dff2', GradientType=1);
 }
 
 .boxView .boxView_line:nth-child(2) {
@@ -114,11 +121,11 @@ section.section-sep:nth-child(odd) {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     display: -webkit-box !important;
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 4 !important;
     -webkit-box-orient: vertical !important;
     font-size: 15px;
     font-weight: 100;
-    margin-top: 1px;
+    margin-top: -10px;
     color: #767676;
     font-family: 'Open Sans';
     -webkit-font-smoothing: antialiased;
@@ -134,27 +141,28 @@ section.section-sep:nth-child(odd) {
 
 .boxView img {
     width: 100%;
-    border-bottom: 5px solid #868686;
-    border-radius: 15% 0% 0% 0%;
+    border: 1px solid #3db0da;
 }
 
 .profile-image {
     width: 100%;
-
+   
 }
 
 .boxView .edit {
-    display: flex;
+    width;
+    20px;
+    display: inline-flex;
     float: right !important;
-    margin-top: 8px;
-    background: #d2881c !important;
-    border: 1px solid #d2881c;
+    margin-top: 20px;
+    margin-right: 10px;
+    background: #3db0da !important;
+    border: 1px solid #3db0da;
     transition: background-color .25s ease-out, color .25s ease-out;
     text-align: center;
     cursor: pointer;
     color: #fff;
-    font-size: 12px;
-    border-radius: 0px;
+    font-size: 14px;
 }
 
 .boxView .edit:after {
@@ -162,7 +170,7 @@ section.section-sep:nth-child(odd) {
     padding-left: 5px;
     content: "\f044";
     margin-top: 0px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .boxView .edit:hover {

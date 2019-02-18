@@ -11,24 +11,22 @@ section.section-sep:nth-child(odd) {
 /***** boxview ****/
 
 .boxView {
-    position: relative;
     overflow: hidden;
     display: block;
     float: left;
     margin: 30px 20px 30px 20px;
     width: 33.33333%;
-    border: 10px solid #fcfcfc;
-    border-radius: 15% 0% 15% 0%;
+    border: 1px solid #fcfcfc;
+    border-radius: 5px;
     padding: 0px;
     cursor: pointer;
-    min-height: 310px;
+    min-height: 370px;
     word-wrap: break-word;
     max-width: 240px;
     background: #fcfcfc;
-    -webkit-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    -moz-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
-    transition: 0.3s;
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(156, 156, 156, 0.64);
+    -moz-box-shadow: 0px 0px 10px 2px rgba(156, 156, 156, 0.64);
+    box-shadow: 0px 0px 10px 2px rgba(156, 156, 156, 0.64);
 }
 
 
@@ -57,7 +55,7 @@ section.section-sep:nth-child(odd) {
     .boxView {
         width: 90%;
         max-width: 90%;
-        min-height: 570px;
+        min-height: 200px;
     }
 
 }
@@ -66,62 +64,46 @@ section.section-sep:nth-child(odd) {
     .boxView {
         width: 90%;
         max-width: 90%;
-        min-height: 390px;
+        min-height: 200px;
     }
 
 }
 
 
 .boxView .list-data {
-    padding-top: 10px;
-    padding-left: 0px;
+    padding-left: 10px;
     display: block;
-    padding-right: 0px;
+    padding-right: 10px;
     word-wrap: break-word;
 }
 
 .boxView:hover {
-    border: 5px solid #fcfcfc;
-    -webkit-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
-    -moz-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
-    box-shadow: 0px 1px 1px 2px rgb(210, 136, 28, 0.9);
+    border-color: #efefef;
+    background: #efefef;
 }
 
 .boxView .boxView_line:first-child {
-    padding-top: 0px;
-    margin-top: 0px;
-    font-size: 17px;
+    padding-top: 15px;
+    border-top: 3px solid #dcdcdc;
+    font-size: 20px;
     font-weight: 900;
-    text-transform: uppercase;
-    color: #d2881c;
-
+    text-transform: capitalize;
 }
 
 .boxView .boxView_line:last-child {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 90000;
-    padding-top: 5px;
-    padding-bottom: 0px;
-    color: #767676;
-    ;
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
 }
 
 .boxView .boxView_line:nth-child(2) {
-    white-space: normal;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 3 !important;
-    -webkit-box-orient: vertical !important;
     font-size: 15px;
     font-weight: 100;
-    margin-top: 1px;
+    margin-bottom: 10px;
+    margin-top: -10px;
     color: #767676;
     font-family: 'Open Sans';
     -webkit-font-smoothing: antialiased;
+    line-height: 20px;
 
 }
 
@@ -133,36 +115,23 @@ section.section-sep:nth-child(odd) {
 }
 
 .boxView img {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     width: 100%;
-    border-bottom: 5px solid #868686;
-    border-radius: 15% 0% 0% 0%;
 }
 
-.profile-image {
-    width: 100%;
-
-}
 
 .boxView .edit {
-    display: flex;
-    float: right !important;
-    margin-top: 8px;
-    background: #d2881c !important;
-    border: 1px solid #d2881c;
+    margin: 20px auto 15px auto;
+    padding: 5px 5px;
+    display: block;
+    width: 40%;
+    background-color: #2199e8;
+    border: 1px solid #2199e8;
     transition: background-color .25s ease-out, color .25s ease-out;
+    line-height: 1;
     text-align: center;
     cursor: pointer;
-    color: #fff;
-    font-size: 12px;
-    border-radius: 0px;
-}
-
-.boxView .edit:after {
-    font-family: FontAwesome;
-    padding-left: 5px;
-    content: "\f044";
-    margin-top: 0px;
-    font-size: 12px;
 }
 
 .boxView .edit:hover {
@@ -236,6 +205,8 @@ section.section-sep:nth-child(odd) {
 .list-style span strong {
     color: red;
 }
+
+
 
 #checklist-div {
     margin-top: 30px;
