@@ -1,0 +1,336 @@
+/***** LIST GENERAL CLASSES ****/
+
+section.section-sep:nth-child(even) {
+    background: #e1e9e4
+}
+
+section.section-sep:nth-child(odd) {
+    background: #e8f8ee
+}
+
+/***** boxview ****/
+
+.boxView {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    float: left;
+    margin: 30px 20px 30px 20px;
+    width: 33.33333%;
+    border: 10px solid #fcfcfc;
+    border-radius: 15% 0% 15% 0%;
+    padding: 0px;
+    cursor: pointer;
+    min-height: 310px;
+    word-wrap: break-word;
+    max-width: 240px;
+    background: #fcfcfc;
+    -webkit-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
+    -moz-box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
+    box-shadow: 0px 0px 5px 2px rgba(156, 156, 156, 0.8);
+    transition: 0.3s;
+}
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .boxView {
+        width: 44%;
+        max-width: 80%;
+        min-height: 400px;
+    }
+
+    .boxView img {
+        max-height: 200px
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .boxView {
+        width: 44%;
+        max-width: 80%;
+        min-height: 400px;
+    }
+
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .boxView {
+        width: 90%;
+        max-width: 90%;
+        min-height: 570px;
+    }
+
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .boxView {
+        width: 90%;
+        max-width: 90%;
+        min-height: 390px;
+    }
+
+}
+
+
+.boxView .list-data {
+    padding-top: 10px;
+    padding-left: 0px;
+    display: block;
+    padding-right: 0px;
+    word-wrap: break-word;
+}
+
+.boxView:hover {
+    border: 5px solid #fcfcfc;
+    -webkit-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
+    -moz-box-shadow: 0px 1px 1px 2px rgba(210, 136, 28, 0.9);
+    box-shadow: 0px 1px 1px 2px rgb(210, 136, 28, 0.9);
+}
+
+.boxView .boxView_line:first-child {
+    padding-top: 0px;
+    margin-top: 0px;
+    font-size: 17px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #d2881c;
+
+}
+
+.boxView .boxView_line:last-child {
+    font-size: 15px;
+    font-weight: 90000;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    color: #767676;
+    ;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.boxView .boxView_line:nth-child(2) {
+    white-space: normal;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    font-size: 15px;
+    font-weight: 100;
+    margin-top: 1px;
+    color: #767676;
+    font-family: 'Open Sans';
+    -webkit-font-smoothing: antialiased;
+
+}
+
+.boxView .boxView_line {
+    padding: 5px 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.boxView img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 5px solid #868686;
+    border-radius: 15% 0% 0% 0%;
+}
+
+.profile-image {
+    width: 100%;
+
+}
+
+.boxView .edit {
+    display: flex;
+    float: right !important;
+    margin-top: 8px;
+    background: #d2881c !important;
+    border: 1px solid #d2881c;
+    transition: background-color .25s ease-out, color .25s ease-out;
+    text-align: center;
+    cursor: pointer;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 0px;
+}
+
+.boxView .edit:after {
+    font-family: FontAwesome;
+    padding-left: 5px;
+    content: "\f044";
+    margin-top: 0px;
+    font-size: 12px;
+}
+
+.boxView .edit:hover {
+    background-color: #1583cc;
+}
+
+
+.goBackToParent {
+    text-decoration: none;
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/*****For BoxView Pagination****/
+.page_navigation {
+    display: block;
+    clear: both;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.page_navigation a {
+    padding: 5px 10px;
+    border: 1px solid #2199e8;
+    margin: 2px;
+    color: #000000;
+    text-decoration: none
+}
+
+.page_navigation a.active_page {
+    background: #2199e8;
+    color: #ffffff;
+}
+
+.show_all {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px 5px 0 17px;
+    padding: 5px 12px;
+    cursor: pointer;
+    outline: none;
+    font-size: 13px;
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    background-color: #4D90FE;
+    background-image: linear-gradient(top, #4D90FE, #4787ED);
+    background-image: -ms-linear-gradient(top, #4D90FE, #4787ED);
+    background-image: -o-linear-gradient(top, #4D90FE, #4787ED);
+    background-image: linear-gradient(top, #4D90FE, #4787ED);
+    border: 1px solid #4787ED;
+    box-shadow: 0 1px 3px #BFBFBF;
+}
+
+/*boxview pagination css ends here*/
+
+
+
+/**** this test-super class is for hover effect on show_all ***/
+#test-super:hover {
+    box-shadow: inset 0px 1px 1px #8C8C8C;
+    text-decoration: none;
+
+    color: #fff;
+}
+
+.list-style span strong {
+    color: red;
+}
+
+#checklist-div {
+    margin-top: 30px;
+}
+
+#checklist-div .btn {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+
+/* Css for tables view */
+select[name=example_length] {
+    width: 60px;
+}
+
+.list-del:hover {
+    text-decoration: none;
+}
+
+.display tr:hover {
+    cursor: pointer;
+}
+
+.tbl-action {
+    width: 20px !important;
+}
+
+
+
+.goBackToParent {
+    text-decoration: none;
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.back-to-list span {
+    font-weight: bold;
+    color: red;
+}
+
+
+
+
+
+
+/********* style for right clicking Menu ***/
+
+.image-menu,
+.pdf-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.custom-menu {
+    display: none;
+    z-index: 2000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
+}
+
+/* Each of the items in the list */
+.custom-menu li,
+.image-menu li,
+.pdf-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+}
+
+.custom-menu li:hover,
+.image-menu li:hover,
+.pdf-menu li:hover {
+    background-color: #DEF;
+}
+
+.editPagePagination {
+    float: right;
+}
