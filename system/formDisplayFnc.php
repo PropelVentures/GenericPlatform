@@ -249,7 +249,16 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 echo "</div></div>";
                 break;
 
+            case "video":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                                echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'></div>";
+                                $fieldValue = str_replace('watch?v','embed/',$fieldValue);
 
+                echo "</div>";
+                                echo "<iframe src='$fieldValue'>
+                     </iframe>";
+                break;
+                
             case "pdf_inline":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
@@ -911,6 +920,7 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
 
         echo "<select name='$row[generic_field_name]'  class='form-control' $readonly $length>";
+        echo "<option></option>";
 
         while ($res = $qry->fetch_assoc()) {
 

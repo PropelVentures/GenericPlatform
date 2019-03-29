@@ -92,11 +92,13 @@ function uploadAudioFile($parameters) {
 
     $target_file = $target_dir . '/' . $fileName;
     $uploadOk = 1;
+    $allowedType = ['audio/mp3','audio/wav'];
 
-    if ($parameters['type'] != "audio/wav" /* || $parameters['type'] != "audio/ogg" || $parameters['type'] != "audio/mpeg" */) {
-        // throw new Exception("This file type is not allowed to upload");
-        $uploadOk = 0;
+    if(!in_array($parameters['type'],$allowedType)){
+      $uploadOk = 0;
+      // throw new Exception("This file type is not allowed to upload")
     }
+    
 // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         throw new Exception("UploadFail");

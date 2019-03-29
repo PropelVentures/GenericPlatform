@@ -189,7 +189,8 @@ function display_content($row) {
 			}
 			
 			$tab_id = $row['display_page'].$row['dict_id'];
-			echo "<div id='$tab_id' >";
+			$DD_style_list = trim($row['list_style']);
+			echo "<div id='$tab_id' class='$DD_style_list'>";
 			/* Show Table Type Header*/
 			ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
 			

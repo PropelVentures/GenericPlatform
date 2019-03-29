@@ -511,7 +511,7 @@ function generateTopNavigation($navItems,$loginRequired){
 			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
 				continue;
 			}
-			$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+      $label = ucwords(dislayUserNameSelector($parent['item_label']));
 			$title = $parent['item_help'];
 			$item_style = $parent['item_style'];
 			$item_icon = getNavItemIcon($parent['item_icon']);
@@ -557,7 +557,7 @@ function generateTopNavigation($navItems,$loginRequired){
 					if($loginRequired && !itemHasVisibility($children['item_visibility'])){
 						continue;
 					}
-					$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+					$label = ucwords(dislayUserNameSelector($children['item_label']));
 					$title = $children['item_help'];
 					$item_style = $children['item_style'];
 					$item_icon = getNavItemIcon($children['item_icon']);
@@ -633,7 +633,7 @@ function generateSideBarNavigation($navItems,$menu){
 		if($parent['loginRequired']== 'true' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
-		$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+		$label = ucwords(dislayUserNameSelector($parent['item_label']));
 		$title = $parent['item_help'];
 		$item_style = $parent['item_style'];
 		$item_icon = getNavItemIcon($parent['item_icon']);
@@ -677,7 +677,7 @@ function generateSideBarNavigation($navItems,$menu){
 				if($children['loginRequired']== 'true' && !itemHasVisibility($children['item_visibility'])){
 					continue;
 				}
-				$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+				$label = ucwords(dislayUserNameSelector($children['item_label']));
 				$title = $children['item_help'];
 				$item_style = $children['item_style'];
 				$item_icon = getNavItemIcon($children['item_icon']);
@@ -979,5 +979,21 @@ function getIframeUrl($description){
 	} else {
 		return "";
 	}
+}
+
+/**
+ * This method is to chose in nave-bar that how to show user name in nav bar
+ */
+function dislayUserNameSelector($selector){
+  $tempSelector = strtoupper($selector);
+  if($tempSelector=='CURRENT-USERNAME'){
+    return $_SESSION['current-username'];
+  }elseif($tempSelector=='CURRENT-USER-FIRSTNAME'){
+    return $_SESSION['current-user-firstname'];
+  }elseif($tempSelector=='CURRENT-USER-FIRST-LASTNAME'){
+    return $_SESSION['current-user-first-lastname'];
+  }else{
+    return $selector;
+  }
 }
 ?>

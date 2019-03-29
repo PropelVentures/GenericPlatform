@@ -561,7 +561,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
 			foreach ($_FILES as $file => $file2) {
 				//checking if audio file is not empty
-				if (!empty($_FILES[$file]['name'])) {
+				if (!empty($file2['name'])) {
 					$file_name = uploadAudioFile($file2);
 					// if file successfully uploaded to target dir
 					if (!empty($file_name)) {
@@ -677,8 +677,7 @@ function callToLogin(){
 				$user = $userQuery->fetch_assoc();
 				if($user['isActive'] == 1){
 					$_SESSION['uid'] = $user[$primaryKey];
-					$_SESSION['user_privilege'] = $user['user_privilege_level'];
-					$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                    setUserDataInSession($user);
 					$message = '';
 					//$message = PROFILE_COMPLETE_MESSAGE;
 					$returnUrl = BASE_URL."index.php";
@@ -686,7 +685,12 @@ function callToLogin(){
 					$message = "Your account is Inactive. Please contact to administrator";
 				}
 			} else {
-				$message = "Invalid Username/Email or Password";
+			    $message = resetPasswordIfFlagIsSet($con);
+                if($message === false){
+                  $message = "Invalid Username/Email or Password";
+                }else{
+                  $returnUrl = BASE_URL."index.php";
+                }
 			}
 		}
 	}
@@ -996,8 +1000,7 @@ function facebookLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-				$_SESSION['user_privilege'] = $user['user_privilege_level'];
-				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                setUserDataInSession($user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1048,8 +1051,7 @@ function linkedInLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-				$_SESSION['user_privilege'] = $user['user_privilege_level'];
-				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                setUserDataInSession($user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1426,5 +1428,52 @@ function getLatLong($formatedAddress){
 	}
 	//Return latitude and longitude of the given address
 	return $arr;
+}
+
+
+/**
+ * a temporary method to reset user password if its reset_password flag is on
+ */
+function resetPasswordIfFlagIsSet($con){
+
+  $table = $_SESSION['update_table2']['database_table_name'];
+  $primaryKey = $_SESSION['update_table2']['keyfield'];
+
+  $query = "SELECT * FROM $table WHERE ";
+  $emailValue = trim($_POST[$_SESSION['user_field_email']]);
+  $usernameValue = trim($_POST[$_SESSION['user_field_uname']]);
+  $passValue = trim($_POST[$_SESSION['user_field_password']]);
+
+  if( (!empty($emailValue) || !empty($usernameValue) ) && !empty($passValue)){
+    $passValue = md5($passValue);
+    if($emailValue){
+      $query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+    } elseif($usernameValue){
+      $query .= "$_SESSION[user_field_uname] = '$usernameValue'" ;
+    }
+  }
+  $userQuery = $con->query($query) OR $message = mysqli_error($con);
+  if($userQuery->num_rows > 0){
+    $user = $userQuery->fetch_assoc();
+    if(empty($user['password']) && ($user['reset_password'] || $user['reset_password_flag'])){
+      $data = array('password' => $passValue,'reset','reset_password'=>0,'reset_password_flag'=>0);
+      $where = array('user_id' => $user['user_id']);
+      $result = update($table,$data,$where);
+      $_SESSION['uid'] = $user[$primaryKey];
+      setUserDataInSession($user);
+      return '';
+    }else{
+      return false;
+    }
+  }
+  return "Invalid Username/Email or Password";
+}
+
+function setUserDataInSession($user){
+    $_SESSION['user_privilege'] = $user['user_privilege_level'];
+    $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+    $_SESSION['current-username'] = $user['uname'];
+    $_SESSION['current-user-firstname'] = $user['firstname'];
+    $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
 }
 
