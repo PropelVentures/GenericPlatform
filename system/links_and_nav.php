@@ -167,13 +167,15 @@ function headersAndSubHeaders($display_page){
 	$con = connect();
 
 	$header_query = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num>0 AND table_type LIKE 'header%' ORDER BY table_type ASC");
-	$sub_header_query = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num>0 AND table_type LIKE 'subheader%' GROUP BY tab_num  ORDER BY table_type ASC");
+	$sub_header_query = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num>0 AND table_type LIKE 'subheader%'  ORDER BY table_type ASC");
 
-	while ($header_row = $header_query->fetch_assoc()) {
-		ShowTableTypeHeaderContent($display_page,$header_row['tab_num']);
+	if ($header_row = $header_query->fetch_assoc()) {
+		ShowTableTypeHeaderContent($display_page);
 	}
 
-	while ($sub_header_row = $sub_header_query->fetch_assoc()) {
+	if ($sub_header_row = $sub_header_query->fetch_assoc()) {
+    // pr($sub_header_row);
+
 		ShowTableTypeSubHeaderContent($display_page);
 	}
 }
@@ -328,9 +330,11 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 		} else {
 			$tabNum = $_GET['tabNum'];
 		}
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'header%' ORDER BY table_type ASC");
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'header%'  ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
+    // pr($tableTypeHeaderQuery->num_rows);
+    // pr($display_page);
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
 			$userPrivilege = false;
 			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
