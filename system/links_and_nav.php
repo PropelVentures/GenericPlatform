@@ -328,7 +328,7 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 				$listStyle = $row['list_style'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
-				<h1 id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+				<h1 id="<?php echo $listStyle; ?>" class="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
 					<?php echo $header; ?>
 				</h1>
 			<?php
@@ -365,7 +365,7 @@ function ShowTableTypeSubHeaderContent($display_page,$tabNum=''){
 				$listStyle = $row['list_style'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
-				<h2 id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+				<h2 id="<?php echo $listStyle; ?>" class="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
 					<?php echo $header; ?>
 				</h2>
 			<?php
