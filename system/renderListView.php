@@ -1,6 +1,10 @@
 <?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$con = connect();
+// for checklist in listviews
+	$listView = trim($row['list_views']);
+	$list_views = listvalues($row['list_views']);
+
 	$list_select = trim($row['list_select']);
 	$list_style = $row['list_style'];
     $keyfield = firstFieldName($row['database_table_name']);
@@ -14,13 +18,13 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
 	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1' cellspacing='0' width='100%'>
-	<!--Code Changes for Task 5.4.77 End-->	
+	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>
 				<th class='tbl-action'><span style='visibility:hidden;'>12<span></th>
 				<?php $tbRs = $con->query($tbQry);
 				while ($tbRow = $tbRs->fetch_assoc()) {
-					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){ 
+					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
 						//Code Change for Task 5.4.22 End
@@ -122,7 +126,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 							//will temprory truncate
 							$fieldValue = substr($fieldValue, 0, 30);
 							//Code Change for Task 5.4.22 Start
-							if($flag == true){	
+							if($flag == true){
 							//Code Change for Task 5.4.22 End
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
 								<td> <?php echo $fieldValue; ?></td>
