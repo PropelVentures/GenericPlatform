@@ -548,6 +548,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 							unset($_POST['imgu'][$img]);
 							$_POST[$img] = '';
 						} else {
+                            if (empty($_POST['user_id'])){
+                                echo "<script>
+                                        alert('Please upload some photo and then update.');
+                                        window.location.href = document.referrer;
+                                    </script>";
+                            }
 							unset($_POST['imgu'][$img]);
 						}
 					} else {
@@ -1476,4 +1482,3 @@ function setUserDataInSession($user){
     $_SESSION['current-user-firstname'] = $user['firstname'];
     $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
 }
-
