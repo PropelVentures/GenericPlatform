@@ -10,7 +10,7 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
     $dict_id = $row['dict_id'];
 	$list_select_arr = getListSelectParams($list_select);
 	?>
-	<div class='boxViewContainer' id='content<?php echo $tab_num; ?>'>
+	<div class="boxViewContainer <?php echo (!empty($list_style) ? $list_style : '') ?>" id='content<?php echo $tab_num; ?>'>
 		<!-- the input fields that will hold the variables we will use -->
 		<input type='hidden' class='current_page' />
 		<input type='hidden' class='show_per_page' />

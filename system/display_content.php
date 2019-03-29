@@ -25,7 +25,7 @@ function display_content($row) {
 
     $row1 = $rs->fetch_assoc();
 	$tableType = trim(strtolower($row1['table_type']));
-	
+
 	$addUrlInner = getRecordAddUrlInner($row);
 
     /*     * *****************
@@ -47,7 +47,7 @@ function display_content($row) {
 
         $userPrivilege = false;
     }*/
-	
+
 	$userPrivilege = false;
 	if(itemHasVisibility($row['dd_visibility']) && itemHasPrivilege($row['dd_privilege_level'])){
 		$userPrivilege = true;
@@ -71,7 +71,7 @@ function display_content($row) {
 					$style = $row1['list_style'] . ' page_not_editable';
 				} else {
 					$style = 'page_not_editable';
-				}	
+				}
 			} elseif ($row1['page_editable'] == 2) {
 				$page_editable = false;
 				if (!empty($row1['list_style'])){
@@ -109,11 +109,11 @@ function display_content($row) {
 
 
 			$_SESSION['update_table']['database_table_name'] = $row1['database_table_name'];
-			
+
 			$primary_key = firstFieldName($row1['database_table_name']);
 
 			$_SESSION['update_table']['keyfield'] = $primary_key;
-			
+
 			if (trim($row1['table_type']) == 'parent') {
 				$_SESSION['update_table']['child_parent_key'] = (!empty($row1['keyfield']) ? $row1['keyfield'] : $_SESSION['update_table']['keyfield'] );
 				$_SESSION['update_table']['child_parent_key_diff'] = (!empty($row1['keyfield']) ? 'true' : 'false');
@@ -149,22 +149,22 @@ function display_content($row) {
 			}
 
 			if (( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id']) ) || $_GET['edit'] == 'true' || !empty($_GET['addFlag']) ) {
-				
+
 				$operationsVarArray = array();
 				$operation = '';
-				
+
 				##DD.edit_operation
-				if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1) 
+				if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
 				{
 					$operation = 'edit_operations';
-							
+
 					if(!empty(trim($row1['edit_operations']) ) )
 						$operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
 				}
 				else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
 				{
 					$operation = 'view_operations';
-					
+
 					if(!empty(trim($row1['view_operations']) ) )
 						$operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
 				}
@@ -184,32 +184,33 @@ function display_content($row) {
 					$google_array,
 					$linkedin_array,
 					$save_add_array
-				)  = $operationsVarArray;           
-				
+				)  = $operationsVarArray;
+
 			}
-			
+
 			$tab_id = $row['display_page'].$row['dict_id'];
-			echo "<div id='$tab_id' >";
+			$DD_style_list = trim($row['list_style']);
+			echo "<div id='$tab_id' class='$DD_style_list'>";
 			/* Show Table Type Header*/
-			ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
-			
+			// ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
+
 			echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
-			
+
 			/* Show Table Type SubHeader*/
-			ShowTableTypeSubHeaderContent($row['display_page'],$row['tab_num']);
-			
+			// ShowTableTypeSubHeaderContent($row['display_page'],$row['tab_num']);
+
 			if(!empty($facebook_array)){
 				$facebookButton = generateFacebookButton($facebook_array);
 			}
-			
+
 			if(!empty($google_array)){
 				$googleButton = generateGoogleButton($google_array);
 			}
-			
+
 			if(!empty($linkedin_array)){
 				$linkedinButton = generateLinkedinButton($linkedin_array);
 			}
-		
+
 			/// setting for  Save/Update button
 			if (!empty($submit_array) ) {
 				$updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
@@ -218,11 +219,11 @@ function display_content($row) {
 					$updateSaveButton = "<input type='submit' value='" . formSave . "' class='btn btn-primary update-btn' /> &nbsp;";
 				} else {
 					$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
-				}            
+				}
 			} else if($operation == 'view_operations') {
 				#$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
 			}
-			
+
 			/// setting for  save add button
 			if (!empty($save_add_array) ) {
 				if($addUrlInner){
@@ -230,7 +231,7 @@ function display_content($row) {
 				}
 				$saveAddButton = "<button type='submit' name='save_add_record' class='btn " . $save_add_array['style'] ."'>" . $save_add_array['label'] . "</button> &nbsp;";
 			}
-			
+
 			/// setting for  delete button
 			if (!empty($del_array) ) {
 				$deleteButton = "<button type='submit' class='btn list-del " . $del_array['style'] . "' name='$row1[dict_id]' id='$_GET[search_id]' fnc='onepage' >" . $del_array['label'] . "</button> &nbsp;";
@@ -245,12 +246,12 @@ function display_content($row) {
 				$href = "window.location.href='$addUrlInner'";
 				$addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' onclick=$href >" . $add_array['label'] . "</button> &nbsp;";
 			}
-			
-			
+
+
 			##CUSTOM FUNCTION BUTTON##
 			generateCustomFunctionArray($customFunctionArray); // in codeCommonFunction.php
-			
-			
+
+
 			if (!empty($_GET['ta']) && $_GET['ta'] == $row1['table_alias'] && !empty($_GET['search_id'])) {
 
 				if ($_GET['table_type'] == 'parent') {
@@ -289,8 +290,8 @@ function display_content($row) {
 				 * Short solution for back to home page
 				 */
 				generateBreadcrumbsAndBackPageForAdd($row1,$onePage=true); // in codeCommonFunction.php
-				
-				
+
+
 				if ($_GET['checkFlag'] == 'true') {
 					###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
 					echo "<form action='$addUrlInner&action=add&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-true'><br>";
@@ -298,7 +299,7 @@ function display_content($row) {
 					$_SESSION['return_url2'] = $actual_link;
 					echo "<form action='?action=add&tabNum=$_GET[tabNum]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-false'><br>";
 				}
-				
+
 				if ($_GET['checkFlag'] == 'true') {
 					if ($_GET['table_type'] == 'child'){
 						$link_to_return = $_SESSION['child_return_url'];
@@ -306,21 +307,21 @@ function display_content($row) {
 						$link_to_return = $_SESSION['return_url'];
 					}
 					$actual_link = $link_to_return;
-					
+
 					$_SESSION['return_url2'] = $_SESSION['return_url'];
 				}
 				$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]&fnc=onepage";
-				
+
 				//$actual_link = $_SESSION['return_url2'] . "&fnc=onepage";
-				
+
 				$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
 				if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
 					$cancelButton = "";// empty
 				}
-				
+
 				//echo "<form action='?action=add&checkFlag=true&tabNum=$_GET[tabNum]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
-				
-				echo "<div class='form-footer'>      						
+
+				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
 						$saveAddButton
@@ -339,8 +340,8 @@ function display_content($row) {
 				while ($row = $rs2->fetch_assoc()) {
 					formating_Update($row, $method = 'add', $urow);
 				}//// end of while loop
-				
-				echo "<div class='form-footer'>     
+
+				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
 						$saveAddButton
@@ -355,7 +356,7 @@ function display_content($row) {
 
 
 				echo "<div style='clear:both'></div></form></section></div>";
-					
+
 			} else {
 
 
@@ -373,14 +374,14 @@ function display_content($row) {
 					}
 
 					$image_display = 'true';
-					
+
 					/***
 					 * ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
 					 *
 					 * Short solution for back to home page
 					 */
 					generateBreadcrumbsAndBackPage($row1,$primary_key,$onePage=true); // in codeCommonFunction.php
-					
+
 					/*
 					 * ****
 					 * *********
@@ -449,7 +450,6 @@ function display_content($row) {
 						$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
 					}
 	//print_r($urow);die;
-
 					while ($row3 = $rs2->fetch_assoc()) {
 						formating_Update($row3, $method = 'edit', $urow, $image_display);
 					}//// end of while loop

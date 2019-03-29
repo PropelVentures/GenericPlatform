@@ -14,14 +14,16 @@
 	//echo($_SESSION['return_url']) . "<br>";
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
+
 	Navigation($display_page);
 	//////////////
 	if ($display_page == 'home') {
 		include("../system/home-slider.php");
 	}
+
 ?>
 <div class="container main-content-container">
-	<?php 
+	<?php
 		/* CHECKING NAV HAS VISIBILITY  START*/
 		if(navHasVisibility()){ ?>
 		<!-- Left sidebar content Area -->
@@ -80,7 +82,7 @@
 			if ($left_sidebar == 'left' && $right_sidebar == 'right') {
 				$both_sidebar = 'both';
 			}
-			
+
 			/*
 			 * Check If middle content exist
 			 * If not exist then check the width of aone and asign the other
@@ -106,27 +108,27 @@
 					}
 				}
 			}
-			
+
 			/*
 			* left sidebar code
 			*/
-			sidebar($left_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
+			sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
 			/*
 				* displaying tab area
 			*/
 			// $total_width = 0;
 			if ($_GET['child_list_active'] == 'isSet')
 			echo "<a href='#' class='goBackToParent'>click me</a>";
-		
+
 			if($middleContentExist){
 				if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-					$total_width = 100 - ( $right_sidebar_width + $left_sidebar );
+					$total_width = 100 - ( $right_sidebar_width + $left_sidebar_width );
 					echo "<div class='center-container' style='width:$total_width%;float:left;' >";
 				} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
 					$total_width = 100 - $right_sidebar_width;
 					echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
 				} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-					$total_width = 100 - $left_sidebar;
+					$total_width = 100 - $left_sidebar_width;
 					echo "<div class='center-container' style='width:$total_width%;float:left;'>";
 				} else {
 					if ($both_sidebar == 'both') {
@@ -138,7 +140,7 @@
 					}
 				}
 			}
-				
+
 			//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 		<!-- Tab Content area .. -->
@@ -148,28 +150,40 @@
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
+
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
-					/* Side Bar Navigation Start*/ 
+					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
-					/* Side Bar Navigation End*/ 
-					/* Tab Navigation Start*/ 
+					/* Side Bar Navigation End*/
+
+					headersAndSubHeaders($display_page);
+
+					/* Tab Navigation Start*/
 					Get_Tab_Links($display_page,'center');
-					/* Tab Navigation End*/ 
+
+					/* Tab Navigation End*/
 					if($middleContentExist){
+						// renderHeadersAndSubheaders($display_page);
 						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
 					}
 				} else {
+					// die('qwqwqw');
+
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
-					/* Side Bar Navigation Start*/ 
+					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
-					/* Side Bar Navigation End*/ 
+					/* Side Bar Navigation End*/
+
+					headersAndSubHeaders($display_page);
+
 					echo Get_Links($display_page);
 					global $tab;
 					$tab_status = 'false';
 					if($middleContentExist){
+						// renderHeadersAndSubheaders($display_page);
 						if (isset($_SESSION['tab'])) {
 							Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
 						} else {
@@ -178,6 +192,9 @@
 						}
 				}/// tab_num else ends here
 			}//// page_layout
+
+
+
 		?>
 	<?php if($middleContentExist){ ?>
 	<div style="clear:both"></div>
@@ -188,7 +205,7 @@
 		/*
 		* Right sidebar code
 		*/
-		sidebar($right_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+		sidebar($right_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
 	} else { ?>
 		<div class="center-body-message-box">
 			<h2><?php echo ERROR_403; ?></h2>
@@ -290,7 +307,7 @@
 <style>.center_tab_fix{position:fixed; top:75px; z-index:9; border-bottom:1px solid #e7e7e7; left:0; padding-left:calc(50% - 550px); width:100%; background:#fff;}</style>
 <script type="text/javascript">
 	<!-- Script To Fix center tab on top -->
-	$(window).scroll(function() {    
+	$(window).scroll(function() {
 		var scroll = $(window).scrollTop();
 		if (scroll >= 30) {
 			$(".center-tab-fixed").addClass("center_tab_fix");
@@ -301,7 +318,7 @@
 	/*Code Changes by Palak*/
 	$(document).ready(function(){
 	//$(document).ready(function () {
-	/*Code Changes by Palak*/	
+	/*Code Changes by Palak*/
 	   /*
 		**
 		*
@@ -394,7 +411,7 @@
 			alert(test);
 			});
 		*/
-		
+
 		// If the document is clicked somewhere
 		$(document).bind("mousedown", function (e) {
 			// If the clicked element is not the menu
@@ -559,7 +576,7 @@
 		/******************************************************/
 		/************** Enabling submit and cancel button *******/
 		/********** *****************************************/
-		
+
 		$(".edit-btn").click(function () {
 			var id = $(this).attr('id');
 			/*Code Changes by Palak*/
@@ -791,4 +808,4 @@
 		});
 	});
 </script>
-<?php include("footer.php"); ?>											
+<?php include("footer.php"); ?>

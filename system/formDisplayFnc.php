@@ -147,7 +147,13 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     } else
         $userPrivilege = false;*/
     //$row[field_label_name] = $row[field_label_name] . $row['privilege_level'];
-
+	$dimensions = getFieldDimension($row['format_length']);
+	// pr($dimensions);
+	$dimWidth = $dimensions['width'];
+	$dimStyle = $dimensions['style'];
+	// pr($row['format_type']);
+	// pr($row['tab_num']);
+	// pr($row['field_def_id']);
     if ($userPrivilege === true) {
 		$formatArray = explode("-",$row['format_type']);
         switch ($formatArray[0]) {
@@ -155,7 +161,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
             case "richtext":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
 				/*Code Start for Task 5.4.20*/
-                echo "<textarea class='ckeditor' cols='$row[format_length]' name='$field' $row[strict_disabled] $rt_readonly>$fieldValue</textarea>";
+                echo "<textarea class='ckeditor' cols='$row[format_length]' name='$field' $row[strict_disabled] $dimStyle size=$dimWidth $rt_readonly>$fieldValue</textarea>";
                 /*Code End for Task 5.4.20*/
 				echo "</div></div>";
                 break;
@@ -185,7 +191,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
                     $value = dropdown($row, $urow = 'list_display', $crf_value);
 
-                    echo "<input type='$row[format_type]' name='$field' value='$value' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> <input type='hidden' name='$field' value='$crf_value' >";
+                    echo "<input type='$row[format_type]' name='$field' value='$value' $row[strict_disabled] $readonly $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'> <input type='hidden' name='$field' value='$crf_value' >";
 
 
                     echo "</div></div>";
@@ -194,22 +200,22 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "email":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<input type='email' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'> ";
+                echo "<input type='email' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'> ";
                 echo "</div></div>";
                 break;
 
             case "textbox":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<textarea name='$field' class='form-control' cols='$row[format_length]' $row[strict_disabled] $readonly>$fieldValue</textarea>";
+                echo "<textarea name='$field' class='form-control' cols='$row[format_length]' $row[strict_disabled] $dimStyle size=$dimWidth $readonly>$fieldValue</textarea>";
                 echo "</div></div>";
                 break;
 
             case "tag":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
-                    tagFnc($row, $urow, $image_display);
+                    tagFnc($row, $urow, $image_display, $dimStyle, $dimWidth);
                 else
-                    tagFnc($row);
+                    tagFnc($row, $dimStyle, $dimWidth);
                 echo "</div></div>";
                 break;
 
@@ -249,7 +255,16 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 echo "</div></div>";
                 break;
 
+            case "video":
+                echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
+                                echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'></div>";
+                                $fieldValue = str_replace('watch?v','embed/',$fieldValue);
 
+                echo "</div>";
+                                echo "<iframe src='$fieldValue'>
+                     </iframe>";
+                break;
+                
             case "pdf_inline":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
                 if ($urow != 'false')
@@ -314,7 +329,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 					default:
 						echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
 						echo "</div></div>";
 				}
 			break;
@@ -329,7 +344,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 					default:
 						echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
 						echo "</div></div>";
 				}
 			break;
@@ -342,13 +357,13 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 			case "confirm_password":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth' class='form-control'>";
                 echo "</div></div>";
 			break;
 
 			case "old_password":
                 echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+                echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
                 echo "</div></div>";
 			break;
 
@@ -369,11 +384,24 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 			/*Code Start for Task 5.4.112*/
 				}else{
 					echo "<div class='new_form $sigle_line_alignment'><div><label>$row[field_label_name]</label>";
-					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size='$row[format_length]'  class='form-control'>";
+					// echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimensions['style'] size=$dimensions['width'] class='form-control'>";
+					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
+					// pr($str);
 					echo "</div></div>";
 				}
         }///switch conditions end here
     }/////userprivilege ends here
+}
+
+function get_field_width_height($format_length){
+	if(!empty("$row[format_length]")){
+		$params = explode(",","$row[format_length]");
+	}
+	if(isset($params)){
+		$height = $params['1'].'em';
+		$width = $params['0'];
+		$style = "style='height:$height;'";
+	}
 }
 
 /*
@@ -473,7 +501,7 @@ function audio_upload($row, $urow = 'false', $image_display = 'false') {
  * @function tagFnc
  */
 
-function tagFnc($row, $urow = 'false', $image_display = 'false') {
+function tagFnc($row, $urow = 'false', $image_display = 'false', $dimStyle, $dimWidth) {
 
 
     ///for adding we don't need an edit button to be clicked.
@@ -548,7 +576,7 @@ function tagFnc($row, $urow = 'false', $image_display = 'false') {
 
 
 
-    echo "<input name='$row[generic_field_name]' class='$row[generic_field_name]' value='$field_value'>";
+    echo "<input name='$row[generic_field_name]' class='$row[generic_field_name]' $dimStyle size=$dimWidth value='$field_value'>";
 }
 
 /*
@@ -590,8 +618,15 @@ die;
 
         $masterToolTip = $title = "";
     }
-    echo "<span> <img src='" . USER_UPLOADS . "" . $img_show . "' border='0' width='150' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
-
+	// pr($row);
+	if(empty($row['format_length'])){
+		echo "<span> <img src='" . USER_UPLOADS . "" . $img_show . "' border='0' width='150' class='img-thumbnail img-responsive user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
+	}else{
+		$format_length_value = getImageDimension($row['format_length']);
+		$image_width = $format_length_value['width'];
+		$image_height = $format_length_value['height'];
+		echo "<span> <img src='" . USER_UPLOADS . "" . $img_show . "' border='0' width='$image_width' height='$image_height' class='user_thumb $masterToolTip' alt='$row[generic_field_name]' $title /> </span>";
+	}
     /* if (!empty($_SESSION['profile-image'])) {
 
 
@@ -702,7 +737,7 @@ function pdf_inline($row, $urow = 'false', $image_display = 'false') {
     $field_val = $urow[$row[generic_field_name]];
     // $img = ($urow != 'false') ? $urow[$row[generic_field_name]] : '';
     // $img_show = (!empty($img) && file_exists(USER_UPLOADS . "pdf/" . $img) ) ? $img : 'pdf.png';
-	
+
 	/*Code Start for Task 5.4.112*/
 				if("$row[format_type]" == "pdf_inline"){
 					if(!empty("$row[format_length]")){
@@ -786,12 +821,12 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
 
     if ($urow != 'false') {
         if ($urow[$row['generic_field_name']] == '1')
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox' checked='checked'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control checkbox' checked='checked'>";
         else
-            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
+            echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control checkbox'>";
     }else {
 
-        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' size='$row[format_length]' class='form-control checkbox'>";
+        echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $readonly $row[strict_disabled] $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control checkbox'>";
     }
 }
 
@@ -911,6 +946,7 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
 
         echo "<select name='$row[generic_field_name]'  class='form-control' $readonly $length>";
+        echo "<option></option>";
 
         while ($res = $qry->fetch_assoc()) {
 
@@ -1075,12 +1111,12 @@ function boolean_slider($row, $formatArray, $urow = false, $page_editable = fals
 			<label class="boolean_slider">';
 			if ($urow != false) {
 				if ($urow[$row['generic_field_name']] == '1'){
-					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]' checked='checked'>";
+					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth checked='checked'>";
 				} else {
-					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]' >";
+					echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth >";
 				}
 			} else {
-				echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' size='$row[format_length]'>";
+				echo "<input type='checkbox' name='$row[generic_field_name]' value='1' $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth>";
 			}
 
 	echo 	'<span class="boolean_slider_span"></span>
@@ -1207,6 +1243,38 @@ function datepicker($row, $formatArray, $urow = false, $page_editable = false) {
 				});
 			});
 		  </script>";
-	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $row[strict_disabled] $disabled $required title='$row[help_message]' size='$row[format_length]' class='form-control'>";
+	echo "<input type='text' id='datepicker_$row[generic_field_name]' value='".(isset($urow[$row['generic_field_name']]) ? $urow[$row['generic_field_name']] : '')."' name='$row[generic_field_name]' $row[strict_disabled] $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
 }
 
+//to detect width and height
+function getImageDimension($string){
+	$values = explode(',',trim($string));
+
+	$result['width'] = '';
+	$result['height'] = '';
+	if(!empty($values[0])){
+		$result['width']=$values[0];
+	}
+	if(isset($values[1]) && !empty($values[1])){
+		$result['height'] = $values[1];
+	}
+	return $result;
+}
+
+function getFieldDimension($string){
+	$values = explode(',',trim($string));
+
+	$result['width'] = '';
+	$result['height'] = '';
+	$result['style'] = '';
+
+	// die($values);
+	if(!empty($values[0])){
+		$result['width']=$values[0];
+	}
+	if(isset($values[1]) && !empty($values[1])){
+		$result['height'] = $values[1].'em';
+		$result['style'] = "style='height:" . $result['height'] . "';";
+	}
+	return $result;
+}
