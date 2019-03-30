@@ -852,7 +852,9 @@ function getNavTarget($row){
 function getNavItemIcon($item_icon){
 	if(empty($item_icon)){
 		return "";
-	}
+	}elseif(strtoupper($item_icon)=='CURRENT-USER-PROFILE-IMAGE'){
+    return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+  }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
 		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
 	}
