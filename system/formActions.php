@@ -443,7 +443,6 @@ function addData()
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-
 	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
 	switch($_GET['table_type']){
 		case 'login':

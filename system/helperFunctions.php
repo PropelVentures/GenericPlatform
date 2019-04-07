@@ -98,7 +98,7 @@ function uploadAudioFile($parameters) {
       $uploadOk = 0;
       // throw new Exception("This file type is not allowed to upload")
     }
-    
+
 // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         throw new Exception("UploadFail");
@@ -513,9 +513,9 @@ function getOperationsData($operations, $operationType = 'list_operations') {
         else if(stripos($operationsKeywordData, 'topmenu[') !== false )
         {
             $actions['topmenu'] = trim(str_ireplace ('topmenu[', '', $operationsKeywordData) );
-			/*Code Change Start Task ID 5.6.4*/	
+			/*Code Change Start Task ID 5.6.4*/
             $actions['topmenu'] = parseCsvParameters($actions['topmenu']);
-			/*Code Change End Task ID 5.6.4*/	
+			/*Code Change End Task ID 5.6.4*/
         }
 
     }
@@ -573,7 +573,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 				}
 				break;
 			}
-			
+
             case 'topmenu': {
 				foreach ($actionData as $actionKey => $actionValue) {
 					if($actionKey === 'customFunction')
@@ -611,19 +611,19 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 							case 'submit':
 								$submit_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'facebook_auth':
 								$facebook_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'google_auth':
 								$google_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'linkedin_auth':
 								$linkedin_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							default:
 						}
 
@@ -632,7 +632,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 				}
 				break;
 			}
-			
+
             default:
         }
 
@@ -748,8 +748,8 @@ function getListSelectParams($list_select){
 /* To Do:-
  * Get Alignment Class
  * For Edit & View Operation
- * @params To check 
- * single_line_left , single_line_right, single_line_center 
+ * @params To check
+ * single_line_left , single_line_right, single_line_center
  */
 function getAlignmentClass($operation){
 	$operations = array_filter( array_map('trim', explode(';', $operation)) );
@@ -1030,14 +1030,14 @@ function listFilter($listFilter, $search) {
 function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 	<a href="javascript:void(0);" class="prev_slider" onclick="plusDivs(-<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10094;</a>
 	<a href="javascript:void(0);" class="next_slider" onclick="plusDivs(+<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10095;</a>
-	
+
 	</div>
-	
+
 	<?php
 	if (!empty($list_select_arr[2][0])) {
 		echo "<a href='" . BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[2][2] . "&tab=" . $list_select_arr[2][0] . "&tabNum=" . $list_select_arr[2][1] . "' class='show_all ' id='test-super'>" . SHOW_ALL . "</a>";
 	}
-	
+
 	if(isset($pagination[1])){
 		if(strpos($pagination[1],'#') !== false){
 			preg_match_all('!\d+!', $pagination[1], $limitPage);
@@ -1045,7 +1045,7 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 		}
 	}
 	?>
-	
+
 	<script>
 	var tab_num = <?php echo $tab_num; ?>;
 	var limit = <?php echo $limit; ?>;
@@ -1064,7 +1064,7 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 	function showDivs(n,per_page,tab_num) {
 		var i;
 		var box = $("#content"+tab_num+" .boxView");
-		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)} 
+		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)}
 		if (n < Math.abs(per_page)) {slideIndex[tab_num] = box.length} ;
 		for (i = 0; i < box.length; i++) {
 			box[i].classList.remove("showDiv"+tab_num);
@@ -1074,7 +1074,7 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 		var start = parseInt(slideIndex[tab_num] - Math.abs(per_page));
 		for(var item = start; item < slideIndex[tab_num]; item++){
 			box[item].classList.add("hideDiv"+tab_num);
-			box[item].style.display = "block"; 
+			box[item].style.display = "block";
 		}
 	}
 	</script>
@@ -1118,11 +1118,11 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
 
     <br>
     <div class='page_navigation'></div>
-	
+
 
     <?php
 	/* By Shaily Start*/
-	
+
 	if(isset($list_pagination[1])){
 		if(strpos($list_pagination[1],'#') !== false){
 			preg_match_all('!\d+!', $list_pagination[1], $limitPage);
@@ -1296,7 +1296,7 @@ function callBxSlider($tab_num,$list_pagination){
 	}
 	?>
 	</div>
-	
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#content<?php echo $tab_num; ?>').bxSlider({
@@ -1314,7 +1314,7 @@ function callBxSlider($tab_num,$list_pagination){
 			});
 		});
 	</script>
-<?php 
+<?php
 }
 
 
@@ -1421,7 +1421,7 @@ function generateFacebookButton($facebook_array){
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.8' // use graph api version 2.8
 		});
-		
+
 		// Check whether the user already logged in
 		/* FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
@@ -1462,7 +1462,7 @@ function generateFacebookButton($facebook_array){
 				dataType: 'json',
 				data: response,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){
@@ -1515,7 +1515,7 @@ function generateGoogleButton($google_array){
 						dataType: 'json',
 						data: { email : googleUser.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
 						beforeSend: function(xhr) {
-							
+
 						},
 						success: function(response){
 							if(response.message){
@@ -1535,10 +1535,10 @@ function generateGoogleButton($google_array){
 				}
 			);
 		}
-		
+
 		googleSignup();
 		</script>
-	<?php 
+	<?php
 	return $googleButton;
 }
 
@@ -1560,7 +1560,7 @@ function generateLinkedinButton($linkedin_array){
 			<?php } else {  ?>
 				IN.Event.on(IN, "auth", getProfileData);
 			<?php } ?>
-		} 
+		}
 		function getProfileData() {
 			//IN.API.Raw("/people/~").result(displayProfileData).error(onError);
 			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address","summary").result(displayProfileData).error(onError);
@@ -1576,7 +1576,7 @@ function generateLinkedinButton($linkedin_array){
 			document.getElementById('profileData').style.display = 'block'; */
 			saveUserData(user);
 		}
-		
+
 		// Save user data to the database
 		function saveUserData(userData){
 			$.ajax({
@@ -1586,7 +1586,7 @@ function generateLinkedinButton($linkedin_array){
 				//data: { email : userData.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
 				data: userData,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){
@@ -1606,17 +1606,17 @@ function generateLinkedinButton($linkedin_array){
 		function onError(error) {
 			console.log(error);
 		}
-		
+
 		// Destroy the session of linkedin
 		function logout(){
 			IN.User.logout(removeProfileData);
 		}
-		
+
 		// Remove profile data from page
 		function removeProfileData(){
 			//document.getElementById('profileData').remove();
 		}
 		</script>
-	<?php 
+	<?php
 	return $linkedinButton;
 }

@@ -47,7 +47,7 @@ function display_content($row) {
 
         $userPrivilege = false;
     }*/
-
+    $css_style = $row1['dd_css_code'];
 	$userPrivilege = false;
 	if(itemHasVisibility($row['dd_visibility']) && itemHasPrivilege($row['dd_privilege_level'])){
 		$userPrivilege = true;
@@ -61,29 +61,28 @@ function display_content($row) {
 			//print_r($row1);die;
 			//////ASsigning custom class to the form
 
-			//$style = $row1['list_style'];
 
 			////adding class if form is not for editing purpose
 			$page_editable = true;
 			if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
 				$page_editable = false;
-				if (!empty($row1['list_style'])){
-					$style = $row1['list_style'] . ' page_not_editable';
+				if (!empty($row1['dd_css_class'])){
+					$dd_css_class =' page_not_editable '. $row1['dd_css_class'];
 				} else {
-					$style = 'page_not_editable';
+					$dd_css_class = 'page_not_editable';
 				}
 			} elseif ($row1['page_editable'] == 2) {
 				$page_editable = false;
-				if (!empty($row1['list_style'])){
-					$style = $row1['list_style'] . ' profile_page';
+				if (!empty($row1['dd_css_class'])){
+					$dd_css_class = 'profile_page '.$row1['dd_css_class'];
 				} else {
-					$style = 'profile_page';
+					$dd_css_class = 'profile_page';
 				}
 			}else {
-				if (!empty($row1['list_style'])){
-					$style = $row1['list_style'] . ' simple_edit_page';
+				if (!empty($row1['dd_css_class'])){
+					$dd_css_class =  ' simple_edit_page '.$row1['dd_css_class'];
 				} else {
-					$style = 'simple_edit_page';
+					$dd_css_class = 'simple_edit_page';
 				}
 			}
 
@@ -189,8 +188,9 @@ function display_content($row) {
 			}
 
 			$tab_id = $row['display_page'].$row['dict_id'];
-			$DD_style_list = trim($row['list_style']);
-			echo "<div id='$tab_id' class='$DD_style_list'>";
+			$DD_style_list = trim($row['dd_css_class']);
+      $DD_css_style = trim($row['dd_css_code']);
+			echo "<div id='$tab_id' class='$DD_style_list' style='$DD_css_style'>";
 			/* Show Table Type Header*/
 			// ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
 
@@ -271,7 +271,7 @@ function display_content($row) {
 				if (empty($save_add_array) ) {
 					unset($_SESSION['save_add_url']);
 				}
-				$style = $row1['list_style'];
+				$dd_css_class = $row1['dd_css_class'];
 
 				$_SESSION['dict_id'] = $row1['dict_id'];
 
@@ -294,10 +294,10 @@ function display_content($row) {
 
 				if ($_GET['checkFlag'] == 'true') {
 					###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
-					echo "<form action='$addUrlInner&action=add&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-true'><br>";
+					echo "<form action='$addUrlInner&action=add&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='shivgre-checkFlag-true $dd_css_class' style='$css_style'><br>";
 				} else {
 					$_SESSION['return_url2'] = $actual_link;
-					echo "<form action='?action=add&tabNum=$_GET[tabNum]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style shivgre-checkFlag-false'><br>";
+					echo "<form action='?action=add&tabNum=$_GET[tabNum]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='shivgre-checkFlag-false $dd_css_class' style='$css_style'><br>";
 				}
 
 				if ($_GET['checkFlag'] == 'true') {
@@ -368,9 +368,9 @@ function display_content($row) {
 				if (( ( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || ( $_GET['edit'] == 'true' && $_GET['tabNum'] == $row1['tab_num']) && $_GET['ta'] == $row1['table_alias'] ) && $row1['table_type'] != 'content') {
 
 					if (isset($_SESSION['return_url']) && $_GET['checkFlag'] == 'true') {
-						echo "<form action='?action=update&checkFlag=true&tabNum=$row1[tab_num]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+						echo "<form action='?action=update&checkFlag=true&tabNum=$row1[tab_num]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$dd_css_class' style='$css_style'><br>";
 					} else {
-						echo "<form action='?action=update&tabNum=$row1[tab_num]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$style'><br>";
+						echo "<form action='?action=update&tabNum=$row1[tab_num]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$dd_css_class' style='$css_style'><br>";
 					}
 
 					$image_display = 'true';
@@ -470,7 +470,7 @@ function display_content($row) {
 
 							echo "<iframe src='$url'></iframe>";
 						} else {
-							echo "<div class='$row1[list_style]'>$row1[description]</div>";
+							echo "<div class='$row1[dd_css_class]'>$row1[description]</div>";
 						}
 					} else {
 

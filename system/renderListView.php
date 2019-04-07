@@ -1,12 +1,13 @@
 <?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
+	
 	$con = connect();
 // for checklist in listviews
 	$listView = trim($row['list_views']);
 	$list_views = listvalues($row['list_views']);
 
 	$list_select = trim($row['list_select']);
-	$list_style = $row['list_style'];
+	$dd_css_class = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_type = trim($row['table_type']);
     $table_name = trim($row['database_table_name']);
@@ -17,7 +18,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1' cellspacing='0' width='100%'>
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%'>
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>

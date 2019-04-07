@@ -1,8 +1,9 @@
-<?php 
+<?php
 function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
 	$con = connect();
 	$list_select = trim($row['list_select']);
-	$list_style = $row['list_style'];
+	$dd_css_class = $row['dd_css_class'];
+	$css_style = trim($row['dd_css_code']);
     $keyfield = firstFieldName($row['database_table_name']);
     $table_type = trim($row['table_type']);
     $table_name = trim($row['database_table_name']);
@@ -10,11 +11,11 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
     $dict_id = $row['dict_id'];
 	$list_select_arr = getListSelectParams($list_select);
 	?>
-	<div class="boxViewContainer <?php echo (!empty($list_style) ? $list_style : '') ?>" id='content<?php echo $tab_num; ?>'>
+	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
 		<!-- the input fields that will hold the variables we will use -->
 		<input type='hidden' class='current_page' />
 		<input type='hidden' class='show_per_page' />
-		<?php 
+		<?php
 		if ($list->num_rows > 0) {
 			$i=0;
 			$count = 1;
@@ -27,7 +28,7 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 				}
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 				$rs = $con->query($qry); ?>
-				<div class="boxView  <?php echo (!empty($list_style) ? $list_style : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+				<div style="<?= $css_style ?>" class="boxView  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
 					<?php
 					if (!empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
@@ -58,8 +59,8 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 								}
 							}
 						}
-					} 
-					
+					}
+
 					/*
 					 * @while loop
 					 * get FD info and put data into @lisdata array
@@ -75,7 +76,7 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 									$flag = false;
 								}
 						//$row['generic_field_name'] =  trim($row['generic_field_name']);
-						if($flag == true){	
+						if($flag == true){
 						//Code Change for Task 5.4.22 Palak End
 						$row['generic_field_name'] =  trim($row['generic_field_name']);
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
@@ -113,6 +114,6 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 			}
 		} else { ?>
 	</div>
-		<?php 
+		<?php
 	}
 } ?>

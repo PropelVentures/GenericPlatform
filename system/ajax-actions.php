@@ -179,6 +179,7 @@ if (isset($_GET["list_add"]) && !empty($_GET["list_add"]) && $_GET["check_action
  */
 
 if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"] == 'openChild') {
+
     $search_key = $_GET["childID"];
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
     if (trim($row['table_type']) == 'parent') {
@@ -230,13 +231,13 @@ if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enabl
     $dp_page = $check[0]['display_page'];
 
     $row = getWhere('data_dictionary', array('dd_editable' => '11', 'display_page' => $dp_page));
-	
+
     if ($row) {
-		
+
         if ($_GET['form_edit_conf'] == 'changed')
             exit('active');
         else {
-			
+
            query("update data_dictionary set dd_editable=1 where display_page='$dp_page' and dict_id != $_GET[id]");
 
            update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
@@ -244,7 +245,7 @@ if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enabl
            exit('not-active');
         }
     } else {
-		
+
 		 update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
 
          exit('not-active');
@@ -360,10 +361,7 @@ if (!empty($_GET["img_revert"]) && $_GET["img_revert"] == 'img-revert') {
 
 if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'friend_me') {
 
-
-
     $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
     if (empty($check[0])) {
 
 
@@ -618,6 +616,3 @@ if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
 {
     unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
 }
-
-
-

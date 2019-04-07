@@ -1,18 +1,24 @@
-<?php 
+<?php
 /**
- * These function are common for tab and one page layout 
+ * These function are common for tab and one page layout
  *(tab_num = S-C , S-R, S-L || tab_num = 1, 2,3)
  *
  */
-	
+
+
+
 function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
+
+	if(hideBreadCrumb($row1['list_extra_options'])){
+		return;
+	}
+
 	if ($_GET['checkFlag'] == 'true' && $row1['dd_editable'] == 11) {
 		if ($_GET['table_type'] == 'child'){
 			$link_to_return = $_SESSION['child_return_url'];
 		} else {
 			$link_to_return = $_SESSION['return_url'];
 		}
-			
 		$home_test = explode("display", $link_to_return);
 
 		if ($home_test[1] == '=home'){
@@ -20,14 +26,14 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 		} else {
 			$breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
 		}
-		
+
 		if($onepage){
 			$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";
 		} else {
 			$url = "$link_to_return&button=cancel&table_type=$row1[table_type]" .($_GET['fnc']=='onepage' ? '&fnc=onepage' : '' );
 		}
-		echo "<div class='breadcrumb'> 
-				<a href='$url' class='back-to-list'>$breadcrumb_display</a>      
+		echo "<div class='breadcrumb'>
+				<a href='$url' class='back-to-list'>$breadcrumb_display</a>
 					".editPagePagination($row1['list_extra_options'], $primary_key)."
 			</div>";
 	}
@@ -40,19 +46,19 @@ function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
 		$link_to_return = $_SESSION['return_url'];
 	}
 	$home_test = explode("display", $link_to_return);
-	
+
 	if ($home_test[1] == '=home'){
 		$breadcrumb_display = " Back To <span>Home</span> Page";
 	} else {
 		$breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
 	}
-	
+
 	if($onepage){
 		$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";
 	} else {
 		$url = "$link_to_return&button=cancel&table_type=$row1[table_type]" .($_GET['fnc']=='onepage' ? '&fnc=onepage' : '' );
 	}
-		
+
 	echo "<br>
 		<div class='breadcrumb'>
 			<a href='$url' class='back-to-list'> $breadcrumb_display</a>
@@ -64,7 +70,7 @@ function generateCustomFunctionArray($customFunctionArray){
 	if (!empty($customFunctionArray) ) {
 		echo "<br/>";
 		foreach($customFunctionArray as $keyCustomFunction => $customFunction)
-		{    
+		{
 			##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
 			if(strtolower($customFunction['function']) == 'addimport')
 			{
@@ -74,23 +80,23 @@ function generateCustomFunctionArray($customFunctionArray){
 				###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######STARTS####
 				$customFunctionParams = $customFunction['params'];
 				$customFunctionParams = explode("`", $customFunctionParams);
-				$customFunctionParams = array_map('trim', $customFunctionParams);  
+				$customFunctionParams = array_map('trim', $customFunctionParams);
 
 				$customFunctionThirdParameter = $customFunctionParams['2'];
 
 				###SET SESSION var for holding addimport function parameters######
 				$_SESSION['addImportParameters'] = $customFunctionParams;
 
-				$addImportLink = $_SESSION['add_url_list'] . '&addImport=true';                            
+				$addImportLink = $_SESSION['add_url_list'] . '&addImport=true';
 
-				$buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';                                
+				$buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';
 				$buttonHtmlManualImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=manual' . '" data-prompt_action="importManual" >Manual Import</a>';
 				#<a data-dismiss="modal" data-toggle="modal" href="#lost">Click</a>
 
-				$buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';                                
+				$buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';
 				$buttonHtmlManualImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportManualModal" data-prompt_action="importManual" >Manual Import</a>';
 
-				$importPromptMessage = 'Import from CSV File, or Manual Import?';  
+				$importPromptMessage = 'Import from CSV File, or Manual Import?';
 
 				###DEFAULT IMPORT TYPE = P i.e. prompt after every import###
 				$importButtonActionType = 'P';
@@ -104,7 +110,7 @@ function generateCustomFunctionArray($customFunctionArray){
 
 //                            if(stripos($customFunctionThirdParameter, 'P') !== false )
 //                            {
-//                                $importButtonActionType = 'P';                              
+//                                $importButtonActionType = 'P';
 //                            }
 //                            else if(stripos($customFunctionThirdParameter, 'I') !== false)
 //                            {
@@ -118,11 +124,11 @@ function generateCustomFunctionArray($customFunctionArray){
 //                            }
 				###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######ENDS######
 				#<!-- Button trigger modal -->
-				echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
+				echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
 					data-function_params='{$customFunction['params']}' name='add_import' data-import_type='$importButtonActionType'
 					data-toggle='modal' data-target='#addimportModal'>" . $customFunction['label'] . "</button>";
 
-				?>                         
+				?>
 
 
 				<!-- addimport prompt Modal -->
@@ -173,7 +179,7 @@ function generateCustomFunctionArray($customFunctionArray){
 								?>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                                            
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 							</div>
 						</div>
 					</div>
@@ -196,12 +202,12 @@ function generateCustomFunctionArray($customFunctionArray){
 					#unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
 					?>
 				});
-				</script>    
+				</script>
 				<?php
 			}
 			else
 			{
-				echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}' 
+				echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
 					data-function_params='{$customFunction['params']}' name='custom_function_$keyCustomFunction' >" . $customFunction['label'] . "</button>";
 				?>
 				<script>
@@ -225,12 +231,12 @@ function generateCustomFunctionArray($customFunctionArray){
 						}
 					});
 				});
-				</script>    
+				</script>
 		<?php
 			}
 
 		}
-		
+
 		?>
 		<!--####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######-->
 		<!--File modal addimport-->
@@ -244,11 +250,11 @@ function generateCustomFunctionArray($customFunctionArray){
 
 					<form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
 
-						<div class="modal-body">                        
+						<div class="modal-body">
 
 							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
 								<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' />
-							</div>  
+							</div>
 
 						</div>
 						<div class="modal-footer" style="border-top: none;">
@@ -278,11 +284,11 @@ function generateCustomFunctionArray($customFunctionArray){
 						<div class="modal-body">
 
 							<?php
-							#if(strtolower($_GET['addImportType']) == 'manual') 
+							#if(strtolower($_GET['addImportType']) == 'manual')
 							{
 								$customFunctionParameters = $_SESSION['addImportParameters'];
 
-								array_splice($customFunctionParameters, 0, 3); 
+								array_splice($customFunctionParameters, 0, 3);
 
 								$customFunctionParameters = array_map('ucwords', $customFunctionParameters);
 								###$_SESSION['addImportParameters']['1'] == description###
@@ -292,7 +298,7 @@ function generateCustomFunctionArray($customFunctionArray){
 							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
 								<br>Fields : <?= implode(', ', $customFunctionParameters); ?> <br>
 								<textarea name="addImportText" class="form-control" cols="100" required ></textarea>
-							</div>                        
+							</div>
 
 						</div>
 						<div class="modal-footer" style="border-top: none;">
@@ -305,16 +311,16 @@ function generateCustomFunctionArray($customFunctionArray){
 					</form>
 				</div>
 			</div>
-		</div>        
+		</div>
 		<?php
 	}
 }
 function getRecordAddUrl($list_select_arr,$table_type){
 	$addUrl = "";
-	
+
 	$con = connect();
 	$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
-	$navList = $nav->fetch_assoc();		
+	$navList = $nav->fetch_assoc();
 	if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 		if (count($list_select_arr[0]) == 2) {
 			/// add button url
@@ -325,12 +331,12 @@ function getRecordAddUrl($list_select_arr,$table_type){
 		}
 	}
 	return trim($addUrl);
-	
+
 }
 
 function getRecordAddUrlInner($row){
 	$addUrl = "";
-	
+
 	$con = connect();
 	$ddQuery = $con->query("SELECT data_dictionary.* FROM field_dictionary INNER JOIN data_dictionary ON (data_dictionary.`table_alias` = field_dictionary.`table_alias`) where data_dictionary.table_alias='".$row['table_alias']."' and data_dictionary.display_page='".$row['display_page']."' and data_dictionary.tab_num='".$row['tab_num']."' order by field_dictionary.display_field_order LIMIT 1");
 	if($ddQuery->num_rows){
@@ -339,7 +345,7 @@ function getRecordAddUrlInner($row){
 		$table_type = trim($row['table_type']);
 		$list_select_arr = getListSelectParams($list_select);
 		$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
-		$navList = $nav->fetch_assoc();		
+		$navList = $nav->fetch_assoc();
 		if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 			if (count($list_select_arr[0]) == 2) {
 				/// add button url
@@ -351,6 +357,23 @@ function getRecordAddUrlInner($row){
 		}
 	}
 	return $addUrl;
-	
+
+}
+
+function hideBreadCrumb($extraOptions){
+	$temp  = explode(';',$extraOptions);
+	foreach ($temp as $key => $value) {
+		if(empty(trim($value))){
+			unset($temp[$key]);
+		}else{
+			$temp[$key] = trim(strtoupper($value));
+		}
+	}
+	$temp = array_values($temp);
+	$result = array_search('DISABLE_BREADCRUMB',$temp);
+	if($result === false){
+		return false;
+	}
+	return true;
 }
 ?>
