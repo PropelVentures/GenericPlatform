@@ -82,14 +82,14 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         $buttonOptions = $row['edit_operations'];
     else if($row['dd_editable'] == '1' )
         $buttonOptions = $row['view_operations'];*/
-	
+
 	if(!empty($row['list_select']) ){
 			if((empty($row['list_operations'])) || ($row['list_operations'] == NULL)){
 				$sql1 = $con->query("SELECT list_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
 				$list_operations = $sql1->fetch_assoc();
 				$buttonOptions = $list_operations['list_operations'];
 				//$displaypage = $row['display_page'];
-				//$buttonOptions = check_dd_defaults($displaypage);				
+				//$buttonOptions = check_dd_defaults($displaypage);
 			}else{
 				$buttonOptions = $row['list_operations'];
 			}
@@ -184,7 +184,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	$table_type = trim($row['table_type']);
 	$list_select_arr = getListSelectParams($list_select);
 	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
-    $list_style = $row['list_style'];
+    $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
     $list_fields = trim($row['list_fields']);

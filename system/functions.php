@@ -523,28 +523,28 @@ function generateTopNavigation($navItems,$loginRequired){
 
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class'nav_item $item_style'>
 									<div class='saperator_line'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class'nav_item $item_style'>
 									<br/>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#space#":
-						$menu.="<li >
+						$menu.="<li class'nav_item $item_style'>
 									<div class='margin_bottom_list'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						default:
-						$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
+						$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
 								<a href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
@@ -568,22 +568,22 @@ function generateTopNavigation($navItems,$loginRequired){
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class'nav_item $item_style'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class'nav_item $item_style'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li >
+						$menu.=" <li class'nav_item $item_style'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class' id='$item_style'>
+						$menu.="<li class='$enable_class nav_item $item_style' style=''>
 									<a $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
@@ -596,22 +596,22 @@ function generateTopNavigation($navItems,$loginRequired){
 			} else {
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class' id='$sub_item_style'>
+						$menu.="<li class='nav_item $enable_class $item_style' >
 									<a $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
@@ -662,7 +662,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
+				$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
 						<a href='#nav_".$parent['nav_id']."' class='dropdown-toggle' data-toggle='collapse' title='$title'>
 							".$item_icon.getSaperator($label)."
 							<span class='caret'></span>
@@ -703,7 +703,7 @@ function generateSideBarNavigation($navItems,$menu){
 							</li>";
 					break;
 					default:
-					$menu.="<li class='$enable_class' id='$item_style'>
+					$menu.="<li class='$enable_class $item_style' style=''>
 								<a $target_blank href='$target' title='$title'>".
 									$item_icon.
 									getSaperator($label)."
@@ -731,7 +731,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class' id='$item_style'>
+				$menu.="<li class='$enable_class $item_style' style=''>
 							<a $target_blank href='$target' title='$title'>
 								".$item_icon.getSaperator($label)."
 							</a>
@@ -852,7 +852,10 @@ function getNavTarget($row){
 function getNavItemIcon($item_icon){
 	if(empty($item_icon)){
 		return "";
-	}
+	}elseif(strtoupper($item_icon)=='CURRENT-USER-PROFILE-IMAGE'){
+//     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+  }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
 		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
 	}

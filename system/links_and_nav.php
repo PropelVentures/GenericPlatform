@@ -56,7 +56,8 @@ function Get_Links($display_page) {
 			$tab_name = explode("/", $row['tab_name']);
 
 			$row['tab_name'] = trim($tab_name[0]);
-			$list_style = $row['list_style'];
+			$dd_css_class = $row['dd_css_class'];
+      $css_style = $row['dd_css_code'];
 			if ($i == 1 && !( isset($_SESSION['tab']) )) {
 				$tab = $row['table_alias'];
 
@@ -111,12 +112,14 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 				<?php
 				while ($row = $tabQuery->fetch_assoc()) {
 					if(trim($row['tab_name'])){
-						$list_style = $row['list_style'];
+						$dd_css_class = $row['dd_css_class'];
+            $css_style = $row['dd_css_code'];
+
 						$tab_id = "#".$display_page.$row['dict_id'];
 						if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
 							continue;
 						} ?>
-						<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
+						<li class="tab-class js_tab <?= $dd_css_class ?>" style="<?= $css_style?>"id="<?php echo $tab_id; ?>">
 							<!--<a id="<?php //echo $list_style; ?>" href="javascript:void(0);">
 								<?php //echo $row['tab_name']; ?>
 							</a>-->
@@ -247,7 +250,7 @@ function Navigation($page, $menu_location = 'header') {
             <?php } ?>
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right" id="<?= $item_style; ?>">
+            <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
                 <?php
                 if (isUserLoggedin()) {
 					$navItems = getNavItems($page,$menu_location);
@@ -345,10 +348,11 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 			}
 			if ($userPrivilege === true) {
 				$header = $row['description'];
-				$listStyle = $row['list_style'];
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
-				<h1 id="<?php echo $listStyle; ?>" class="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+				<h1 class="<?php echo $dd_css_class; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?><?= $css_style?>">
 					<?php echo $header; ?>
 				</h1>
 			<?php
@@ -383,10 +387,12 @@ function ShowTableTypeSubHeaderContent($display_page,$tabNum=''){
 			}
 			if ($userPrivilege === true) {
 				$header = $row['description'];
-				$listStyle = $row['list_style'];
+
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']); ?>
-				<h2 id="<?php echo $listStyle; ?>" class="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?>">
+				<h2 class="<?php echo $dd_css_class; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?><?= $css_style?>>">
 					<?php echo $header; ?>
 				</h2>
 			<?php
@@ -420,12 +426,14 @@ function ShowTableTypeBanner($display_page,$tabNum=''){
 			}
 			if ($userPrivilege === true) {
 				$banner = getBannerImages($row['description']);
-				$listStyle = $row['list_style'];
+
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
 				if(!empty($banner)) { ?>
-					<div class="<?php echo $divClass; ?>">
-						<div id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;">
+					<div style="<?= $css_style ?>"class="<?php echo $divClass.' '.$dd_css_class; ?>">
+						<div style="width:<?php echo $width; ?>;">
 							<section class='section-sep'>
 								<a href="<?php echo $url; ?>"><img style="width:100%;height:<?php echo $height; ?>;" src="<?php echo $banner; ?>"></a>
 							</section>
@@ -463,12 +471,13 @@ function ShowTableTypeContent($display_page,$tabNum=''){
 			}
 			if ($userPrivilege === true) {
 				$iframeUrl = getIframeUrl($row['description']);
-				$listStyle = $row['list_style'];
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
 				if(!empty($iframeUrl)) { ?>
-					<div class="<?php echo $divClass; ?>">
-						<iframe id="<?php echo $listStyle; ?>" align="<?php echo $align; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" src="<?php echo $iframeUrl; ?>"></iframe>
+					<div class="<?php echo $divClass; ?><?= $dd_css_class?>" style="<?= $css_style?>">
+						<iframe align="<?php echo $align; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" src="<?php echo $iframeUrl; ?>"></iframe>
 					</div>
 					<?php
 				}
@@ -504,12 +513,13 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 			}
 			if ($userPrivilege === true) {
 				$sliders = getSliderImages($row['description']);
-				$listStyle = $row['list_style'];
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				//$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
 				if(!empty($sliders)){ ?>
-					<div class="<?php echo $divClass; ?>">
-						<div id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;" class="slider">
+					<div class="<?php echo $divClass; ?><?=$dd_css_class ?>" style="<?=$css_style?>">
+						<div  style="width:<?php echo $width; ?>;" class="slider">
 							<div id="myCarousel" style="height:<?php echo $height; ?>;" class="carousel slide" data-ride="carousel">
 								<!-- Indicators -->
 								<ol class="carousel-indicators">
@@ -569,12 +579,13 @@ function ShowTableTypeImage($display_page,$tabNum=''){
 			if ($userPrivilege === true) {
 				$images = getImages($row['description']);
 				$url = getDDUrl($row['list_select']);
-				$listStyle = $row['list_style'];
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options'],true);
 				if(!empty($images)){ ?>
-				<div class="<?php echo $divClass; ?>">
+				<div class="<?php echo $divClass; ?><?= $dd_css_class?>" style="<?= $css_style?>">
 					<?php foreach($images as $key=>$image){ ?>
-						<a href="<?php echo $url; ?>"><img src="<?php echo $image; ?>" id="<?php echo $listStyle; ?>" style="margin:10px;height:<?php echo $height; ?>;width:<?php echo $width; ?>;"></a></li>
+						<a href="<?php echo $url; ?>"><img src="<?php echo $image; ?>" style="margin:10px;height:<?php echo $height; ?>;width:<?php echo $width; ?>;"></a></li>
 					<?php } ?>
 				</div>
 				<?php
@@ -610,12 +621,12 @@ function ShowTableTypeIcon($display_page,$tabNum=''){
 			if ($userPrivilege === true) {
 				$images = getImages($row['description']);
 				$url = getDDUrl($row['list_select']);
-				$listStyle = $row['list_style'];
+				$listStyle = $row['dd_css_class'];
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options'],true);
 				if(!empty($images)){ ?>
 				<!--div class="<?php echo $divClass; ?>"-->
 					<?php foreach($images as $key=>$image){ ?>
-						<a href="<?php echo $url; ?>"><img src="<?php echo $image; ?>" id="<?php echo $listStyle; ?>" style="margin:10px;height:<?php echo $height; ?>;width:<?php echo $width; ?>;"></a></li>
+						<a href="<?php echo $url; ?>"><img src="<?php echo $image; ?>" style="margin:10px;height:<?php echo $height; ?>;width:<?php echo $width; ?>;"></a></li>
 					<?php } ?>
 				<!--/div-->
 				<?php

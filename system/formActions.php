@@ -443,7 +443,6 @@ function addData()
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-
 	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
 	switch($_GET['table_type']){
 		case 'login':
@@ -1481,4 +1480,5 @@ function setUserDataInSession($user){
     $_SESSION['current-username'] = $user['uname'];
     $_SESSION['current-user-firstname'] = $user['firstname'];
     $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
+    $_SESSION['current-user-profile-image'] = $user['image'];
 }

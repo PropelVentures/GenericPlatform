@@ -1,5 +1,6 @@
 <?php
 	require_once("functions_loader.php");
+
 	include("header.php");
 	$display_page = $_GET['display'];
 	$page_layout_style = $_GET['layout'];
@@ -147,6 +148,7 @@
 		<?php
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
 				serial_layout($display_page, $style);
+
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
@@ -155,8 +157,10 @@
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
 					/* Side Bar Navigation Start*/
-					GetSideBarNavigation($display_page,'body-center');
+
+					 GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
+					fffr_icons($display_page);
 
 					headersAndSubHeaders($display_page);
 
@@ -169,13 +173,12 @@
 						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
 					}
 				} else {
-					// die('qwqwqw');
-
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
 					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
+					fffr_icons($display_page);
 
 					headersAndSubHeaders($display_page);
 
@@ -492,6 +495,7 @@
 				data: {childID: del_id, check_action: "openChild", dict_id: dict_id, display: "<?= $_GET['display']; ?>"}
 			})
 			.done(function (child_url) {
+				
 				window.location = child_url;
 				// window.open(msg,'','width=800,height=768,left=300');
 			});
