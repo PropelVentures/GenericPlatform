@@ -1,6 +1,7 @@
 <?php
 function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
 	$con = connect();
+	// pr($row);
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
@@ -19,9 +20,14 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 		if ($list->num_rows > 0) {
 			$i=0;
 			$count = 1;
-			preg_match_all('!\d+!', $list_pagination[1], $limitPage);
+			preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
 			$no_of_pages = $limitPage[0][0];
-			$limit = $limitPage[0][0] * $list_pagination[0];
+			$limit = $limitPage[0][0] * $list_pagination['itemsperpage'];
+
+			if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
+				$limit = trim($list_pagination['totalitems']);
+			}
+			$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
 			while ($listRecord = $list->fetch_assoc()) {
 				if($count > $limit){
 					break;
@@ -107,11 +113,11 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 			 *
 			 * Pagination Function goes here
 			 */
-			if(isset($list_pagination[2]) && $list_pagination[2] == 'hscroll'){
-				boxViewHscroll($list_pagination, $tab_num, $list_select_arr);
-			} else {
-				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
-			}
+			 if(isset($list_pagination['hscroll']) && strtoupper($list_pagination['hscroll']) == 'ON'){
+ 				boxViewHscroll($list_pagination, $tab_num, $list_select_arr);
+ 			} else {
+ 				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
+ 			}
 		} else { ?>
 	</div>
 		<?php

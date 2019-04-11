@@ -26,16 +26,38 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         unset($_SESSION['parent_key_value']);
     }
 
+// **********************************************************************************
+//  CJ-NOTE ***
+//  Below ... this is BAD coding .... defining internal_table_types as 0,1 ...
+//  vague for coding and for other programmers to look at ... we need to change soon
+//  using defined constants for different table types  eg ... define("TABLE_TYPE_PARENT",...)
+// **********************************************************************************
     ###if table_type="parent" OR table_type= $internal_table_types[0] OR table_type= $internal_table_types[1]
     ###`$internal_table_types` array so `$internal_table_types[0]` == 'USER'` and  `$internal_table_types[1]` == 'PROJECT'`
     ###(adjusting for lower case)
+
+
     $tableTypeUppercase = strtoupper(trim($row['table_type']) );
     if (strtolower(trim($row['table_type']) ) == 'child')# || $tableTypeUppercase == $internal_table_types['0'] || $tableTypeUppercase == $internal_table_types['1']
     {
+
+// **********************************************************************************
+//  CJ-NOTE ***
+// Two comments - see below
+// **********************************************************************************
+
+// **********************************************************************************
+// 1) it is confusing right now to know where $_SESSION['update_table']['search'] comes from ...
+// but it is important - because this may be the critical problem wiith parent-child processing
+// **********************************************************************************
         $search_key = $_SESSION['update_table']['search'];
-        if(!empty($_REQUEST['search_id'])  && !empty($_SESSION['parent_key_value']) )
+        if(!empty($_REQUEST['search_id'])  && !empty($row['keyfield']) )
         {
             $search_key = $_REQUEST['search_id'];
+// **********************************************************************************
+// 2) The $row[keyfield]  term below also MAY be the source of the problem
+// because it would have been easy or likelyy for the prior coder to capture the wrong value beforehand
+// **********************************************************************************
             $row['list_filter'] = array('list_filter' => $row['list_filter'], 'child_filter' => "$row[database_table_name].$row[keyfield]='$search_key'");
         }
         //      if(empty($row['list_filter']) && $row['parent_table'] == 'product' )
@@ -45,6 +67,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }
     else
         $search_key = $_SESSION['search_id'];
+
 
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $list_sort[0], $listCheck);
@@ -57,13 +80,16 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	$list_views = listvalues($row['list_views']);
 	//Code End//
 	//Added BY Dharmesh 2018-10-12
-	$list_pagination = listpageviews($row['list_pagination']);
-	if (!isset($list_pagination[0]) || empty($list_pagination[0])){
-		$list_pagination[0] = 9 ;// set default
+
+    $list_pagination = listpageviews($row['list_pagination']);
+	if (!isset($list_pagination['itemsperpage']) || empty($list_pagination['itemsperpage'])){
+		$list_pagination['itemsperpage'] = 9 ;// set default
 	}
-	if (!isset($list_pagination[1]) || empty($list_pagination[1])){
-		$list_pagination[1] = "#".( ceil($list->num_rows/$list_pagination[0]) ) ;
-	}
+	if (!isset($list_pagination['totalpages']) || empty($list_pagination['totalpages'])){
+		$list_pagination['totalpages'] = "#".( ceil($list->num_rows/$list_pagination['itemsperpage']) ) ;
+	}else{
+        $list_pagination['totalpages'] = '#'.$list_pagination['totalpages'];
+    }
 	//Code End//
 
     /*
@@ -115,7 +141,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	/*Code Change End Task ID 5.6.4*/
 
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
-
     global $popup_menu;
 
     $popup_menu = array(

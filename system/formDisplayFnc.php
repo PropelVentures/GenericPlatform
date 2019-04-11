@@ -378,6 +378,14 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 						$params = explode(",","$row[format_length]");
 						}
 				}
+				if(isKeyField($row)){
+					$place_holder = KEYFIELD_PLACEHOLDER;
+					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label>$row[field_label_name]</span></label>";
+					// echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimensions['style'] size=$dimensions['width'] class='form-control'>";
+					echo "<input type='$row[format_type]' name='$field' placeholder='$place_holder' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimStyle size=$dimWidth class='form-control'>";
+					echo "</div></div>";
+					return;
+				}
 				if(isset($params)){
 					$height = $params['1'].'em';
 					$width = $params['0'];
@@ -1317,4 +1325,15 @@ function getFieldDimension($string){
 		$result['style'] = "style='height:" . $result['height'] . "';";
 	}
 	return $result;
+}
+
+//to add red staric for identification that these fields are system related and dont mess with them
+function isKeyField($row){
+	$data = $row['generic_field_name'];
+	$length = strlen($data);
+	$result = substr($data,$length-3);
+	if(strtoupper($result) ==="_ID" || strtoupper($data)==="ID" || strtoupper($row['field_identifier'])==="KEYFIELD"){
+		return true;
+	}
+	return false;
 }

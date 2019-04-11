@@ -4,9 +4,6 @@
  *(tab_num = S-C , S-R, S-L || tab_num = 1, 2,3)
  *
  */
-
-
-
 function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 
 	if(hideBreadCrumb($row1['list_extra_options'])){
@@ -19,12 +16,13 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 		} else {
 			$link_to_return = $_SESSION['return_url'];
 		}
-		$home_test = explode("display", $link_to_return);
 
+		$home_test = explode("display", $link_to_return);
 		if ($home_test[1] == '=home'){
 			$breadcrumb_display = " Back To <span>Home</span> Page";
 		} else {
-			$breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
+			$backText = str_replace('*', '', $_SESSION['list_tab_name']);
+			$breadcrumb_display = " Back To <span>$backText</span> Lists";
 		}
 
 		if($onepage){
@@ -50,7 +48,9 @@ function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
 	if ($home_test[1] == '=home'){
 		$breadcrumb_display = " Back To <span>Home</span> Page";
 	} else {
-		$breadcrumb_display = " Back To <span>$_SESSION[list_tab_name]</span> Lists";
+
+		$backText = str_replace('*', '', $_SESSION['list_tab_name']);
+		$breadcrumb_display = " Back To <span>$backText</span> Lists";
 	}
 
 	if($onepage){

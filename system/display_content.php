@@ -14,7 +14,13 @@ function display_content($row) {
 
     ///for taking inline anchoring
     $tab_anchor = trim($row['tab_name']);
+    $tab_anchor = str_replace('*', '', $tab_anchor);
 
+    if ($row['table_type'] == 'parent') {
+        $_SESSION['parent_list_tabname'] = $tab_anchor;
+
+        $_SESSION['parent_url'] = $actual_link;
+    }
     $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$row[table_alias]' and data_dictionary.display_page='$row[display_page]' and tab_num='$row[tab_num]'   order by field_dictionary.display_field_order");
 
 
@@ -119,6 +125,7 @@ function display_content($row) {
 			}
 
 			/******** for update ****/
+            // $row1['tab_name'] = str_replace('*', '', $row1['tab_name']);
 
 			$_SESSION['list_tab_name'] = $row1['tab_name'];
 
@@ -194,7 +201,7 @@ function display_content($row) {
 			/* Show Table Type Header*/
 			// ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
 
-			echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$row[tab_name]</h1><!-- h1-content class not used-->";
+			echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$tab_anchor</h1><!-- h1-content class not used-->";
 
 			/* Show Table Type SubHeader*/
 			// ShowTableTypeSubHeaderContent($row['display_page'],$row['tab_num']);

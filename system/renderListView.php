@@ -2,7 +2,59 @@
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	
 	$con = connect();
-// for checklist in listviews
+	// pr($row);
+	//styling of data table
+	//*
+	//*
+	if(!isset($list_pagination['pageselector']) || strtoupper($list_pagination['pageselector'])=='ON'){
+		$list_pagination['paging'] = 'true';
+	}else{
+		$list_pagination['paging'] = 'false';
+	}
+
+	if(!isset($list_pagination['hscroll']) || strtoupper($list_pagination['hscroll'])=='ON'){
+		$list_pagination['scrollX'] = 'true';
+	}else{
+		$list_pagination['scrollX'] = 'false';
+	}
+
+	if(!isset($list_pagination['vscrollbar']) || strtoupper($list_pagination['vscrollbar'])=='ON'){
+		$list_pagination['scrollY'] = '500';
+		$list_pagination['scrollCollapse'] = 'true';
+	}else{
+		$list_pagination['scrollY'] = 'false';
+		$list_pagination['scrollCollapse'] = 'false';
+	}
+	if(!isset($list_pagination['searchbox']) || strtoupper($list_pagination['searchbox'])=='ON'){
+		$list_searching= 'true';
+	}else{
+		$list_searching = 'false';
+	}
+
+	if(!isset($list_pagination['pagedropdown']) || strtoupper($list_pagination['pagedropdown'])=='ON'){
+		$list_pagination['lengthChange'] = 'true';
+	}else{
+		$list_pagination['lengthChange'] = 'false';
+	}
+	$scroll_both = 'false';
+	if(isset($list_pagination['hscrollbar']) && strtoupper($list_pagination['hscrollbar'])=='TOP'){
+		echo "<style>
+		#table_".$row['dict_id']."_wrapper .dataTables_scrollBody {
+	    transform:rotateX(180deg);
+	}";
+	echo "#table_".$row['dict_id']."_wrapper .dataTables_scrollBody table {
+	    transform:rotateX(180deg);
+	}</style>";
+	}elseif(isset($list_pagination['hscrollbar']) && strtoupper($list_pagination['hscrollbar'])=='BOTH'){
+		$scroll_both = 'true';
+		echo "<style>
+		#table_".$row['dict_id']."_wrapper .dataTables_scrollBody {
+	overflow-y: visible !important;
+	overflow-x: initial !important;
+	}</style>";
+	}
+
+	// for checklist in listviews
 	$listView = trim($row['list_views']);
 	$list_views = listvalues($row['list_views']);
 
@@ -13,6 +65,8 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
     $table_name = trim($row['database_table_name']);
     $list_fields = trim($row['list_fields']);
     $dict_id = $row['dict_id'];
+	$display_page = $row['display_page'];
+	$display_id ='#'.$display_page . $dict_id.' .clearFunction';
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
@@ -44,9 +98,16 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 			if ($list->num_rows > 0) {
 				$i=0;
 				$count = 1;
-				preg_match_all('!\d+!', $list_pagination[1], $limitPage);
+
+				preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
 				$no_of_pages = $limitPage[0][0];
-				$limit = $limitPage[0][0] * $list_pagination[0];
+				$limit = $limitPage[0][0] * $list_pagination['itemsperpage'];
+
+				if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
+					$limit = trim($list_pagination['totalitems']);
+				}
+				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+
 				while ($listRecord = $list->fetch_assoc()) {
 					if($count > $limit){
 						break;
@@ -158,13 +219,18 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 		}
 	?>
 	<script>
-		<?php $page_no = $list_pagination[0]; ?>
+	<?php $page_no = $list_pagination['itemsperpage']; ?>
 		$('#table_<?php echo $dict_id;?>').DataTable({
-			"pageLength": <?php echo $page_no; ?>,
-            "scrollX": true,
-			"pagingType": 'full_numbers',
-			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			"bStateSave": true,
+			pageLength: <?php echo $page_no; ?>,
+	  		scrollX: <?php echo $list_pagination['scrollX'];?>,
+			paging: <?php echo $list_pagination['paging'];?>,
+			scrollY:<?php echo $list_pagination['scrollY'];?>,
+			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
+			searching: <?php echo $list_searching;?>,
+			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
+			pagingType: 'full_numbers',
+			lengthMenu: <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
+			bStateSave: true,
 		});
 
 		//Fixing the bug for default pagination values for the datatable//
@@ -193,6 +259,15 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 				window.location = $(this).parent().attr('id');
 			}
 		});
+		if(!(<?php echo $list_searching ?>)){
+			console.log('<?php echo $display_id;?>');
+			$(' <?php echo $display_id;?>').hide();
+		}
+
+		if(<?php echo $scroll_both?>){
+			$('body').find('.dataTables_scrollBody').wrap('');
+			$('#scroll_div').doubleScroll();
+		}
 		/* $('#table_<?php echo $dict_id;?>').on('click', 'tbody tr td:not(:first-child)', function () {
 			if ($(this).hasClass('tabholdEvent')) {
 			return false;

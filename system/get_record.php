@@ -1,22 +1,21 @@
 <?php
 
 /*
- * 
+ *
  * function get_single_record($db_name, $pkey, $search) {
  * ***********
- * 
+ *
  * function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false')
- * 
+ *
  * **********************
  * **********************************
- * 
+ *
  * function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit = 'false', $fields = 'false')
  * ****
  * ***********************8
  */
 
 function get_single_record($db_name, $pkey, $search) {
-
 
     $_SESSION['update_table']['search'] = $search;
 
@@ -29,12 +28,12 @@ function get_single_record($db_name, $pkey, $search) {
 		return $user->fetch_assoc();
 	}
 	return array();
-    
+
 }
 
 /**
  * Get multi records for list display
- * 
+ *
  * @param type $db_name
  * @param type $pkey
  * @param type $search
@@ -49,7 +48,6 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
 //echo "<pre>";
 //print_r(USER_TABLETYPE);
 //echo "</pre>";
-
     $_SESSION['update_table']['search'] = $search;
 
 
@@ -61,20 +59,19 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
     if ($listFilter != 'false')
         $clause = listFilter($listFilter, $search);
 
-//    echo "\$clause:$clause<br>";die;
-
     // exit("select * from $db_name $clause");
 
     if (!empty($clause))
-        $clause = 'WHERE ' . $clause;
-
-//    echo ("SELECT * FROM $db_name $clause");
-
-    $user = $con->query("SELECT * FROM $db_name $clause");
+        $clause ='WHERE ' . $clause;
 
 
-//exit("select * from $db_name where $pkey=$search order by $singleSort");
+    $user = $con->query("SELECT * FROM $db_name $clause ");
 
+// if($db_name=='product'){
+//   while ($data= $user->fetch_assoc()) {
+//     pr($data['productImage']);
+//   }
+// }
     return $user;
 }
 
@@ -95,10 +92,10 @@ function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit 
         $clause = 'where ' . $clause;
 
     // exit("select * from $db_name $clause");
-    
+
     if(!$fields)
         $fields = "*";
-    
+
     if ($limit)
         $user = $con->query("select $fields from $db_name $clause limit 0, $limit");
     else

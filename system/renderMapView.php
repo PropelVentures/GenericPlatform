@@ -15,9 +15,15 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 	if ($list->num_rows > 0) {
 		$i=0;
 		$count = 1;
-		preg_match_all('!\d+!', $list_pagination[1], $limitPage);
+		preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
 		$no_of_pages = $limitPage[0][0];
-		$limit = $limitPage[0][0] * $list_pagination[0];
+		$limit = $limitPage[0][0] * $list_pagination['itemsperpage'];
+
+		if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
+			$limit = trim($list_pagination['totalitems']);
+		}
+		$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+
 		while ($listRecord = $list->fetch_assoc()) {
 			if($count > $limit){
 				break;
