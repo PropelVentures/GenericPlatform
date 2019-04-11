@@ -183,12 +183,23 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
     $search_key = $_GET["childID"];
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
     if (trim($row['table_type']) == 'parent') {
+
+// **********************************************************************************
+//  CJ-NOTE ***
+// I am not sure what the line below does or why 'child_parent_key_diff' exists ... it almost seems as a fix to cover a mistake.
+// **********************************************************************************
         if ($_SESSION['update_table']['child_parent_key_diff'] == 'true') {
+
 			$primary_key = firstFieldName($row['database_table_name']);
             $child_parent_value = getWhere($row['database_table_name'], array($primary_key => $_GET['childID']));
-			$key = (!empty($row1['keyfield']) ? $row1['keyfield'] : $primary_key );
+			$key = (!empty($row['keyfield']) ? $row['keyfield'] : $primary_key );
             $search_key = $_SESSION['parent_value'] = $child_parent_value[0][$key];
         } else {
+// **********************************************************************************
+//  CJ-NOTE ***
+// hard to tell based on just label names but the line below does not quite seem right
+// ansd maybe the source of paarent child problems why would a parent_value be set to a child ID?
+// **********************************************************************************
             $search_key = $_SESSION['parent_value'] = $_GET['childID'];
         }
     }
@@ -196,6 +207,11 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
     foreach ($list_select_sep as $listArray) {
         $list_select_arr[] = explode(",", $listArray);
     }
+
+// **********************************************************************************
+//  CJ-NOTE ***
+// Why is this  Nav Table code relevant in this "open child" block of code??
+// **********************************************************************************
 
     $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
     $navList = $nav->fetch_assoc();
