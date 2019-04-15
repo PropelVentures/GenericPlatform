@@ -1,15 +1,15 @@
 <?php
 
 /*
- * 
+ *
  * function get_single_record($db_name, $pkey, $search) {
  * ***********
- * 
+ *
  * function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false')
- * 
+ *
  * **********************
  * **********************************
- * 
+ *
  * function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit = 'false', $fields = 'false')
  * ****
  * ***********************8
@@ -29,12 +29,12 @@ function get_single_record($db_name, $pkey, $search) {
 		return $user->fetch_assoc();
 	}
 	return array();
-    
+
 }
 
 /**
  * Get multi records for list display
- * 
+ *
  * @param type $db_name
  * @param type $pkey
  * @param type $search
@@ -95,10 +95,10 @@ function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit 
         $clause = 'where ' . $clause;
 
     // exit("select * from $db_name $clause");
-    
+
     if(!$fields)
         $fields = "*";
-    
+
     if ($limit)
         $user = $con->query("select $fields from $db_name $clause limit 0, $limit");
     else

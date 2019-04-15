@@ -8,7 +8,7 @@ try {
 	$handler =  new Handler($con);
 	$handler->checkLogin();
 	$handler->redirectAccordingToUrl();
-	
+
 } catch(Exception $e){
 	FlashMessage::add($e->getMessage());
 	header("Location:".BASE_URL.'system/login.php');

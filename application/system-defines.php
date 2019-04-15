@@ -233,9 +233,9 @@ define("ERROR_403","You don't have enough privilege to view contents");
 define("GOOGLE_GEO_API_KEY" , "AIzaSyD2XMNK3swWjkiGUIGxnD34A3nHxDZxHM4");
 define("GOOGLE_MAP_API_KEY" , "AIzaSyB_RG_AlKVthUJnPJ_I73siI_YhkrIhcOk");
 //define("GOOGLE_MAP_API_KEY" , "AIzaSyBS34pdyzNxNbjrDmaytiyskwFH5vtIRKI");
-define("MAP_CENTER_LATITUDE" , 28.628454); //float value
-define("MAP_CENTER_LONGITUDE" , 77.376945); //float value
-define("MAP_ZOOM" , 9); //integer
+define("MAP_CENTER_LATITUDE" , 31.3259); //float value
+define("MAP_CENTER_LONGITUDE" , 74.2037); //float value
+define("MAP_ZOOM" , 10); //integer
 
 /********************SOCIAL CREDENTIALS********************/
 //define("FACEBOOK_APP_ID" , "372901176588464");

@@ -302,7 +302,7 @@ function lastKey($tblName, $pkey, $clause) {
 
 /**
  * secure
- * 
+ *
  * @param string $value
  * @param string $type
  * @param boolean $quoted
@@ -333,8 +333,8 @@ function secure($value, $type = "", $quoted = true) {
                 } else {
                     $value = (!is_empty($value))? "'%%".$value."%%'" : "''";
                 }
-                break; 
-				
+                break;
+
 			case 'NULL':
                 $value = NULL;
                 break;
@@ -348,7 +348,7 @@ function secure($value, $type = "", $quoted = true) {
 
 /**
  * is_empty
- * 
+ *
  * @param string $value
  * @return boolean
  */
@@ -367,7 +367,7 @@ function is_empty($value) {
 
 /**
  * set_datetime
- * 
+ *
  * @param string $date
  * @return string
  */
@@ -378,7 +378,7 @@ function set_datetime($date) {
 
 /**
  * get_datetime
- * 
+ *
  * @param string $date
  * @return string
  */

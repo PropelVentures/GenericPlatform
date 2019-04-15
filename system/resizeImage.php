@@ -2,19 +2,19 @@
 
 class ResizeImage {
 
-	
+
 
    var $image;
 
    var $image_type;
 
-   
+
 
    var $classif_img_width;
 
    var $classif_img_height;
 
- 
+
 
    function load($filename) {
 
@@ -24,19 +24,19 @@ class ResizeImage {
 
       if( $this->image_type == IMAGETYPE_JPEG ) {
 
- 
+
 
          $this->image = imagecreatefromjpeg($filename);
 
       } elseif( $this->image_type == IMAGETYPE_GIF ) {
 
- 
+
 
          $this->image = imagecreatefromgif($filename);
 
       } elseif( $this->image_type == IMAGETYPE_PNG ) {
 
- 
+
 
          $this->image = imagecreatefrompng($filename);
 
@@ -44,7 +44,7 @@ class ResizeImage {
 
    }
 
-   
+
 
    function setImgDim($width, $height){
 
@@ -54,11 +54,11 @@ class ResizeImage {
 
    }
 
-   
+
 
    function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
 
- 
+
 
       if( $image_type == IMAGETYPE_JPEG ) {
 
@@ -66,13 +66,13 @@ class ResizeImage {
 
       } elseif( $image_type == IMAGETYPE_GIF ) {
 
- 
+
 
          imagegif($this->image,$filename);
 
       } elseif( $image_type == IMAGETYPE_PNG ) {
 
- 
+
 
          imagepng($this->image,$filename);
 
@@ -80,7 +80,7 @@ class ResizeImage {
 
       if( $permissions != null) {
 
- 
+
 
          chmod($filename,$permissions);
 
@@ -90,7 +90,7 @@ class ResizeImage {
 
    function output($image_type=IMAGETYPE_JPEG) {
 
- 
+
 
       if( $image_type == IMAGETYPE_JPEG ) {
 
@@ -98,13 +98,13 @@ class ResizeImage {
 
       } elseif( $image_type == IMAGETYPE_GIF ) {
 
- 
+
 
          imagegif($this->image);
 
       } elseif( $image_type == IMAGETYPE_PNG ) {
 
- 
+
 
          imagepng($this->image);
 
@@ -114,7 +114,7 @@ class ResizeImage {
 
    function getWidth() {
 
- 
+
 
       return imagesx($this->image);
 
@@ -122,7 +122,7 @@ class ResizeImage {
 
    function getHeight() {
 
- 
+
 
       return imagesy($this->image);
 
@@ -130,19 +130,19 @@ class ResizeImage {
 
    function resizeToHeight($height) {
 
- 
+
 
       $ratio = $height / $this->getHeight();
 
       $width = $this->getWidth() * $ratio;
 
-	  
+
 
 	  $this->resize($width,$height);
 
    }
 
- 
+
 
    function resizeToWidth($width) {
 
@@ -150,13 +150,13 @@ class ResizeImage {
 
       $height = $this->getheight() * $ratio;
 
-	
+
 
       $this->resize($width,$height);
 
    }
 
- 
+
 
    function scale($scale) {
 
@@ -168,11 +168,11 @@ class ResizeImage {
 
    }
 
- 
+
 
    function resize($width,$height) {
 
-	 	
+
 
 		if($width > $this->classif_img_width){
 
@@ -184,17 +184,17 @@ class ResizeImage {
 
 		}
 
-		
+
 
 		$new_image = imagecreatetruecolor($width,$height);
 
-		  
+
 
 	   imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width,$height, $this->getWidth(), $this->getHeight());
 
        $this->image = $new_image;
 
-		   
+
 
 	   if($width > $this->classif_img_width){
 
@@ -210,11 +210,11 @@ class ResizeImage {
 
 	   $this->image = $new_image;
 
-	 
 
-   }      
 
- 
+   }
+
+
 
 }
 

@@ -361,19 +361,51 @@ function getRecordAddUrlInner($row){
 }
 
 function hideBreadCrumb($extraOptions){
-	$temp  = explode(';',$extraOptions);
-	foreach ($temp as $key => $value) {
-		if(empty(trim($value))){
-			unset($temp[$key]);
-		}else{
-			$temp[$key] = trim(strtoupper($value));
-		}
-	}
+	$temp = parseExtraOptions($extraOptions);
 	$temp = array_values($temp);
-	$result = array_search('DISABLE_BREADCRUMB',$temp);
+	$result = array_search('disable_breadcrumb',$temp);
 	if($result === false){
 		return false;
 	}
 	return true;
+}
+
+function getDataFromExtraOptionForField($extraOptions,$field){
+	$isExist = strpos($extraOptions,$field);
+	if($isExist !== false){
+		$parsed_array = parseExtraOptions($extraOptions);
+
+		foreach ($parsed_array as $key => $value) {
+			$temp  = explode(':',$value);
+			if(count($temp)> 1 && strtoupper(trim($temp[0]))===strtoupper($field)){
+				if(!empty(trim($temp[1]))){
+					return trim($temp[1]);
+				}else{
+					return false;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+function isHaveToShowImage($extraOptions){
+	return getDataFromExtraOptionForField($extraOptions,'map_marker_field');
+}
+
+function checkListItemsLimit($extraOptions){
+	return getDataFromExtraOptionForField($extraOptions,'maxrecords');
+}
+
+function parseExtraOptions($string){
+	$temp  = explode(';',$string);
+	foreach ($temp as $key => $value) {
+		if(empty(trim($value))){
+			unset($temp[$key]);
+		}else{
+			$temp[$key] = trim($value);
+		}
+	}
+	return $temp;
 }
 ?>

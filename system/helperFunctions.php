@@ -85,7 +85,6 @@ function getColumnsNames($table){
  */
 
 function uploadAudioFile($parameters) {
-
     $target_dir = USER_UPLOADS . "audio";
     $randName = rand(124, 1000);
     $fileName = $randName . $parameters['name'];
@@ -93,7 +92,6 @@ function uploadAudioFile($parameters) {
     $target_file = $target_dir . '/' . $fileName;
     $uploadOk = 1;
     $allowedType = ['audio/mp3','audio/wav'];
-
     if(!in_array($parameters['type'],$allowedType)){
       $uploadOk = 0;
       // throw new Exception("This file type is not allowed to upload")
@@ -104,8 +102,6 @@ function uploadAudioFile($parameters) {
         throw new Exception("UploadFail");
 // if everything is ok, try to upload file
     } else {
-
-
         if (@move_uploaded_file($parameters["tmp_name"], $target_file)) {
 
             return $fileName;
@@ -116,6 +112,27 @@ function uploadAudioFile($parameters) {
     }
 }
 
+
+function uploadRecordedAudio($string){
+  $target_dir = USER_UPLOADS . "audio";
+  $fileName = time().'.wav';
+  $randName = rand(124, 1000);
+  $fileName = $randName . $fileName;
+  $target_file = $target_dir . '/' . $fileName;
+  // pr($string);
+  // $fileDecoded = base64_decode($string);
+
+  $uploadOk = file_put_contents($target_file, base64_decode($string));
+  // pr($target_file);
+  // die($uploadOk);
+  if($uploadOk){
+    // pr($uploadOk);
+    // pr('AAAAAAAAAAAAAAAAAAAAAAAAA');
+    // die();
+    return $fileName;
+  }
+  return false;
+}
 /*
  *
  * Function @uploadImageFile
@@ -400,7 +417,6 @@ function listExtraOptions($list_extra_options, $listOperations = false) {
         "editPagePagination" => $editPagePagination, "numberLabel" => $numberLabel, "pattern" => $pattern
     );
 
-	//pr($listOptionsArray);
     return $listOptionsArray;
 }
 
@@ -1092,10 +1108,8 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 
 
 function boxViewPagination($pagination, $tab_num, $list_select_arr) {
-
 //    echo "1 - stop here"; die;
 
-	//pr($list_select_arr);
     //Added By Dharmesh 2018-10-12//
     foreach($pagination as $k=>$v){
             if(strpos($v, '#') !== FALSE){
@@ -1619,4 +1633,19 @@ function generateLinkedinButton($linkedin_array){
 		</script>
 	<?php
 	return $linkedinButton;
+}
+
+function isAllowedToShowByPrivilegeLevel($row){
+  $user_privilege = $_SESSION['user_privilege'];
+
+  if(is_null($user_privilege) || $user_privilege==0 ){
+    return true;
+  }
+
+  $DD_privilege = $row['dd_privilege_level'];
+  $DD_visibility = $row['dd_visibility'];
+  if($user_privilege < $DD_privilege || $user_privilege < $DD_visibility){
+    return false;
+  }
+  return true;
 }

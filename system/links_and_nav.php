@@ -95,6 +95,8 @@ function Get_Links($display_page) {
 
 	ShowTableTypeBanner($display_page);
 
+  ShowTableTypeParallaxBanner($display_page);
+
 	ShowTableTypeContent($display_page);
 
 	ShowTableTypeImage($display_page);
@@ -177,7 +179,6 @@ function headersAndSubHeaders($display_page){
 	}
 
 	if ($sub_header_row = $sub_header_query->fetch_assoc()) {
-    // pr($sub_header_row);
 
 		ShowTableTypeSubHeaderContent($display_page);
 	}
@@ -336,8 +337,7 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'header%'  ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
-    // pr($tableTypeHeaderQuery->num_rows);
-    // pr($display_page);
+
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
 			$userPrivilege = false;
 			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
@@ -436,6 +436,73 @@ function ShowTableTypeBanner($display_page,$tabNum=''){
 						<div style="width:<?php echo $width; ?>;">
 							<section class='section-sep'>
 								<a href="<?php echo $url; ?>"><img style="width:100%;height:<?php echo $height; ?>;" src="<?php echo $banner; ?>"></a>
+							</section>
+						</div>
+					</div>
+					<?php
+				}
+			}
+		}
+	}
+}
+
+function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
+
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			$userPrivilege = false;
+			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
+				$userPrivilege = true;
+			}
+			if(loginNotRequired()){
+				$userPrivilege = true;
+			}
+			if ($userPrivilege === true) {
+				$banner = getBannerImages($row['description']);
+
+				$dd_css_class = $row['dd_css_class'];
+        $css_style = $row['dd_css_code'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
+				if(!empty($banner)) { ?>
+          <style>
+          .parallax {
+            /* The image used */
+            background-image: url("<?= $banner ?>");
+
+            /* Full height */
+            height: 100%;
+
+            /* Create the parallax scrolling effect */
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            }
+          </style>
+					<div class="<?php echo $divClass.' '.$dd_css_class; ?> " style="<?= $css_style ?>">
+						<div style="width:<?php echo $width; ?>;">
+							<section class='section-sep'>
+                <div class="parallax"></div>
+                  <div style="height:1000px;background-color:red;font-size:36px">
+                    Scroll Up and Down this page to see the parallax scrolling effect.
+                    This div is just here to enable scrolling.
+                    Tip: Try to remove the background-attachment property to remove the scrolling effect.
+                  </div>
+                <div class="parallax"></div>
 							</section>
 						</div>
 					</div>

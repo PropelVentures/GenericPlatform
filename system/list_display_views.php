@@ -52,18 +52,24 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $listSort = 'false', $listCheck);
     }
 
+    $availableRecords =   $list->num_rows;
+    $limitOnAddButton = checkListItemsLimit($row['list_extra_options']);
+    $disableAddButton = false;
+    if($limitOnAddButton !== false && $availableRecords >= $limitOnAddButton){
+      $disableAddButton = true;
+    }
     $listView = trim($row['list_views']);
 	//Added BY Dharmesh 2018-10-07
 	$list_views = listvalues($row['list_views']);
 	//Code End//
 	//Added BY Dharmesh 2018-10-12
-	$list_pagination = listpageviews($row['list_pagination']);
+  $list_pagination = listpageviews($row['list_pagination']);
 	if (!isset($list_pagination[0]) || empty($list_pagination[0])){
 		$list_pagination[0] = 9 ;// set default
 	}
 	if (!isset($list_pagination[1]) || empty($list_pagination[1])){
 		$list_pagination[1] = "#".( ceil($list->num_rows/$list_pagination[0]) ) ;
-	}
+  }
 	//Code End//
 
     /*
@@ -252,9 +258,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
 
 				/// ADD BUTTON
-                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) { ?>
-                    <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
-                <?php
+                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
+                  if($disableAddButton) {?>
+                    <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
+                <?php }else{ ?>
+                  <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
+                <?php }
 				}
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button

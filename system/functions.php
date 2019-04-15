@@ -506,6 +506,20 @@ function getNavItems($page,$menu_location,$loginRequired='true'){
  */
 function generateTopNavigation($navItems,$loginRequired){
 	$menu = '';
+  if(!isUserLoggedin()){
+    echo '<style>
+    .disabled_nav {
+pointer-events: none;
+cursor: default;
+opacity: 0.6;
+}
+</style>';
+}else{
+  echo '<style>
+  .disabled_nav {
+}
+</style>';
+}
 	if(!empty($navItems)){
 		foreach($navItems as $parent){
 			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
@@ -519,6 +533,10 @@ function generateTopNavigation($navItems,$loginRequired){
 			$target = $navTarget['target'];
 			$enable_class=$navTarget['enable_class'];
 			$target_blank = $navTarget['target_blank'];
+      $disable = '';
+      if($parent['loginRequired']=='true'){
+        $disable ='disabled_nav';
+      }
 			if(!empty($parent['children'])){
 
 				switch(strtolower($label)){
@@ -545,7 +563,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
-								<a href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+								<a class='$disable' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
 								</a>
@@ -565,6 +583,10 @@ function generateTopNavigation($navItems,$loginRequired){
 					$target = $navTarget['target'];
 					$enable_class=$navTarget['enable_class'];
 					$target_blank = $navTarget['target_blank'];
+          $disable_child = '';
+          if($children['loginRequired']=='true'){
+            $disable_child ='disabled_nav';
+          }
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
@@ -584,7 +606,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style=''>
-									<a $target_blank href='$target' title='$title'>".
+									<a class='$disable_child' $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -612,7 +634,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' >
-									<a $target_blank href='$target' title='$title'>
+									<a class='$disable' $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>";

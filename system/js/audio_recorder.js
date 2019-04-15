@@ -9,12 +9,23 @@ navigator.mediaDevices.getUserMedia({
         let blob = new Blob(audio, {
           type: 'audio/x-mpeg-3'
         });
+        // $('#recorded_audio').val(blob);
         recordedAudio.src = URL.createObjectURL(blob);
         recordedAudio.controls = true;
-        audioDownload.href = recordedAudio.src;
-        audioDownload.download = 'audio.mp3';
-        audioDownload.innerHTML = 'Download';
-        submit(blob);
+        // audioDownload.href = recordedAudio.src;
+        // console.log(recordedAudio.src);
+        // audioDownload.download = 'audio.mp3';
+        // audioDownload.innerHTML = 'Download';
+        // console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB');
+        var reader = new window.FileReader();
+        temp = reader.readAsDataURL(blob);
+        reader.onloadend = function() {
+         base64data = reader.result;
+         document.getElementById("recorded_audio").value = base64data;
+        }
+        // debugger;
+
+        // submit(blob);
       }
     }
   })
@@ -24,38 +35,21 @@ navigator.mediaDevices.getUserMedia({
 // Also, page does not get reloaded and therefore the results are not shown.
 // The POST request has to be done without AJAX.
 
-function startRecording() {
+function startRecording(el) {
   $('#startRecord').addClass('disabled');
+  $('#startRecord').text('Recording..');
   $('#stopRecord').removeClass('disabled');
+
   audio = [];
   recordedAudio.controls = false;
   rec.start();
 }
 
 function stopRecording() {
+  rec.stop();
+  $('#audio').hide();
+  $('#startRecord').text('Record');
+  $('#input_audio_file').hide();
   $('#stopRecord').addClass('disabled');
   $('#startRecord').removeClass('disabled');
-  rec.stop();
-}
-
-function submit(blob) {
-  var reader = new window.FileReader();
-  reader.readAsDataURL(blob);
-  reader.onloadend = function() {
-    var fd = new FormData();
-    base64data = reader.result;
-    console.log(base64data);
-    fd.append('file', base64data, 'audio.mp3');
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: fd,
-      cache: false,
-      processData: false,
-      contentType: false,
-      enctype: 'multipart/form-data'
-    }).done(function(data) {
-      console.log(data);
-    });
-  }
 }

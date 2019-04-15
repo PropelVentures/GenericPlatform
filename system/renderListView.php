@@ -1,6 +1,6 @@
 <?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
-	
+
 	$con = connect();
 // for checklist in listviews
 	$listView = trim($row['list_views']);

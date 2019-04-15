@@ -1,9 +1,8 @@
 <?php
-@session_start();
 
+@session_start();
 require_once("../application/system-config.php");
 require_once("dbFunctions.php");
-
 
 $now = time();
 if (isset($_SESSION['discard_after']) && $now > $_SESSION['discard_after']) {
@@ -15,6 +14,3 @@ if (isset($_SESSION['discard_after']) && $now > $_SESSION['discard_after']) {
 }
 
 $_SESSION['discard_after'] = $now + SESSION_AUTO_TIMEOUT;
-//$_SESSION['discard_after'] = $now + 10;
-
-
