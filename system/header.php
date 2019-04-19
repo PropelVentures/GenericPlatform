@@ -84,7 +84,7 @@ if($_GET['source'] == 'api'){
 		<script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAP_API_KEY; ?>"></script>
 		<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
 		</script>
-        
+
         <script type="text/javascript">
 
             UPLOADCARE_PUBLIC_KEY = '4c3637988f9b93d343e8';
@@ -116,7 +116,3 @@ if($_GET['source'] == 'api'){
         <?php include 'js/record.php';  ?>
     </head>
     <body>
-
-
-
-

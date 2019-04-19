@@ -1,7 +1,7 @@
 <?php
 function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array, $mapAddress){
 	$con = connect();
-
+	$showImageIcon = isHaveToShowImage($row['list_extra_options']);
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
@@ -28,6 +28,14 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			if($count > $limit){
 				break;
 			}
+			$thisUserImage = false;
+			if($showImageIconS !== false){
+				$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];
+				if(!file_exists($thisUserImage)){
+					$thisUserImage = USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg";
+				}
+			}
+
 			$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 			$rs = $con->query($qry);
 			if (!empty($list_select) || $table_type == 'child') {
@@ -92,6 +100,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 						}
 					}
 					if(!empty($tempLatLong['lat']) && !empty($tempLatLong['lng'])){
+						$tempLatLong['userImage'] = $thisUserImage;
 						$tempLatLong['list_data'] = array_filter($listData);
 						$tempLatLong['target_url'] = $target_url."&edit=true#$tab_anchor";
 						$tempLatLong['target_url2'] = $target_url2;
@@ -105,24 +114,40 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 		} else { ?>
 		<div> No record found!</div>
 	<?php } ?>
-	<?php if(!empty($mapData)) { ?>
+	<?php if(!empty($mapData)) {
+		$button_id ="reset_state".$dict_id; ?>
+		<button  style='margin:10px' type='button' class="btn btn-danger" id="<?=$button_id?>">Reset Map</button>
 		<div id="map_<?php echo $dict_id; ?>" class="mapView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" style="$css_style"></div>
 		<script>
 		function initMap<?php echo $dict_id; ?>() {
 			var markers = [];
 			var markersForBound = [];
-			var map = new google.maps.Map(document.getElementById("<?php echo 'map_'.$dict_id; ?>"), {
-				zoom: <?php echo MAP_ZOOM; ?>,
-				center: {lat: <?php echo MAP_CENTER_LATITUDE; ?>, lng: <?php echo MAP_CENTER_LONGITUDE; ?>}
-			});
-
+			var latlng = new google.maps.LatLng(<?php echo MAP_CENTER_LATITUDE; ?>, <?php echo MAP_CENTER_LONGITUDE; ?>);
+			var mapOptions = {
+        zoom: <?php echo MAP_ZOOM; ?>,
+        center: latlng,
+		 }
+			var map = new google.maps.Map(document.getElementById("<?php echo 'map_'.$dict_id; ?>"), mapOptions);
 			<?php foreach($mapData as $key=>$data){ ?>
 				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
+					<?php if($showImageIconS !== flase){ ?>
+						var image = {
+          		url:"<?php echo $data['userImage'] ?>",
+          		scaledSize: new google.maps.Size(40, 40),
+          		origin: new google.maps.Point(0, 0),
+          		anchor: new google.maps.Point(0, 0)
+        		};
+						<?php } ?>
+
 				var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
 					position:new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>),
 					id: '<?php echo $key ?>',
 					title: "<?php echo ucwords(@$data['list_data'][0]); ?>",
+					<?php if($showImageIconS !== flase){ ?>
+					icon: image,
+					<?php }else{ ?>
 					label: "<?php echo substr(@$data['list_data'][0],0,1); ?>",
+					<?php } ?>
 				});
 				marker_obj_<?php echo $key; ?>.setMap(map);
 
@@ -178,10 +203,10 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			}); */
 
 			var bounds = new google.maps.LatLngBounds();
-			$.each(markersForBound,function(index,value){
-				bounds.extend(value);
-			});
-			map.fitBounds(bounds);
+			// $.each(markersForBound,function(index,value){
+			// 	// bounds.extend(value);
+			// });
+			// map.fitBounds(bounds);
 
 
 			var options = {
@@ -189,12 +214,23 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			};
 
 			var markerCluster = new MarkerClusterer(map, markers, options);
+			return [map,bounds];
 		}
 
 		$(function(){
+			var thismap;
 		   $(window).load(function(){
-				initMap<?php echo $dict_id; ?>();
+				thismap = initMap<?php echo $dict_id; ?>();
+				setTimeout(function(){
+						$(".gm-style img[src*='/application/']").each(function (i, el) {
+		         $(el).css('border-radius','50%');
+		     });
+			 }, 500);
 		   });
+			 $("#reset_state"+"<?php echo $dict_id; ?>").click(function() {
+				  // thismap[0].fitBounds(thismap[1]);
+					thismap[0].setCenter(new google.maps.LatLng(<?php echo MAP_CENTER_LATITUDE; ?>, <?php echo MAP_CENTER_LONGITUDE; ?>));
+				})
 		});
 		</script>
 

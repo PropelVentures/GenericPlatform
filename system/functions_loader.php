@@ -8,10 +8,14 @@
 include_once("config.php");
 require_once("appConfig.php");
 require_once("functions.php");
+
 require_once("helperFunctions.php");
 require_once("formActions.php");
+
 require_once("formDisplayFnc.php");
+
 require_once("get_record.php");
+
 require_once("list_display_views.php");
 require_once("fffr_icons.php");
 require_once("sidebars.php");

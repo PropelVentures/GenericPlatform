@@ -54,14 +54,8 @@ function display_content($row) {
         $userPrivilege = false;
     }*/
     $css_style = $row1['dd_css_code'];
-	$userPrivilege = false;
-	if(itemHasVisibility($row['dd_visibility']) && itemHasPrivilege($row['dd_privilege_level'])){
-		$userPrivilege = true;
-	}
-	if(loginNotRequired()){
-		$userPrivilege = true;
-	}
-    if ($userPrivilege === true) {
+
+    if (isAllowedToShowByPrivilegeLevel($row)) {
 			///////// for displaying image container
 			$image_display = 'true';
 			//print_r($row1);die;

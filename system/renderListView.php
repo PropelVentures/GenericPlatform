@@ -1,6 +1,6 @@
 <?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
-	
+
 	$con = connect();
 	// pr($row);
 	//styling of data table

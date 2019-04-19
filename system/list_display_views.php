@@ -75,6 +75,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $listSort = 'false', $listCheck);
     }
 
+    $availableRecords =   $list->num_rows;
+    $limitOnAddButton = checkListItemsLimit($row['list_extra_options']);
+    $disableAddButton = false;
+    if($limitOnAddButton !== false && $availableRecords >= $limitOnAddButton){
+      $disableAddButton = true;
+    }
     $listView = trim($row['list_views']);
 	//Added BY Dharmesh 2018-10-07
 	$list_views = listvalues($row['list_views']);
@@ -207,8 +213,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
 	$table_type = trim($row['table_type']);
+  // pr($list_select);
 	$list_select_arr = getListSelectParams($list_select);
+
 	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
+  // pr($addRecordUrl);
+  // pr($_SESSION);
     $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
@@ -277,9 +287,13 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
 
 				/// ADD BUTTON
-                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) { ?>
-                    <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
-                <?php
+                if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
+
+                  if($disableAddButton) { ?>
+                    <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="limitIsFull()" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
+                <?php }else{ ?>
+                  <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
+                <?php }
 				}
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button

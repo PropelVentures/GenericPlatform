@@ -1,7 +1,7 @@
 <?php
 	require_once("functions_loader.php");
-
 	include("header.php");
+
 	$display_page = $_GET['display'];
 	$page_layout_style = $_GET['layout'];
 	$style = $_GET['style'];
@@ -494,7 +494,7 @@
 				data: {childID: del_id, check_action: "openChild", dict_id: dict_id, display: "<?= $_GET['display']; ?>"}
 			})
 			.done(function (child_url) {
-				
+
 				window.location = child_url;
 				// window.open(msg,'','width=800,height=768,left=300');
 			});
@@ -808,5 +808,8 @@
 			});
 		});
 	});
+	function limitIsFull(){
+		alert("Maximum records limit reach, You can not add more records");
+	}
 </script>
 <?php include("footer.php"); ?>

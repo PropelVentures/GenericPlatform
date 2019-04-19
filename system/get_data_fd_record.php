@@ -37,6 +37,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
 
         while ($row = $rs->fetch_assoc()) {
+          if(!isAllowedToShowByPrivilegeLevel($row)){
+            continue;
+          }
 			switch($row['table_type']){
 				case 'slider':
 					ShowTableTypeSlider($row['display_page'],$row['tab_num']);
@@ -44,6 +47,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				case 'banner':
 					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
 					break;
+        case 'p_banner':
+          ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
+          break;
+				case 'content':
 				case 'url':
 					ShowTableTypeURL($row['display_page'],$row['tab_num']);
 					break;
@@ -56,7 +63,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				case 'icon':
 					ShowTableTypeIcon($row['display_page'],$row['tab_num']);
 					break;
-                default:
+        default:
 					/////display_content.php////
 					display_content($row);
 					break;
@@ -92,7 +99,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             $rs2 = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page'  and tab_num='$_GET[tabNum]'  order by field_dictionary.display_field_order");
         }
         $row1 = $rs->fetch_assoc();
-
+        if(!isAllowedToShowByPrivilegeLevel($row1)){
+          return;
+        }
 		$addUrlInner = getRecordAddUrlInner($row1);
 
         $_SESSION['list_pagination'] = $row1['list_pagination'];
@@ -221,7 +230,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         // pr($add_array);
         /// ADD BUTTON
         if (!empty($add_array) ) {
-            $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
+          	$href = "window.location.href='$addUrlInner'";
+            $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' onclick=$href>" . $add_array['label'] . "</button> &nbsp;";
         }
 
         ##CUSTOM FUNCTION BUTTON##
@@ -243,18 +253,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          */
 
         $css_style = $row1['dd_css_code'];
-		$userPrivilege = false;
-		if(itemHasPrivilege($row1['dd_privilege_level'])){
-			$userPrivilege = true;
-		}
-		if(!itemHasVisibility($row1['dd_visibility'])){
-			$userPrivilege = false;
-		}
-		if(loginNotRequired()){
-			$userPrivilege = true;
-		}
-        if ($userPrivilege === true) {
-        	////adding class if form is not for editing purpose
+        if (isAllowedToShowByPrivilegeLevel($row1)) {
+			////adding class if form is not for editing purpose
 				$page_editable = true;
 
 				if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {

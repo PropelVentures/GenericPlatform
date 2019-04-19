@@ -482,7 +482,11 @@ function loginNotRequired(){
  */
 function getNavItems($page,$menu_location,$loginRequired='true'){
 	$con = connect();
-	$rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='$loginRequired' ORDER BY item_number ASC");
+  if($loginRequired=='true'){
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='$loginRequired' ORDER BY item_number ASC");
+  }
 	$navItems = array();
 	$arr = array();
 	$i = 0;
@@ -505,7 +509,23 @@ function getNavItems($page,$menu_location,$loginRequired='true'){
  * For all menu location & loginrequired(true or false)
  */
 function generateTopNavigation($navItems,$loginRequired){
+  $isUserLoggedIn = true;
+  if(isset($_SESSION['user_privilege'])){
+    $currentUserPrivilege = $_SESSION['user_privilege'];
+  }else{
+    $isUserLoggedIn = false;
+    $currentUserPrivilege = 0;
+  }
 	$menu = '';
+
+    echo '<style>
+        .disabled_nav {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+    }
+    </style>';
+
 	if(!empty($navItems)){
 		foreach($navItems as $parent){
 			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
@@ -519,6 +539,10 @@ function generateTopNavigation($navItems,$loginRequired){
 			$target = $navTarget['target'];
 			$enable_class=$navTarget['enable_class'];
 			$target_blank = $navTarget['target_blank'];
+      $disable = '';
+      if($currentUserPrivilege < $parent['item_privilege'] && $isUserLoggedIn){
+        $disable ='disabled_nav';
+      }
 			if(!empty($parent['children'])){
 
 				switch(strtolower($label)){
@@ -545,7 +569,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
-								<a href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+								<a class='' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
 								</a>
@@ -565,6 +589,10 @@ function generateTopNavigation($navItems,$loginRequired){
 					$target = $navTarget['target'];
 					$enable_class=$navTarget['enable_class'];
 					$target_blank = $navTarget['target_blank'];
+          $disable_child = '';
+          if($currentUserPrivilege < $children['item_privilege'] && $isUserLoggedIn){
+            $disable_child ='disabled_nav';
+          }
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
@@ -584,7 +612,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style=''>
-									<a $target_blank href='$target' title='$title'>".
+									<a class='$disable_child' $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -612,7 +640,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' >
-									<a $target_blank href='$target' title='$title'>
+									<a class='$disable' $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>";
