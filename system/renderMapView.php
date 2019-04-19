@@ -124,7 +124,6 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			var map = new google.maps.Map(document.getElementById("<?php echo 'map_'.$dict_id; ?>"), mapOptions);
 			<?php foreach($mapData as $key=>$data){ ?>
 				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
-				console.log("<?php echo $data['userImage'] ?>");
 					<?php if($showImageIconS !== flase){ ?>
 						var image = {
           		url:"<?php echo $data['userImage'] ?>",
@@ -199,7 +198,7 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 
 			var bounds = new google.maps.LatLngBounds();
 			// $.each(markersForBound,function(index,value){
-			// 	bounds.extend(value);
+			// 	// bounds.extend(value);
 			// });
 			// map.fitBounds(bounds);
 
@@ -223,7 +222,8 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			 }, 500);
 		   });
 			 $("#reset_state"+"<?php echo $dict_id; ?>").click(function() {
-				  thismap[0].fitBounds(thismap[1]);
+				  // thismap[0].fitBounds(thismap[1]);
+					thismap[0].setCenter(new google.maps.LatLng(<?php echo MAP_CENTER_LATITUDE; ?>, <?php echo MAP_CENTER_LONGITUDE; ?>));
 				})
 		});
 		</script>

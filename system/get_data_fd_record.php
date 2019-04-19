@@ -231,7 +231,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
         /// ADD BUTTON
         if (!empty($add_array) ) {
-            $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' >" . $add_array['label'] . "</button> &nbsp;";
+          	$href = "window.location.href='$addUrlInner'";
+            $addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' onclick=$href>" . $add_array['label'] . "</button> &nbsp;";
         }
 
         ##CUSTOM FUNCTION BUTTON##
@@ -254,16 +255,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
     $css_style = $row1['dd_css_code'];
 		$userPrivilege = false;
-		if(itemHasPrivilege($row1['dd_privilege_level'])){
-			$userPrivilege = true;
-		}
-		if(!itemHasVisibility($row1['dd_visibility'])){
-			$userPrivilege = false;
-		}
-		if(loginNotRequired()){
-			$userPrivilege = true;
-		}
-        if ($userPrivilege === true) {
+
+        if (isAllowedToShowByPrivilegeLevel($row1)) {
 			////adding class if form is not for editing purpose
 				$page_editable = true;
 
@@ -820,7 +813,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 								}
 								$urow = array();
 							}
-              
 							formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
 						}//// end of while loop
 					} else {

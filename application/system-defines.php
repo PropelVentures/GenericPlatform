@@ -245,7 +245,8 @@ define("LINKEDIN_APP_ID" , "86j4ktoqu4eouz");
 //define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
 
 
-
+//Message to show when a record limit is reached for a list
+define("MAXIMUM_LIMIT_REACHED","Maximum records limit reach, You can not add more records");
 
 /* * *Form labels for PROFILE page** */
 /* THESE ARE NO LONGER NEEDED!

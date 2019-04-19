@@ -1,4 +1,4 @@
-
+<!--
 <script>
 function restore(elem) {
 
@@ -222,4 +222,4 @@ $(document).ready(function () {
 
 });
 
-</script>
+</script> -->

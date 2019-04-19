@@ -811,5 +811,8 @@
 			});
 		});
 	});
+	function limitIsFull(){
+		alert("Maximum records limit reach, You can not add more records");
+	}
 </script>
 <?php include("footer.php"); ?>

@@ -188,8 +188,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
 	$table_type = trim($row['table_type']);
+  // pr($list_select);
 	$list_select_arr = getListSelectParams($list_select);
+
 	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
+  // pr($addRecordUrl);
+  // pr($_SESSION);
     $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
@@ -259,8 +263,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
 				/// ADD BUTTON
                 if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
-                  if($disableAddButton) {?>
-                    <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
+
+                  if($disableAddButton) { ?>
+                    <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="limitIsFull()" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }else{ ?>
                   <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }

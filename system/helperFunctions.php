@@ -115,20 +115,16 @@ function uploadAudioFile($parameters) {
 
 function uploadRecordedAudio($string){
   $target_dir = USER_UPLOADS . "audio";
-  $fileName = time().'.wav';
+  $fileName = time().'.mp3';
   $randName = rand(124, 1000);
   $fileName = $randName . $fileName;
   $target_file = $target_dir . '/' . $fileName;
-  // pr($string);
-  // $fileDecoded = base64_decode($string);
+  $fileDecoded = str_replace('data:audio/mpeg;base64,', '',  $string);
 
-  $uploadOk = file_put_contents($target_file, base64_decode($string));
-  // pr($target_file);
-  // die($uploadOk);
+  $uploadOk = file_put_contents($target_file, base64_decode($fileDecoded));
+
   if($uploadOk){
-    // pr($uploadOk);
-    // pr('AAAAAAAAAAAAAAAAAAAAAAAAA');
-    // die();
+
     return $fileName;
   }
   return false;
@@ -1637,15 +1633,17 @@ function generateLinkedinButton($linkedin_array){
 
 function isAllowedToShowByPrivilegeLevel($row){
   $user_privilege = $_SESSION['user_privilege'];
-
-  if(is_null($user_privilege) || $user_privilege==0 ){
-    return true;
-  }
-
   $DD_privilege = $row['dd_privilege_level'];
   $DD_visibility = $row['dd_visibility'];
-  if($user_privilege < $DD_privilege || $user_privilege < $DD_visibility){
+  if(is_null($user_privilege)){
+    $user_privilege = 0;
+  }
+  if($DD_visibility ==0){
     return false;
   }
-  return true;
+
+  if($user_privilege >= $DD_privilege){
+    return true;
+  }
+  return false;
 }

@@ -339,14 +339,8 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 	if($tableTypeHeaderQuery->num_rows > 0){
 
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$header = $row['description'];
 				$dd_css_class = $row['dd_css_class'];
         $css_style = $row['dd_css_code'];
@@ -378,14 +372,7 @@ function ShowTableTypeSubHeaderContent($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$header = $row['description'];
 
 				$dd_css_class = $row['dd_css_class'];
@@ -417,14 +404,7 @@ function ShowTableTypeBanner($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$banner = getBannerImages($row['description']);
 
 				$dd_css_class = $row['dd_css_class'];
@@ -463,14 +443,7 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$banner = getBannerImages($row['description']);
 
 				$dd_css_class = $row['dd_css_class'];
@@ -478,10 +451,26 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
 				if(!empty($banner)) { ?>
-          <style>
+
+          <!-- Font Awesome -->
+          <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/css/mdb.min.css" rel="stylesheet"> -->
+
+          <!-- JQuery -->
+<!-- Bootstrap tooltips -->
+<!-- Bootstrap core JavaScript -->
+<!-- MDB core JavaScript -->
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+<!-- Bootstrap tooltips -->
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script> -->
+<!-- Bootstrap core JavaScript -->
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/js/mdb.min.js"></script> -->
+
+          <!-- <style>
           .parallax {
             /* The image used */
-            background-image: url("<?= $banner ?>");
+            background-image: url("");
 
             /* Full height */
             height: 100%;
@@ -492,20 +481,42 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
             background-repeat: no-repeat;
             background-size: cover;
             }
-          </style>
+          </style> -->
 					<div class="<?php echo $divClass.' '.$dd_css_class; ?> " style="<?= $css_style ?>">
 						<div style="width:<?php echo $width; ?>;">
 							<section class='section-sep'>
-                <div class="parallax"></div>
+                <!-- <div class="parallax"></div>
                   <div style="height:1000px;background-color:red;font-size:36px">
                     Scroll Up and Down this page to see the parallax scrolling effect.
                     This div is just here to enable scrolling.
                     Tip: Try to remove the background-attachment property to remove the scrolling effect.
                   </div>
-                <div class="parallax"></div>
+                <div class="parallax"></div> -->
+                <div class="jarallax">
+  <img class="jarallax-img" src="<?= $banner ?>" alt="">
+  Your content here...
+</div>
 							</section>
 						</div>
 					</div>
+
+          <!-- <script type="text/javascript">
+
+          $(document).ready(function(){
+            setTimeout(function(){
+              // object-fit polyfill run
+              objectFitImages();
+
+              /* init Jarallax */
+              jarallax(document.querySelectorAll('.jarallax'));
+
+              jarallax(document.querySelectorAll('.jarallax-keep-img'), {
+                keepImg: true,
+              });
+           }, 500);
+          });
+
+          </script> -->
 					<?php
 				}
 			}
@@ -529,14 +540,7 @@ function ShowTableTypeContent($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$iframeUrl = getIframeUrl($row['description']);
 				$dd_css_class = $row['dd_css_class'];
         $css_style = $row['dd_css_code'];
@@ -571,14 +575,8 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$sliders = getSliderImages($row['description']);
 				$dd_css_class = $row['dd_css_class'];
         $css_style = $row['dd_css_code'];
@@ -636,14 +634,7 @@ function ShowTableTypeImage($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$images = getImages($row['description']);
 				$url = getDDUrl($row['list_select']);
 				$dd_css_class = $row['dd_css_class'];
@@ -678,14 +669,7 @@ function ShowTableTypeIcon($display_page,$tabNum=''){
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
-			$userPrivilege = false;
-			if(itemHasPrivilege($row['dd_privilege_level']) && itemHasVisibility($row['dd_visibility'])){
-				$userPrivilege = true;
-			}
-			if(loginNotRequired()){
-				$userPrivilege = true;
-			}
-			if ($userPrivilege === true) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
 				$images = getImages($row['description']);
 				$url = getDDUrl($row['list_select']);
 				$listStyle = $row['dd_css_class'];

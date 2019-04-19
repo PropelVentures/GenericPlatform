@@ -43,7 +43,16 @@
  *
  *
  */
-
+// if( isset($_GET['action']) && $_GET['action'] =='user_recorded_file'){
+//   foreach ($_FILES as $file => $file2) {
+//     //checking if audio file is not empty
+//     if (!empty($file2['name'])) {
+//         $file_name = uploadRecordedAudio($file2);
+//         echo $file_name;
+//         exit();
+//       }
+//     }
+// }
 if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'cancel') {
     update("data_dictionary", array("dd_editable" => '1'), array("display_page" => $_GET['display']));
     // exit($_SESSION[return_url2]);
@@ -527,7 +536,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
     if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
       $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
       if(!empty($recordedFileNmae)){
-        $_POST['audio_file'] = $recordedFileNmae;
+        $_POST['temp_audio_file'] = $recordedFileNmae;
       }
     }
 			foreach ($_FILES as $file => $file2) {
@@ -551,6 +560,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				}
 			}
 
+      if(isset($_POST['temp_audio_file'])){
+        $_POST['audio_file'] = $_POST['temp_audio_file'];
+      }
+      // die();
 			/* Storing Base Latitude and Longitude Start*/
 			$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
 			$_POST = setBaseGpsCordinate($dataFdRecord,$_POST);
@@ -1381,7 +1394,6 @@ function setBaseGpsCordinate($dataFdRecord,$postData){
  * calculate lat lng based on address
  */
 function getLatLong($formatedAddress){
-  pr('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',1);
 	//Formatted address
 	$arr['lat'] = $arr['lng'] = "";
 	$formattedAddr = urlencode(implode(',',$formatedAddress));
