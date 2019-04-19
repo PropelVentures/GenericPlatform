@@ -44,16 +44,14 @@ function Get_Links($display_page) {
     /////////////////////////////
     //////////////////////////////////////////////
     ///////////////////////////////////////////////////////////
-
 	if($rs->num_rows){
-		echo "<ul class='center-tab' role='tablist' >";
-		while ($row = $rs->fetch_assoc()) {
-			if($row['loginRequired']== 'true' && !itemHasVisibility($row['dd_visibility'])){
-				continue;
-			}
-			//pr($row);
+            echo "<ul class='center-tab' role='tablist' >";
+    		while ($row = $rs->fetch_assoc()) {
+    			if($row['loginRequired']== 'true' && !itemHasVisibility($row['dd_visibility'])){
+    				continue;
+    			}
 
-			$tab_name = explode("/", $row['tab_name']);
+    			$tab_name = explode("/", $row['tab_name']);
 
 			$row['tab_name'] = trim($tab_name[0]);
 			$dd_css_class = $row['dd_css_class'];
@@ -61,31 +59,28 @@ function Get_Links($display_page) {
 			if ($i == 1 && !( isset($_SESSION['tab']) )) {
 				$tab = $row['table_alias'];
 
-				$_SESSION['tab'] = $tab;
+    				$_SESSION['tab'] = $tab;
 
 
-				//echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
-				if($row['tab_name']){
-					echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
-				}
-			} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
 
-				//echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
-				if($row['tab_name']){
-					echo "<li class='active'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
-				}
-			} else {
+                    ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    			} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
 
-				//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
-				if($row['tab_name']){
-					echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class'>$row[tab_name]</a></li>";
-				}
-			}
-			$i++;
-		}
+    				ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    			} else {
 
-		echo "</ul>";
+    				//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+    				ShowTab($display_page, $rs, $row, $row['table_alias']);
+    			}
+    			$i++;
+    		}
+
+    		echo "</ul>";
+
 	}
+
+
+
 
 	/* Check From table_type == subheader1 or subheader2 Start */
 	// ShowTableTypeSubHeaderContent($display_page);
@@ -102,6 +97,20 @@ function Get_Links($display_page) {
 	ShowTableTypeImage($display_page);
 }
 
+function ShowTab($display_page, $rs, $row, $tab, $class=''){
+    $tab_name = trim($row['tab_name']);
+
+    if($rs->num_rows == 1 && $row['tab_name']){
+        if($tab_name[0] != '*'){
+            echo "<li class='$class'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
+        }
+    }else if($rs->num_rows > 1){
+        if(!empty($row['tab_num'])){
+            echo "<li class='$class'><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num] class='tab-class'>$row[tab_name]</a></li>";
+        }
+    }
+}
+
 function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 	if (!empty($row)) {
 		if ($_GET['edit'] == 'true'){
@@ -110,12 +119,13 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 		$con = connect();
 		$tabQuery = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader|image|icon' AND tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
 		if($tabQuery->num_rows > 0) { ?>
+
 			<ul class='<?php echo $ulClass.$sidebar; ?>' role='tablist'>
 				<?php
 				while ($row = $tabQuery->fetch_assoc()) {
 					if(trim($row['tab_name'])){
 						$dd_css_class = $row['dd_css_class'];
-            $css_style = $row['dd_css_code'];
+                        $css_style = $row['dd_css_code'];
 
 						$tab_id = "#".$display_page.$row['dict_id'];
 						if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
@@ -125,6 +135,18 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 							<!--<a id="<?php //echo $list_style; ?>" href="javascript:void(0);">
 								<?php //echo $row['tab_name']; ?>
 							</a>-->
+							<a href="javascript:void(0);">
+								<?php echo $row['tab_name']; ?>
+							</a>
+						</li>
+						<?php
+					} else if(trim($row['tab_name']) && $tabQuery->num_rows > 1 && !empty($row['tab_name'])){
+						$list_style = $row['list_style'];
+						$tab_id = "#".$display_page.$row['dict_id'];
+						if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
+							continue;
+						} ?>
+						<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">
 							<a href="javascript:void(0);">
 								<?php echo $row['tab_name']; ?>
 							</a>
@@ -337,7 +359,6 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'header%'  ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
-
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
 
 			if (isAllowedToShowByPrivilegeLevel($row)) {
@@ -537,6 +558,41 @@ function ShowTableTypeContent($display_page,$tabNum=''){
 			$tabNum = $_GET['tabNum'];
 		}
 		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'content' ORDER BY table_type ASC");
+	}
+	if($tableTypeHeaderQuery->num_rows > 0){
+		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
+			if (isAllowedToShowByPrivilegeLevel($row)) {
+				$content = $row['description'];
+				$listStyle = $row['list_style'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
+				if(!empty($content)) { ?>
+                    <div class="<?php echo $divClass; ?>">
+						<div id="<?php echo $listStyle; ?>" style="width:<?php echo $width; ?>;">
+							<?php echo $content ?>
+						</div>
+					</div>
+					<?php
+				}
+			}
+		}
+	}
+}
+
+
+function ShowTableTypeURL($display_page,$tabNum=''){
+	$con = connect();
+	if($tabNum){
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'url' ORDER BY table_type ASC");
+	} else {
+		if (empty($_GET['tabNum'])) {
+			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+			$row = $rs->fetch_assoc();
+			$tabNum = $row['tab_num'];
+		} else {
+			$tabNum = $_GET['tabNum'];
+		}
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'url' ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {

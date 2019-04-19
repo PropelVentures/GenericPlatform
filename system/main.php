@@ -37,7 +37,6 @@
 			$right_sidebar = $left_sidebar = '';
 			$left_sidebar_width = $right_sidebar_width = 0;
 			while ($row = $rs->fetch_assoc()) {
-				//pr($row);
 				$r1 = explode('w', trim($row['tab_num']));
 				if (!empty($r1[1])) {
 					if ($r1[0] == 'R1')
@@ -152,7 +151,7 @@
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
-
+				// pr($row);
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
@@ -570,10 +569,8 @@
 				}else{
 				if (form_edit == 'changed') {
 					event.preventDefault();
-					if (confirm("<?= backAlertMsg ?>") == true) {
-						//console.log($(this).attr('href'));
-						window.location = $(this).attr('href');
-					}
+					// window.location = $(this).attr('href');
+					window.location = document.referrer;
 				}
 			}
 		});

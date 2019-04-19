@@ -3,7 +3,6 @@
 function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
 
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
     $con = connect();
     ///setting form editable if user click on list for editing purpose
     if (!empty($_GET['edit']) && $_GET['edit'] == 'true') {
@@ -36,6 +35,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
     if ($tab_status == 'true') {
 
         $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+
         while ($row = $rs->fetch_assoc()) {
           if(!isAllowedToShowByPrivilegeLevel($row)){
             continue;
@@ -51,6 +51,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
           ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
           break;
 				case 'content':
+				case 'url':
+					ShowTableTypeURL($row['display_page'],$row['tab_num']);
+					break;
+                case 'content':
 					ShowTableTypeContent($row['display_page'],$row['tab_num']);
 					break;
 				case 'image':
@@ -59,8 +63,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				case 'icon':
 					ShowTableTypeIcon($row['display_page'],$row['tab_num']);
 					break;
-
-
         default:
 					/////display_content.php////
 					display_content($row);
@@ -86,19 +88,16 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
             $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and data_dictionary.tab_num='$tab_num'    order by field_dictionary.display_field_order");
 
-
             $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and tab_num='$tab_num'    order by field_dictionary.display_field_order";
             $_SESSION['mydata'] = $table_alias . " " . $display_page;
             $rs2 = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page'  and tab_num='$tab_num'  order by field_dictionary.display_field_order");
         } else {
             $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and tab_num='$_GET[tabNum]'  order by field_dictionary.display_field_order");
 
-
             $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and tab_num='$_GET[tabNum]'   order by field_dictionary.display_field_order";
 
             $rs2 = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page'  and tab_num='$_GET[tabNum]'  order by field_dictionary.display_field_order");
         }
-
         $row1 = $rs->fetch_assoc();
         if(!isAllowedToShowByPrivilegeLevel($row1)){
           return;
@@ -228,7 +227,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         if (!empty($copy_array) ) {
             $copyButton = "<button type='submit' class='btn list-copy " . $copy_array['style'] . "'  name='$row1[dict_id]' id='$_GET[search_id]'>" . $copy_array['label'] . "</button> &nbsp;";
         }
-
+        // pr($add_array);
         /// ADD BUTTON
         if (!empty($add_array) ) {
           	$href = "window.location.href='$addUrlInner'";
@@ -253,9 +252,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          *
          */
 
-    $css_style = $row1['dd_css_code'];
-		$userPrivilege = false;
-
+        $css_style = $row1['dd_css_code'];
         if (isAllowedToShowByPrivilegeLevel($row1)) {
 			////adding class if form is not for editing purpose
 				$page_editable = true;
@@ -285,7 +282,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
 					$_SESSION['search_id'] = $_SESSION['uid'];
 				else if (trim($row1['table_type']) == 'child') {
-	//                die("INSIDE HERE PARENT_KEY SESSION FOR SEARCH_ID");
+
 					$_SESSION['search_id'] = $_SESSION['parent_value'];
 				} else
 					$_SESSION['search_id'] = $_SESSION['uid']; /// for displaying one user
@@ -300,8 +297,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 					$_SESSION['search_id'] = $_GET['id'];
 					//$_SESSION['update_table']['keyfield'] = 'id';
 				}
-
-
 
 				$_SESSION['update_table']['database_table_name'] = $row1['database_table_name'];
 
@@ -431,7 +426,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				 */
 
 				$tab_name = explode("/", $row1['tab_name']);
-
 				if (!empty(trim($tab_name[1]))) {
 					echo "<h1 class='tab-header'>$tab_name[1]</h1>";
 				}
@@ -444,7 +438,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				$_SESSION['list_tab_name'] = $tab_name[0];
 
 				/////generating session for capturing parent List tabname
-
 				if ($row1['table_type'] == 'parent') {
 					$_SESSION['parent_list_tabname'] = $tab_name[0];
 
@@ -474,9 +467,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 				if ((( $row1['list_views'] != 'NULL' || $row1['list_views'] != '' ) && trim($row1['table_type']) == 'child' && $_GET['edit'] != 'true' ) && $_GET['addFlag'] != 'true') {
 
-
+                    $backText = str_replace('*', '', $_SESSION['parent_list_tabname']);
 					echo "<br><ol class='breadcrumb'>
-								<li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$_SESSION[parent_list_tabname]</span> List</a></li>
+								<li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$backText</span> List</a></li>
 							  </ol>";
 				}
 
@@ -838,7 +831,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 						} else {
 							#echo ("INSIDE FD RECORD.PHP called list_display()<br> ");
 	//                        echo "<pre>";
-	//                        print_r($_SESSION); die;
+                            // pr($_SESSION['parent_key_value']);
 							list_display($qry, $row1['tab_num']); //// list displays
 
 							echo "<div style='clear:both'></div>";
@@ -908,5 +901,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             echo "<h3 style='color:red'>You don't have enough privilege to view contents</h3>";
             ///page privilege if its false
         }
+
     }//else ends here where tab_num=0 is not part of dd->display_page
 }
