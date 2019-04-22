@@ -47,7 +47,7 @@ function Get_Links($display_page) {
 	if($rs->num_rows){
             echo "<ul class='center-tab' role='tablist' >";
     		while ($row = $rs->fetch_assoc()) {
-    			if($row['loginRequired']== 'true' && !itemHasVisibility($row['dd_visibility'])){
+    			if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
     				continue;
     			}
 
@@ -223,7 +223,7 @@ function Navigation($page, $menu_location = 'header') {
      *
      * Checking whether user have access to current page or not
      */
-    if ($row['loginRequired'] == 'true' && !isset($_SESSION['uid'])) {
+    if ($row['loginRequired'] == '1' && !isset($_SESSION['uid'])) {
         $_SESSION['callBackPage'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         FlashMessage::add('Login required to view the current page!');
         echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
