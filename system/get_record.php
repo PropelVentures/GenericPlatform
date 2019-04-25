@@ -43,18 +43,8 @@ function get_single_record($db_name, $pkey, $search) {
  * @return type
  */
 function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false') {
-
-//echo "<font color=red>\$db_name:$db_name, \$pkey:$pkey, \$search:$search, \$listFilter:$listFilter, \$singleSort:$singleSort, \$listCheck:$listCheck</font><br>";
-//echo "<pre>";
-//print_r(USER_TABLETYPE);
-//echo "</pre>";
     $_SESSION['update_table']['search'] = $search;
-
-
     $con = connect();
-
-// exit(" db=$db_name, keyfield = $pkey, search_id = $search, list_filter = $listFilter, single_sort = $singleSort, listCheck = $listCheck");
-
 
     if ($listFilter != 'false')
         $clause = listFilter($listFilter, $search);
@@ -64,9 +54,11 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
     if (!empty($clause))
         $clause ='WHERE ' . $clause;
 
+    if($singleSort !=='false'){
+      $clause = $clause .' order by '.$singleSort;
+    }
 
     $user = $con->query("SELECT * FROM $db_name $clause ");
-
 // if($db_name=='product'){
 //   while ($data= $user->fetch_assoc()) {
 //     pr($data['productImage']);

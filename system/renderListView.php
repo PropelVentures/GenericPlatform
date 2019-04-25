@@ -1,8 +1,6 @@
 <?php
 function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
-
 	$con = connect();
-	// pr($row);
 	//styling of data table
 	//*
 	//*
@@ -58,6 +56,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$listView = trim($row['list_views']);
 	$list_views = listvalues($row['list_views']);
 
+	$list_sort = trim($row['list_sort']);
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
@@ -68,7 +67,9 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$display_page = $row['display_page'];
 	$display_id ='#'.$display_page . $dict_id.' .clearFunction';
 	$list_select_arr = getListSelectParams($list_select);
+
 	?>
+
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
@@ -78,10 +79,27 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 			<tr class='tr-heading'>
 				<th class='tbl-action'><span style='visibility:hidden;'>12<span></th>
 				<?php $tbRs = $con->query($tbQry);
+				$sort_index = 0;
+				$count = 0;
 				while ($tbRow = $tbRs->fetch_assoc()) {
 					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
+							$count++;
+							if(isset($row['list_sort']) && !empty($row['list_sort'])){
+								$list_sort = explode('-',$row['list_sort']);
+								// pr($list_sort);
+								if(isset($list_sort[0]) && !empty($list_sort[0])){
+									$sort_parameter = $list_sort[0];
+									$sort_order = 'asc';
+								}else{
+									$sort_parameter = $list_sort[1];
+									$sort_order = 'desc';
+								}
+								if($tbRow['generic_field_name'] == $sort_parameter){
+										$sort_index=$count;
+								}
+							}
 						//Code Change for Task 5.4.22 End
 					  ?>
 						<th><?php echo $tbRow['field_label_name']; ?></th>
@@ -222,7 +240,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	<?php $page_no = $list_pagination['itemsperpage']; ?>
 		$('#table_<?php echo $dict_id;?>').DataTable({
 			pageLength: <?php echo $page_no; ?>,
-	  		scrollX: <?php echo $list_pagination['scrollX'];?>,
+  			scrollX: <?php echo $list_pagination['scrollX'];?>,
 			paging: <?php echo $list_pagination['paging'];?>,
 			scrollY:<?php echo $list_pagination['scrollY'];?>,
 			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
@@ -230,7 +248,8 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
 			pagingType: 'full_numbers',
 			lengthMenu: <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			bStateSave: true,
+			order: [<?php echo $sort_index; ?>, <?php echo "'" . $sort_order . "'"; ?>],
+			// bStateSave: true,
 		});
 
 		//Fixing the bug for default pagination values for the datatable//
