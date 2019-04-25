@@ -174,7 +174,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "list_fragment":
-                echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+                echo "<div class='$sigle_line_alignment $fd_css_class' style='overflow:auto!important;max-height:500px; $fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 
                 if ($urow != 'false')
                     list_fragment($row);
@@ -255,6 +255,25 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "image":
+								if($readonly){
+									if(empty(trim($fieldValue))){
+										break;
+									}
+								}
+                echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+                if ($urow != 'false')
+                    image_upload($row, $urow, $image_display);
+                else
+                    image_upload($row);
+                echo "</div></div>";
+                break;
+
+						case "image_only":
+								if($readonly){
+									if(empty(trim($fieldValue))){
+										break;
+									}
+								}
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     image_upload($row, $urow, $image_display);
@@ -275,6 +294,28 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
             case "video":
 							if($readonly){
 								$row['format_type'] = "hidden";
+							}
+							$dimensions = getVideoFormatLength($row['format_length']);
+							$iframeWidth = $dimensions['width'];
+							$iframeHeight = $dimensions['height'];
+
+								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
+            	echo "</div>";
+							$fieldValue = setTheVideoURL($fieldValue);
+							$srcdoc = '';
+							if(empty(trim($fieldValue))){
+								$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
+							}
+              echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
+							break;
+
+						case "video_only":
+							if($readonly){
+								$row['format_type'] = "hidden";
+								if(empty(trim($fieldValue))){
+									break;
+								}
 							}
 							$dimensions = getVideoFormatLength($row['format_length']);
 							$iframeWidth = $dimensions['width'];
@@ -1155,7 +1196,7 @@ function list_fragment($row2) {
 
     $query = get_listFragment_record($dd['database_table_name'], $dd['keyfield'], $dd['list_filter'], $dd['list_extra_options'], $fields);
 
-    echo "<table class='list_fragment $fd_css_class' style='$fd_css_style'>";
+    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap; $fd_css_style'>";
 
     /*     * **
      *

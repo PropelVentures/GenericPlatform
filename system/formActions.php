@@ -289,6 +289,9 @@ function addData()
     if (array_key_exists('old_audio', $_POST)) {
         unset($_POST['old_audio']);
     }
+    if (array_key_exists('recorded_audio', $_POST)) {
+        unset($_POST['recorded_audio']);
+    }
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
 
     ### if addimport then CHECK FOR DD.table_type = PARENT/CHILD AND IF CHILD THEN FIELD ITS PARENT DD.dict_id and its keyfield and autoincrement it###
@@ -383,7 +386,7 @@ function addData()
 	/* Storing Base Latitude and Longitude End*/
 
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-
+    
     ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
     if($_GET['actionType'] == 'addimport') {
         return $check;

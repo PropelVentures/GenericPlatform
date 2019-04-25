@@ -76,7 +76,6 @@ function Get_Links($display_page) {
     		}
 
     		echo "</ul>";
-
 	}
 
 
@@ -97,7 +96,24 @@ function Get_Links($display_page) {
 	ShowTableTypeImage($display_page);
 }
 
+function is_FFFR_DD($tableType){
+  $tableType = strtolower(trim($tableType));
+  if(  $tableType=='friend'
+    || $tableType=='follow'
+    || $tableType=='favorite'
+    || $tableType=='rating'
+    || $tableType=='votiing'
+  ){
+    return true;
+  }
+  return false;
+}
+
 function ShowTab($display_page, $rs, $row, $tab, $class=''){
+
+    if(is_FFFR_DD($row['table_type'])){
+      return;
+    }
     $tab_name = trim($row['tab_name']);
 
     if($rs->num_rows == 1 && $row['tab_name']){

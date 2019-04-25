@@ -693,7 +693,6 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	// later we can (using list_style)  have control over the css formatting of the
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
-
 	//  This is the
 	echo "<div class='boxView_content list-data'>";
 		if(!empty($listData)){
