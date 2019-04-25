@@ -54,7 +54,11 @@
 //     }
 // }
 if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'cancel') {
-    update("data_dictionary", array("dd_editable" => '1'), array("display_page" => $_GET['display']));
+
+
+  //5.6.112 as this was crashing evrything
+    // update("data_dictionary", array("dd_editable" => '1'), array("display_page" => $_GET['display']));
+
     // exit($_SESSION[return_url2]);
     if ($_GET['table_type'] == 'child') {
         $link_to_return = $_SESSION['child_return_url'];
@@ -65,6 +69,13 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
         $link_to_return = BASE_URL . "system/main.php?display?" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
     else
         $link_to_return = $_SESSION['return_url2'];
+
+
+    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+     $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+     unset($_SESSION['link_in_case_of_DDetiable_2']);
+   }
+
     if ($_GET['fnc'] != 'onepage') {
         echo "<script>window.location='$link_to_return'</script>";
     } else {
@@ -411,7 +422,7 @@ function addData()
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
+    $_GET['table_type'] = trim(strtolower($_GET['table_type']));
 	switch($_GET['table_type']){
 		case 'login':
 			callToLogin();
@@ -457,6 +468,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['old_audio']);
 			}
 			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+      if($ddRecord['dd_editable']=='11'){
+        $_SESSION['show_with_edit_button'] = true;
+        $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
+
+      }
 			$ddRecord['keyfield'] = firstFieldName($ddRecord['database_table_name']);
 			/****** for pdf files ********** */
 			foreach ($_POST['pdf'] as $img => $img2) {
@@ -592,6 +608,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 					} else {
 						$link_to_return = $_SESSION['return_url2'];
 					}
+
+                    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+                     $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+                     unset($_SESSION['link_in_case_of_DDetiable_2']);
+                   }
 				}
 				if ($_GET['fnc'] != 'onepage') {
 					//exit($link_to_return);
@@ -1396,21 +1417,27 @@ function setBaseGpsCordinate($dataFdRecord,$postData){
 function getLatLong($formatedAddress){
 	//Formatted address
 	$arr['lat'] = $arr['lng'] = "";
+
 	$formattedAddr = urlencode(implode(',',$formatedAddress));
+  $geocode=file_get_contents('https://maps.google.com/maps/api/geocode/json?address='.$formatedAddress.'&sensor=false'.'&key='.GOOGLE_GEO_API_KEY);
+  $output= json_decode($geocode);
+
+  $arr['lat'] = $output->results[0]->geometry->location->lat;
+	$arr['lng']  = $output->results[0]->geometry->location->lng;
 	//Send request and receive json data by address
-	$url="https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddr&key=".GOOGLE_GEO_API_KEY;
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_HEADER, false);
-	$geocodeFromAddr = curl_exec($curl);
-	curl_close($curl);
-	$output = json_decode($geocodeFromAddr);
-	if($output->status =='OK'){
-		//Get latitude and longitute from json data
-		$arr['lat']  = $output->results[0]->geometry->location->lat;
-		$arr['lng'] = $output->results[0]->geometry->location->lng;
-	}
+	// $url="https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddr&key=".GOOGLE_GEO_API_KEY;
+	// $curl = curl_init();
+	// curl_setopt($curl, CURLOPT_URL, $url);
+	// curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	// curl_setopt($curl, CURLOPT_HEADER, false);
+	// $geocodeFromAddr = curl_exec($curl);
+	// curl_close($curl);
+	// $output = json_decode($geocodeFromAddr);
+	// if($output->status =='OK'){
+	// 	//Get latitude and longitute from json data
+	// 	$arr['lat']  = $output->results[0]->geometry->location->lat;
+	// 	$arr['lng'] = $output->results[0]->geometry->location->lng;
+	// }
 	//Return latitude and longitude of the given address
 	return $arr;
 }

@@ -243,9 +243,9 @@ function display_content($row) {
 				$copyButton = "<button type='submit' class='btn list-copy " . $copy_array['style'] . "' name='$row1[dict_id]' id='$_GET[search_id]' fnc='onepage' >" . $copy_array['label'] . "</button> &nbsp;";
 			}
 			/// ADD BUTTON
+
 			if (!empty($add_array) ) {
 				$href = "window.location.href='$addUrlInner'";
-				$addButton = "<button type='submit' class='btn action-add " . $add_array['style'] . "' name='add' onclick=$href >" . $add_array['label'] . "</button> &nbsp;";
 			}
 
 
@@ -339,6 +339,7 @@ function display_content($row) {
 
 
 				while ($row = $rs2->fetch_assoc()) {
+
 					formating_Update($row, $method = 'add', $urow);
 				}//// end of while loop
 

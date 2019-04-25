@@ -470,7 +470,7 @@ function loginNotRequired(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-	if(!empty($navigation) && $navigation['loginRequired'] == 'false'){
+	if(!empty($navigation) && strtoupper($navigation['loginRequired']) == 'FALSE'){
 		return true;
 	}
 	return false;
@@ -658,7 +658,7 @@ function generateTopNavigation($navItems,$loginRequired){
  */
 function generateSideBarNavigation($navItems,$menu){
 	foreach($navItems as $parent){
-		if($parent['loginRequired']== 'true' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+		if(strtoupper($parent['loginRequired'])== 'TRUE' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
 		$label = ucwords(dislayUserNameSelector($parent['item_label']));

@@ -1,16 +1,15 @@
 <?php
 
 function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
-
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $con = connect();
     ///setting form editable if user click on list for editing purpose
-    if (!empty($_GET['edit']) && $_GET['edit'] == 'true') {
-
-        $con->query("update data_dictionary set dd_editable='1' where display_page=$_GET[display]");
-
-        $con->query("update data_dictionary set dd_editable='11' where display_page='$_GET[display]' and tab_num='$_GET[tabNum]' and table_alias='$_GET[tab]'");
-    }
+    // if (!empty($_GET['edit']) && $_GET['edit'] == 'true') {
+    //
+    //     $con->query("update data_dictionary set dd_editable='1' where display_page=$_GET[display]");
+    //
+    //     $con->query("update data_dictionary set dd_editable='11' where display_page='$_GET[display]' and tab_num='$_GET[tabNum]' and table_alias='$_GET[tab]'");
+    // }
 
 
     if (empty($_GET['tabNum'])) {
@@ -35,7 +34,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
     if ($tab_status == 'true') {
 
         $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
-
         while ($row = $rs->fetch_assoc()) {
           if(!isAllowedToShowByPrivilegeLevel($row)){
             continue;
@@ -70,8 +68,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 			}
         }
     } else {
-
-
         /* ******************
          * *****************************************
          * *****************************************************************************
@@ -85,7 +81,6 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          */
 
         if ($tab_status == 'bars') {
-
             $rs = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and data_dictionary.tab_num='$tab_num'    order by field_dictionary.display_field_order");
 
             $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page' and tab_num='$tab_num'    order by field_dictionary.display_field_order";
@@ -99,9 +94,34 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
             $rs2 = $con->query("SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$table_alias' and data_dictionary.display_page='$display_page'  and tab_num='$_GET[tabNum]'  order by field_dictionary.display_field_order");
         }
         $row1 = $rs->fetch_assoc();
-        if(!isAllowedToShowByPrivilegeLevel($row1)){
-          return;
+        $form_open_for_edit = false;
+
+        $dd_EditAbleHaveValue2  = false;
+
+        if($row1['dd_editable']=='2'){
+          $row1['dd_editable'] = '11';
+          $dd_EditAbleHaveValue2  = true;
         }
+
+        if(!$dd_EditAbleHaveValue2){
+          unset($_SESSION['link_in_case_of_DDetiable_2']);
+        }
+
+        if(isset($_SESSION['form_open_for_edit']) && $_SESSION['form_open_for_edit_DD']==$row1['dict_id']){
+
+          $form_open_for_edit = true;
+          $row1['dd_editable']='11';
+          unset($_SESSION['form_open_for_edit_DD']);
+        }
+
+        $show_with_edit_button = false;
+        if(isset($_SESSION['show_with_edit_button']) && $_SESSION['show_with_edit_button_DD']==$row1['dict_id']){
+          $show_with_edit_button = true;
+          $row1['dd_editable']='1';
+          unset($_SESSION['show_with_edit_button']);
+          unset($_SESSION['show_with_edit_button_DD']);
+        }
+
 		$addUrlInner = getRecordAddUrlInner($row1);
 
         $_SESSION['list_pagination'] = $row1['list_pagination'];
@@ -151,6 +171,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 }
                 else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
                 {
+
                     $operation = 'view_operations';
 
 					/*Code Change Start Task ID 5.6.4*/
@@ -227,7 +248,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
         if (!empty($copy_array) ) {
             $copyButton = "<button type='submit' class='btn list-copy " . $copy_array['style'] . "'  name='$row1[dict_id]' id='$_GET[search_id]'>" . $copy_array['label'] . "</button> &nbsp;";
         }
-        // pr($add_array);
+
         /// ADD BUTTON
         if (!empty($add_array) ) {
           	$href = "window.location.href='$addUrlInner'";
@@ -253,9 +274,19 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
          */
 
         $css_style = $row1['dd_css_code'];
-        if (isAllowedToShowByPrivilegeLevel($row1)) {
-			////adding class if form is not for editing purpose
-				$page_editable = true;
+		$userPrivilege = false;
+		if(itemHasPrivilege($row1['dd_privilege_level'])){
+			$userPrivilege = true;
+		}
+		if(!itemHasVisibility($row1['dd_visibility'])){
+			$userPrivilege = false;
+		}
+		if(loginNotRequired()){
+			$userPrivilege = true;
+		}
+        if ($userPrivilege === true) {
+        	////adding class if form is not for editing purpose
+		      $page_editable = true;
 
 				if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
 					$page_editable = false;
@@ -663,13 +694,8 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 						 *
 						 */
 
-
-
-
-
-
-
 						if (isset($_SESSION['return_url']) || isset($_SESSION['child_return_url']) && $_GET['checkFlag'] == 'true') {
+
 							echo "<form action='?action=update&checkFlag=true&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$dd_css_class' style='$css_style'><br>";
 						} else {
 							echo "<form action='?action=update&tabNum=$_GET[tabNum]&table_type=$table_type' method='post' id='user_profile_form' enctype='multipart/form-data' class='$dd_css_class' style='$css_style'><br>";
@@ -725,13 +751,17 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
 								if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+									if ($_GET['checkFlag'] == 'true' ||  $dd_EditAbleHaveValue2) {
 
-									if ($_GET['checkFlag'] == 'true') {
+										if ($_GET['table_type'] == 'child'){
+                      $link_to_return = $_SESSION['child_return_url'];
+                    }else{
+                      $link_to_return = $_SESSION['return_url'];
+                    }
 
-										if ($_GET['table_type'] == 'child')
-											$link_to_return = $_SESSION['child_return_url'];
-										else
-											$link_to_return = $_SESSION['return_url'];
+                    if($dd_EditAbleHaveValue2){
+                      $_SESSION['link_in_case_of_DDetiable_2'] = $link_to_return;
+                    }
 
 										$actual_link = $link_to_return;
 
@@ -777,8 +807,7 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
 
 						if ($row1['dd_editable'] == 1 && $row1['page_editable'] == 1) {
-							echo "<button type='button' class='edit-btn btn btn-default pull-right' id='$row1[dict_id]'>" . EDIT . "</button>";
-
+                echo "<button type='button' class='edit-btn btn btn-default pull-right' id='$row1[dict_id]'>" . EDIT . "</button>";
 							$image_display = 'false';
 						}
 
@@ -806,6 +835,15 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 								}
 								$urow = array();
 							}
+              if($row['dd_editable']=='2'){
+                $row['dd_editable'] = '11';
+              }
+              if($form_open_for_edit){
+                $row['temp_dd_editable'] = '11';
+              }else if($show_with_edit_button){
+                $row['temp_dd_editable'] = '1';
+              }
+
 							formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
 						}//// end of while loop
 					} else {

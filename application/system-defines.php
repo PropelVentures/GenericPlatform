@@ -153,6 +153,14 @@ define("defaultFieldLenText", "40");
 define("defaultFieldLenTextarea", "50");
 define("defaultFieldLenBoolean", "10");
 
+
+/******
+ *
+ * Defining default limit for multi select
+ */
+ define("maxSelectLimit", "5");
+
+
 define("showClear", "true"); ///set rating icon
 define("dropdownSeparator", "&nbsp;");///dropdown separator
 define("favoriteTitle", "Favorite");///FFFR favorite title
