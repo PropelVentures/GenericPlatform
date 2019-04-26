@@ -47,10 +47,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				case 'banner':
 					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
 					break;
-        case 'p_banner':
-          ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
-          break;
-				case 'content':
+                case 'p_banner':
+                    ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
+                    break;
 				case 'url':
 					ShowTableTypeURL($row['display_page'],$row['tab_num']);
 					break;
