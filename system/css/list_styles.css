@@ -18,13 +18,36 @@ section.section-sep:nth-child(odd) {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#caeff9', endColorstr='#fefefe', GradientType=0);
 }
 
+.boxWideContainer .boxWide:nth-of-type(even) {
+    background: #caeff9;
+    background: -moz-linear-gradient(top, #caeff9 50%, #fefefe 100%);
+    background: -webkit-linear-gradient(top, #caeff9 50%, #fefefe 100%);
+    background: linear-gradient(to bottom, #caeff9 50%, #fefefe 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#caeff9', endColorstr='#fefefe', GradientType=0);
+}
+
 .boxViewContainer .boxView:nth-of-type(even) img {
+    border-color: #72a5e6;
+}
+
+.boxWideContainer .boxWide:nth-of-type(even) img {
     border-color: #72a5e6;
 }
 
 /***** boxview ****/
 
 .boxViewContainer {
+    background: rgba(255, 255, 255, 1);
+    background: -moz-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(100%, rgba(225, 228, 230, 0.63)));
+    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
+    background: -o-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
+    background: -ms-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
+    background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e1e4e6', GradientType=1);
+}
+
+.boxWideContainer {
     background: rgba(255, 255, 255, 1);
     background: -moz-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(225, 228, 230, 0.63) 100%);
     background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(100%, rgba(225, 228, 230, 0.63)));
@@ -47,6 +70,28 @@ section.section-sep:nth-child(odd) {
     cursor: pointer;
     word-wrap: break-word;
     max-width: 260px;
+    background: transparent;
+    font-family: 'Open Sans', sans-serif;
+    background: -moz-linear-gradient(top, #d1eace 50%, #fefefe 100%);
+    background: -webkit-linear-gradient(top, #d1eace 50%, #fefefe 100%);
+    background: linear-gradient(to bottom, #d1eace 50%, #fefefe 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d1eace', endColorstr='#fefefe', GradientType=0);
+    -webkit-box-shadow: 0px 10px 45px -11px rgba(0, 0, 0, 0.37);
+    -moz-box-shadow: 0px 10px 45px -11px rgba(0, 0, 0, 0.37);
+    box-shadow: 0px 10px 45px -11px rgba(0, 0, 0, 0.37);
+}
+
+.boxWideContainer .boxWide {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    float: left;
+    margin: 30px 10px 30px 10px;
+    width: 100%;
+    height: 450px;
+    padding: 0px;
+    cursor: pointer;
+    word-wrap: break-word;
     background: transparent;
     font-family: 'Open Sans', sans-serif;
     background: -moz-linear-gradient(top, #d1eace 50%, #fefefe 100%);
@@ -148,6 +193,13 @@ section.section-sep:nth-child(odd) {
 .boxView img {
     width: 100%;
     height: 160px;
+    object-fit: cover;
+    border-bottom: 3px solid #84bf53;
+}
+
+.boxWide img {
+    width: 50%;
+    height: 250px;
     object-fit: cover;
     border-bottom: 3px solid #84bf53;
 }
@@ -840,5 +892,3 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcf9da', end
 /************************************************
             Blue Circle Theme Ends
 ************************************************/
-
-

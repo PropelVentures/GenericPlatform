@@ -554,6 +554,11 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
+                case 'boxWide':
+					include_once('renderBoxWide.php');
+					renderBoxWide($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					break;
+
 				default:
 					include_once('renderListView.php');
 					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
