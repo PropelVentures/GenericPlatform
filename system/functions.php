@@ -532,7 +532,7 @@ function generateTopNavigation($navItems,$loginRequired){
 			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
 				continue;
 			}
-      $label = ucwords(dislayUserNameSelector($parent['item_label']));
+      $label = dislayUserNameSelector($parent['item_label']);
 			$title = $parent['item_help'];
 			$item_style = $parent['item_style'];
 			$item_icon = getNavItemIcon($parent['item_icon']);
@@ -582,7 +582,7 @@ function generateTopNavigation($navItems,$loginRequired){
 					if($loginRequired && !itemHasVisibility($children['item_visibility'])){
 						continue;
 					}
-					$label = ucwords(dislayUserNameSelector($children['item_label']));
+					$label = dislayUserNameSelector($children['item_label']);
 					$title = $children['item_help'];
 					$item_style = $children['item_style'];
 					$item_icon = getNavItemIcon($children['item_icon']);
@@ -662,7 +662,7 @@ function generateSideBarNavigation($navItems,$menu){
 		if($parent['loginRequired']== '1' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
-		$label = ucwords(dislayUserNameSelector($parent['item_label']));
+		$label = dislayUserNameSelector($parent['item_label']);
 		$title = $parent['item_help'];
 		$item_style = $parent['item_style'];
 		$item_icon = getNavItemIcon($parent['item_icon']);
@@ -706,7 +706,7 @@ function generateSideBarNavigation($navItems,$menu){
 				if($children['loginRequired']== '1' && !itemHasVisibility($children['item_visibility'])){
 					continue;
 				}
-				$label = ucwords(dislayUserNameSelector($children['item_label']));
+				$label = dislayUserNameSelector($children['item_label']);
 				$title = $children['item_help'];
 				$item_style = $children['item_style'];
 				$item_icon = getNavItemIcon($children['item_icon']);
@@ -1017,11 +1017,11 @@ function getIframeUrl($description){
  */
 function dislayUserNameSelector($selector){
   $tempSelector = strtoupper($selector);
-  if($tempSelector=='CURRENT-USERNAME'){
+  if($tempSelector=='#CURRENT-USERNAME'){
     return $_SESSION['current-username'];
-  }elseif($tempSelector=='CURRENT-USER-FIRSTNAME'){
+  }elseif($tempSelector=='#CURRENT-USER-FIRSTNAME'){
     return $_SESSION['current-user-firstname'];
-  }elseif($tempSelector=='CURRENT-USER-FIRST-LASTNAME'){
+  }elseif($tempSelector=='#CURRENT-USER-FIRST-LASTNAME'){
     return $_SESSION['current-user-first-lastname'];
   }else{
     return $selector;

@@ -1017,7 +1017,7 @@ function listFilter($listFilter, $search) {
         $listFilterParentChildClause = $listFilter['child_filter'];
         $listFilter = $listFilter['list_filter'];
     }
-    $allFilters = explode(';',$listFilter);
+    $allFilters = explode('AND',$listFilter);
 
     foreach ($allFilters as $key => $value) {
       if(empty(trim($value))){
@@ -1199,11 +1199,11 @@ function listFilter($listFilter, $search) {
 function getFiltersArray($list_filters){
   $result = [];
   $counter =0;
-  $allFilters = explode('||',trim($list_filters));
+  $allFilters = explode(';',trim($list_filters));
   foreach ($allFilters as $key => $value) {
     $value = trim($value);
     if(!empty($value)){
-        $keyValue = explode('|',$value);
+        $keyValue = explode(',',$value);
         if(count($keyValue)>1){
           $result[$counter]['label'] = trim($keyValue[0]);
           $result[$counter]['filter'] = trim($keyValue[1]);

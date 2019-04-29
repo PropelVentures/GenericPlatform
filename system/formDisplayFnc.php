@@ -312,14 +312,15 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
-            	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';
 							if(empty(trim($fieldValue))){
 								$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
 							}
-              echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
-							break;
+							echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
+
+							echo "</div>";
+						break;
 
 						case "video_only":
 							if($readonly){
@@ -336,13 +337,14 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							$inputSize = getDefaultLengthsByType($row);
 							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]' size='' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
-            	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';
 							if(empty(trim($fieldValue))){
 								$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
 							}
-              echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
+							echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
+
+							echo "</div>";
 							break;
 
             case "pdf_inline":
