@@ -103,7 +103,7 @@ function renderBoxWide($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					listViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
 			<?php

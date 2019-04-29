@@ -178,7 +178,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
                 if ($urow != 'false')
                     list_fragment($row);
-                echo "</div></div>";
+                echo "</div></div><br>";
                 break;
 
             case "crf":
@@ -240,7 +240,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='boolen_label' class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 								if(!$readonly){
-									echo "<input type='text' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size=$dimWidth class='form-control $fd_css_class' style='width:$progressWidth;height:$progressHeight;$fd_css_style'> ";
+									echo "<input type='text' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]'  class='form-control $fd_css_class' style='$fd_css_style'> ";
 
 								}else{
 									progressbar($fieldValue,$fd_css_class,$fd_css_style,$progressWidth,$progressHeight);
@@ -311,7 +311,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
 
 								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control $fd_css_class'  style='width:$videoInputFieldWidth;height:$videoInputFieldHeight;$fd_css_style'></div>";
+								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
             	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';
@@ -334,7 +334,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							$videoInputFieldWidth = $dimensions['width'].'px';
 							$videoInputFieldHeight = $dimensions['height'].'px';
 								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='$row[format_length]' class='form-control $fd_css_class'  style='width:$videoInputFieldWidth;height:$videoInputFieldHeight;$fd_css_style'></div>";
+								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
             	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';
@@ -1207,7 +1207,7 @@ function list_fragment($row2) {
 
     $query = get_listFragment_record($dd['database_table_name'], $dd['keyfield'], $dd['list_filter'], $dd['list_extra_options'], $fields);
 
-    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap; $fd_css_style'>";
+    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap;border-collapse: collapse; $fd_css_style'>";
 
     /*     * **
      *

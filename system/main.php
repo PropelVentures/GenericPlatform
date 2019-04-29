@@ -17,6 +17,9 @@
 	///// copy these two files for displaying navigation/////
 
 	Navigation($display_page);
+
+	ShowTableTypeParallaxBanner($display_page);
+
 	//////////////
 	if ($display_page == 'home') {
 		include("../system/home-slider.php");
@@ -216,6 +219,7 @@
 	/* CHECKING NAV HAS VISIBILITY  END*/
 ?>
 </div>
+<div class="parallax"></div>
 <script src="<?= BASE_URL_SYSTEM ?>ckeditor/ckeditor.js"></script>
 <!-- modal view dialog to display  Enlarge image -->
 <div id="imgModal" class="modal fade">

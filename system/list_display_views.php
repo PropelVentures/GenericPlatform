@@ -709,3 +709,65 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 }
 
 ///end of listViews function
+
+
+
+function wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+    /*
+     *
+     * displaying of image in list
+     */
+     echo "<div class='row' ><div class='col-lg-6'>";
+    $tbl_img = $listRecord[$imageField['generic_field_name']];
+    $filename = USER_UPLOADS . "" . $tbl_img;
+    echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
+    if (!empty($tbl_img) && file_exists($filename)) {
+        echo "<img src='" . USER_UPLOADS . "$tbl_img' alt='' class='img-responsive'></a>";
+    } else {
+        echo "<img src='" . USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
+    }
+    echo "</div><div class='col-lg-6>'";
+	// *************************************
+    /*
+     * displaying Edit button
+     */
+    if (!empty($list_select_arr[0][0])) {
+        if ($_SESSION['user_privilege'] > 8) {
+            echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+        } else {
+            if (!empty($user_field)) {
+                //exit($_SESSION['uid']);
+                if ($listRecord[$user_field] == $_SESSION['uid']) {
+                    echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+                }
+            } else {
+//                echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+            }
+        }
+    }
+
+    if ($_GET['table_type'] == 'child') {
+        $_SESSION['child_return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    } else {
+        ////parent link
+        $_SESSION['return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    }
+
+	// *************************************
+	// ****  these are the lines that format and display the test inside the Boxview list (cards)
+	// we need to refine this ... because not every field needs a <br> after it
+	// also we want to tag each field/line with some generic CSS so that
+	// later we can (using list_style)  have control over the css formatting of the
+	// first line of the text, and successive lines
+	$listData = array_filter($listData);
+	//  This is the
+	echo "<div class='boxView_content list-data'>";
+		if(!empty($listData)){
+			foreach($listData as $data){
+				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
+			}
+		}
+	echo "</div></div></div>";
+}
+
+///end of listViews function
