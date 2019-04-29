@@ -4,10 +4,24 @@
 
 require_once 'functions_loader.php';
 
+
+/*on chnage of list filter*/
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter') {
+  pr($_GET['dict_id_to_apply_filter'].'_selected_filter');
+  if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
+    $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_filter'] = $_GET['selected_filter'];
+  }
+  exit;
+}
+
+
+
 /*
  *
  * @checklist Multiple Deletion
  */
+
+
 
 
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'delete') {

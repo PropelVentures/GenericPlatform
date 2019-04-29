@@ -237,10 +237,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 								$progressbarDimensions = getFieldFormatLength($row['format_length']);
 								$progressWidth = $progressbarDimensions['width'];
 								$progressHeight = $progressbarDimensions['height'];
-
+								$inputSize = getDefaultLengthsByType($row);
 								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='boolen_label' class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 								if(!$readonly){
-									echo "<input type='text' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]'  class='form-control $fd_css_class' style='$fd_css_style'> ";
+									echo "<input type='text' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]'  class='form-control $fd_css_class' style='$fd_css_style'> ";
 
 								}else{
 									progressbar($fieldValue,$fd_css_class,$fd_css_style,$progressWidth,$progressHeight);
@@ -308,10 +308,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							$iframeHeight = $dimensions['height'];
 							$videoInputFieldWidth = $dimensions['width'].'px';
 							$videoInputFieldHeight = $dimensions['height'].'px';
+							$inputSize = getDefaultLengthsByType($row);
 
-
-								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
+							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
             	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';
@@ -333,8 +333,9 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							$iframeHeight = $dimensions['height'];
 							$videoInputFieldWidth = $dimensions['width'].'px';
 							$videoInputFieldHeight = $dimensions['height'].'px';
-								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-								echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size='' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
+							$inputSize = getDefaultLengthsByType($row);
+							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]' size='' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
             	echo "</div>";
 							$fieldValue = setTheVideoURL($fieldValue);
 							$srcdoc = '';

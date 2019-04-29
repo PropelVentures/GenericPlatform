@@ -44,9 +44,7 @@ function parseFieldType($row) {
             $field_type = $result_rec['Type'];
         }
     }
-
     $field_type = explode("(", $field_type);
-
     $field_length = '40';
 
     if ($field_type[0] == 'varchar') {
@@ -67,6 +65,30 @@ function parseFieldType($row) {
     }
 
     return $field_length;
+}
+
+function getDefaultLengthsByType($row){
+  $con = connect();
+
+  $result = $con->query("describe $row[database_table_name]");
+
+  while ($result_rec = $result->fetch_assoc()) {
+      if ($result_rec['Field'] == $row['generic_field_name']) {
+
+          $field_type = $result_rec['Type'];
+      }
+  }
+
+  return get_string_between($field_type,'(',')');
+}
+
+function get_string_between($string, $start, $end){
+    $string = ' ' . $string;
+    $ini = strpos($string, $start);
+    if ($ini == 0) return '';
+    $ini += strlen($start);
+    $len = strpos($string, $end, $ini) - $ini;
+    return substr($string, $ini, $len);
 }
 
 function getColumnsNames($table){
@@ -1174,6 +1196,23 @@ function listFilter($listFilter, $search) {
     return $sqlClause;
 }
 
+function getFiltersArray($list_filters){
+  $result = [];
+  $counter =0;
+  $allFilters = explode('||',trim($list_filters));
+  foreach ($allFilters as $key => $value) {
+    $value = trim($value);
+    if(!empty($value)){
+        $keyValue = explode('|',$value);
+        if(count($keyValue)>1){
+          $result[$counter]['label'] = trim($keyValue[0]);
+          $result[$counter]['filter'] = trim($keyValue[1]);
+          $counter++;
+        }
+    }
+  }
+  return $result;
+}
 /* boxView hScroll Start */
 function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 

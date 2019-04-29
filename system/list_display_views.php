@@ -68,11 +68,24 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     else
         $search_key = $_SESSION['search_id'];
 
+    $filters_srray = getFiltersArray($row['list_filter']);
+    $selected_filter_index = 0;
+    if(count($filters_srray)>0){
+      if(isset($_SESSION[$row['dict_id'].'_selected_filter'])){
+        $selected_filter_index = $_SESSION[$row['dict_id'].'_selected_filter'];
+        $selected_row_filter = $filters_srray[$_SESSION[$row['dict_id'].'_selected_filter']]['filter'];
+        unset($_SESSION[$row['dict_id'].'_selected_filter']);
+      }else{
+        $selected_row_filter = $filters_srray[0]['filter'];
+      }
+    }else{
+      $selected_row_filter = $row['list_filter'];
+    }
 
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $list_sort[0], $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck);
     } else {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $listSort = 'false', $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck);
     }
 
     $availableRecords =   $list->num_rows;
@@ -295,6 +308,21 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                   <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }
 				}
+
+        if(count($filters_srray)>0){
+          $select_menu_id = $row['dict_id'].'filter_select_box';
+          $this_DD_id = $row['dict_id'];
+          echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+          foreach ($filters_srray as $key => $value) {
+            $label = $value['label'];
+            if($key==$selected_filter_index){
+              echo "<option value='$key' selected>$label</option>";
+            }else{
+              echo "<option value='$key' >$label</option>";
+            }
+          }
+          echo "</select>";
+        }
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
@@ -717,7 +745,7 @@ function wideListViews($listData, $table_type, $target_url, $imageField, $listRe
      *
      * displaying of image in list
      */
-     echo "<div class='row' ><div class='col-lg-6'>";
+     echo "<div class='row' ><div class='col-lg-3' style='margin-right:-5%'>";
     $tbl_img = $listRecord[$imageField['generic_field_name']];
     $filename = USER_UPLOADS . "" . $tbl_img;
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
@@ -726,7 +754,7 @@ function wideListViews($listData, $table_type, $target_url, $imageField, $listRe
     } else {
         echo "<img src='" . USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
     }
-    echo "</div><div class='col-lg-6>'";
+    echo "</div><div class='col-lg-9'>";
 	// *************************************
     /*
      * displaying Edit button

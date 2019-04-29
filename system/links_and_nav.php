@@ -89,7 +89,7 @@ function Get_Links($display_page) {
 
 	ShowTableTypeBanner($display_page);
 
-  ShowTableTypeParallaxBanner($display_page);
+  // ShowTableTypeParallaxBanner($display_page);
 
 	ShowTableTypeContent($display_page);
 
@@ -463,7 +463,7 @@ function ShowTableTypeBanner($display_page,$tabNum=''){
 	}
 }
 
-function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
+function ShowTableTypeParallaxBanner($display_page,&$haveParalax,$tabNum=''){
 	$con = connect();
   $tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND table_type = 'p_banner'");
 	// if($tabNum){
@@ -487,7 +487,13 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
         $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
-				if(!empty($banner)) {?>
+				if(!empty($banner)) {
+          $haveParalax = true;?>
+
+          <script src="<?= BASE_URL_SYSTEM ?>js/parallax.min.js"></script>
+          
+
+          <div class="parallax-window" data-parallax="scroll" data-image-src="<?=$banner?>">
 
           <!-- Font Awesome -->
           <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/css/mdb.min.css" rel="stylesheet"> -->
@@ -504,13 +510,13 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
 
 <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/js/mdb.min.js"></script> -->
 
-          <style>
+          <!-- <style>
           .parallax {
             /* The image used */
             background-image: url("<?=$banner?>");
 
             /* Full height */
-            height: 1000px;
+            height: 200px;
 
             /* Create the parallax scrolling effect */
             background-attachment: fixed;
@@ -519,7 +525,7 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
             background-size: cover;
             }
           </style>
-          <div class="parallax"></div>
+          <div class="parallax"></div><div style="height:100%"> -->
                 <!-- <div class="parallax"></div>
                   <div style="height:1000px;background-color:red;font-size:36px">
                     Scroll Up and Down this page to see the parallax scrolling effect.

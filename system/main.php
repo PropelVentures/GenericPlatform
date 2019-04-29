@@ -17,8 +17,8 @@
 	///// copy these two files for displaying navigation/////
 
 	Navigation($display_page);
-
-	ShowTableTypeParallaxBanner($display_page);
+	$haveParalax = false;
+	ShowTableTypeParallaxBanner($display_page,$haveParalax);
 
 	//////////////
 	if ($display_page == 'home') {
@@ -219,8 +219,11 @@
 	/* CHECKING NAV HAS VISIBILITY  END*/
 ?>
 </div>
-<div class="parallax"></div>
+<?php if($haveParalax){?>
+</div>
+<?php } ?>
 <script src="<?= BASE_URL_SYSTEM ?>ckeditor/ckeditor.js"></script>
+
 <!-- modal view dialog to display  Enlarge image -->
 <div id="imgModal" class="modal fade">
     <div class="modal-dialog">
@@ -460,6 +463,7 @@
 				});
 			}
 		}
+
 		/***** popup COPY Function ****/
 		function popup_copy(del_id) {
 			if (confirm("Are you sure ,You want to copy the Record!") == true) {
@@ -815,5 +819,19 @@
 	function limitIsFull(){
 		alert("Maximum records limit reach, You can not add more records");
 	}
+
+	function listFilterChange(e){
+		dict_id = $(e).data('dd');
+		value = $(e).val();
+		$.ajax({
+			method: "GET",
+			url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+			data: {dict_id_to_apply_filter: dict_id, selected_filter: value,check_action: "set_list_filter"}
+		})
+		.done(function (msg) {
+				location.reload();
+		});
+	}
+
 </script>
 <?php include("footer.php"); ?>

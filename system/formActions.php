@@ -310,9 +310,11 @@ function addData()
         else if ($tableType == 'child' && !empty($keyfield))
         {
             #$rowParent = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-            if((int)$_SESSION['parent_value'] !== 0 );
             // DONT ASSIGN STRING VALUES, ONLY ASSIGN REAL PRIMARY KEYS WHICH WILL ALWAYS BE INTEGERS OR 0 IF TYPECASTED FROM STRING
-                $_POST["$keyfield"] = $_SESSION['parent_value'];
+
+            if((int)$_SESSION['parent_value'] !== 0 ){
+              $_POST["$keyfield"] = $_SESSION['parent_value'];
+            }
                 //SET KEYFIELD TO THE PARENT VALUE TO PRESERVE PARENT->CHILD RELATIONSHIP
         }
     }
@@ -346,6 +348,7 @@ function addData()
             $user = array($uid => $_SESSION['uid']);
         }
     }
+
     $data = $_POST;
     if (!empty($user)) {
         $userKey = key($user);
@@ -386,7 +389,7 @@ function addData()
 	/* Storing Base Latitude and Longitude End*/
 
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-    
+
     ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
     if($_GET['actionType'] == 'addimport') {
         return $check;
@@ -644,8 +647,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 
 function callToLogin(){
 	$table = $_SESSION['update_table2']['database_table_name'];
-    $primaryKey = $_SESSION['update_table2']['keyfield'];
-    $con = connect();
+  $primaryKey = $_SESSION['update_table2']['keyfield'];
+  $con = connect();
 	$message = "Please enter required fields";
 	$returnUrl = $_SESSION['return_url2'];
 	if(!empty($_POST)){
@@ -666,7 +669,7 @@ function callToLogin(){
 				$user = $userQuery->fetch_assoc();
 				if($user['isActive'] == 1){
 					$_SESSION['uid'] = $user[$primaryKey];
-                    setUserDataInSession($user);
+                    setUserDataInSession($con,$user);
 					$message = '';
 					//$message = PROFILE_COMPLETE_MESSAGE;
 					$returnUrl = BASE_URL."index.php";
@@ -989,7 +992,7 @@ function facebookLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-                setUserDataInSession($user);
+                setUserDataInSession($con,$user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1040,7 +1043,7 @@ function linkedInLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-                setUserDataInSession($user);
+                setUserDataInSession($con,$user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1448,7 +1451,7 @@ function resetPasswordIfFlagIsSet($con){
       $where = array('user_id' => $user['user_id']);
       $result = update($table,$data,$where);
       $_SESSION['uid'] = $user[$primaryKey];
-      setUserDataInSession($user);
+      setUserDataInSession($con,$user);
       return '';
     }else{
       return false;
@@ -1457,10 +1460,19 @@ function resetPasswordIfFlagIsSet($con){
   return "Invalid Username/Email or Password";
 }
 
-function setUserDataInSession($user){
+function setUserDataInSession($con,$user){
+
+    $name = 'uname';
+    $userNameQuery = "SELECT * FROM field_dictionary WHERE field_identifier='username'";
+      $fieldQuery = $con->query($userNameQuery) OR $message = mysqli_error($con);
+      if($fieldQuery->num_rows > 0){
+        $field = $fieldQuery->fetch_assoc();
+        $name = $field['generic_field_name'];
+      }
+
     $_SESSION['user_privilege'] = $user['user_privilege_level'];
     $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
-    $_SESSION['current-username'] = $user['uname'];
+    $_SESSION['current-username'] = $user[$name];
     $_SESSION['current-user-firstname'] = $user['firstname'];
     $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
     $_SESSION['current-user-profile-image'] = $user['image'];
