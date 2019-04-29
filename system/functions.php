@@ -470,7 +470,7 @@ function loginNotRequired(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-	if(!empty($navigation) && strtoupper($navigation['loginRequired']) == 'FALSE'){
+	if(!empty($navigation) && strtoupper($navigation['loginRequired']) == '2'){
 		return true;
 	}
 	return false;
@@ -483,9 +483,9 @@ function loginNotRequired(){
 function getNavItems($page,$menu_location,$loginRequired='true'){
 	$con = connect();
   if($loginRequired=='true'){
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 ORDER BY item_number ASC");
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='2' ORDER BY item_number ASC");
   }else{
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='$loginRequired' ORDER BY item_number ASC");
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='1' ORDER BY item_number ASC");
   }
 	$navItems = array();
 	$arr = array();
@@ -509,6 +509,7 @@ function getNavItems($page,$menu_location,$loginRequired='true'){
  * For all menu location & loginrequired(true or false)
  */
 function generateTopNavigation($navItems,$loginRequired){
+  // pr($navItems);
   $isUserLoggedIn = true;
   if(isset($_SESSION['user_privilege'])){
     $currentUserPrivilege = $_SESSION['user_privilege'];
@@ -531,7 +532,7 @@ function generateTopNavigation($navItems,$loginRequired){
 			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
 				continue;
 			}
-      $label = ucwords(dislayUserNameSelector($parent['item_label']));
+      $label = dislayUserNameSelector($parent['item_label']);
 			$title = $parent['item_help'];
 			$item_style = $parent['item_style'];
 			$item_icon = getNavItemIcon($parent['item_icon']);
@@ -540,7 +541,7 @@ function generateTopNavigation($navItems,$loginRequired){
 			$enable_class=$navTarget['enable_class'];
 			$target_blank = $navTarget['target_blank'];
       $disable = '';
-      if($currentUserPrivilege < $parent['item_privilege'] && $isUserLoggedIn){
+      if($currentUserPrivilege < $parent['item_privilege'] ){
         $disable ='disabled_nav';
       }
 			if(!empty($parent['children'])){
@@ -581,7 +582,7 @@ function generateTopNavigation($navItems,$loginRequired){
 					if($loginRequired && !itemHasVisibility($children['item_visibility'])){
 						continue;
 					}
-					$label = ucwords(dislayUserNameSelector($children['item_label']));
+					$label = dislayUserNameSelector($children['item_label']);
 					$title = $children['item_help'];
 					$item_style = $children['item_style'];
 					$item_icon = getNavItemIcon($children['item_icon']);
@@ -658,10 +659,10 @@ function generateTopNavigation($navItems,$loginRequired){
  */
 function generateSideBarNavigation($navItems,$menu){
 	foreach($navItems as $parent){
-		if(strtoupper($parent['loginRequired'])== 'TRUE' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+		if(strtoupper($parent['loginRequired'])== '1' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
-		$label = ucwords(dislayUserNameSelector($parent['item_label']));
+		$label = dislayUserNameSelector($parent['item_label']);
 		$title = $parent['item_help'];
 		$item_style = $parent['item_style'];
 		$item_icon = getNavItemIcon($parent['item_icon']);
@@ -702,10 +703,10 @@ function generateSideBarNavigation($navItems,$menu){
 								<ul class='nav navbar-nav'>";
 
 			foreach($parent['children'] as $children){
-				if($children['loginRequired']== 'true' && !itemHasVisibility($children['item_visibility'])){
+				if($children['loginRequired']== '1' && !itemHasVisibility($children['item_visibility'])){
 					continue;
 				}
-				$label = ucwords(dislayUserNameSelector($children['item_label']));
+				$label = dislayUserNameSelector($children['item_label']);
 				$title = $children['item_help'];
 				$item_style = $children['item_style'];
 				$item_icon = getNavItemIcon($children['item_icon']);
@@ -777,8 +778,7 @@ function navHasVisibility(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-
-	if(empty($navigation) || $navigation['loginRequired'] == 'false'){
+	if(empty($navigation) || $navigation['loginRequired'] == '2'){
 		return true;
 	}
 	return itemHasVisibility($navigation['item_visibility']);
@@ -845,10 +845,10 @@ function getSaperator($label=''){
 
 function getNavTarget($row){
 	$target_blank = "";
-	if($row['loginRequired'] == 'true' && !itemHasPrivilege($row['item_privilege'])){
+	if($row['loginRequired'] == '1' && !itemHasPrivilege($row['item_privilege'])){
 		$target = "javascript:void(0);";
 		$enable_class = "disabled ";
-	}else if($row['loginRequired'] == 'true' && !itemHasEnable($row['enabled']) ){
+	}else if($row['loginRequired'] == '1' && !itemHasEnable($row['enabled']) ){
 		$target = "javascript:void(0);";
 		$enable_class = "disabled ";
 	} else {
@@ -1017,11 +1017,11 @@ function getIframeUrl($description){
  */
 function dislayUserNameSelector($selector){
   $tempSelector = strtoupper($selector);
-  if($tempSelector=='CURRENT-USERNAME'){
+  if($tempSelector=='#CURRENT-USERNAME'){
     return $_SESSION['current-username'];
-  }elseif($tempSelector=='CURRENT-USER-FIRSTNAME'){
+  }elseif($tempSelector=='#CURRENT-USER-FIRSTNAME'){
     return $_SESSION['current-user-firstname'];
-  }elseif($tempSelector=='CURRENT-USER-FIRST-LASTNAME'){
+  }elseif($tempSelector=='#CURRENT-USER-FIRST-LASTNAME'){
     return $_SESSION['current-user-first-lastname'];
   }else{
     return $selector;

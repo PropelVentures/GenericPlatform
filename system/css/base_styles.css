@@ -640,6 +640,13 @@ input:checked + .boolean_slider_span {
     float: left;
 }
 
+.boxWideContainer {
+    position: relative;
+    margin: auto;
+    width: 100%;
+    float: left;
+}
+
 /* Next & previous buttons */
 .prev_slider,
 .next_slider {

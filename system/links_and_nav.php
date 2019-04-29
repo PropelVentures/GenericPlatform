@@ -47,7 +47,7 @@ function Get_Links($display_page) {
 	if($rs->num_rows){
             echo "<ul class='center-tab' role='tablist' >";
     		while ($row = $rs->fetch_assoc()) {
-    			if($row['loginRequired']== 'true' && !itemHasVisibility($row['dd_visibility'])){
+    			if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
     				continue;
     			}
 
@@ -76,7 +76,6 @@ function Get_Links($display_page) {
     		}
 
     		echo "</ul>";
-
 	}
 
 
@@ -90,14 +89,31 @@ function Get_Links($display_page) {
 
 	ShowTableTypeBanner($display_page);
 
-  ShowTableTypeParallaxBanner($display_page);
+  // ShowTableTypeParallaxBanner($display_page);
 
 	ShowTableTypeContent($display_page);
 
 	ShowTableTypeImage($display_page);
 }
 
+function is_FFFR_DD($tableType){
+  $tableType = strtolower(trim($tableType));
+  if(  $tableType=='friend'
+    || $tableType=='follow'
+    || $tableType=='favorite'
+    || $tableType=='rating'
+    || $tableType=='votiing'
+  ){
+    return true;
+  }
+  return false;
+}
+
 function ShowTab($display_page, $rs, $row, $tab, $class=''){
+
+    if(is_FFFR_DD($row['table_type'])){
+      return;
+    }
     $tab_name = trim($row['tab_name']);
 
     if($rs->num_rows == 1 && $row['tab_name']){
@@ -223,7 +239,7 @@ function Navigation($page, $menu_location = 'header') {
      *
      * Checking whether user have access to current page or not
      */
-    if ($row['loginRequired'] == 'true' && !isset($_SESSION['uid'])) {
+    if ($row['loginRequired'] == '1' && !isset($_SESSION['uid'])) {
         $_SESSION['callBackPage'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         FlashMessage::add('Login required to view the current page!');
         echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
@@ -447,21 +463,21 @@ function ShowTableTypeBanner($display_page,$tabNum=''){
 	}
 }
 
-function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
-
+function ShowTableTypeParallaxBanner($display_page,&$haveParalax,$tabNum=''){
 	$con = connect();
-	if($tabNum){
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
-	} else {
-		if (empty($_GET['tabNum'])) {
-			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
-			$row = $rs->fetch_assoc();
-			$tabNum = $row['tab_num'];
-		} else {
-			$tabNum = $_GET['tabNum'];
-		}
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
-	}
+  $tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND table_type = 'p_banner'");
+	// if($tabNum){
+	// 	$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
+	// } else {
+	// 	if (empty($_GET['tabNum'])) {
+	// 		$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
+	// 		$row = $rs->fetch_assoc();
+	// 		$tabNum = $row['tab_num'];
+	// 	} else {
+	// 		$tabNum = $_GET['tabNum'];
+	// 	}
+	// 	$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type = 'p_banner' ORDER BY table_type ASC");
+	// }
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
 			if (isAllowedToShowByPrivilegeLevel($row)) {
@@ -471,7 +487,13 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
         $css_style = $row['dd_css_code'];
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
-				if(!empty($banner)) { ?>
+				if(!empty($banner)) {
+          $haveParalax = true;?>
+
+          <script src="<?= BASE_URL_SYSTEM ?>js/parallax.min.js"></script>
+          
+
+          <div class="parallax-window" data-parallax="scroll" data-image-src="<?=$banner?>">
 
           <!-- Font Awesome -->
           <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/css/mdb.min.css" rel="stylesheet"> -->
@@ -491,10 +513,10 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
           <!-- <style>
           .parallax {
             /* The image used */
-            background-image: url("");
+            background-image: url("<?=$banner?>");
 
             /* Full height */
-            height: 100%;
+            height: 200px;
 
             /* Create the parallax scrolling effect */
             background-attachment: fixed;
@@ -502,10 +524,8 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
             background-repeat: no-repeat;
             background-size: cover;
             }
-          </style> -->
-					<div class="<?php echo $divClass.' '.$dd_css_class; ?> " style="<?= $css_style ?>">
-						<div style="width:<?php echo $width; ?>;">
-							<section class='section-sep'>
+          </style>
+          <div class="parallax"></div><div style="height:100%"> -->
                 <!-- <div class="parallax"></div>
                   <div style="height:1000px;background-color:red;font-size:36px">
                     Scroll Up and Down this page to see the parallax scrolling effect.
@@ -513,13 +533,12 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
                     Tip: Try to remove the background-attachment property to remove the scrolling effect.
                   </div>
                 <div class="parallax"></div> -->
-                <div class="jarallax">
-  <img class="jarallax-img" src="<?= $banner ?>" alt="">
+                <!-- <div class="jarallax">
   Your content here...
 </div>
 							</section>
 						</div>
-					</div>
+					</div> -->
 
           <!-- <script type="text/javascript">
 
@@ -538,8 +557,7 @@ function ShowTableTypeParallaxBanner($display_page,$tabNum=''){
           });
 
           </script> -->
-					<?php
-				}
+				<?php }
 			}
 		}
 	}

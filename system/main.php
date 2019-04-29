@@ -17,6 +17,9 @@
 	///// copy these two files for displaying navigation/////
 
 	Navigation($display_page);
+	$haveParalax = false;
+	ShowTableTypeParallaxBanner($display_page,$haveParalax);
+
 	//////////////
 	if ($display_page == 'home') {
 		include("../system/home-slider.php");
@@ -52,13 +55,13 @@
 				}
 			}
 			/* Nav Body-Left or Body-right Code Start*/
-			$navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='true' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+			$navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
 			if($navBodyLeftQuery->num_rows){
 				if($left_sidebar ==''){
 					$left_sidebar = 'left';
 				}
 			}
-			$navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='true' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+			$navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
 			if($navBodyRightQuery->num_rows){
 				if($right_sidebar ==''){
 					$right_sidebar = 'right';
@@ -216,7 +219,11 @@
 	/* CHECKING NAV HAS VISIBILITY  END*/
 ?>
 </div>
+<?php if($haveParalax){?>
+</div>
+<?php } ?>
 <script src="<?= BASE_URL_SYSTEM ?>ckeditor/ckeditor.js"></script>
+
 <!-- modal view dialog to display  Enlarge image -->
 <div id="imgModal" class="modal fade">
     <div class="modal-dialog">
@@ -456,6 +463,7 @@
 				});
 			}
 		}
+
 		/***** popup COPY Function ****/
 		function popup_copy(del_id) {
 			if (confirm("Are you sure ,You want to copy the Record!") == true) {
@@ -811,5 +819,19 @@
 	function limitIsFull(){
 		alert("Maximum records limit reach, You can not add more records");
 	}
+
+	function listFilterChange(e){
+		dict_id = $(e).data('dd');
+		value = $(e).val();
+		$.ajax({
+			method: "GET",
+			url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+			data: {dict_id_to_apply_filter: dict_id, selected_filter: value,check_action: "set_list_filter"}
+		})
+		.done(function (msg) {
+				location.reload();
+		});
+	}
+
 </script>
 <?php include("footer.php"); ?>

@@ -68,11 +68,24 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     else
         $search_key = $_SESSION['search_id'];
 
+    $filters_srray = getFiltersArray($row['list_filter']);
+    $selected_filter_index = 0;
+    if(count($filters_srray)>0){
+      if(isset($_SESSION[$row['dict_id'].'_selected_filter'])){
+        $selected_filter_index = $_SESSION[$row['dict_id'].'_selected_filter'];
+        $selected_row_filter = $filters_srray[$_SESSION[$row['dict_id'].'_selected_filter']]['filter'];
+        unset($_SESSION[$row['dict_id'].'_selected_filter']);
+      }else{
+        $selected_row_filter = $filters_srray[0]['filter'];
+      }
+    }else{
+      $selected_row_filter = $row['list_filter'];
+    }
 
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $list_sort[0], $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck);
     } else {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $row['list_filter'], $listSort = 'false', $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck);
     }
 
     $availableRecords =   $list->num_rows;
@@ -295,6 +308,21 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                   <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }
 				}
+
+        if(count($filters_srray)>0){
+          $select_menu_id = $row['dict_id'].'filter_select_box';
+          $this_DD_id = $row['dict_id'];
+          echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+          foreach ($filters_srray as $key => $value) {
+            $label = $value['label'];
+            if($key==$selected_filter_index){
+              echo "<option value='$key' selected>$label</option>";
+            }else{
+              echo "<option value='$key' >$label</option>";
+            }
+          }
+          echo "</select>";
+        }
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
@@ -554,6 +582,11 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
+                case 'boxWide':
+					include_once('renderBoxWide.php');
+					renderBoxWide($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					break;
+
 				default:
 					include_once('renderListView.php');
 					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
@@ -693,7 +726,6 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	// later we can (using list_style)  have control over the css formatting of the
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
-
 	//  This is the
 	echo "<div class='boxView_content list-data'>";
 		if(!empty($listData)){
@@ -702,6 +734,68 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 			}
 		}
 	echo "</div>";
+}
+
+///end of listViews function
+
+
+
+function wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+    /*
+     *
+     * displaying of image in list
+     */
+     echo "<div class='row' ><div class='col-lg-3' style='margin-right:-5%'>";
+    $tbl_img = $listRecord[$imageField['generic_field_name']];
+    $filename = USER_UPLOADS . "" . $tbl_img;
+    echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
+    if (!empty($tbl_img) && file_exists($filename)) {
+        echo "<img src='" . USER_UPLOADS . "$tbl_img' alt='' class='img-responsive'></a>";
+    } else {
+        echo "<img src='" . USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg' alt='' class='img-responsive'></a>";
+    }
+    echo "</div><div class='col-lg-9'>";
+	// *************************************
+    /*
+     * displaying Edit button
+     */
+    if (!empty($list_select_arr[0][0])) {
+        if ($_SESSION['user_privilege'] > 8) {
+            echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+        } else {
+            if (!empty($user_field)) {
+                //exit($_SESSION['uid']);
+                if ($listRecord[$user_field] == $_SESSION['uid']) {
+                    echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+                }
+            } else {
+//                echo "<a href='$target_url&edit=true#$tab_anchor' class='btn btn-primary edit' >Edit</a>";
+            }
+        }
+    }
+
+    if ($_GET['table_type'] == 'child') {
+        $_SESSION['child_return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    } else {
+        ////parent link
+        $_SESSION['return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    }
+
+	// *************************************
+	// ****  these are the lines that format and display the test inside the Boxview list (cards)
+	// we need to refine this ... because not every field needs a <br> after it
+	// also we want to tag each field/line with some generic CSS so that
+	// later we can (using list_style)  have control over the css formatting of the
+	// first line of the text, and successive lines
+	$listData = array_filter($listData);
+	//  This is the
+	echo "<div class='boxView_content list-data'>";
+		if(!empty($listData)){
+			foreach($listData as $data){
+				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
+			}
+		}
+	echo "</div></div></div>";
 }
 
 ///end of listViews function
