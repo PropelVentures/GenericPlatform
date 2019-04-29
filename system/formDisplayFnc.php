@@ -50,6 +50,7 @@
 
 
 function formating_Update($row, $method, $urow, $image_display = 'false', $page_editable = 'false') {
+	// pr($row);
 
     /* temporary testing */
 
@@ -70,7 +71,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
         $crf_value = $urow_record[$field];
 
-        if (empty($row['format_length']) && $row['format_type'] != 'dropdown') {
+        if (empty($row['format_length']) && ($row['format_type'] != 'dropdown') && $row['format_type'] != 'multi_dropdown') {
 
             $row['format_length'] = parseFieldType($row);
         }
@@ -85,7 +86,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 			$row['dd_editable'] = '11';
 		}
         if (trim($row['table_type']) != 'transaction') {
-            if ($row['dd_editable'] != '11' || $row['editable'] == 'false' || $page_editable == false) {
+					$DD_EDITABLE_TEMP = $row['dd_editable'];
+					if(isset($row['temp_dd_editable'])){
+						$DD_EDITABLE_TEMP = $row['temp_dd_editable'];
+					}
+            if ($DD_EDITABLE_TEMP != '11' || $row['editable'] == 'false' || $page_editable == false) {
 
                 $readonly = 'readonly';
 
@@ -154,7 +159,6 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     if ($userPrivilege === true) {
 		$formatArray = explode("-",$row['format_type']);
         switch ($formatArray[0]) {
-
             case "richtext":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 				/*Code Start for Task 5.4.20*/
@@ -172,6 +176,15 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                     dropdown($row);
                 echo "</div></div>";
                 break;
+
+			case "multi_dropdown":
+				echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label>$row[field_label_name]</label>";
+				if ($urow != 'false')
+					multi_dropdown($row, $formatArray, $urow, $fieldValue = 'false', $page_editable);
+				else
+					multi_dropdown($row, $formatArray);
+				echo "</div></div>";
+				break;
 
             case "list_fragment":
                 echo "<div class='$sigle_line_alignment $fd_css_class' style='overflow:auto!important;max-height:500px; $fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
@@ -607,6 +620,8 @@ function audio_upload($row, $urow = 'false', $image_display = 'false') {
 
     if (!empty($urow[$row[generic_field_name]])) {
         $audio_path = $urow[$row[generic_field_name]];
+
+
         if ($image_display == 'true' && $row['strict_disabled'] == '') {
 
             ///finding whether file is text file or audio wav file
@@ -1023,6 +1038,7 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
 
     $dd = $rs->fetch_assoc();
+	// pr($row);
 
 		//print_r($row);die;
     $list_fields = explode(',', $dd['list_fields']);
@@ -1043,15 +1059,9 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
 
             $readonly = 'disabled="disabled"';
         }
-
-
     }
     if (!empty($row['required']))
         $required = 'required';
-
-
-
-
 
     if (!empty($row[format_length]))
         $length = "style='width:$row[format_length]px'";
@@ -1147,6 +1157,212 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         echo "</select>";
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'false', $page_editable = 'check') {
+	// pr($urow);
+
+	$selectLimit = isset($formatArray[1]) ? $formatArray[1]  : maxSelectLimit;
+	$v = $urow[$row[generic_field_name]];
+
+	echo "<input id='limitValue' hidden value=$selectLimit />";
+	echo "<input id='multiSelectValues' hidden value=$v name='$row[generic_field_name]' />";
+    $con = connect();
+
+    $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
+
+    $dd = $rs->fetch_assoc();
+	// pr($row);
+
+//print_r($row);die;
+    $list_fields = explode(',', $dd['list_fields']);
+
+    $keyfield = '';
+
+    if ($_GET['addFlag'] == 'true')
+        $row['dd_editable'] = '11';
+
+    if (trim($row['table_type']) != 'transaction') {
+        if (( $row['dd_editable'] != '11' && $urow != 'false' ) || $page_editable == false || $row['strict_disabled'] == 'disabled')
+            $readonly = 'disabled="disabled"';
+    }else{
+
+        if( $row['strict_disabled'] == 'disabled'){
+
+            $readonly = 'disabled="disabled"';
+        }
+    }
+    if (!empty($row['required']))
+        $required = 'required';
+
+    if (!empty($row['format_length']))
+        $length = "style='width:$row[format_length]px'";
+//        $length = "style='width:$row[format_length]em'";
+	// pr($length);
+
+    $itemDis = array();
+    foreach ($list_fields as $val) {
+
+
+        $newVal = explode('*', $val);
+
+        //print_r($newVal);die;
+
+        if ($newVal[0] == '' && !empty($newVal[1])) {
+
+            $tilde = explode('~', $newVal[1]);
+
+//print_r($tilde);die;
+
+            if ($tilde[0] == '' && !empty($tilde[1])) {
+
+                $inviKey = $tilde[1];
+            } else {
+
+                $visiKey = $tilde[0];
+            }
+        } else
+            $itemDis[] = $val;
+    }/// foreach ends here
+
+    if (isset($inviKey)) {
+        $itemDis[] = $inviKey;
+
+        $key = $inviKey;
+    } else {
+        $itemDis[] = $visiKey;
+
+        $key = $visiKey;
+    }
+//print_r($itemDis);die;
+    $list_fields = implode(',', $itemDis);
+
+
+    //// this check is to avoid list display view
+    $list_sort = explode('-', $dd['list_sort']);
+
+    // print_r($list_sort);die;
+
+    if ($list_sort[0] == '' && !empty($list_sort[1])) {
+
+        $order = "order by " . $list_sort[1] . " DESC";
+    } else if ($list_sort[1] == '' && !empty($list_sort[0])) {
+
+        $order = "order by " . $list_sort[0] . " ASC";
+    } else {
+
+        $order = '';
+    }
+
+
+    if ($urow == 'list_display') {
+
+        $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] where $key='$fieldValue'");
+
+        $res = $qry->fetch_assoc();
+
+        $res2 = $res;
+
+        unset($res2[$inviKey]);
+
+        return $data = implode(dropdownSeparator, $res2);
+    } else {
+
+        $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
+
+		echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>';
+		echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"></script>';
+
+		// pr($urow[$row[generic_field_name]]);
+
+		echo "<div>";
+        echo "<select multiple class='multiple_select form-control' $readonly $length>";
+
+        while ($res = $qry->fetch_assoc()) {
+
+            $res2 = $res;
+            unset($res2[$inviKey]);
+
+
+            $data = implode(dropdownSeparator, $res2);
+            if ($urow[$row[generic_field_name]] == $res[$key]) {
+
+                echo "<option value='$res[$key]' selected >$data</option>";
+            } else
+                echo "<option value='$res[$key]'>$data</option>";
+        }
+        echo "</select> </div>";
+
+
+		echo '<script>
+			var limit = $("#limitValue").val();
+		    $(document).ready(function() {
+				$(".multiple_select").multiselect({
+					buttonWidth: "200px",
+	            	onChange: function(option, checked, select) {
+						var length = $(".multiple_select").val().length;
+						var values = $(".multiple_select").val();
+						console.log("length : " + length );
+						console.log("limit : " + limit );
+						if(length > limit){
+							var deselect = [];
+							deselect.push(option.val());
+							deselectValues(deselect);
+						}else{
+							$("#multiSelectValues").val(values);
+						}
+
+	            	}
+        		});
+
+				var vv = $("#multiSelectValues").val();
+				vv = vv.split(",");
+				selectValues(vv);
+
+				function deselectValues(value){
+					$(".multiple_select").multiselect("deselect",value );
+
+				}
+
+				function selectValues(value){
+					$(".multiple_select").multiselect("select",value );
+
+				}
+
+				$(".multiselect.dropdown-toggle").css("height","40px");
+				$(".multiselect.dropdown-toggle").css("border-radius","2px");
+				$(".multiselect.dropdown-toggle").css("padding-left","5px");
+
+		    });
+		</script>';
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* * **********
  * *******************

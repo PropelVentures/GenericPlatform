@@ -143,7 +143,6 @@ function getMulti($table, $ws, $field='false') {
     while ($row = mysqli_fetch_assoc($result)) {
         $r[] = $row;
     }
-
     return $r;
 }
 

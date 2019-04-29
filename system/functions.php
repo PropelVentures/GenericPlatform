@@ -470,7 +470,7 @@ function loginNotRequired(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-	if(!empty($navigation) && $navigation['loginRequired'] == '2'){
+	if(!empty($navigation) && strtoupper($navigation['loginRequired']) == '2'){
 		return true;
 	}
 	return false;
@@ -659,7 +659,7 @@ function generateTopNavigation($navItems,$loginRequired){
  */
 function generateSideBarNavigation($navItems,$menu){
 	foreach($navItems as $parent){
-		if($parent['loginRequired']== '1' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+		if(strtoupper($parent['loginRequired'])== '1' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
 		$label = dislayUserNameSelector($parent['item_label']);
