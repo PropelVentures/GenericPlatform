@@ -2,7 +2,7 @@
 /* * *SITE INFORMATION********* */
 // require_once '../system/config.php';
 
-define("SESSION_AUTO_TIMEOUT","9200");
+define("SESSION_AUTO_TIMEOUT","604800");
 
 // =======================================================================
 // DATABASE CONFIG (Location, CREDENTIALS)
