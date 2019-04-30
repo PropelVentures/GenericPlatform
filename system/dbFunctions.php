@@ -89,9 +89,10 @@ function updateString($data) {
     foreach ($data as $key => $value) {
           //5.4.202 trimiing spaces
         trimSpacesAroundSepraters($value,',');
-        trimSpacesAroundSepraters($value,';');
+        trimSpacesAroundSepraters($value,';',',');
         $i[] = "$key = '$value'";
     }
+
     return implode(", ", $i);
 }
 
@@ -400,14 +401,16 @@ $con = connect();
  * took a string by reference and a $separator and parse it such that if there are extra spaces around that $separator
  *it trims out those spaces like width=5px ; height=10px   ;  it will become width=5px;height=10px;
  */
-function trimSpacesAroundSepraters(&$string, $separator){
+function trimSpacesAroundSepraters(&$string, $separator,$unsetIfRaw = false){
   if(!empty($string) && is_string($string)){
     $parts = explode($separator, $string);
     if(count($parts)> 1){
       $string = '';
       foreach ($parts as $key => $value) {
         if(!empty($value)){
-          $string = $string.trim($value).$separator;
+          if($value!==$unsetIfRaw){
+            $string = $string.trim($value).$separator;
+          }
         }
       }
     }
