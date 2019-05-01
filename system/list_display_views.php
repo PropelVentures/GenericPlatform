@@ -81,7 +81,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }else{
       $selected_row_filter = $row['list_filter'];
     }
-
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck);
     } else {

@@ -880,7 +880,7 @@ function getNavTarget($row){
 function getNavItemIcon($item_icon){
 	if(empty($item_icon)){
 		return "";
-	}elseif(strtoupper($item_icon)=='CURRENT-USER-PROFILE-IMAGE'){
+	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
 //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
     return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
