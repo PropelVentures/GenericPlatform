@@ -842,9 +842,10 @@ function editPagePagination($list_extra_options, $pkey) {
 
     ///////fetching forigen keys
 
-
+    $isExistFilter;
+    $isExistField;
     if (!empty($record[0]['list_filter']))
-        $clause = listFilter($record[0]['list_filter'], $search_key);
+        $clause = listFilter($record[0]['list_filter'], $search_key,$isExistFilter,$isExistField);
 
 
 
@@ -938,7 +939,7 @@ function helperOfEPP($id, $mode = 'false') {
  *
  *
  */
-function translateSpecialKeysValueTOSQL($array){
+function translateSpecialKeysValueTOSQL($array,&$isexistFilter,&$isExistField){
 
   $result = '';
   if(empty($array[0]) || empty($array[1])){
@@ -954,6 +955,12 @@ function translateSpecialKeysValueTOSQL($array){
     $result = "$key=NULL";
   }else if(strtoupper($condition) ==='!NULL'){
     $result = "$key!=NULL";
+  }else if(strtoupper($condition) ==='FILEEXISTS'){
+    $isexistFilter = 'exist';
+    $isExistField = $key;
+  }else if(strtoupper($condition) ==='!FILEEXISTS'){
+    $isexistFilter = 'not_exist';
+    $isExistField = $key;
   }
   return $result;
 }
@@ -967,7 +974,7 @@ function convertVariableValuesToRealValues($value){
   return $value;
 }
 
-function convertFilterToSQL($filter){
+function convertFilterToSQL($filter,&$isexistFilter,&$isExistField){
   $filter = trim($filter);
   $result = '';
   if(empty($filter)){
@@ -975,7 +982,7 @@ function convertFilterToSQL($filter){
   }else{
     $specialKeys = explode(':',$filter);
     if(count($specialKeys) > 1){
-      $result = translateSpecialKeysValueTOSQL($specialKeys);
+      $result = translateSpecialKeysValueTOSQL($specialKeys,$isexistFilter,$isExistField);
       $result = convertVariableValuesToRealValues($result);
     }else{
       $result = $filter;
@@ -985,7 +992,7 @@ function convertFilterToSQL($filter){
   }
 }
 
-function checkORConditionAndConvertToSQL($filter){
+function checkORConditionAndConvertToSQL($filter,&$isexistFilter,&$isExistField){
   $filter = trim($filter);
   if(empty($filter)){
     return '';
@@ -993,7 +1000,7 @@ function checkORConditionAndConvertToSQL($filter){
     $allConditions = explode('OR',$filter);
     if(count($allConditions) > 1){
       foreach ($allConditions as $key => $value) {
-        $allConditions[$key] = convertFilterToSQL($value);
+        $allConditions[$key] = convertFilterToSQL($value,$isexistFilter,$isExistField);
       }
       $result = '';
       $length = count($allConditions);
@@ -1005,12 +1012,12 @@ function checkORConditionAndConvertToSQL($filter){
       }
       return $result;
     }else{
-      return convertFilterToSQL($filter);
+      return convertFilterToSQL($filter,$isexistFilter,$isExistField);
     }
   }
 }
 
-function listFilter($listFilter, $search) {
+function listFilter($listFilter, $search,&$isexistFilter,&$isExistField) {
 
     if(is_array($listFilter) )
     {
@@ -1023,7 +1030,7 @@ function listFilter($listFilter, $search) {
       if(empty(trim($value))){
         unset($allFilters[$key]);
       }else{
-        $allFilters[$key] = checkORConditionAndConvertToSQL($value);
+        $allFilters[$key] = checkORConditionAndConvertToSQL($value,$isexistFilter,$isExistField);
       }
 
     }
@@ -1048,152 +1055,6 @@ function listFilter($listFilter, $search) {
     }
     return $result;
 
-//this next code must be removed after completion of 6.8.005
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ###HANDLE PARENT->CHILD RELATIONSHIPT BASED ON DD.keyfield and DD.table_type = 'child'####
-    if(is_array($listFilter) )
-    {
-        $listFilterParentChildClause = $listFilter['child_filter'];
-        $listFilter = $listFilter['list_filter'];
-    }
-
-    $keyfield = explode(";", $listFilter);
-
-    $firstParent = $keyfield[0];
-    // print_r($keyfield);die;
-
-    if (!empty($keyfield[1])) {
-
-        $listCond = $keyfield[1];
-    }
-
-    //  $checkFlag = false;
-
-    ###CREATES AN ARRAY OF ARRAY WITH KEYFIELD=>DYNAMIC_PART BASED ON CSV##
-    if (!empty($keyfield[0])) {
-        $i = 0;
-
-        $keyfield = explode(",", $keyfield[0]);
-
-        foreach ($keyfield as $val) {
-
-            $keyField = explode("=", $val);
-
-            $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
-
-            $i++;
-        }
-    }
-
-    ###'projects=child_product_id'; kind of parameters, same for 'users='
-//    foreach ($keyVal as $val) {
-//
-//        if (!empty($val['projects'])) {
-//
-//            $pid = $val['projects'];
-//        }
-//
-//        if (!empty($val['users'])) {
-//
-//            $uid = $val['users'];
-//        }
-//    }
-
-    ###DETECT THESE #KEYWORDS AND REPLACE THEM WITH RESPECTIVE DYNAMIC ID FROM USER SESSION
-    ###$filterIdKeywordsArray = array('#current_user_id', '#current_user_name', '#current_product_id', '#current_product_name');
-
-    $sqlClause = '';
-
-    foreach ($keyVal as $dataVal) {
-
-        $keywordId = reset($dataVal);
-        $keyField = key($dataVal);
-
-        switch ($keywordId) {
-            case "#current_user_id":
-                $sqlClause .= "$keyField=$_SESSION[uid] ";
-                break;
-            case "#current_user_name":
-                $sqlClause .= "$keyField='$_SESSION[uname]' ";
-                break;
-            case "#current_product_id":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            case "#current_product_name":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            default:
-                $sqlClause .= '';
-        }
-
-    }
-    $sqlClause = str_replace(' ', ' AND ', trim($sqlClause) );
-
-
-//    if (!empty($pid) && !empty($search)) {
-//
-//        $clause = "$pid = '$search'";
-//
-//        //$checkFlag = true;
-//    }
-//
-//    if (!empty($uid)) {
-//
-//        if (!empty($clause)) {
-//
-//            $clause = $clause . " and " . $uid . "=" . $_SESSION['uid'];
-//        } else {
-//
-//            $clause = $uid . "=" . $_SESSION['uid'];
-//        }
-//
-//        //  $checkFlag = true;
-//    }
-
-    if (!empty($sqlClause) && !empty($listCond)) {
-        $sqlClause = $sqlClause . " and " . $listCond;
-    } else if (empty($sqlClause) && !empty($firstParent)) {
-        $sqlClause = $firstParent;
-    }
-
-    ###BIND PARENT CHILD FILTER CLAUSE BASED ON RELATIONSHIP AND DD.keyfield###
-    if(!empty($listFilterParentChildClause) && !empty($sqlClause) )
-    {
-        $sqlClause .= " AND $listFilterParentChildClause";
-    }
-    else if(!empty($listFilterParentChildClause) )
-    {
-        $sqlClause .= " $listFilterParentChildClause";
-    }
-
-    // exit($clause);
-    return $sqlClause;
 }
 
 function getFiltersArray($list_filters){
@@ -1823,4 +1684,32 @@ function isAllowedToShowByPrivilegeLevel($row){
     return true;
   }
   return false;
+}
+
+function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
+  return true;
+  if($isExistField == null || $isExistFilter == null){
+    return true;
+  }
+  if(!isset($row[$isExistField])){
+    return true;
+  }
+
+  $value = trim($row[$isExistField]);
+  if($isExistFilter=='exist'){
+    if(empty($value)){
+      return false;
+    }
+    if(file_exists(USER_UPLOADS.$value)){
+      return true;
+    }else{
+      return false;
+    }
+  }else if($isExistFilter=='not_exist'){
+    if(file_exists(USER_UPLOADS.$value)){
+      return false;
+    }else{
+      return true;
+    }
+  }
 }

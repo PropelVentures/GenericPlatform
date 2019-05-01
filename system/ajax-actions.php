@@ -83,8 +83,11 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'copy') {
 
 
-    $item = implode(",", $_POST['list']);
-
+    // $item = implode(",", $_POST['list']);
+    // pr($_P)
+    // pr($item);
+    // die('AAAAAAAAAAAAAAAAAAA');
+    $item = $_POST['list'];
 
 
     mysqli_query($con, "CREATE table temporary_table2 AS SELECT * FROM " . $_SESSION['update_table']['database_table_name'] . " WHERE " . $_SESSION['update_table']['keyfield'] . " IN( $item )");

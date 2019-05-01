@@ -67,7 +67,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }
     else
         $search_key = $_SESSION['search_id'];
-
+    $isExistFilter = null;
+    $isExistField = null;
     $filters_srray = getFiltersArray($row['list_filter']);
     $selected_filter_index = 0;
     if(count($filters_srray)>0){
@@ -81,13 +82,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }else{
       $selected_row_filter = $row['list_filter'];
     }
-
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck,$isExistFilter,$isExistField);
     } else {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck,$isExistFilter,$isExistField);
     }
-
+    
     $availableRecords =   $list->num_rows;
     $limitOnAddButton = checkListItemsLimit($row['list_extra_options']);
     $disableAddButton = false;
@@ -569,27 +569,27 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 			switch($listView){
 				case 'mapView':
 					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
+					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
 					break;
 
 				case 'mapAddress':
 					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
 					break;
 
 				case 'boxView':
 					include_once('renderBoxView.php');
-					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
                 case 'boxWide':
 					include_once('renderBoxWide.php');
-					renderBoxWide($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
 				default:
 					include_once('renderListView.php');
-					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
+					renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
 					break;
 			} ?>
         </form>

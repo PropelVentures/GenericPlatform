@@ -383,10 +383,26 @@
 			event.preventDefault();
             if (confirm("<?= copyConfirm ?>") == true) {
                 $("#checkHidden").val('copy');
-                $('#list-form').ajaxForm(function (data) {
-                    // console.log(data);
-                    location.reload();
-				});
+								var selected = [];
+								var selected2 = '';
+								$('#list-form input:checked').each(function() {
+										selected.push($(this).val());
+										// selected2 = selected2+$(this).val()+',';
+								});
+								$.ajax({
+										method: "POST",
+										url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+										data: {checkHidden: 'copy',list:selected}
+								})
+								.done(function (returnUrl) {
+									debugger;
+									  location.reload();
+								});
+        //         $('#list-form').ajaxForm(function (data) {
+        //             // console.log(data);
+				// 							debugger;
+				//
+				// });
 				} else {
                 $(this).parents('#list-form').attr('action', '');
 			}

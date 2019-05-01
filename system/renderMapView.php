@@ -1,5 +1,5 @@
 <?php
-function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array, $mapAddress){
+function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num, $imageField, $ret_array, $mapAddress){
 	$con = connect();
 	$showImageIcon = isHaveToShowImage($row['list_extra_options']);
 	$list_select = trim($row['list_select']);
@@ -28,6 +28,11 @@ function renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_
 			if($count > $limit){
 				break;
 			}
+
+			if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
+				break;
+			}
+			
 			$thisUserImage = false;
 			if($showImageIconS !== false){
 				$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];

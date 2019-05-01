@@ -491,7 +491,7 @@ function ShowTableTypeParallaxBanner($display_page,&$haveParalax,$tabNum=''){
           $haveParalax = true;?>
 
           <script src="<?= BASE_URL_SYSTEM ?>js/parallax.min.js"></script>
-          
+
 
           <div class="parallax-window" data-parallax="scroll" data-image-src="<?=$banner?>">
 
