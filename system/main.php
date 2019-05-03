@@ -16,7 +16,9 @@
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
 
-	Navigation($display_page);
+	Navigation($display_page,'header');
+	Navigation($display_page,'header2');
+
 	$haveParalax = false;
 	ShowTableTypeParallaxBanner($display_page,$haveParalax);
 

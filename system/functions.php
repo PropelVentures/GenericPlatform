@@ -480,13 +480,22 @@ function loginNotRequired(){
  * Get Nav Items according to Parent & Children
  * For all menu location & loginrequired(true or false)
  */
-function getNavItems($page,$menu_location,$loginRequired='true'){
+function getNavItems($page,$menu_location,$overRide= false){
 	$con = connect();
-  if($loginRequired=='true'){
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='2' ORDER BY item_number ASC");
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
   }else{
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='1' ORDER BY item_number ASC");
+    $loginRequired=='false';
+    $notThis = '1';
   }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
 	$navItems = array();
 	$arr = array();
 	$i = 0;
