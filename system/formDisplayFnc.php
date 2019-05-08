@@ -1016,8 +1016,11 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
 
     $dd = $rs->fetch_assoc();
-	// pr($row);
 
+		$isAllowedToAdd = false;
+		if(isAllowedToShowByPrivilegeLevel($dd)){
+			$isAllowedToAdd  = true;
+		}
 		//print_r($row);die;
     $list_fields = explode(',', $dd['list_fields']);
 
@@ -1099,9 +1102,19 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         $order = '';
     }
 
+		$table = $dd['database_table_name'];
+		$primeryKey == $key;
+		$primeryfieldValue = $fieldValue;
+		$listFields = $list_fields;
+		$listFields = str_replace($dd['keyfield'].',','',$listFields);
+		$listFields = str_replace($dd['keyfield'],'',$listFields);
+
+		// $list = str_replace($dd,'',$list_fields);
+
+
+
 
     if ($urow == 'list_display') {
-
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] where $key='$fieldValue'");
 
         $res = $qry->fetch_assoc();
@@ -1112,12 +1125,16 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
 
         return $data = implode(dropdownSeparator, $res2);
     } else {
-
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
 
-        echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
-        echo "<option></option>";
 
+			if($isAllowedToAdd){
+				  echo "<select onclick='addnewOption(this)' data-table='$table' data-key='$primeryKey' data-primaryvalue='$primeryfieldValue' data-inputfields='$listFields' name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+				echo '<option  > Add Option</option>';
+			}else{
+				  echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+				  echo "<option></option>";
+			}
         while ($res = $qry->fetch_assoc()) {
 
             $res2 = $res;
@@ -1133,6 +1150,7 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
                 echo "???? <option value='$res[$key]'>$data</option>";
         }
         echo "</select>";
+
     }
 }
 
@@ -1245,7 +1263,6 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
 
         $order = '';
     }
-
 
     if ($urow == 'list_display') {
 
@@ -1783,6 +1800,7 @@ function showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$
 	echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 	echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'>";
 	if(isSlideShareURL($fieldValue)){
+		echo "<br>";
 		echo "$fieldValue";
 		echo "<br>";
 	}else{

@@ -11,6 +11,7 @@ function fffr_friend($row){
   if(!empty(trim($row['tab_name']))){
     $title = trim($row['tab_name']);
   }
+
   $css_class = trim($row['list_style']);
   $dd_css_class = trim($row['dd_css_class']);
   $dd_css_code = trim($row['dd_css_code']);
@@ -18,8 +19,14 @@ function fffr_friend($row){
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
   $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
 
-  echo "<button type='button' class='button friend_me_icon $css_class' id='$row[database_table_name]' title='" . $title . "'>"
-  . (empty($check[0]) ? friendOn : friendOff) . "</button>";
+  if(!iconOrButton($row,$check,'friend_me_icon')){
+    echo "<button type='button' class='button friend_me_icon $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+    . (empty($check[0]) ? friendOn : friendOff) . "</button>";
+    echo "<input type='hidden' id='friend_me_icon_selected' value='".friendOn."' />";
+    echo "<input type='hidden' id='friend_me_icon_unselected' value='".friendOff."' />";
+    echo "<input type='hidden' id='friend_me_icon_type' value='text' />";
+
+  }
   echo "</div>";
 }
 
@@ -36,11 +43,17 @@ function fffr_favorite($row){
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
 
   $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  if(!iconOrButton($row,$check,'favorite_me_icon')){
+    echo " <span class='"
+    . (empty($check[0]) ? "favorite_me_icon" : "favorite_me_icon_selected" ) . "' id='$row[database_table_name]' title='" . $title . "'></span>";
+    echo "<input type='hidden' id='favorite_me_icon_selected' value='favorite_me_icon' />";
+    echo "<input type='hidden' id='favorite_me_icon_unselected' value='favorite_me_icon_selected' />";
+    echo "<input type='hidden' id='favorite_me_icon_type' value='icon' />";
+  }
 
-  echo " <span class='"
-  . (empty($check[0]) ? "favorite_me_icon" : "favorite_me_icon_selected" ) . "' id='$row[database_table_name]' title='" . $title . "'></span>";
   echo "</div>";
 }
+
 function fffr_follow($row){
   $title = followTitle;
   if(!empty(trim($row['tab_name']))){
@@ -53,9 +66,15 @@ function fffr_follow($row){
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
   $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  if(!iconOrButton($row,$check,'follow_me_icon')){
+    echo "<button type='button' class='button follow_me_icon $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+    . (empty($check[0]) ? followOn : followOff) . "</button>";
+    echo "<input type='hidden' id='follow_me_icon_selected' value='".followOn."' />";
+    echo "<input type='hidden' id='follow_me_icon_unselected' value='".followOff."' />";
+    echo "<input type='hidden' id='follow_me_icon_type' value='text' />";
 
-  echo " <button type='button' class='button follow_me_icon' id='$row[database_table_name]' title='" . $title . "'>"
-  . (empty($check[0]) ? followOn : followOff) . "</button>&nbsp;&nbsp";
+
+  }
   echo "</div>";
 }
 
@@ -173,4 +192,48 @@ function fffr_icons($display_page){
   if($haveAnyFFFR){
     echo "<br><br>";
   }
+}
+
+function iconOrButton($row,$check,$type){
+
+  $display_type;
+  $selected ;
+  $unselected;
+  $title = friendTitle;
+  if(!empty(trim($row['tab_name']))){
+    $title = trim($row['tab_name']);
+  }
+  $extraOptions = trim($row['list_extra_options']);
+  if(empty($extraOptions)){
+    return false;
+  }
+  $extraOptions = explode(':',$extraOptions);
+  if(!empty(trim($extraOptions[0]))){
+    $display_type = strtolower(trim($extraOptions[0]));
+    $selectedUnselected = explode(',',$extraOptions[1]);
+      if(!empty(trim($selectedUnselected[0])) && !empty(trim($selectedUnselected[1]))){
+        $selected = trim($selectedUnselected[0]);
+        $unselected = trim($selectedUnselected[1]);
+        $unselected = str_replace(';','',$unselected);
+      }else{
+        return false;
+      }
+  }
+  $selected_id = $type.'_selected';
+  $unselected_id = $type.'_unselected';
+  $type_value = $type.'_type';
+
+  if($display_type =='icon'){
+    echo " <span class='"
+    . (empty($check[0]) ? "$selected" : "$unselected" ) . "' id='$row[database_table_name]' title='" . $title . "'></span>";
+  }else if($display_type=='text'){
+      echo "<button type='button' class='button $type $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+        .(empty($check[0]) ? $selected : $unselected) . "</button>";
+
+  }
+  echo "<input type='hidden' id='$selected_id' value='".$selected."' />";
+  echo "<input type='hidden' id='$unselected_id' value='".$unselected."' />";
+  echo "<input type='hidden' id='$type_value' value='$display_type' />";
+  return true;
+
 }

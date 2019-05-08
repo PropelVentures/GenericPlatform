@@ -5,6 +5,8 @@
 require_once 'functions_loader.php';
 
 
+
+
 /*on chnage of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter') {
   pr($_GET['dict_id_to_apply_filter'].'_selected_filter');
@@ -14,6 +16,18 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter')
   exit;
 }
 
+
+/*on chnage of list filter*/
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'adding_new_options') {
+  $table = $_GET['table'];
+  $insert =$_GET['data'];
+  if(!empty($_GET['selectedKeyField'])){
+    $insert[$_GET['selectedKeyField']] = $_GET['selectedprimaryvalue'];
+  }
+  $id = insert($table,$insert);
+  echo $id;
+  exit;
+}
 
 
 /*
@@ -121,8 +135,10 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
 /// Searching and deleting images from targeted table first
 
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
-
-
+    if(!isAllowedToPerformListAction($row)){
+      echo 'false';
+      die();
+    }
     $frow = getWhere("field_dictionary", array("table_alias" => $row['table_alias'], "format_type" => "image"));
 
     $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $_GET["list_delete"]));
@@ -156,8 +172,11 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
  * @checklist single copy
  */
 if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_action"] == 'copy') {
-
-	$row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
+	$row = get("data_dictionary", "dict_id='" . $_SESSION['dict_id'] . "'");
+    if(!isAllowedToPerformListAction($row)){
+      echo 'false';
+      die();
+    }
 
     mysqli_query($con, "CREATE table temporary_table2 AS SELECT * FROM " . $row['database_table_name'] . " WHERE " . firstFieldName($row['database_table_name']) . " = $_GET[list_copy]");
 
@@ -229,8 +248,15 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
 
     $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
     $navList = $nav->fetch_assoc();
-
-    $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+    $display_page = trim($list_select_arr[1][2]);
+    $tab_alias = trim($list_select_arr[1][0]);
+    $tab_num = trim($list_select_arr[1][1]);
+    $result = get('data_dictionary',"display_page='$display_page' AND table_alias='$tab_alias' AND tab_num='$tab_num'");
+    if(isAllowedToPerformListAction($result)){
+      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+    }else{
+      $target_url = 'false';
+    }
 
     exit($target_url);
     ///////openChild ends here
@@ -645,4 +671,21 @@ if(!empty($_POST['action']) && $_POST['action'] == 'custom_function')
 if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
 {
     unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
+}
+
+function isAllowedToPerformListAction($row){
+  $user_privilege = $_SESSION['user_privilege'];
+  $DD_privilege = $row['dd_privilege_level'];
+  $DD_visibility = $row['dd_visibility'];
+  if(is_null($user_privilege)){
+    $user_privilege = 0;
+  }
+  if($DD_visibility ==0){
+    return false;
+  }
+
+  if($user_privilege >= $DD_privilege){
+    return true;
+  }
+  return false;
 }
