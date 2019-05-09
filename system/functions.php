@@ -1027,4 +1027,22 @@ function dislayUserNameSelector($selector){
     return $selector;
   }
 }
+
+function setUserDataInSession($con,$user){
+
+    $name = 'uname';
+    $userNameQuery = "SELECT * FROM field_dictionary WHERE field_identifier='username'";
+      $fieldQuery = $con->query($userNameQuery) OR $message = mysqli_error($con);
+      if($fieldQuery->num_rows > 0){
+        $field = $fieldQuery->fetch_assoc();
+        $name = $field['generic_field_name'];
+      }
+
+    $_SESSION['user_privilege'] = $user['user_privilege_level'];
+    $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+    $_SESSION['current-username'] = $user[$name];
+    $_SESSION['current-user-firstname'] = $user['firstname'];
+    $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
+    $_SESSION['current-user-profile-image'] = $user['image'];
+}
 ?>

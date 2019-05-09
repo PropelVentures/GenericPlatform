@@ -1,6 +1,6 @@
 <?php
 
-function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
+function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $con = connect();
     ///setting form editable if user click on list for editing purpose
@@ -11,7 +11,10 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
     //     $con->query("update data_dictionary set dd_editable='11' where display_page='$_GET[display]' and tab_num='$_GET[tabNum]' and table_alias='$_GET[tab]'");
     // }
 
-
+    $aboveThanTabs = false;
+    if($dd_position =='above'){
+      $aboveThanTabs =true;
+    }
     if (empty($_GET['tabNum'])) {
 
         $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND table_type NOT REGEXP 'header|banner|slider|content|url|text|subheader|image|icon' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' order by tab_num");
@@ -32,9 +35,12 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
      *
      */
     if ($tab_status == 'true') {
-
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
-        while ($row = $rs->fetch_assoc()) {
+      if($aboveThanTabs){
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+      }else{
+          $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+      }
+      while ($row = $rs->fetch_assoc()) {
           if(!isAllowedToShowByPrivilegeLevel($row)){
             continue;
           }
@@ -45,9 +51,9 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 				case 'banner':
 					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
 					break;
-                case 'p_banner':
-                    ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
-                    break;
+        // case 'p_banner':
+        //     ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
+        //     break;
 				case 'url':
 					ShowTableTypeURL($row['display_page'],$row['tab_num']);
 					break;
@@ -148,24 +154,19 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
                 $operationsVarArray = array();
                 $operation = '';
 
+                $defaultOptions = getDefaultListViewExtraOptions($con,$row['display_page']);
+
                 ##DD.edit_operation
                 if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
                 {
                     $operation = 'edit_operations';
 
-					/*Code Change Start Task ID 5.6.4*/
-					if((empty($row1['edit_operations'])) || ($row1['edit_operations'] == NULL)){
-						$sql1 = $con->query("SELECT edit_operations FROM data_dictionary where data_dictionary.display_page='$row1[display_page]' and data_dictionary.table_alias='default'");
-						$edit_operations = $sql1->fetch_assoc();
-					}
-					/*Code Change End Task ID 5.6.4*/
-
                     if(!empty(trim($row1['edit_operations']) ) ){
                         $operationsVarArray = getOperationsData($row1['edit_operations'], 'edit_operations');
-					/*Code Change Start Task ID 5.6.4*/
-					}else{
-							$operationsVarArray = getOperationsData($edit_operations['edit_operations'], 'edit_operations');
-					}
+          					/*Code Change Start Task ID 5.6.4*/
+          					}else{
+          							$operationsVarArray = getOperationsData($defaultOptions['edit_operations'], 'edit_operations');
+          					}
 					/*Code Change End Task ID 5.6.4*/
                 }
                 else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
@@ -173,20 +174,13 @@ function Get_Data_FieldDictionary_Record($table_alias, $display_page, $tab_statu
 
                     $operation = 'view_operations';
 
-					/*Code Change Start Task ID 5.6.4*/
-					if((empty($row1['view_operations'])) || ($row1['view_operations'] == NULL)){
-						$sql1 = $con->query("SELECT view_operations FROM data_dictionary where data_dictionary.display_page='$row1[display_page]' and data_dictionary.table_alias='default'");
-						$view_operations = $sql1->fetch_assoc();
-					}
-					/*Code Change End Task ID 5.6.4*/
-
                     if(!empty(trim($row1['view_operations']) ) ){
                         $operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
-					/*Code Change Start Task ID 5.6.4*/
-					}else{
-							$operationsVarArray = getOperationsData($view_operations['view_operations'], 'view_operations');
-					}
-					/*Code Change Start Task ID 5.6.4*/
+          					/*Code Change Start Task ID 5.6.4*/
+          					}else{
+          							$operationsVarArray = getOperationsData($defaultOptions['view_operations'], 'view_operations');
+          					}
+          					/*Code Change Start Task ID 5.6.4*/
                 }
                 list($popupmenu,
 					$popup_delete_array,

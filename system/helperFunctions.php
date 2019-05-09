@@ -1713,3 +1713,106 @@ function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
     }
   }
 }
+
+function getDefaultListViewExtraOptions($con,$displaypage){
+  $sql1 = $con->query("SELECT * FROM data_dictionary where data_dictionary.display_page='$displaypage' and data_dictionary.table_type='default'");
+  $defaultOptions = $sql1->fetch_assoc();
+  return $defaultOptions;
+}
+
+
+// function renderTheMianStructure($con,$display_page,$page_layout_style,$posittion=''){
+//
+//   $left_sidebar;
+//   $right_sidebar;
+//   $both_sidebar;
+//   $left_sidebar_width;
+//   $right_sidebar_width;
+//   // setLeftRightSideBars($con,$display_page,$posittion,$left_sidebar,$right_sidebar,$both_sidebar,$left_sidebar_width,$right_sidebar_width)
+//   //
+// 	// sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+//
+// }
+//
+// function setLeftRightSideBars($con,$display_page,$posittion,&$left_sidebar,&$right_sidebar,&$both_sidebar,&$left_sidebar_width,&$right_sidebar_width){
+//   if(strtoupper($posittion) =='TOP'){
+//     $positionCheck = ' position="top"';
+//   }else{
+//     $positionCheck = ' position != "top"';
+//   }
+//   $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND $positionCheck ");
+//   $right_sidebar = $left_sidebar = '';
+//   $left_sidebar_width = $right_sidebar_width = 0;
+//   while ($row = $rs->fetch_assoc()) {
+//     $r1 = explode('w', trim($row['tab_num']));
+//     if (!empty($r1[1])) {
+//       if ($r1[0] == 'R1')
+//       $right_sidebar_width = $r1[1];
+//       else
+//       $left_sidebar_width = $r1[1];
+//     }
+//     if ($r1[0] == 'R1') {
+//       $right_sidebar = 'right';
+//     }
+//     if ($r1[0] == 'L1') {
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code Start*/
+//   $navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyLeftQuery->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyRightQuery->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code End*/
+//   /* Tab TTl1 or Tl2 Start */
+//   $tabLeftExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-L%' AND $positionCheck ");
+//   if($tabLeftExist->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $tabRightExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-R%' AND $positionCheck ");
+//   if($tabRightExist->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Tab TTl1 or Tl2 End */
+//   if ($left_sidebar == 'left' && $right_sidebar == 'right') {
+//     $both_sidebar = 'both';
+//   }
+//
+//   /*
+//    * Check If middle content exist
+//    * If not exist then check the width of aone and asign the other
+//    * or if width not exist then divide 50% each
+//    */
+//   $middleContentExist = true;
+//   $checkMiddleContentQuery = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'  and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND $positionCheck");
+//   if($checkMiddleContentQuery->num_rows == 0 ){
+//     $middleContentExist = false;
+//     if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       // do nothing
+//     } else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+//       $left_sidebar_width = 100 - $right_sidebar_width;
+//     } else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       $right_sidebar_width = 100 - $left_sidebar_width;
+//     } else {
+//       if ($both_sidebar == 'both') {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else {
+//         $left_sidebar_width = $right_sidebar_width = 0;
+//       }
+//     }
+//   }
+// }

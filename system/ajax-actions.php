@@ -29,8 +29,9 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
     // exit($_POST['dict_id'][0]);
     //// Image deletion first if there is any /////
 
-
-    $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'][0] . "'");
+    pr($_POST);
+    die();
+    $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
 
 
     $frow = getWhere("field_dictionary", array("table_alias" => $row['table_alias'], "format_type" => "image"));
@@ -82,24 +83,35 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'copy') {
 
+    $item = implode(",", $_POST['list']);
+    $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
+    $table = $row['database_table_name'];
+    $keyField = $row['keyfield'];
+    $isParent = false;
+    if($row['table_type'] == 'parent'){
+      $isParent = true;
+      $childRow = get("data_dictionary", "parent_table='".$row['database_table_name']."' AND table_type='child' ");
+      $childTable = $childRow['database_table_name'];
+      $childKey = 'child_'.$keyField;
+    }
 
-    // $item = implode(",", $_POST['list']);
-    // pr($_P)
-    // pr($item);
-    // die('AAAAAAAAAAAAAAAAAAA');
-    $item = $_POST['list'];
+    $allRecords = getWhere($table, "$keyField IN( $item )","",false);
+    foreach ($allRecords as $key => $record) {
+      $tempRecord = $record;
+     unsetExtraRows($tempRecord);
+      $parentId= $record[$keyField];
+      unset($tempRecord[$keyField]);
+      $newId = insert($table,$tempRecord);
+      if($isParent){
+        $llChildren = getWhere($childTable,"$childKey='$parentId'",'',false);
+        foreach ($llChildren as $key => $value) {
+          unsetExtraRows($value);
+          unset($value['id']);
+          insert($childTable,$value);
+        }
+      }
 
-
-    mysqli_query($con, "CREATE table temporary_table2 AS SELECT * FROM " . $_SESSION['update_table']['database_table_name'] . " WHERE " . $_SESSION['update_table']['keyfield'] . " IN( $item )");
-
-
-    mysqli_query($con, "UPDATE temporary_table2 SET " . $_SESSION['update_table']['keyfield'] . " =NULL;");
-
-    mysqli_query($con, "INSERT INTO " . $_SESSION['update_table']['database_table_name'] . " SELECT * FROM temporary_table2;");
-
-    mysqli_query($con, "DROP TABLE IF EXISTS temporary_table2;");
-
-    //exit('yasir');
+    }
 }
 
 /*

@@ -1,10 +1,10 @@
-<?php 
+<?php
 class Handler{
 	private $con;
 	public function __construct($con){
 		$this->con = $con;
 	}
-	
+
 	public function checkLogin(){
 		if(!isset($_GET['username']) || !isset($_GET['password'])){
 			throw new Exception("Username/Email and Password is required");
@@ -15,7 +15,7 @@ class Handler{
 		if(empty($_GET['password'])){
 			throw new Exception("Please enter password");
 		}
-		$query = "SELECT * FROM field_dictionary 
+		$query = "SELECT * FROM field_dictionary
 					INNER JOIN data_dictionary ON (data_dictionary.`table_alias` = field_dictionary.`table_alias`)
 					where data_dictionary.table_alias = 'login' and data_dictionary.table_type='user'
 					ORDER BY field_dictionary.display_field_order";
@@ -32,13 +32,16 @@ class Handler{
 					$usernameField = $ddRecord['generic_field_name'];
 				}
 			}
+
 			$primaryKey = firstFieldName($table_name);
-			$userQuery = $this->con->query("SELECT * FROM $table_name where ($emailField = ".secure($_GET['username'])." OR $usernameField = ".secure($_GET['username']).") and $passwordField = ".secure($_GET['password']).";");
+			$userQuery = $this->con->query("SELECT * FROM $table_name where ($emailField = ".secure($_GET['username'])." OR $usernameField = ".secure($_GET['username']).") and $passwordField = ".secure(md5($_GET['password']))."");
+
 			if($userQuery->num_rows >0 ){
 				$user = $userQuery->fetch_assoc();
 				$_SESSION['uid'] = $user[$primaryKey];
 				$_SESSION['uname'] = $user[$usernameField];
 				$_SESSION['user_privilege'] = $user['user_privilege_level'];
+				setUserDataInSession($this->con,$user);
 				return true;
 			} else {
 				throw new Exception("Invalid Username or Password.");
@@ -46,7 +49,7 @@ class Handler{
 		}
 		throw new Exception("Something went wrong please try again");
 	}
-	
+
 	public function redirectAccordingToUrl(){
 		if(!isset($_GET['dd_id']) || empty($_GET['dd_id'])){
 			throw new Exception("DD ID parameter is required");
@@ -68,22 +71,22 @@ class Handler{
 		} else {
 			$url .= self::_appendUrlForDisplayPageOrTab($display_page,$ddRecord);
 		}
-		
+
 		$url .= self::_setEditOrView();
-		
+
 		$url .= self::_appendLayoutAndStyle($display_page);
-		
+
 		$url .= self::_appendAnchor($display_page,$ddRecord);
-		
+
 		self::_setReferer($ddRecord);
-		
+
 		self::_setSessionAddUrl($url,$ddRecord);
 
 		header("Location:$url");
-		
+
 		exit;
 	}
-	
+
 	private function _appendUrlForDisplayPageOrTab($display_page,$ddRecord){
 		$checkTab = $this->con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 		if($checkTab->num_rows > 0){
@@ -92,7 +95,7 @@ class Handler{
 		}
 		return "display=$display_page&tab=".$ddRecord['table_alias']."&tabNum=".$ddRecord['tab_num'];
 	}
-	
+
 	private function _appendUrlForParentOrChildPage($display_page,$ddRecord){
 		$listSelect = trim($ddRecord['list_select']);
 		$listSelectArray = array();
@@ -125,7 +128,7 @@ class Handler{
 		return "";
 
 	}
-	
+
 	private function _appendUrlForAddRecord($display_page,$ddRecord){
 		$listSelect = trim($ddRecord['list_select']);
 		$listSelectArray = array();
@@ -158,14 +161,14 @@ class Handler{
 		return "";
 
 	}
-	
+
 	private function _setEditOrView(){
 		if(isset($_GET['edit']) && $_GET['edit'] == true){
 			return "&edit=true";
 		}
 		return "";
 	}
-	
+
 	private function _appendLayoutAndStyle($display_page){
 		$nav = $this->con->query("SELECT * FROM navigation where target_display_page='$display_page'");
 		$layout = $itemStyle = "";
@@ -176,7 +179,7 @@ class Handler{
 		}
 		return "&layout=$layout&style=$itemStyle";
 	}
-	
+
 	private function _appendAnchor($display_page,$ddRecord){
 		$checkTab = $this->con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 		if($checkTab->num_rows > 0){
@@ -185,7 +188,7 @@ class Handler{
 		}
 		return "";
 	}
-	
+
 	private function _setReferer($ddRecord){
 		//unset($_SESSION['child_return_url']);
 		//unset($_SESSION['return_url']);
@@ -204,7 +207,7 @@ class Handler{
 			//$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 		}
 	}
-	
+
 	private function _setSessionAddUrl($url,$ddRecord){
 		$_SESSION['add_url_list'] = $url;
 		$_SESSION['dict_id'] = $ddRecord['dict_id'];

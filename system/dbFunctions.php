@@ -46,6 +46,7 @@ function insert($table, $data, $config = 'false') {
 
     $con = connect($config);
     $is = insertString($data);
+
     //echo "INSERT INTO $table $is";die;
     mysqli_query($con, "INSERT INTO $table $is");
     return mysqli_insert_id($con);
@@ -104,14 +105,13 @@ function whereString($data) {
     return implode(" AND ", $w);
 }
 
-function getWhere($table, $where = "false", $order = "") {
+function getWhere($table, $where = "false", $order = "",$setwhereString = true) {
 
     if ($where != 'false') {
-        $ws = whereString($where);
-
-        //exit("SELECT * FROM $table WHERE $ws $order");
-
-        $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $ws $order");
+      if($setwhereString){
+        $where = whereString($where);
+      }
+        $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $where $order");
     } else {
 
         $result = mysqli_query(connect(), "SELECT * FROM $table $order");
@@ -417,5 +417,12 @@ function trimSpacesAroundSepraters(&$string, $separator,$unsetIfRaw = false){
   }
 }
 
+function unsetExtraRows(&$data){
+  foreach ($data as $key => $value) {
+    if(is_numeric($key)){
+      unset($data[$key]);
+    }
+  }
+}
 
 ?>

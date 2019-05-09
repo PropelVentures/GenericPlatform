@@ -36,6 +36,7 @@
 				* Finding page layout by DD->tab_num
 			*/
 			$con = connect();
+			Get_Data_FieldDictionary_Record('above',$_SESSION['tab'], $display_page, 'true');
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 			$right_sidebar = $left_sidebar = '';
 			$left_sidebar_width = $right_sidebar_width = 0;
@@ -172,7 +173,7 @@
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
-						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
 					}
 				} else {
 					$_SESSION['display2'] = '';
@@ -190,9 +191,9 @@
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
 						if (isset($_SESSION['tab'])) {
-							Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
+							Get_Data_FieldDictionary_Record('',$_SESSION['tab'], $display_page, $tab_status);
 						} else {
-							Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+							Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
 						}
 						}
 				}/// tab_num else ends here
@@ -347,14 +348,23 @@
 		});
 		///when click on delete button////
         $(".action-delete").on('click', function (event) {
+						var dict_id = $(this).data('id');
 			event.preventDefault();
             if (confirm("<?= deleteConfirm ?>") == true) {
                 $("#checkHidden").val('delete');
-                $('#list-form').ajaxForm(function (data) {
-					//console.log(data);
-					//return false;
-                    location.reload();
-				});
+								var selected = [];
+								$('#list-form input:checked').each(function() {
+										selected.push($(this).val());
+								});
+								$.ajax({
+										method: "POST",
+										url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+										data: {checkHidden: 'delete',list:selected,dict_id:dict_id}
+								})
+								.done(function (returnUrl) {
+									debugger;
+										// location.reload();
+								});
 				} else {
                 $(this).parents('#list-form').attr('action', '');
 			}
@@ -380,29 +390,22 @@
 		});
 		///copy button .. multi select
         $(".action-copy").on('click', function (event) {
+					var dict_id = $(this).data('id');
 			event.preventDefault();
             if (confirm("<?= copyConfirm ?>") == true) {
                 $("#checkHidden").val('copy');
 								var selected = [];
-								var selected2 = '';
 								$('#list-form input:checked').each(function() {
 										selected.push($(this).val());
-										// selected2 = selected2+$(this).val()+',';
 								});
 								$.ajax({
 										method: "POST",
 										url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-										data: {checkHidden: 'copy',list:selected}
+										data: {checkHidden: 'copy',list:selected,dict_id:dict_id}
 								})
 								.done(function (returnUrl) {
-									debugger;
 									  location.reload();
 								});
-        //         $('#list-form').ajaxForm(function (data) {
-        //             // console.log(data);
-				// 							debugger;
-				//
-				// });
 				} else {
                 $(this).parents('#list-form').attr('action', '');
 			}
