@@ -290,16 +290,18 @@ function Navigation($page, $menu_location = 'header') {
                     }
                 }
             ?>
-            <?php if ($nav_menu_location != 'LOGO-RIGHT') { ?>
+            <?php if ($nav_menu_location != 'LOGO-RIGHT') {
+              if($menu_location=='header'){ ?>
                 <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
                     <?php
+
                         if ($logo_image != '') {
                             echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
                         }
                         echo $logo_text;
                     ?>
                 </a>
-            <?php } ?>
+            <?php } }?>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
@@ -352,7 +354,7 @@ function Navigation($page, $menu_location = 'header') {
 
 function GetSideBarNavigation($display_page,$menu_location){
 
-	$navItems = getNavItems($display_page,$menu_location);
+	$navItems = getSideBarNavItems($display_page,$menu_location);
 
 	$menu = "";
 	if(!empty($navItems)){ ?>

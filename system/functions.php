@@ -513,6 +513,40 @@ function getNavItems($page,$menu_location,$overRide= false){
 	return $navItems;
 }
 
+function getSideBarNavItems($page,$menu_location,$overRide= false){
+	$con = connect();
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
+  }else{
+    $loginRequired=='false';
+    $notThis = '1';
+  }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where  (display_page='$page' OR display_page='ALL' )  and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
+	$navItems = array();
+	$arr = array();
+	$i = 0;
+	while ($row = $rs->fetch_assoc()) {
+		if(strpos($row['item_number'],".0")){
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		} elseif(strpos($row['item_number'],".")){
+			$navItems[floor($row['item_number'])]['children'][] = $row;
+		} else {
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		}
+	}
+	return $navItems;
+}
+
+
 /* TO DO//
  * Generate Top Nav Items
  * For all menu location & loginrequired(true or false)
