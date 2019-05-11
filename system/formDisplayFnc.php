@@ -313,52 +313,30 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							break;
 
             case "video":
-							if($readonly){
-								$row['format_type'] = "hidden";
-							}
-							$dimensions = getVideoFormatLength($row['format_length']);
-							$iframeWidth = $dimensions['width'];
-							$iframeHeight = $dimensions['height'];
-							$videoInputFieldWidth = $dimensions['width'].'px';
-							$videoInputFieldHeight = $dimensions['height'].'px';
-							$inputSize = getDefaultLengthsByType($row);
-
-							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
-							$fieldValue = setTheVideoURL($fieldValue);
-							$srcdoc = '';
-							if(empty(trim($fieldValue))){
-								$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
-							}
-							echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
-
-							echo "</div>";
+							showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
 						break;
 
 						case "video_only":
 							if($readonly){
-								$row['format_type'] = "hidden";
 								if(empty(trim($fieldValue))){
 									break;
 								}
 							}
-							$dimensions = getVideoFormatLength($row['format_length']);
-							$iframeWidth = $dimensions['width'];
-							$iframeHeight = $dimensions['height'];
-							$videoInputFieldWidth = $dimensions['width'].'px';
-							$videoInputFieldHeight = $dimensions['height'].'px';
-							$inputSize = getDefaultLengthsByType($row);
-							echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-							echo "<input type='$row[format_type]' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]' size='' class='form-control $fd_css_class'  style='$fd_css_style'></div>";
-							$fieldValue = setTheVideoURL($fieldValue);
-							$srcdoc = '';
-							if(empty(trim($fieldValue))){
-								$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
-							}
-							echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe><br>";
-
-							echo "</div>";
+							showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
 							break;
+
+							case "ppt":
+								showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+							break;
+
+							case "ppt_only":
+								if($readonly){
+									if(empty(trim($fieldValue))){
+										break;
+									}
+								}
+								showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+								break;
 
             case "pdf_inline":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
@@ -1038,8 +1016,11 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
 
     $dd = $rs->fetch_assoc();
-	// pr($row);
 
+		$isAllowedToAdd = false;
+		if(isAllowedToShowByPrivilegeLevel($dd)){
+			$isAllowedToAdd  = true;
+		}
 		//print_r($row);die;
     $list_fields = explode(',', $dd['list_fields']);
 
@@ -1121,9 +1102,19 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
         $order = '';
     }
 
+		$table = $dd['database_table_name'];
+		$primeryKey == $key;
+		$primeryfieldValue = $fieldValue;
+		$listFields = $list_fields;
+		$listFields = str_replace($dd['keyfield'].',','',$listFields);
+		$listFields = str_replace($dd['keyfield'],'',$listFields);
+
+		// $list = str_replace($dd,'',$list_fields);
+
+
+
 
     if ($urow == 'list_display') {
-
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] where $key='$fieldValue'");
 
         $res = $qry->fetch_assoc();
@@ -1134,12 +1125,16 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
 
         return $data = implode(dropdownSeparator, $res2);
     } else {
-
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
 
-        echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
-        echo "<option></option>";
 
+			if($isAllowedToAdd){
+				  echo "<select onclick='addnewOption(this)' data-table='$table' data-key='$primeryKey' data-primaryvalue='$primeryfieldValue' data-inputfields='$listFields' name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+				echo '<option  > Add Option</option>';
+			}else{
+				  echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+				  echo "<option></option>";
+			}
         while ($res = $qry->fetch_assoc()) {
 
             $res2 = $res;
@@ -1155,6 +1150,7 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
                 echo "???? <option value='$res[$key]'>$data</option>";
         }
         echo "</select>";
+
     }
 }
 
@@ -1267,7 +1263,6 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
 
         $order = '';
     }
-
 
     if ($urow == 'list_display') {
 
@@ -1714,6 +1709,18 @@ function setTheVideoURL($rawURL){
 	return $rawURL;
 }
 
+function setThePptURL($rawURL){
+	$index = strpos($rawURL,'/edit');
+	if($index===false){
+		$index = strpos($rawURL,'/view');
+	}
+	if($index !== false){
+		$rawURL = substr($rawURL,0,$index);
+		$rawURL = $rawURL.'/embed?start=false&loop=false&delayms=3000';
+	}
+	return $rawURL;
+}
+
 function getFieldFormatLength($formatLength){
 	$values = explode(',',trim($formatLength));
 	$result['width'] = '50px';
@@ -1750,6 +1757,69 @@ function isKeyField($row){
 	$length = strlen($data);
 	$result = substr($data,$length-3);
 	if(strtoupper($result) ==="_ID" || strtoupper($data)==="ID" || strtoupper($row['field_identifier'])==="KEYFIELD"){
+		return true;
+	}
+	return false;
+}
+
+
+function showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize){
+	if($readonly){
+		$row['format_type'] = "hidden";
+	}
+	$dimensions = getVideoFormatLength($row['format_length']);
+	$iframeWidth = $dimensions['width'];
+	$iframeHeight = $dimensions['height'];
+	$videoInputFieldWidth = $dimensions['width'].'px';
+	$videoInputFieldHeight = $dimensions['height'].'px';
+	$inputSize = getDefaultLengthsByType($row);
+
+	echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+	echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'>";
+	$fieldValue = setTheVideoURL($fieldValue);
+	$srcdoc = '';
+	if(empty(trim($fieldValue))){
+		$srcdoc = "srcdoc='<h3>No video attached!</h3>'";
+	}
+	echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen class='$fd_css_class' style='$fd_css_style'></iframe></div><br>";
+
+	echo "</div>";
+}
+
+function showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize){
+	if($readonly){
+		$row['format_type'] = "hidden";
+	}
+	$dimensions = getVideoFormatLength($row['format_length']);
+	$iframeWidth = $dimensions['width'];
+	$iframeHeight = $dimensions['height'];
+	$videoInputFieldWidth = $dimensions['width'].'px';
+	$videoInputFieldHeight = $dimensions['height'].'px';
+	$inputSize = getDefaultLengthsByType($row);
+
+	echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+	echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required size='$inputSize' title='$row[help_message]' class='form-control $fd_css_class'  style='$fd_css_style'>";
+	if(isSlideShareURL($fieldValue)){
+		echo "<br>";
+		echo "$fieldValue";
+		echo "<br>";
+	}else{
+		$fieldValue = setThePptURL($fieldValue);
+		$srcdoc = '';
+		if(empty(trim($fieldValue))){
+			$srcdoc = "srcdoc='<h3>No Slides attached!</h3>'";
+		}
+		echo "<iframe $srcdoc width='$iframeWidth' height='$iframeHeight' src='$fieldValue' allowfullscreen='true' mozallowfullscreen='true' webkitallowfullscreen='true' class='$fd_css_class' style='$fd_css_style'></iframe><br>";
+	}
+
+	echo "</div></div>";
+}
+
+function isSlideShareURL(&$url){
+	$index = strpos($url,'www.slideshare.net/slideshow');
+	if($index !== false){
+		$index2 = strpos($url,'</iframe>');
+			$url = substr($url,0,$index2+9);
 		return true;
 	}
 	return false;

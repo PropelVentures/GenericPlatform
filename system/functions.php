@@ -480,13 +480,22 @@ function loginNotRequired(){
  * Get Nav Items according to Parent & Children
  * For all menu location & loginrequired(true or false)
  */
-function getNavItems($page,$menu_location,$loginRequired='true'){
+function getNavItems($page,$menu_location,$overRide= false){
 	$con = connect();
-  if($loginRequired=='true'){
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='2' ORDER BY item_number ASC");
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
   }else{
-    $rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired!='1' ORDER BY item_number ASC");
+    $loginRequired=='false';
+    $notThis = '1';
   }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where  display_page='ALL'  and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
 	$navItems = array();
 	$arr = array();
 	$i = 0;
@@ -503,6 +512,40 @@ function getNavItems($page,$menu_location,$loginRequired='true'){
 	}
 	return $navItems;
 }
+
+function getSideBarNavItems($page,$menu_location,$overRide= false){
+	$con = connect();
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
+  }else{
+    $loginRequired=='false';
+    $notThis = '1';
+  }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where  (display_page='$page' OR display_page='ALL' )  and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
+	$navItems = array();
+	$arr = array();
+	$i = 0;
+	while ($row = $rs->fetch_assoc()) {
+		if(strpos($row['item_number'],".0")){
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		} elseif(strpos($row['item_number'],".")){
+			$navItems[floor($row['item_number'])]['children'][] = $row;
+		} else {
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		}
+	}
+	return $navItems;
+}
+
 
 /* TO DO//
  * Generate Top Nav Items
@@ -880,7 +923,7 @@ function getNavTarget($row){
 function getNavItemIcon($item_icon){
 	if(empty($item_icon)){
 		return "";
-	}elseif(strtoupper($item_icon)=='CURRENT-USER-PROFILE-IMAGE'){
+	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
 //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
     return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }

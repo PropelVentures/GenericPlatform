@@ -233,21 +233,34 @@ function headersAndSubHeaders($display_page){
 
 function Navigation($page, $menu_location = 'header') {
     $con = connect();
-    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' ");
-    $row = $rs->fetch_assoc();
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
+
+    $classForNavBr2 = '';
+    if($menu_location=='header2'){
+      $classForNavBr2 = 'navbar-lower';
+      echo "<style>
+      .navbar-lower{
+        margin-top:75px;
+        z-index:800;
+      }
+
+      </style>";
+    }
     /*
      *
      * Checking whether user have access to current page or not
      */
-    if ($row['loginRequired'] == '1' && !isset($_SESSION['uid'])) {
-        $_SESSION['callBackPage'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        FlashMessage::add('Login required to view the current page!');
-        echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
-        exit();
+     $overRide = false;
+    if ($rs->num_rows > 0) {
+         $overRide = true;
+        // $_SESSION['callBackPage'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        // FlashMessage::add('Login required to view the current page!');
+        // echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
+        // exit();
     }
     ?>
     <!-- Navigation starts here -->
-    <div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top <?=$classForNavBr2 ?>">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">
@@ -277,25 +290,26 @@ function Navigation($page, $menu_location = 'header') {
                     }
                 }
             ?>
-            <?php if ($nav_menu_location != 'LOGO-RIGHT') { ?>
+            <?php if ($nav_menu_location != 'LOGO-RIGHT') {
+              if($menu_location=='header'){ ?>
                 <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
                     <?php
+
                         if ($logo_image != '') {
                             echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
                         }
                         echo $logo_text;
                     ?>
                 </a>
-            <?php } ?>
+            <?php } }?>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
                 <?php
+                	$navItems = getNavItems($page,$menu_location,$overRide);
                 if (isUserLoggedin()) {
-					$navItems = getNavItems($page,$menu_location);
-					$loginRequired = true;
+					             $loginRequired = true;
                 } else {
-					$navItems = getNavItems($page,$menu_location,'false');
 					$loginRequired = false;
 					?>
 					<!--
@@ -339,11 +353,9 @@ function Navigation($page, $menu_location = 'header') {
 ////////main navigation function ends here///
 
 function GetSideBarNavigation($display_page,$menu_location){
-	if (isUserLoggedin()) {
-		$navItems = getNavItems($display_page,$menu_location);
-	} else {
-		$navItems = getNavItems($display_page,$menu_location,'false');
-	}
+
+	$navItems = getSideBarNavItems($display_page,$menu_location);
+
 	$menu = "";
 	if(!empty($navItems)){ ?>
 		<!-- Menu -->
@@ -491,7 +503,7 @@ function ShowTableTypeParallaxBanner($display_page,&$haveParalax,$tabNum=''){
           $haveParalax = true;?>
 
           <script src="<?= BASE_URL_SYSTEM ?>js/parallax.min.js"></script>
-          
+
 
           <div class="parallax-window" data-parallax="scroll" data-image-src="<?=$banner?>">
 

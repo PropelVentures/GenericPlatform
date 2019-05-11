@@ -1205,8 +1205,8 @@ function getFiltersArray($list_filters){
     if(!empty($value)){
         $keyValue = explode(',',$value);
         if(count($keyValue)>1){
-          $result[$counter]['label'] = trim($keyValue[0]);
-          $result[$counter]['filter'] = trim($keyValue[1]);
+          $result[$counter]['label'] = trim($keyValue[1]);
+          $result[$counter]['filter'] = trim($keyValue[0]);
           $counter++;
         }
     }

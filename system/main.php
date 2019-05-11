@@ -16,7 +16,9 @@
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
 
-	Navigation($display_page);
+	Navigation($display_page,'header');
+	Navigation($display_page,'header2');
+
 	$haveParalax = false;
 	ShowTableTypeParallaxBanner($display_page,$haveParalax);
 
@@ -258,6 +260,28 @@
 		</div>
 	</div>
 </div>
+
+
+<div id="addOptionModel" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+			</div>
+            <div class="modal-body">
+
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default" onclick="AddOptionInTable()">Add</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <!-- Modal For Transaction Dialog display -->
 <div class="modal fade" id="transModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -373,6 +397,7 @@
 				})
 				.done(function (returnUrl) {
 					window.location.href=returnUrl;
+					location.reload();
 				});
 			} else {
                 event.stopImmediatePropagation();
@@ -459,7 +484,11 @@
 					data: {list_delete: del_id, check_action: "delete", dict_id: dict_id}
 				})
 				.done(function (msg) {
-					location.reload();
+					if(msg=='false'){
+							alert('Permission Denied');
+					}else{
+							location.reload();
+					}
 				});
 			}
 		}
@@ -473,7 +502,11 @@
 					data: {list_copy: del_id, check_action: "copy"}
 				})
 				.done(function (msg) {
-					location.reload();
+					if(msg=='false'){
+							alert('Permission Denied');
+					}else{
+							location.reload();
+					}
 				});
 			}
 		}
@@ -502,8 +535,11 @@
 				data: {childID: del_id, check_action: "openChild", dict_id: dict_id, display: "<?= $_GET['display']; ?>"}
 			})
 			.done(function (child_url) {
-
-				window.location = child_url;
+				if(child_url=='false'){
+					alert('Permission Denied');
+				}else{
+					window.location = child_url;
+				}
 				// window.open(msg,'','width=800,height=768,left=300');
 			});
 			//}
@@ -622,11 +658,7 @@
 				data: {action: "friend_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).text('<?= friendOn ?>');
-					} else {
-					$(class_holder).text('<?= friendOff ?>');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'friend_me_icon');
 			});
 		});
 		/*
@@ -645,11 +677,7 @@
 				data: {action: "follow_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).text('<?= followOn ?>');
-					} else {
-					$(class_holder).text('<?= followOff ?>');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'follow_me_icon');
 			});
 		});
 		/*
@@ -669,13 +697,7 @@
 				data: {action: "favorite_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).removeClass('favorite_me_icon_selected');
-					$(class_holder).addClass('favorite_me_icon');
-					} else {
-					$(class_holder).removeClass('favorite_me_icon');
-					$(class_holder).addClass('favorite_me_icon_selected');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'favorite_me_icon');
 			});
 		});
 		/*
@@ -833,5 +855,81 @@
 		});
 	}
 
+	function addnewOption(e){
+		if($(e).find('option:selected').val()!='Add Option'){
+			return;
+		}
+		var name = $(e).attr('name');
+		var table = $(e).data('table');
+		var keyField = $(e).data('key');
+		var primaryvalue = $(e).data('primaryvalue');
+		var inputFieldes = $(e).data('inputfields');
+		inputFieldes = inputFieldes.split(',');
+		$('#addOptionModel .modal-body').html('');
+		inputFieldes.forEach (function(value){
+			if(value!==''){
+				$('#addOptionModel .modal-body').append($('<input>', {type: 'text',name:value,placeholder:value}));
+			}
+		});
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedTable',value:table}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedKeyField',value:keyField}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedinputFieldes',value:inputFieldes}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedprimaryvalue',value:primaryvalue}));
+		 $('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedName',value:name}));
+		$('#addOptionModel').modal('show');
+
+	}
+
+	function AddOptionInTable(){
+		var table = $('#selectedTable').val();
+		var selectedKeyField = $('#selectedKeyField').val();
+		var selectedinputFieldes = $('#selectedinputFieldes').val();
+		var selectedprimaryvalue = $('#selectedprimaryvalue').val();
+		var name = $('#selectedName').val();
+		var data ={};
+		$("#addOptionModel .modal-body input[type=text]").each(function(){
+				 data[this.name] = this.value;
+		});
+		$.ajax({
+				method: "GET",
+				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+				data: {table: table, selectedKeyField: selectedKeyField, selectedprimaryvalue: selectedprimaryvalue, data: data,'check_action':'adding_new_options'}
+}).done(function (returnUrl) {
+	var mystring = '';
+	if(returnUrl > 0){
+		Object.keys(data).forEach(function(key) {mystring = mystring+ data[key]+' ';});
+		$("[name='"+name+"']").append($('<option>', {
+		    value: returnUrl,
+		    text:mystring
+		}));
+			$('#addOptionModel').modal('hide');
+	}else{
+		alert('Some Error accourd');
+	}
+});
+	}
+
+	function setStyleOfFFFRafterAction(element,result,type){
+		var action_type = $('#'+type+'_type').val();
+		var selected = $('#'+type+'_selected').val();
+		var unselected = $('#'+type+'_unselected').val();
+
+		if(action_type=='text'){
+			if (result == 'deleted') {
+				$(element).text(selected);
+				} else {
+				$(element).text(unselected);
+			}
+		}else{
+			if (result == 'deleted') {
+				$(element).removeClass(unselected);
+				$(element).addClass(selected);
+			}else{
+				$(element).removeClass(selected);
+				$(element).addClass(unselected);
+			}
+		}
+
+	}
 </script>
 <?php include("footer.php"); ?>
