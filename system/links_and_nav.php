@@ -258,6 +258,10 @@ function Navigation($page, $menu_location = 'header') {
         // echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
         // exit();
     }
+  	$navItems = getNavItems($page,$menu_location,$overRide);
+    if($menu_location!=='header' && count($navItems)==0){
+      return;
+    }
     ?>
     <!-- Navigation starts here -->
     <div class="navbar navbar-default navbar-fixed-top <?=$classForNavBr2 ?>">
@@ -306,7 +310,6 @@ function Navigation($page, $menu_location = 'header') {
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
                 <?php
-                	$navItems = getNavItems($page,$menu_location,$overRide);
                 if (isUserLoggedin()) {
 					             $loginRequired = true;
                 } else {
