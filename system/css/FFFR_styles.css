@@ -14,14 +14,14 @@
     line-height: 1;
 
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;    
+    -moz-osx-font-smoothing: grayscale;
 
     font-size: 30px; cursor: pointer; margin-right:5px;
-    
+
 }
 
 .favorite_me_icon:before{
-    
+
     content: "\e005";
 }
 
@@ -36,16 +36,16 @@
     line-height: 1;
 
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;    
+    -moz-osx-font-smoothing: grayscale;
 
     font-size: 30px; cursor: pointer; margin-right:5px;
-    
+
     color:red;
-    
+
 }
 
 .favorite_me_icon_selected:before{
-    
+
     content: "\e005";
 }
 
