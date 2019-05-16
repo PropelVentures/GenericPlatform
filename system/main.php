@@ -3,6 +3,10 @@
 	include("header.php");
 
 	$display_page = $_GET['display'];
+
+	//log event
+	log_event($_GET['display'],'page view');
+
 	$page_layout_style = $_GET['layout'];
 	$style = $_GET['style'];
 	if (isset($_GET['tab']) || !empty($_GET['tab'])) {
@@ -362,8 +366,7 @@
 										data: {checkHidden: 'delete',list:selected,dict_id:dict_id}
 								})
 								.done(function (returnUrl) {
-									debugger;
-										// location.reload();
+										location.reload();
 								});
 				} else {
                 $(this).parents('#list-form').attr('action', '');

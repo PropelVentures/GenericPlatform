@@ -233,7 +233,7 @@ define("eventCodes", "event_codes");
 define("notificationAlertTypes", "notification_alert_types");
 define("notificationLog", "notification_log");
 define("notificationTypes", "notification_types");
-define("EVENT_LOGGING_ON", "YES");
+define("EVENT_LOGGING_ON", "ON");
 define("NOTIFICATION_ALERTS_ON", "ON");
 
 

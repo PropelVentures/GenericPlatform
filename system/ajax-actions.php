@@ -7,7 +7,6 @@ require_once 'functions_loader.php';
 
 /*on chnage of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter') {
-  pr($_GET['dict_id_to_apply_filter'].'_selected_filter');
   if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
     $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_filter'] = $_GET['selected_filter'];
   }
@@ -20,54 +19,29 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter')
  *
  * @checklist Multiple Deletion
  */
-
-
-
-
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'delete') {
+    log_event($_GET['display'],'delete');
 
-    // exit($_POST['dict_id'][0]);
-    //// Image deletion first if there is any /////
-
-    pr($_POST);
-    die();
+    $item = implode(",", $_POST['list']);
     $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
-
-
     $frow = getWhere("field_dictionary", array("table_alias" => $row['table_alias'], "format_type" => "image"));
-
     $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $_GET["list_delete"]));
-
-
     foreach ($frow AS $val) {
-
-
         foreach ($_POST['list'] as $list_id) {
-
-
             $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $list_id));
-
             if (!empty($image_name[0][$val['generic_field_name']])) {
-
                 @unlink(USER_UPLOADS. "" . $image_name[0][$val['generic_field_name']]);
             }
         }/////inside list
     }
-
-
-
-
-
-    //// actuall multiple deletion of records/////
-    $item = implode(",", $_POST['list']);
-
-    //exit("delete from " . $row['database_table_name'] ." where " . $row['keyfield'] . " IN( $item )");
-
-
-    mysqli_query($con, "delete from " . $row['database_table_name'] . " where " . firstFieldName($row['database_table_name']) . " IN( $item )");
-    //exit('yasir');
-
-    // delete project child table records related to project
+    $keyField = firstFieldName($row['database_table_name']);
+    mysqli_query($con, "delete from " . $row['database_table_name'] . " where " . $keyField . " IN( $item )");
+    if($row['table_type'] == 'parent'){
+      $childRow = get("data_dictionary", "parent_table='".$row['database_table_name']."' AND table_type='child' ");
+      $childTable = $childRow['database_table_name'];
+      $childKey = 'child_'.$keyField;
+        mysqli_query($con, "delete from " .$childTable . " where " . $childKey . " IN( $item )");
+    }
     if($row['database_table_name'] == 'project'){
         mysqli_query($con, "delete from project_child  where " . firstFieldName($row['database_table_name']) . " IN( $item )");
     }
@@ -79,10 +53,8 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
  *
  * @checklist Multiple copy
  */
-
-
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'copy') {
-
+    log_event($_GET['display'],'copy');
     $item = implode(",", $_POST['list']);
     $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
     $table = $row['database_table_name'];
@@ -94,7 +66,6 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
       $childTable = $childRow['database_table_name'];
       $childKey = 'child_'.$keyField;
     }
-
     $allRecords = getWhere($table, "$keyField IN( $item )","",false);
     foreach ($allRecords as $key => $record) {
       $tempRecord = $record;
@@ -107,10 +78,10 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
         foreach ($llChildren as $key => $value) {
           unsetExtraRows($value);
           unset($value['id']);
+          $value[$childKey] = $newId;
           insert($childTable,$value);
         }
       }
-
     }
 }
 
@@ -134,6 +105,7 @@ if (isset($_GET["tab_check"]) && !empty($_GET["tab_check"]) && $_GET["tab_check"
 if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_action"] == 'delete') {
 
 /// Searching and deleting images from targeted table first
+    log_event($_GET['display'],'delete');
 
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
 
@@ -171,6 +143,8 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
  * @checklist single copy
  */
 if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_action"] == 'copy') {
+
+  log_event($_GET['display'],'copy');
 
 	$row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
 

@@ -104,6 +104,7 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
 // ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET['actionType'] == 'addimport') {
     // GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards
+    log_event($_GET['display'],'add');
     $customFunctionImportFields = $_SESSION['addImportParameters'];
     array_splice($customFunctionImportFields, 0, 3);
     //    echo "<pre>\$customFunctionImportFields<br>";
@@ -281,8 +282,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
 
 #####THIS WILL HANDLE ALL ADD OPERATIONS IN COMMON SO IT WILL BE A FUNCTION INSTEAD. IT SHOULD HANDLE INDIVIDUAL ADD AS WELL AS BULK IMPORT/ADD#####
 else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
-    addData();
-
+  log_event($_GET['display'],'add');
+  addData();
 }
 
 function addData()
@@ -405,7 +406,6 @@ function addData()
 	//$data = setBaseGpsCordinate($dataFdRecord,$data);
 	/* Storing Base Latitude and Longitude End*/
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-
     ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
     if($_GET['actionType'] == 'addimport') {
         return $check;
@@ -714,6 +714,7 @@ function callToLogin(){
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}
+  log_event('login','login');
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 /*
@@ -721,6 +722,9 @@ function callToLogin(){
  *
  */
 function callToSignup(){
+
+  log_event($_GET['display'],'signup');
+
 	$table = $_SESSION['update_table2']['database_table_name'];
     $primaryKey = $_SESSION['update_table2']['keyfield'];
     $con = connect();

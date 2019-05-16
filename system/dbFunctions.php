@@ -46,7 +46,6 @@ function insert($table, $data, $config = 'false') {
 
     $con = connect($config);
     $is = insertString($data);
-
     //echo "INSERT INTO $table $is";die;
     mysqli_query($con, "INSERT INTO $table $is");
     return mysqli_insert_id($con);
