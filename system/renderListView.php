@@ -68,12 +68,13 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$display_id ='#'.$display_page . $dict_id.' .clearFunction';
 	$list_select_arr = getListSelectParams($list_select);
 
+	$stripTags = isStripHtmlTags($row['list_extra_options']);
 	?>
 
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%'>
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed;">
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>
@@ -88,7 +89,6 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 							$count++;
 							if(isset($row['list_sort']) && !empty($row['list_sort'])){
 								$list_sort = explode('-',$row['list_sort']);
-								// pr($list_sort);
 								if(isset($list_sort[0]) && !empty($list_sort[0])){
 									$sort_parameter = $list_sort[0];
 									$sort_order = 'asc';
@@ -100,9 +100,21 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 										$sort_index=$count;
 								}
 							}
+							$colStyle = '';
+							if(!empty(trim($tbRow['format_length']))){
+									$colWidth = explode(',',trim($tbRow['format_length']));
+									$colWidth = $colWidth[0];
+									if(!empty($colWidth) &&  $colWidth>100){
+										$colWidth=$colWidth.'px';
+										$colStyle = "style='width:$colWidth'";
+									}else{
+										// $colStyle = "style='width:100px'";
+									}
+							}
 						//Code Change for Task 5.4.22 End
+
 					  ?>
-						<th><?php echo $tbRow['field_label_name']; ?></th>
+						<th <?=$colStyle?> > <?= $tbRow['field_label_name']; ?></th>
 					<?php
 						//Code Change for Task 5.4.22 Start
 						}
@@ -161,7 +173,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 								}
 							} ?>
 							<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr">
-								<td class='dt-body-center'>
+								<td class='dt-body-center' style='overflow: hidden;'>
 									<?php $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
 									/*
 									 * displaying checkboxes
@@ -205,11 +217,15 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 							}
 							//will temprory truncate
 							$fieldValue = substr($fieldValue, 0, 30);
+							if($stripTags){
+								$fieldValue = strip_tags($fieldValue);
+							}
 							//Code Change for Task 5.4.22 Start
 							if($flag == true){
 							//Code Change for Task 5.4.22 End
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
-								<td> <?php echo $fieldValue; ?></td>
+
+								<td style='overflow: hidden;'> <?php echo $fieldValue; ?></td>
 							<?php
 							}
 							//Code Change for Task 5.4.22 Start

@@ -856,7 +856,7 @@
 	}
 
 	function addnewOption(e){
-		if($(e).find('option:selected').val()!='Add Option'){
+		if($(e).find('option:selected').val()!='Add NEW'){
 			return;
 		}
 		var name = $(e).attr('name');

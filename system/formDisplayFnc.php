@@ -1016,7 +1016,6 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
 
     $dd = $rs->fetch_assoc();
-
 		$isAllowedToAdd = false;
 		if(isAllowedToShowByPrivilegeLevel($dd)){
 			$isAllowedToAdd  = true;
@@ -1130,11 +1129,14 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
 
 			if($isAllowedToAdd){
 				  echo "<select onclick='addnewOption(this)' data-table='$table' data-key='$primeryKey' data-primaryvalue='$primeryfieldValue' data-inputfields='$listFields' name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
-				echo '<option  > Add Option</option>';
 			}else{
 				  echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
-				  echo "<option></option>";
 			}
+		  echo "<option></option>";
+			if($isAllowedToAdd && !$readonly){
+				echo '<option  >Add NEW</option>';
+			}
+
         while ($res = $qry->fetch_assoc()) {
 
             $res2 = $res;
@@ -1371,12 +1373,26 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
 function list_fragment($row2) {
 	$fd_css_class  =$row2['fd_css_class'];
 	$fd_css_style = $row2['fd_css_code'];
-    $con = connect();
+  $con = connect();
 
-    $rs = $con->query("SELECT * FROM  field_dictionary where table_alias = '$row2[dropdown_alias]'");
+	$rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row2[dropdown_alias]'");
+	$dd = $rs->fetch_assoc();
+	$required_list_fileds = false;
+	if(!empty(trim($dd['list_fields']))){
+		$required_list_fileds =explode(',',trim($dd['list_fields']));
+		$in_querry_params = '';
+		foreach ($required_list_fileds as $key => $value) {
+			$in_querry_params = $in_querry_params."'$value',";
+		}
+		$in_querry_params = substr($in_querry_params,0,strlen($in_querry_params)-1);
+	}
+	if($required_list_fileds){
+		$rs = $con->query("SELECT * FROM  field_dictionary where table_alias = '$row2[dropdown_alias]' AND generic_field_name IN($in_querry_params)");
+	}else{
+		$rs = $con->query("SELECT * FROM  field_dictionary where table_alias = '$row2[dropdown_alias]'");
+	}
 
     $fields = '';
-
     $labels = array();
     ///taking care of fields and checks in FD
     while ($row = $rs->fetch_assoc()) {
@@ -1412,16 +1428,12 @@ function list_fragment($row2) {
         }
     }
 
-    $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row2[dropdown_alias]'");
-
-    $dd = $rs->fetch_assoc();
-
     //$list_fields = explode(',', $dd['list_fields']);
 		//print_r($list_fields);die;
 
     $query = get_listFragment_record($dd['database_table_name'], $dd['keyfield'], $dd['list_filter'], $dd['list_extra_options'], $fields);
 
-    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap;border-collapse: collapse; $fd_css_style'>";
+    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap; $fd_css_style'>";
 
     /*     * **
      *

@@ -27,7 +27,9 @@ function renderBoxView($row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor
 			if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
 				$limit = trim($list_pagination['totalitems']);
 			}
-			$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+			if(!isset($list_pagination['totalpages']) || isset($list_pagination['totalitems'])){
+				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+			}
 			while ($listRecord = $list->fetch_assoc()) {
 				if($count > $limit){
 					break;

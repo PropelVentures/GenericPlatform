@@ -1291,7 +1291,6 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
     }else{
         $no_of_pages = 0;
     }
-
     if(count($pagination)==1) {
             $pagination = $pagination['itemsperpage'];
     }else{
@@ -1808,6 +1807,10 @@ function generateLinkedinButton($linkedin_array){
 	return $linkedinButton;
 }
 
+
+/**
+ * function to use in all over the project to set the privalleges either have to show or not
+ */
 function isAllowedToShowByPrivilegeLevel($row){
   $user_privilege = $_SESSION['user_privilege'];
   $DD_privilege = $row['dd_privilege_level'];
@@ -1823,4 +1826,22 @@ function isAllowedToShowByPrivilegeLevel($row){
     return true;
   }
   return false;
+}
+
+/**
+ * to check either we have to show data with html tags in lists or we have to strip those tags,
+ * by default it strip tags but if there is a keyworld available in list_extra_options
+ *which is "showtags" then we do not strip them
+ */
+function isStripHtmlTags($value){
+  $value = strtoupper(trim($value));
+  $position = strpos($value,"SHOWTAGS");
+  if($position===false){
+    return true;
+  }
+  $all_options = explode(';',$value);
+  if(in_array("SHOWTAGS", $all_options)){
+    return false;
+  }
+  return true;
 }

@@ -100,6 +100,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	//Added BY Dharmesh 2018-10-12
 
     $list_pagination = listpageviews($row['list_pagination']);
+
 	if (!isset($list_pagination['itemsperpage']) || empty($list_pagination['itemsperpage'])){
 		$list_pagination['itemsperpage'] = 9 ;// set default
 	}
@@ -225,12 +226,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
 	$table_type = trim($row['table_type']);
-  // pr($list_select);
 	$list_select_arr = getListSelectParams($list_select);
 
 	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
-  // pr($addRecordUrl);
-  // pr($_SESSION);
     $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
@@ -308,20 +306,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 <?php }
 				}
 
-        if(count($filters_srray)>0){
-          $select_menu_id = $row['dict_id'].'filter_select_box';
-          $this_DD_id = $row['dict_id'];
-          echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
-          foreach ($filters_srray as $key => $value) {
-            $label = $value['label'];
-            if($key==$selected_filter_index){
-              echo "<option value='$key' selected>$label</option>";
-            }else{
-              echo "<option value='$key' >$label</option>";
-            }
-          }
-          echo "</select>";
-        }
 				if ($list_views['checklist'] == 'true') {
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
@@ -540,6 +524,20 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 			<?php } ?>
             <?php
 
+            if(count($filters_srray)>1){
+              $select_menu_id = $row['dict_id'].'filter_select_box';
+              $this_DD_id = $row['dict_id'];
+              echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+              foreach ($filters_srray as $key => $value) {
+                $label = $value['label'];
+                if($key==$selected_filter_index){
+                  echo "<option value='$key' selected>$label</option>";
+                }else{
+                  echo "<option value='$key' >$label</option>";
+                }
+              }
+              echo "</select>";
+            }
             /*
              *
              * ********
@@ -684,6 +682,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
      *
      * displaying of image in list
      */
+     pr($listData);
     $tbl_img = $listRecord[$imageField['generic_field_name']];
     $filename = USER_UPLOADS . "" . $tbl_img;
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
