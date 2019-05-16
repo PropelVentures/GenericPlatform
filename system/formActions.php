@@ -104,6 +104,7 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
 // ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET['actionType'] == 'addimport') {
     // GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards
+    log_event($_GET['display'],'add');
     $customFunctionImportFields = $_SESSION['addImportParameters'];
     array_splice($customFunctionImportFields, 0, 3);
     //    echo "<pre>\$customFunctionImportFields<br>";
@@ -281,12 +282,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
 
 #####THIS WILL HANDLE ALL ADD OPERATIONS IN COMMON SO IT WILL BE A FUNCTION INSTEAD. IT SHOULD HANDLE INDIVIDUAL ADD AS WELL AS BULK IMPORT/ADD#####
 else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
-    addData();
-
+  log_event($_GET['display'],'add');
+  addData();
 }
 
 function addData()
 {
+
 	$save_add_url = "";
     if (array_key_exists('save_add_record', $_POST)) {
 		$save_add_url = $_SESSION['save_add_url'];
@@ -304,6 +306,7 @@ function addData()
         unset($_POST['recorded_audio']);
     }
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+
 
     ### if addimport then CHECK FOR DD.table_type = PARENT/CHILD AND IF CHILD THEN FIELD ITS PARENT DD.dict_id and its keyfield and autoincrement it###
     if($_GET['actionType'] == 'addimport' || 1)
@@ -330,17 +333,17 @@ function addData()
         }
     }
     if (!empty($row['list_filter'])) {
-        $keyfield = explode(";", $row['list_filter']);
-        $firstParent = $keyfield[0];
-        if (!empty($keyfield[1])) {
-            $listCond = $keyfield[1];
+        $listFilter = explode(";", $row['list_filter']);
+        $firstParent = $listFilter[0];
+        if (!empty($listFilter[1])) {
+            $listCond = $listFilter[1];
         }
-        if (!empty($keyfield[0])) {
+        if (!empty($listFilter[0])) {
             $i = 0;
-            $keyfield = explode(",", $keyfield[0]);
-            foreach ($keyfield as $val) {
-                $keyField = explode("=", $val);
-                $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
+            $firstListFilter = explode(",", $listFilter[0]);
+            foreach ($firstListFilter as $val) {
+                $condition = explode("=", $val);
+                $keyVal[$i] = array(trim($condition[0]) => trim($condition[1]));
                 $i++;
             }
         }
@@ -359,7 +362,6 @@ function addData()
             $user = array($uid => $_SESSION['uid']);
         }
     }
-
     $data = $_POST;
     if (!empty($user)) {
         $userKey = key($user);
@@ -394,13 +396,16 @@ function addData()
         $additional_array = array('user_id' => $_SESSION['uid']);
         $data = array_merge($additional_array, $data);
     }
+    if(empty(trim($_POST[$keyfield]))){
+      if($row['parent_table'] =='user'){
+        $data[$keyfield] = $_SESSION['uid'];
+      }
+    }
 	/* Storing Base Latitude and Longitude Start*/
 	//$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
 	//$data = setBaseGpsCordinate($dataFdRecord,$data);
 	/* Storing Base Latitude and Longitude End*/
-
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-
     ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
     if($_GET['actionType'] == 'addimport') {
         return $check;
@@ -600,7 +605,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				}
 			}
 			/* removing extra fields that are not preset in table end */
-
 			$status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
 
       // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
@@ -710,6 +714,7 @@ function callToLogin(){
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}
+  log_event('login','login');
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 /*
@@ -717,6 +722,9 @@ function callToLogin(){
  *
  */
 function callToSignup(){
+
+  log_event($_GET['display'],'signup');
+
 	$table = $_SESSION['update_table2']['database_table_name'];
     $primaryKey = $_SESSION['update_table2']['keyfield'];
     $con = connect();
@@ -1485,22 +1493,4 @@ function resetPasswordIfFlagIsSet($con){
     }
   }
   return "Invalid Username/Email or Password";
-}
-
-function setUserDataInSession($con,$user){
-
-    $name = 'uname';
-    $userNameQuery = "SELECT * FROM field_dictionary WHERE field_identifier='username'";
-      $fieldQuery = $con->query($userNameQuery) OR $message = mysqli_error($con);
-      if($fieldQuery->num_rows > 0){
-        $field = $fieldQuery->fetch_assoc();
-        $name = $field['generic_field_name'];
-      }
-
-    $_SESSION['user_privilege'] = $user['user_privilege_level'];
-    $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
-    $_SESSION['current-username'] = $user[$name];
-    $_SESSION['current-user-firstname'] = $user['firstname'];
-    $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
-    $_SESSION['current-user-profile-image'] = $user['image'];
 }

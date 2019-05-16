@@ -227,6 +227,17 @@ define("pdfInline", "Click Me!");
 define("noFile", "No File!");
 
 
+/************* Notification and event logging tables and veriables**************/
+define("eventLog", "event_log");
+define("eventCodes", "event_codes");
+define("notificationAlertTypes", "notification_alert_types");
+define("notificationLog", "notification_log");
+define("notificationTypes", "notification_types");
+define("EVENT_LOGGING_ON", "ON");
+define("NOTIFICATION_ALERTS_ON", "ON");
+
+
+
 
 /******** Constant use for user_privilege_level *******/
 define("user_privilege_level", "user_privilege_level");

@@ -1070,4 +1070,94 @@ function dislayUserNameSelector($selector){
     return $selector;
   }
 }
+
+function setUserDataInSession($con,$user){
+    $name = 'uname';
+    $userNameQuery = "SELECT * FROM field_dictionary WHERE field_identifier='username'";
+      $fieldQuery = $con->query($userNameQuery) OR $message = mysqli_error($con);
+      if($fieldQuery->num_rows > 0){
+        $field = $fieldQuery->fetch_assoc();
+        $name = $field['generic_field_name'];
+      }
+    $_SESSION['user_privilege'] = $user['user_privilege_level'];
+    $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+    $_SESSION['current-username'] = $user[$name];
+    $_SESSION['current-user-email'] = $user['email'];
+    $_SESSION['current-user-firstname'] = $user['firstname'];
+    $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
+    $_SESSION['current-user-profile-image'] = $user['image'];
+}
+
+function log_event($display_page,$action){
+  if(EVENT_LOGGING_ON !=='ON'){
+    return;
+  }
+  $action = strtoupper(trim($action));
+  $event_log_code = get('event_log_codes',"event_name='$action'");
+  $event_action_default = false;
+  $event_notification_alert_type_default = false;
+  if(!empty($event_log_code)){
+    $event_action_default = $event_log_code['event_action_default'];
+    $event_notification_alert_type_default = $event_log_code['event_notification_alert_type_default'];
+  }
+  if($event_action_default && $event_action_default>0){
+    $data = [];
+    $data['display_page'] = $display_page;
+    $data['action_taken'] = $action;
+    $data['user_id'] = $_SESSION['uid'];
+    $data['target_user_id'] = $_SESSION['uid'];
+    $data['event_log_code'] = $event_log_code['event_log_code_id'];
+    $data['notification_type'] = $event_notification_alert_type_default;
+    $log_id =insert('event_log',$data);
+    log_notification($event_notification_alert_type_default,$display_page,$action);
+  }
+}
+
+function log_notification($type,$displayPage,$action){
+  if(NOTIFICATION_ALERTS_ON !=='ON'){
+    return;
+  }
+  $data = [];
+  $data['notification_type'] = $type;
+  $data['user_id'] = $_SESSION['uid'];
+  $data['target_user_id'] = 0;
+  $data['response_type'] = 0;
+  $data['alert_type'] = 0;
+  $notif_id = insert('notification_log',$data);
+  if($type>1){
+    send_notification_alert($type,$displayPage,$action);
+  }
+}
+
+function send_notification_alert($type,$displayPage,$action){
+  if($type=='2'){
+    sendEmailNotification($displayPage,$action);
+  }else if($type=='3'){
+    //push notification
+  }
+}
+
+function sendEmailNotification($page,$action){
+	$to = $_SESSION['current-user-email'];
+	$subject = "Action Notification | Generic Platform";
+	$message = "<html><head><title>Notification</title></head><body>";
+	$message .= "Hi,<br/>";
+  $message .= "An Action ".$action." has occured at ".$page." page<br/>";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
 ?>

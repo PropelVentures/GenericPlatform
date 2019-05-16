@@ -67,7 +67,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }
     else
         $search_key = $_SESSION['search_id'];
-
+    $isExistFilter = null;
+    $isExistField = null;
     $filters_srray = getFiltersArray($row['list_filter']);
     $selected_filter_index = 0;
     if(count($filters_srray)>0){
@@ -82,9 +83,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
       $selected_row_filter = $row['list_filter'];
     }
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck,$isExistFilter,$isExistField);
     } else {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck);
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck,$isExistFilter,$isExistField);
     }
 
     $availableRecords =   $list->num_rows;
@@ -127,36 +128,32 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     else if($row['dd_editable'] == '1' )
         $buttonOptions = $row['view_operations'];*/
 
+  $defaultOptions = getDefaultListViewExtraOptions($con,$row['display_page']);
 	if(!empty($row['list_select']) ){
 			if((empty($row['list_operations'])) || ($row['list_operations'] == NULL)){
-				$sql1 = $con->query("SELECT list_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
-				$list_operations = $sql1->fetch_assoc();
-				$buttonOptions = $list_operations['list_operations'];
-				//$displaypage = $row['display_page'];
-				//$buttonOptions = check_dd_defaults($displaypage);
+        $buttonOptions = $defaultOptions['list_operations'];
 			}else{
 				$buttonOptions = $row['list_operations'];
 			}
     }else if($row['dd_editable'] == '11' ){
-		if((empty($row['edit_operations'])) || ($row['edit_operations'] == NULL)){
-				$sql1 = $con->query("SELECT edit_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
-				$edit_operations = $sql1->fetch_assoc();
-				$buttonOptions = $edit_operations['edit_operations'];
-		}else{
-				$buttonOptions = $row['edit_operations'];
-		}
+  		if((empty($row['edit_operations'])) || ($row['edit_operations'] == NULL)){
+          $buttonOptions = $defaultOptions['edit_operations'];
+  		}else{
+  				$buttonOptions = $row['edit_operations'];
+  		}
 		//$buttonOptions = $row['edit_operations'];
     }else if($row['dd_editable'] == '1' ){
-       	if((empty($row['view_operations'])) || ($row['view_operations'] == NULL)){
-				$sql1 = $con->query("SELECT view_operations FROM data_dictionary where data_dictionary.display_page='$row[display_page]' and data_dictionary.table_alias='default'");
-				$view_operations = $sql1->fetch_assoc();
-				$buttonOptions = $view_operations['view_operations'];
-		}else{
-				$buttonOptions = $row['view_operations'];
-		}
+     	if((empty($row['view_operations'])) || ($row['view_operations'] == NULL)){
+          $buttonOptions = $defaultOptions['view_operations'];
+  		}else{
+  				$buttonOptions = $row['view_operations'];
+  		}
 		//$buttonOptions = $row['view_operations'];
 	}
 	/*Code Change End Task ID 5.6.4*/
+    if(empty($row['list_extra_options']) || $row['list_extra_options'] == NULL){
+      $row['list_extra_options'] = $defaultOptions['list_extra_options'];
+    }
 
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
     global $popup_menu;
@@ -323,16 +320,16 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
           echo "</select>";
         }
 				if ($list_views['checklist'] == 'true') {
+            $thisDDid  = $row['dict_id'];
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
 
-                        echo "<button type='submit' class='btn action-delete " . $ret_array['del_array']['style'] . "' name='delete' >" . $ret_array['del_array']['label'] . "</button>";
+                        echo "<button type='submit' data-id='$thisDDid' class='btn action-delete " . $ret_array['del_array']['style'] . "' name='delete' >" . $ret_array['del_array']['label'] . "</button>";
                     }
-
                     //// setting for  copy button
                     if (isset($ret_array['copy_array']) && !empty($ret_array['copy_array'])) {
 
-                        echo "<button type='submit' class='btn action-copy " . $ret_array['copy_array']['style'] . "' name='copy' >" . $ret_array['copy_array']['label'] . "</button>";
+                        echo "<button type='submit' data-id='$thisDDid' class='btn action-copy " . $ret_array['copy_array']['style'] . "' name='copy' >" . $ret_array['copy_array']['label'] . "</button>";
                     }
                     echo "";
                 }/// checklist if ends here
@@ -568,27 +565,27 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 			switch($listView){
 				case 'mapView':
 					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
+					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
 					break;
 
 				case 'mapAddress':
 					include_once('renderMapView.php');
-					renderMapView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
 					break;
 
 				case 'boxView':
 					include_once('renderBoxView.php');
-					renderBoxView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
                 case 'boxWide':
 					include_once('renderBoxWide.php');
-					renderBoxWide($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
 				default:
 					include_once('renderListView.php');
-					renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
+					renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
 					break;
 			} ?>
         </form>

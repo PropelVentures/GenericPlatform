@@ -842,9 +842,10 @@ function editPagePagination($list_extra_options, $pkey) {
 
     ///////fetching forigen keys
 
-
+    $isExistFilter;
+    $isExistField;
     if (!empty($record[0]['list_filter']))
-        $clause = listFilter($record[0]['list_filter'], $search_key);
+        $clause = listFilter($record[0]['list_filter'], $search_key,$isExistFilter,$isExistField);
 
 
 
@@ -938,7 +939,7 @@ function helperOfEPP($id, $mode = 'false') {
  *
  *
  */
-function translateSpecialKeysValueTOSQL($array){
+function translateSpecialKeysValueTOSQL($array,&$isexistFilter,&$isExistField){
 
   $result = '';
   if(empty($array[0]) || empty($array[1])){
@@ -954,6 +955,12 @@ function translateSpecialKeysValueTOSQL($array){
     $result = "$key=NULL";
   }else if(strtoupper($condition) ==='!NULL'){
     $result = "$key!=NULL";
+  }else if(strtoupper($condition) ==='FILEEXISTS'){
+    $isexistFilter = 'exist';
+    $isExistField = $key;
+  }else if(strtoupper($condition) ==='!FILEEXISTS'){
+    $isexistFilter = 'not_exist';
+    $isExistField = $key;
   }
   return $result;
 }
@@ -967,7 +974,7 @@ function convertVariableValuesToRealValues($value){
   return $value;
 }
 
-function convertFilterToSQL($filter){
+function convertFilterToSQL($filter,&$isexistFilter,&$isExistField){
   $filter = trim($filter);
   $result = '';
   if(empty($filter)){
@@ -975,7 +982,7 @@ function convertFilterToSQL($filter){
   }else{
     $specialKeys = explode(':',$filter);
     if(count($specialKeys) > 1){
-      $result = translateSpecialKeysValueTOSQL($specialKeys);
+      $result = translateSpecialKeysValueTOSQL($specialKeys,$isexistFilter,$isExistField);
       $result = convertVariableValuesToRealValues($result);
     }else{
       $result = $filter;
@@ -985,7 +992,7 @@ function convertFilterToSQL($filter){
   }
 }
 
-function checkORConditionAndConvertToSQL($filter){
+function checkORConditionAndConvertToSQL($filter,&$isexistFilter,&$isExistField){
   $filter = trim($filter);
   if(empty($filter)){
     return '';
@@ -993,7 +1000,7 @@ function checkORConditionAndConvertToSQL($filter){
     $allConditions = explode('OR',$filter);
     if(count($allConditions) > 1){
       foreach ($allConditions as $key => $value) {
-        $allConditions[$key] = convertFilterToSQL($value);
+        $allConditions[$key] = convertFilterToSQL($value,$isexistFilter,$isExistField);
       }
       $result = '';
       $length = count($allConditions);
@@ -1005,12 +1012,12 @@ function checkORConditionAndConvertToSQL($filter){
       }
       return $result;
     }else{
-      return convertFilterToSQL($filter);
+      return convertFilterToSQL($filter,$isexistFilter,$isExistField);
     }
   }
 }
 
-function listFilter($listFilter, $search) {
+function listFilter($listFilter, $search,&$isexistFilter,&$isExistField) {
 
     if(is_array($listFilter) )
     {
@@ -1023,7 +1030,7 @@ function listFilter($listFilter, $search) {
       if(empty(trim($value))){
         unset($allFilters[$key]);
       }else{
-        $allFilters[$key] = checkORConditionAndConvertToSQL($value);
+        $allFilters[$key] = checkORConditionAndConvertToSQL($value,$isexistFilter,$isExistField);
       }
 
     }
@@ -1048,152 +1055,6 @@ function listFilter($listFilter, $search) {
     }
     return $result;
 
-//this next code must be removed after completion of 6.8.005
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ###HANDLE PARENT->CHILD RELATIONSHIPT BASED ON DD.keyfield and DD.table_type = 'child'####
-    if(is_array($listFilter) )
-    {
-        $listFilterParentChildClause = $listFilter['child_filter'];
-        $listFilter = $listFilter['list_filter'];
-    }
-
-    $keyfield = explode(";", $listFilter);
-
-    $firstParent = $keyfield[0];
-    // print_r($keyfield);die;
-
-    if (!empty($keyfield[1])) {
-
-        $listCond = $keyfield[1];
-    }
-
-    //  $checkFlag = false;
-
-    ###CREATES AN ARRAY OF ARRAY WITH KEYFIELD=>DYNAMIC_PART BASED ON CSV##
-    if (!empty($keyfield[0])) {
-        $i = 0;
-
-        $keyfield = explode(",", $keyfield[0]);
-
-        foreach ($keyfield as $val) {
-
-            $keyField = explode("=", $val);
-
-            $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
-
-            $i++;
-        }
-    }
-
-    ###'projects=child_product_id'; kind of parameters, same for 'users='
-//    foreach ($keyVal as $val) {
-//
-//        if (!empty($val['projects'])) {
-//
-//            $pid = $val['projects'];
-//        }
-//
-//        if (!empty($val['users'])) {
-//
-//            $uid = $val['users'];
-//        }
-//    }
-
-    ###DETECT THESE #KEYWORDS AND REPLACE THEM WITH RESPECTIVE DYNAMIC ID FROM USER SESSION
-    ###$filterIdKeywordsArray = array('#current_user_id', '#current_user_name', '#current_product_id', '#current_product_name');
-
-    $sqlClause = '';
-
-    foreach ($keyVal as $dataVal) {
-
-        $keywordId = reset($dataVal);
-        $keyField = key($dataVal);
-
-        switch ($keywordId) {
-            case "#current_user_id":
-                $sqlClause .= "$keyField=$_SESSION[uid] ";
-                break;
-            case "#current_user_name":
-                $sqlClause .= "$keyField='$_SESSION[uname]' ";
-                break;
-            case "#current_product_id":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            case "#current_product_name":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            default:
-                $sqlClause .= '';
-        }
-
-    }
-    $sqlClause = str_replace(' ', ' AND ', trim($sqlClause) );
-
-
-//    if (!empty($pid) && !empty($search)) {
-//
-//        $clause = "$pid = '$search'";
-//
-//        //$checkFlag = true;
-//    }
-//
-//    if (!empty($uid)) {
-//
-//        if (!empty($clause)) {
-//
-//            $clause = $clause . " and " . $uid . "=" . $_SESSION['uid'];
-//        } else {
-//
-//            $clause = $uid . "=" . $_SESSION['uid'];
-//        }
-//
-//        //  $checkFlag = true;
-//    }
-
-    if (!empty($sqlClause) && !empty($listCond)) {
-        $sqlClause = $sqlClause . " and " . $listCond;
-    } else if (empty($sqlClause) && !empty($firstParent)) {
-        $sqlClause = $firstParent;
-    }
-
-    ###BIND PARENT CHILD FILTER CLAUSE BASED ON RELATIONSHIP AND DD.keyfield###
-    if(!empty($listFilterParentChildClause) && !empty($sqlClause) )
-    {
-        $sqlClause .= " AND $listFilterParentChildClause";
-    }
-    else if(!empty($listFilterParentChildClause) )
-    {
-        $sqlClause .= " $listFilterParentChildClause";
-    }
-
-    // exit($clause);
-    return $sqlClause;
 }
 
 function getFiltersArray($list_filters){
@@ -1824,3 +1685,134 @@ function isAllowedToShowByPrivilegeLevel($row){
   }
   return false;
 }
+
+function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
+  return true;
+  if($isExistField == null || $isExistFilter == null){
+    return true;
+  }
+  if(!isset($row[$isExistField])){
+    return true;
+  }
+
+  $value = trim($row[$isExistField]);
+  if($isExistFilter=='exist'){
+    if(empty($value)){
+      return false;
+    }
+    if(file_exists(USER_UPLOADS.$value)){
+      return true;
+    }else{
+      return false;
+    }
+  }else if($isExistFilter=='not_exist'){
+    if(file_exists(USER_UPLOADS.$value)){
+      return false;
+    }else{
+      return true;
+    }
+  }
+}
+
+function getDefaultListViewExtraOptions($con,$displaypage){
+  $sql1 = $con->query("SELECT * FROM data_dictionary where data_dictionary.display_page='$displaypage' and data_dictionary.table_type='default'");
+  $defaultOptions = $sql1->fetch_assoc();
+  return $defaultOptions;
+}
+
+
+// function renderTheMianStructure($con,$display_page,$page_layout_style,$posittion=''){
+//
+//   $left_sidebar;
+//   $right_sidebar;
+//   $both_sidebar;
+//   $left_sidebar_width;
+//   $right_sidebar_width;
+//   // setLeftRightSideBars($con,$display_page,$posittion,$left_sidebar,$right_sidebar,$both_sidebar,$left_sidebar_width,$right_sidebar_width)
+//   //
+// 	// sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+//
+// }
+//
+// function setLeftRightSideBars($con,$display_page,$posittion,&$left_sidebar,&$right_sidebar,&$both_sidebar,&$left_sidebar_width,&$right_sidebar_width){
+//   if(strtoupper($posittion) =='TOP'){
+//     $positionCheck = ' position="top"';
+//   }else{
+//     $positionCheck = ' position != "top"';
+//   }
+//   $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND $positionCheck ");
+//   $right_sidebar = $left_sidebar = '';
+//   $left_sidebar_width = $right_sidebar_width = 0;
+//   while ($row = $rs->fetch_assoc()) {
+//     $r1 = explode('w', trim($row['tab_num']));
+//     if (!empty($r1[1])) {
+//       if ($r1[0] == 'R1')
+//       $right_sidebar_width = $r1[1];
+//       else
+//       $left_sidebar_width = $r1[1];
+//     }
+//     if ($r1[0] == 'R1') {
+//       $right_sidebar = 'right';
+//     }
+//     if ($r1[0] == 'L1') {
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code Start*/
+//   $navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyLeftQuery->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyRightQuery->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code End*/
+//   /* Tab TTl1 or Tl2 Start */
+//   $tabLeftExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-L%' AND $positionCheck ");
+//   if($tabLeftExist->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $tabRightExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-R%' AND $positionCheck ");
+//   if($tabRightExist->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Tab TTl1 or Tl2 End */
+//   if ($left_sidebar == 'left' && $right_sidebar == 'right') {
+//     $both_sidebar = 'both';
+//   }
+//
+//   /*
+//    * Check If middle content exist
+//    * If not exist then check the width of aone and asign the other
+//    * or if width not exist then divide 50% each
+//    */
+//   $middleContentExist = true;
+//   $checkMiddleContentQuery = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'  and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND $positionCheck");
+//   if($checkMiddleContentQuery->num_rows == 0 ){
+//     $middleContentExist = false;
+//     if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       // do nothing
+//     } else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+//       $left_sidebar_width = 100 - $right_sidebar_width;
+//     } else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       $right_sidebar_width = 100 - $left_sidebar_width;
+//     } else {
+//       if ($both_sidebar == 'both') {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else {
+//         $left_sidebar_width = $right_sidebar_width = 0;
+//       }
+//     }
+//   }
+// }

@@ -12,7 +12,7 @@ function serial_layout($display_page, $style) {
         echo "<form class='$style'>
   <fieldset>
     <legend>$row[tab_name]:</legend>";
-        Get_Data_FieldDictionary_Record($row['table_alias'], $display_page, $editable);
+        Get_Data_FieldDictionary_Record('',$row['table_alias'], $display_page, $editable);
         echo "</fieldset>
 </form>";
     }
