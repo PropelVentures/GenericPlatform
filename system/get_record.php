@@ -42,22 +42,21 @@ function get_single_record($db_name, $pkey, $search) {
  * @param type $listCheck
  * @return type
  */
-function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false') {
+function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false',&$isExistFilter,&$isExistField) {
     $_SESSION['update_table']['search'] = $search;
     $con = connect();
 
     if ($listFilter != 'false')
-        $clause = listFilter($listFilter, $search);
+        $clause = listFilter($listFilter, $search,$isExistFilter,$isExistField);
 
     // exit("select * from $db_name $clause");
-
-    if (!empty($clause))
-        $clause ='WHERE ' . $clause;
+    if (!empty(trim($clause))){
+      $clause ='WHERE ' . $clause;
+    }
 
     if($singleSort !=='false'){
       $clause = $clause .' order by '.$singleSort;
     }
-
     $user = $con->query("SELECT * FROM $db_name $clause ");
 // if($db_name=='product'){
 //   while ($data= $user->fetch_assoc()) {
@@ -73,9 +72,9 @@ function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit 
     $con = connect();
 
 
-
+    $isExistFilter;$isExistField;
     if ($listFilter != 'false')
-        $clause = listFilter($listFilter, $search);
+        $clause = listFilter($listFilter, $search,$isExistFilter,$isExistField);
 
 
     // exit("select * from $db_name $clause");

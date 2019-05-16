@@ -1,5 +1,5 @@
 <?php
-function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
+function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 	$con = connect();
 	//styling of data table
 	//*
@@ -142,6 +142,11 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 					if($count > $limit){
 						break;
 					}
+
+					if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
+						break;
+					}
+
 					$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 					$rs = $con->query($qry);
 					if (!empty($list_select) || $table_type == 'child') {
@@ -180,7 +185,7 @@ function renderListView($row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
 									 * checking in database if checklist is there
 									 */
 									if ($list_views['checklist'] == 'true') { ?>
-										<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='<?php $checkbox_id ;?>' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>
+										<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='<?= $checkbox_id; ?>' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>
 										<input type='hidden' name='dict_id[]' value='<?php echo $dict_id; ?>'>
 									<?php } ?>
 									<span class='list-del' id='<?php echo $checkbox_id; ?>' name='<?php echo $dict_id; ?>'></span>

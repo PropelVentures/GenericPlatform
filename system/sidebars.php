@@ -33,7 +33,7 @@ function sidebar($sidebar, $both_sidebar, $display_page, $sidebar_width) {
     			//ShowTableTypeSubHeaderContent($display_page,$row['tab_num']);
     			/* Check For table_type == subheader1 or subheader2 End */
           if(isAllowedToShowByPrivilegeLevel($row)){
-            Get_Data_FieldDictionary_Record($row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
+            Get_Data_FieldDictionary_Record('',$row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
           }
         }
         echo "</div>";
@@ -62,7 +62,7 @@ function sidebar($sidebar, $both_sidebar, $display_page, $sidebar_width) {
     			//ShowTableTypeSubHeaderContent($display_page,$row['tab_num']);
     			/* Check For table_type == subheader1 or subheader2 End */
           if(isAllowedToShowByPrivilegeLevel($row)){
-            Get_Data_FieldDictionary_Record($row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
+            Get_Data_FieldDictionary_Record('',$row['table_alias'], $display_page, $tab_status = 'bars', $row['tab_num']);
           }
         }
         echo "</div>";

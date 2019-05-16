@@ -50,7 +50,6 @@
 
 
 function formating_Update($row, $method, $urow, $image_display = 'false', $page_editable = 'false') {
-	// pr($row);
 
     /* temporary testing */
 
@@ -119,6 +118,13 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 		}
         $fieldValue = ($urow != 'false') ? $urow[$field] : '';
     }
+
+		if(empty($fieldValue) && strtoupper($row['field_identifier'])==='USER_ID'){
+			$fieldValue = $_SESSION['uid'];
+			$urow = [];
+			$urow[$row['generic_field_name']] = $fieldValue;
+		}
+
     //////////////
     //////////////////////////
     ///////////////////////////////////////
@@ -169,11 +175,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "dropdown":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-
-                if ($urow != 'false')
-                    dropdown($row, $urow, $fieldValue = 'false', $page_editable);
-                else
-                    dropdown($row);
+                if ($urow != 'false'){
+									dropdown($row, $urow, $fieldValue = 'false', $page_editable);
+								}else{
+									dropdown($row);
+								}
                 echo "</div></div>";
                 break;
 
@@ -447,7 +453,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 						}
 				}
 				if(isKeyField($row)){
-					$place_holder = KEYFIELD_PLACEHOLDER;
+					$place_holder ='';
+					if(empty($fieldValue) && $fieldValue!==0 && $fieldValue!=='0'){
+						$place_holder =KEYFIELD_PLACEHOLDER;
+					}
 					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label>$row[field_label_name]</span></label>";
 					// echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimensions['style'] size=$dimensions['width'] class='form-control'>";
 					echo "<input type='$row[format_type]' name='$field' placeholder='$place_holder' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]'  size=$dimWidth class='form-control'>";
@@ -498,7 +507,6 @@ function progressbar($value,$class,$style,$width,$height){
 	// $height = '10px';
 	// $width = '50px';
 	$cssStyles = parseProgressBarStyles($style);
-	// pr($cssStyles);
 	// if(isset($cssStyles['color'])){
 	// 	$color = $cssStyles['color'];
 	// }
@@ -1008,23 +1016,16 @@ function checkbox($row, $urow = 'false', $page_editable = 'false') {
 
 
 function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable = 'check') {
-
-
     $con = connect();
 		$fd_css_class  =$row['fd_css_class'];
 		$fd_css_style = $row['fd_css_code'];
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
-
     $dd = $rs->fetch_assoc();
 		$isAllowedToAdd = false;
 		if(isAllowedToShowByPrivilegeLevel($dd)){
 			$isAllowedToAdd  = true;
 		}
-		//print_r($row);die;
     $list_fields = explode(',', $dd['list_fields']);
-
-		//print_r($list_fields);die;
-
     $keyfield = '';
 
     if ($_GET['addFlag'] == 'true')
@@ -1146,10 +1147,11 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
             $data = implode(dropdownSeparator, $res2);
 
             if ($urow[$row[generic_field_name]] == $res[$key]) {
-
                 echo "<option value='$res[$key]' selected >$data</option>";
-            } else
-                echo "???? <option value='$res[$key]'>$data</option>";
+            } else{
+							  echo "???? <option value='$res[$key]'>$data</option>";
+						}
+
         }
         echo "</select>";
 
@@ -1172,7 +1174,6 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
 
 
 function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'false', $page_editable = 'check') {
-	// pr($urow);
 
 	$selectLimit = isset($formatArray[1]) ? $formatArray[1]  : maxSelectLimit;
 	$v = $urow[$row[generic_field_name]];
@@ -1180,13 +1181,8 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
 	echo "<input id='limitValue' hidden value=$selectLimit />";
 	echo "<input id='multiSelectValues' hidden value=$v name='$row[generic_field_name]' />";
     $con = connect();
-
     $rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row[dropdown_alias]'");
-
     $dd = $rs->fetch_assoc();
-	// pr($row);
-
-//print_r($row);die;
     $list_fields = explode(',', $dd['list_fields']);
 
     $keyfield = '';
@@ -1210,7 +1206,6 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
     if (!empty($row['format_length']))
         $length = "style='width:$row[format_length]px'";
 //        $length = "style='width:$row[format_length]em'";
-	// pr($length);
 
     $itemDis = array();
     foreach ($list_fields as $val) {
@@ -1283,8 +1278,6 @@ function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'fals
 
 		echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>';
 		echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"></script>';
-
-		// pr($urow[$row[generic_field_name]]);
 
 		echo "<div>";
         echo "<select multiple class='multiple_select form-control' $readonly $length>";
