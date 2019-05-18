@@ -1838,3 +1838,32 @@ function getDefaultListViewExtraOptions($con,$displaypage){
 //     }
 //   }
 // }
+
+function showListFilterSelection($row,$filters_srray,$selected_filter_index){
+  $select_menu_id = $row['dict_id'].'filter_select_box';
+  $this_DD_id = $row['dict_id'];
+  echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    if($key==$selected_filter_index){
+      echo "<option value='$key' selected>$label</option>";
+    }else{
+      echo "<option value='$key' >$label</option>";
+    }
+  }
+  echo "</select>";
+}
+
+function showListViewSelection($row,$filters_srray,$selected_filter_index){
+  $this_DD_id = $row['dict_id'];
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    $checked = '';
+    if($key ==$selected_filter_index){
+      $checked = 'checked';
+    }
+    echo "<label style='margin-left:15px' class='radio-inline'>
+    <input onchange='listViewChange(this)' type='radio'".$checked." name='$this_DD_id' value='$key'>$label
+    </label>";
+  }
+}

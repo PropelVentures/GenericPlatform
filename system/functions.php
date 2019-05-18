@@ -552,7 +552,6 @@ function getSideBarNavItems($page,$menu_location,$overRide= false){
  * For all menu location & loginrequired(true or false)
  */
 function generateTopNavigation($navItems,$loginRequired){
-  // pr($navItems);
   $isUserLoggedIn = true;
   if(isset($_SESSION['user_privilege'])){
     $currentUserPrivilege = $_SESSION['user_privilege'];

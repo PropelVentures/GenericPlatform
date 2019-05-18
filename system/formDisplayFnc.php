@@ -1127,15 +1127,15 @@ function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable =
     } else {
         $qry = $con->query("SELECT $list_fields FROM  $dd[database_table_name] $order");
 
-
 			if($isAllowedToAdd){
-				  echo "<select onclick='addnewOption(this)' data-table='$table' data-key='$primeryKey' data-primaryvalue='$primeryfieldValue' data-inputfields='$listFields' name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+				  echo "<select onchange='addnewOption(this)' data-table='$table' data-key='$primeryKey' data-primaryvalue='$primeryfieldValue' data-label='$row[field_label_name]' data-inputfields='$listFields' name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+					echo '<option  >Add NEW</option>';
 			}else{
 				  echo "<select name='$row[generic_field_name]'  class='form-control $fd_css_class' $readonly $length style='$fd_css_style'>";
+					echo "<option></option>";
 			}
-		  echo "<option></option>";
 			if($isAllowedToAdd && !$readonly){
-				echo '<option  >Add NEW</option>';
+
 			}
 
         while ($res = $qry->fetch_assoc()) {
@@ -1370,6 +1370,9 @@ function list_fragment($row2) {
 
 	$rs = $con->query("SELECT * FROM  data_dictionary where table_alias = '$row2[dropdown_alias]'");
 	$dd = $rs->fetch_assoc();
+
+	$stripTags = isStripHtmlTags($row['list_extra_options']);
+
 	$required_list_fileds = false;
 	if(!empty(trim($dd['list_fields']))){
 		$required_list_fileds =explode(',',trim($dd['list_fields']));
@@ -1426,7 +1429,7 @@ function list_fragment($row2) {
 
     $query = get_listFragment_record($dd['database_table_name'], $dd['keyfield'], $dd['list_filter'], $dd['list_extra_options'], $fields);
 
-    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap; $fd_css_style'>";
+    echo "<table class='list_fragment $fd_css_class' style='white-space: nowrap;border-collapse: collapse; $fd_css_style'>";
 
     /*     * **
      *
@@ -1461,6 +1464,9 @@ function list_fragment($row2) {
 			echo "<tr>";
 			$i = 1;
 			foreach ($rec as $val) {
+				if($stripTags){
+					$val = strip_tags($val);
+				}
 				echo "<td class='list_td$i' >$val</td>";
 				$i++;
 			}

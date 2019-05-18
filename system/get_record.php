@@ -58,11 +58,6 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
       $clause = $clause .' order by '.$singleSort;
     }
     $user = $con->query("SELECT * FROM $db_name $clause ");
-// if($db_name=='product'){
-//   while ($data= $user->fetch_assoc()) {
-//     pr($data['productImage']);
-//   }
-// }
     return $user;
 }
 

@@ -74,7 +74,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed;">
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%'>
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>
@@ -265,6 +265,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			paging: <?php echo $list_pagination['paging'];?>,
 			scrollY:<?php echo $list_pagination['scrollY'];?>,
 			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
+			sScrollX: "100%",
 			searching: <?php echo $list_searching;?>,
 			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
 			pagingType: 'full_numbers',

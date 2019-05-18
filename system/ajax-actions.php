@@ -15,6 +15,14 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter')
   exit;
 }
 
+/*on chnage of list filter*/
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_view') {
+  if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
+    $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_view'] = $_GET['selected_filter'];
+  }
+  exit;
+}
+
 
 /*on chnage of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'adding_new_options') {

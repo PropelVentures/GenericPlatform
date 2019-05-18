@@ -1,7 +1,6 @@
 <?php
 function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
 	$con = connect();
-	// pr($row);
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
