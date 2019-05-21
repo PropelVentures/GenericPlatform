@@ -1443,7 +1443,7 @@ function list_fragment($row2) {
         $i = 1;
         foreach ($labels as $val) {
 
-            echo "<th class='list_td$i' > $val </th>";
+            echo "<th style='padding:0 5px 0 0;' class='list_td$i' > $val </th>";
 
             $i++;
         }
@@ -1467,7 +1467,7 @@ function list_fragment($row2) {
 				if($stripTags){
 					$val = strip_tags($val);
 				}
-				echo "<td class='list_td$i' >$val</td>";
+				echo "<td style='padding:0 5px 0 0;' class='list_td$i' >$val</td>";
 				$i++;
 			}
 			echo "</tr>";

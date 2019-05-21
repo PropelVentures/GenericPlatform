@@ -1867,3 +1867,28 @@ function showListViewSelection($row,$filters_srray,$selected_filter_index){
     </label>";
   }
 }
+
+function listColumnWidth($tbRow){
+  if(!empty(trim($tbRow['format_length']))){
+  		$colWidth = explode(',',trim($tbRow['format_length']));
+  		$colWidth = $colWidth[0];
+  		if(empty($colWidth) ||  $colWidth<100){
+  			$colStyle = 40;
+  		}
+  }else{
+  	$colWidth = parseFieldType($tbRow);
+  }
+  return $colWidth;
+}
+
+function calculateWidthsInPercentage($array){
+  $count  = count($array)+1;
+  $total = 0;
+  foreach ($array as $key => $value) {
+    $total = $total+$value;
+  }
+  foreach ($array as $key => $value) {
+    $array[$key] ='"'. ($value*97)/$total.'%"';
+  }
+  return $array;
+}

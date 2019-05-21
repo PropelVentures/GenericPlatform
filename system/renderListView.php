@@ -67,14 +67,15 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	$display_page = $row['display_page'];
 	$display_id ='#'.$display_page . $dict_id.' .clearFunction';
 	$list_select_arr = getListSelectParams($list_select);
-
+	$column_widths_array = [];
 	$stripTags = isStripHtmlTags($row['list_extra_options']);
 	?>
 
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%'>
+	<table id='table_<?php echo $dict_id;?>' class='display compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed !important;
+    word-wrap:break-word;">
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>
@@ -100,21 +101,26 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 										$sort_index=$count;
 								}
 							}
-							$colStyle = '';
-							if(!empty(trim($tbRow['format_length']))){
-									$colWidth = explode(',',trim($tbRow['format_length']));
-									$colWidth = $colWidth[0];
-									if(!empty($colWidth) &&  $colWidth>100){
-										$colWidth=$colWidth.'px';
-										$colStyle = "style='width:$colWidth'";
-									}else{
-										// $colStyle = "style='width:100px'";
-									}
-							}
+							// $colStyle = '';
+							// if(!empty(trim($tbRow['format_length']))){
+							// 		$colWidth = explode(',',trim($tbRow['format_length']));
+							// 		$colWidth = $colWidth[0];
+							// 		if(!empty($colWidth) &&  $colWidth>100){
+							// 			$colWidth=$colWidth.'px';
+							// 			$colStyle = "style='width:$colWidth'";
+							// 		}else{
+							// 			// $colStyle = "style='width:100px'";
+							// 		}
+							// }
+						$colWidth = listColumnWidth($tbRow);
+						if($colWidth < 100){
+							$colWidth = 100;
+						}
+						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
 
 					  ?>
-						<th <?=$colStyle?> > <?= $tbRow['field_label_name']; ?></th>
+						<th> <?= $tbRow['field_label_name']; ?></th>
 					<?php
 						//Code Change for Task 5.4.22 Start
 						}
@@ -178,7 +184,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 								}
 							} ?>
 							<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr">
-								<td class='dt-body-center' style='overflow: hidden;'>
+								<td class='dt-body-center'>
 									<?php $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
 									/*
 									 * displaying checkboxes
@@ -221,7 +227,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 								$fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
 							}
 							//will temprory truncate
-							$fieldValue = substr($fieldValue, 0, 30);
+							// $fieldValue = substr($fieldValue, 0, 30);
 							if($stripTags){
 								$fieldValue = strip_tags($fieldValue);
 							}
@@ -230,7 +236,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							//Code Change for Task 5.4.22 End
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
 
-								<td style='overflow: hidden;'> <?php echo $fieldValue; ?></td>
+								<td style=''> <?php echo $fieldValue; ?></td>
 							<?php
 							}
 							//Code Change for Task 5.4.22 Start
@@ -256,21 +262,28 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
 			$_SESSION['popup_munu_array'][] = $popup_menu;
 		}
+
+
 	?>
 	<script>
 	<?php $page_no = $list_pagination['itemsperpage']; ?>
 		$('#table_<?php echo $dict_id;?>').DataTable({
 			pageLength: <?php echo $page_no; ?>,
-  			scrollX: <?php echo $list_pagination['scrollX'];?>,
+  		scrollX: <?php echo $list_pagination['scrollX'];?>,
 			paging: <?php echo $list_pagination['paging'];?>,
 			scrollY:<?php echo $list_pagination['scrollY'];?>,
 			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
-			sScrollX: "100%",
+			// sScrollX: "100%",
 			searching: <?php echo $list_searching;?>,
 			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
 			pagingType: 'full_numbers',
 			lengthMenu: <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
 			order: [<?php echo $sort_index; ?>, <?php echo "'" . $sort_order . "'"; ?>],
+			columnDefs:[
+				<?php foreach ($column_widths_array as $key => $value) { ?>
+						{ "width": <?=$value?>, "targets": [<?=$key?>] },
+				<?php }?>
+			]
 			// bStateSave: true,
 		});
 
@@ -301,7 +314,6 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			}
 		});
 		if(!(<?php echo $list_searching ?>)){
-			console.log('<?php echo $display_id;?>');
 			$(' <?php echo $display_id;?>').hide();
 		}
 
