@@ -70,6 +70,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $isExistFilter = null;
     $isExistField = null;
     $filters_srray = getFiltersArray($row['list_filter']);
+    $view_types_array = getFiltersArray($row['list_views']);
+
     $selected_filter_index = 0;
     if(count($filters_srray)>0){
       if(isset($_SESSION[$row['dict_id'].'_selected_filter'])){
@@ -82,6 +84,21 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }else{
       $selected_row_filter = $row['list_filter'];
     }
+    $selected_view_index = 0;
+    if(count($view_types_array)>0){
+      if(isset($_SESSION[$row['dict_id'].'_selected_view'])){
+        $selected_view_index = $_SESSION[$row['dict_id'].'_selected_view'];
+        $selected_row_view = $view_types_array[$_SESSION[$row['dict_id'].'_selected_view']]['filter'];
+        unset($_SESSION[$row['dict_id'].'_selected_view']);
+      }else{
+        $selected_row_view = $view_types_array[0]['filter'];
+      }
+    }else{
+      $selected_row_view = $row['list_views'];
+    }
+
+    $listView = strtolower($selected_row_view);
+
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck,$isExistFilter,$isExistField);
     } else {
@@ -94,13 +111,14 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     if($limitOnAddButton !== false && $availableRecords >= $limitOnAddButton){
       $disableAddButton = true;
     }
-    $listView = trim($row['list_views']);
+    // $listView = trim($row['list_views']);
 	//Added BY Dharmesh 2018-10-07
 	$list_views = listvalues($row['list_views']);
 	//Code End//
 	//Added BY Dharmesh 2018-10-12
 
     $list_pagination = listpageviews($row['list_pagination']);
+
 	if (!isset($list_pagination['itemsperpage']) || empty($list_pagination['itemsperpage'])){
 		$list_pagination['itemsperpage'] = 9 ;// set default
 	}
@@ -166,7 +184,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 		"popup_openChild" => $ret_array['popup_openChild']
 	);
 
-    if (count($list_sort) > 1 && ($listView == 'boxView' || $listView == 'boxView')) { ?>
+    if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby">
             <h3>Sort by </h3>
             <span>
@@ -221,13 +239,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
-	$table_type = trim($row['table_type']);
-  // pr($list_select);
-	$list_select_arr = getListSelectParams($list_select);
-
-	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
-  // pr($addRecordUrl);
-  // pr($_SESSION);
+  	$table_type = trim($row['table_type']);
+  	$list_select_arr = getListSelectParams($list_select);
+  	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
     $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
@@ -305,20 +319,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 <?php }
 				}
 
-        if(count($filters_srray)>0){
-          $select_menu_id = $row['dict_id'].'filter_select_box';
-          $this_DD_id = $row['dict_id'];
-          echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
-          foreach ($filters_srray as $key => $value) {
-            $label = $value['label'];
-            if($key==$selected_filter_index){
-              echo "<option value='$key' selected>$label</option>";
-            }else{
-              echo "<option value='$key' >$label</option>";
-            }
-          }
-          echo "</select>";
-        }
 				if ($list_views['checklist'] == 'true') {
             $thisDDid  = $row['dict_id'];
                     /// setting for  delete button
@@ -337,198 +337,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
                 ##CUSTOM FUNCTION BUTTON##
                 if (!empty($ret_array['custom_function_array']) ) {
-
-                    foreach($ret_array['custom_function_array'] as $keyCustomFunction => $customFunction)
-                    {
-
-                        ##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
-                        if(strtolower($customFunction['function']) == 'addimport')
-                        {
-                            ##FOR TESTING AND DEBUG,SHOULD BE REMOVED###
-                            #$customFunction['params'] = 'add import` import multiple data` ` user_id` pname1` description` product_name';##THIRD param iS CI OR CP | TI OR TP##
-
-                            ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######STARTS####
-                            $customFunctionParams = $customFunction['params'];
-                            $customFunctionParams = explode("`", $customFunctionParams);
-                            $customFunctionParams = array_map('trim', $customFunctionParams);
-
-                            $customFunctionThirdParameter = $customFunctionParams['2'];
-
-                            ###SET SESSION var for holding addimport function parameters######
-                            $_SESSION['addImportParameters'] = $customFunctionParams;
-
-//                            echo "<font color=red>\$customFunction['params']:$customFunction[params] ::::::\$customFunctionThirdParameter:$customFunctionThirdParameter</font><br>";
-//                            echo "<pre>";
-//                            print_r($_SESSION['addImportParameters']);
-//                            echo "</pre>";
-
-                            $addImportLink = $_SESSION['add_url_list'] . '&addImport=true';
-
-                            $buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';
-                            $buttonHtmlManualImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=manual' . '" data-prompt_action="importManual" >Manual Import</a>';
-                            #<a data-dismiss="modal" data-toggle="modal" href="#lost">Click</a>
-
-                            $buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';
-                            $buttonHtmlManualImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportManualModal" data-prompt_action="importManual" >Manual Import</a>';
-
-                            $importPromptMessage = 'Import from CSV File, or Manual Import?';
-
-                            ###DEFAULT IMPORT TYPE = P i.e. prompt after every import###
-                            $importButtonActionType = 'P';
-
-                            if(stripos($customFunctionThirdParameter, 'I') !== false)
-                            {
-                                $importButtonActionType = 'I';
-                                $importPromptMessage = 'Import from CSV File?';
-                                $buttonHtmlManualImport = '';
-                            }
-
-//                            if(stripos($customFunctionThirdParameter, 'P') !== false )
-//                            {
-//                                $importButtonActionType = 'P';
-//                            }
-//                            else if(stripos($customFunctionThirdParameter, 'I') !== false)
-//                            {
-//                                $importButtonActionType = 'I';
-//                                $importPromptMessage = 'Import from CSV File?';
-//                                $buttonHtmlManualImport = '';
-//                            }
-//                            else
-//                            {
-//                                $importButtonActionType = 'P';
-//                            }
-                            ###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######ENDS######
-                            #<!-- Button trigger modal -->
-                            echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
-                                data-function_params='{$customFunction['params']}' name='add_import' data-import_type='$importButtonActionType'
-                                data-toggle='modal' data-target='#addimportModal'>" . $customFunction['label'] . "</button>";
-
-                            ?>
-
-
-                            <!-- addimport prompt Modal -->
-                            <div class="modal fade" id="addimportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="myModalLabel">Import</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <?= $importPromptMessage; ?>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                            <?= $buttonHtmlFileImport; ?>
-                                            <?= $buttonHtmlManualImport; ?>
-                                            <!--<button type="button" class="btn btn-primary">Save changes</button>-->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- addimport Status Success/Error Modal -->
-                            <div class="modal fade" id="addimportStatusModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="myModalLabel">Import Status</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <?php
-
-                                            $statusText = "Completed... ";
-
-                                            if(!empty($_SESSION['SuccessAddImport']) )
-                                            {
-                                                $statusText .= count($_SESSION['SuccessAddImport']) . " records processed. ";
-                                            }
-                                            if(!empty($_SESSION['errorsAddImport']) )
-                                            {
-                                                $statusText .= count($_SESSION['errorsAddImport']) . " records did not process due to errors.";
-                                            }
-
-                                            echo $statusText;
-
-                                            ?>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-
-                            <script>
-                            jQuery(document).ready(function($){
-
-                                //##SUCCESS/ERROR MODAL DISPLAYED ON REDIRECT USING SESSION##
-                                <?php
-                                if(!empty($_SESSION['errorsAddImport']) || !empty($_SESSION['SuccessAddImport']) )
-                                {
-                                    echo "$('#addimportStatusModal').modal('show');";
-                                }
-                                unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
-                                ?>
-
-
-                                $('#list-form').on('click', '.actionImportButton, .importPromptAction', function(event){
-                                    //$('#addimportModal').modal('hide');
-//                                    if (confirm( $(this).text() ) == true) {
-//
-//                                        $.ajax({
-//                                            method: "POST",
-//                                            url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-//                                            data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
-//                                        })
-//                                        .done(function (msg) {
-//                                            alert('Success');
-//                                            //location.reload();
-//                                        });
-//
-//                                    } else {
-//                                        event.stopImmediatePropagation();
-//                                    }
-                                });
-                            });
-                            </script>
-                            <?php
-                        }
-                        else
-                        {
-                            echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
-                                data-function_params='{$customFunction['params']}' name='custom_function_$keyCustomFunction' >" . $customFunction['label'] . "</button>";
-                            ?>
-                            <script>
-                            jQuery(document).ready(function($){
-                                $('#list-form').on('click', '.actionCustomfunction', function(event){
-
-                                    if (confirm( $(this).text() ) == true) {
-
-                                        $.ajax({
-                                            method: "POST",
-                                            url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                                            data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
-                                        })
-                                        .done(function (msg) {
-                                            alert('Success');
-                                            //location.reload();
-                                        });
-
-                                    } else {
-                                        event.stopImmediatePropagation();
-                                    }
-                                });
-                            });
-                            </script>
-                    <?php
-                        }
-
-                    }
+                    generateCustomFunctionArray($ret_array['custom_function_array']);
                 }
 
                 /// select checkbox div ends here
@@ -537,6 +346,12 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 			<?php } ?>
             <?php
 
+            if(count($filters_srray)>1){
+              showListFilterSelection($row,$filters_srray,$selected_filter_index);
+            }
+            if(count($view_types_array)>1){
+              showListViewSelection($row,$view_types_array,$selected_view_index);
+            }
             /*
              *
              * ********
@@ -563,22 +378,22 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             }//// if record is zero... ends here
 
 			switch($listView){
-				case 'mapView':
+				case 'mapview':
 					include_once('renderMapView.php');
 					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
 					break;
 
-				case 'mapAddress':
+				case 'mapaddress':
 					include_once('renderMapView.php');
 					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
 					break;
 
-				case 'boxView':
+				case 'boxview':
 					include_once('renderBoxView.php');
 					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
-                case 'boxWide':
+        case 'boxwide':
 					include_once('renderBoxWide.php');
 					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
@@ -681,6 +496,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
      *
      * displaying of image in list
      */
+
     $tbl_img = $listRecord[$imageField['generic_field_name']];
     $filename = USER_UPLOADS . "" . $tbl_img;
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
@@ -726,7 +542,12 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	echo "<div class='boxView_content list-data'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
-				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
+        if(isset($data['data_length'])){
+          $value = truncateLongDataAsPerAvailableWidth($data['field_value'],$data['data_length']);
+        }else{
+          $value = trim($data['field_value']);
+        }
+				echo "<div class='boxView_line ".$data['field_style']."'>".$value."</div>";
 			}
 		}
 	echo "</div>";

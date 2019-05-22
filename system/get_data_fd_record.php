@@ -100,7 +100,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
         }
         $row1 = $rs->fetch_assoc();
         $form_open_for_edit = false;
-
         $dd_EditAbleHaveValue2  = false;
 
         if($row1['dd_editable']=='2'){
@@ -862,7 +861,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 						} else {
 							#echo ("INSIDE FD RECORD.PHP called list_display()<br> ");
 	//                        echo "<pre>";
-                            // pr($_SESSION['parent_key_value']);
+
 							list_display($qry, $row1['tab_num']); //// list displays
 
 							echo "<div style='clear:both'></div>";

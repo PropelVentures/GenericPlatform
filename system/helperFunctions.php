@@ -1152,7 +1152,6 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
     }else{
         $no_of_pages = 0;
     }
-
     if(count($pagination)==1) {
             $pagination = $pagination['itemsperpage'];
     }else{
@@ -1669,6 +1668,10 @@ function generateLinkedinButton($linkedin_array){
 	return $linkedinButton;
 }
 
+
+/**
+ * function to use in all over the project to set the privalleges either have to show or not
+ */
 function isAllowedToShowByPrivilegeLevel($row){
   $user_privilege = $_SESSION['user_privilege'];
   $DD_privilege = $row['dd_privilege_level'];
@@ -1684,6 +1687,25 @@ function isAllowedToShowByPrivilegeLevel($row){
     return true;
   }
   return false;
+}
+
+
+/**
+ * to check either we have to show data with html tags in lists or we have to strip those tags,
+ * by default it strip tags but if there is a keyworld available in list_extra_options
+ *which is "showtags" then we do not strip them
+ */
+function isStripHtmlTags($value){
+  $value = strtoupper(trim($value));
+  $position = strpos($value,"SHOWTAGS");
+  if($position===false){
+    return true;
+  }
+  $all_options = explode(';',$value);
+  if(in_array("SHOWTAGS", $all_options)){
+    return false;
+  }
+  return true;
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
@@ -1816,3 +1838,69 @@ function getDefaultListViewExtraOptions($con,$displaypage){
 //     }
 //   }
 // }
+
+function showListFilterSelection($row,$filters_srray,$selected_filter_index){
+  $select_menu_id = $row['dict_id'].'filter_select_box';
+  $this_DD_id = $row['dict_id'];
+  echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    if($key==$selected_filter_index){
+      echo "<option value='$key' selected>$label</option>";
+    }else{
+      echo "<option value='$key' >$label</option>";
+    }
+  }
+  echo "</select>";
+}
+
+function showListViewSelection($row,$filters_srray,$selected_filter_index){
+  $this_DD_id = $row['dict_id'];
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    $checked = '';
+    if($key ==$selected_filter_index){
+      $checked = 'checked';
+    }
+    echo "<label style='margin-left:15px' class='radio-inline'>
+    <input onchange='listViewChange(this)' type='radio'".$checked." name='$this_DD_id' value='$key'>$label
+    </label>";
+  }
+}
+
+function listColumnWidth($tbRow,$minLimit = 100){
+  if(!empty(trim($tbRow['format_length']))){
+  		$colWidth = explode(',',trim($tbRow['format_length']));
+  		$colWidth = $colWidth[0];
+  		if(empty($colWidth) ||  $colWidth<100){
+  			$colStyle = 40;
+  		}
+  }else{
+  	$colWidth = parseFieldType($tbRow);
+  }
+  if($colWidth < $minLimit){
+    $colWidth = $minLimit;
+  }
+
+  return $colWidth;
+}
+
+function calculateWidthsInPercentage($array){
+  $count  = count($array)+1;
+  $total = 0;
+  foreach ($array as $key => $value) {
+    $total = $total+$value;
+  }
+  foreach ($array as $key => $value) {
+    $array[$key] ='"'. ($value*97)/$total.'%"';
+  }
+  return $array;
+}
+
+function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
+  $data= trim($data);
+  if($roundPxls){
+    $width = $width/6.7;
+  }
+  return substr($data, 0, $width);
+}

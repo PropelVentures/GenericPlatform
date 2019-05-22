@@ -248,9 +248,15 @@ function display_content($row) {
 				$href = "window.location.href='$addUrlInner'";
 			}
 
+      /***
+       * ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
+       *
+       * Short solution for back to home page
+       */
+      generateBreadcrumbsAndBackPageForAdd($row1,$onePage=true); // in codeCommonFunction.php
 
 			##CUSTOM FUNCTION BUTTON##
-			generateCustomFunctionArray($customFunctionArray); // in codeCommonFunction.php
+			// generateCustomFunctionArray($customFunctionArray); // in codeCommonFunction.php
 
 
 			if (!empty($_GET['ta']) && $_GET['ta'] == $row1['table_alias'] && !empty($_GET['search_id'])) {
@@ -285,14 +291,6 @@ function display_content($row) {
 
 				$_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
 
-				/***
-				 * ADDING BREADCRUMB FOR PARENT/NORMAL LISTS/PAGES
-				 *
-				 * Short solution for back to home page
-				 */
-				generateBreadcrumbsAndBackPageForAdd($row1,$onePage=true); // in codeCommonFunction.php
-
-
 				if ($_GET['checkFlag'] == 'true') {
 					###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
 					echo "<form action='$addUrlInner&action=add&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='shivgre-checkFlag-true $dd_css_class' style='$css_style'><br>";
@@ -315,7 +313,7 @@ function display_content($row) {
 
 				//$actual_link = $_SESSION['return_url2'] . "&fnc=onepage";
 
-				$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
+				$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp;";
 				if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
 					$cancelButton = "";// empty
 				}
@@ -325,15 +323,17 @@ function display_content($row) {
 				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
+            $cancelButton
 						$saveAddButton
 						$facebookButton
 						$googleButton
 						$linkedinButton
 						$copyButton
 						$addButton
-						$deleteButton
-						$cancelButton
-					</div>";
+						$deleteButton";
+            generateCustomFunctionArray($customFunctionArray);
+
+					echo "</div>";
 
 				echo "<div style='clear:both'></div><hr>";
 
@@ -346,15 +346,16 @@ function display_content($row) {
 				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
+            $cancelButton
 						$saveAddButton
 						$facebookButton
 						$googleButton
 						$linkedinButton
 						$copyButton
 						$addButton
-						$deleteButton
-						$cancelButton
-					</div>";
+						$deleteButton";
+            generateCustomFunctionArray($customFunctionArray);
+					echo "</div>";
 
 
 				echo "<div style='clear:both'></div></form></section></div>";
@@ -418,12 +419,17 @@ function display_content($row) {
 								if ($tab_status != 'bars') {
 									echo "<div class='form-footer' >
 										$updateSaveButton
+
+                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
+
 										$saveAddButton
 										$copyButton
 										$addButton
 										$deleteButton
-										<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-									</div>";
+										";
+                    generateCustomFunctionArray($customFunctionArray);
+
+									echo "</div>";
 									/*echo "<div class='form-footer'>
 											<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />
 											<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
@@ -500,12 +506,15 @@ function display_content($row) {
 
 							echo "<div class='form-footer' >
 										$updateSaveButton
-										$saveAddButton
+                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
+                    $saveAddButton
 										$copyButton
 										$addButton
 										$deleteButton
-										<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-									</div>";
+										";
+                    generateCustomFunctionArray($customFunctionArray);
+
+									echo "</div>";
 							/*echo "<div class='form-footer'>
 									<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />
 									<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>

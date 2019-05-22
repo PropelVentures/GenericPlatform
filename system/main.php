@@ -161,7 +161,6 @@
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
-				// pr($row);
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
@@ -273,10 +272,9 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title"></h4>
-			</div>
+						</div>
             <div class="modal-body">
-
-			</div>
+						</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 								<button type="button" class="btn btn-default" onclick="AddOptionInTable()">Add</button>
@@ -877,15 +875,32 @@
 		});
 	}
 
+	function listViewChange(e){
+		dict_id = $(e).attr('name');
+		value = $(e).val();
+		$.ajax({
+			method: "GET",
+			url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+			data: {dict_id_to_apply_filter: dict_id, selected_filter: value,check_action: "set_list_view"}
+		})
+		.done(function (msg) {
+				location.reload();
+		});
+	}
+
 	function addnewOption(e){
-		if($(e).find('option:selected').val()!='Add Option'){
+		if($(e).find('option:selected').val()!='Add NEW'){
 			return;
 		}
 		var name = $(e).attr('name');
 		var table = $(e).data('table');
+		var label = $(e).data('label');
 		var keyField = $(e).data('key');
 		var primaryvalue = $(e).data('primaryvalue');
 		var inputFieldes = $(e).data('inputfields');
+		$('#addOptionModel .modal-header .modal-title').html('');
+		$('#addOptionModel .modal-header .modal-title').html('Add '+label);
+
 		inputFieldes = inputFieldes.split(',');
 		$('#addOptionModel .modal-body').html('');
 		inputFieldes.forEach (function(value){

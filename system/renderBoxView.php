@@ -1,7 +1,6 @@
 <?php
 function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
 	$con = connect();
-	// pr($row);
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
@@ -27,7 +26,9 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 			if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
 				$limit = trim($list_pagination['totalitems']);
 			}
-			$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+			if(!isset($list_pagination['totalpages']) || isset($list_pagination['totalitems'])){
+				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
+			}
 			while ($listRecord = $list->fetch_assoc()) {
 				if($count > $limit){
 					break;
@@ -36,7 +37,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 					break;
 				}
-				
+
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 				$rs = $con->query($qry); ?>
 				<div style="<?= $css_style ?>" class="boxView  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
@@ -91,7 +92,9 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 						//Code Change for Task 5.4.22 Palak End
 						$row['generic_field_name'] =  trim($row['generic_field_name']);
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+							$colWidth = listColumnWidth($row);
 							$tmpData = array();
+							$tmpData['data_length']  = $colWidth;
 							$tmpData['field_style'] = $row['field_style'];
 							$tmpData['field_name'] = $row['generic_field_name'];
 							$tmpData['field_value'] = strip_tags($listRecord[$row['generic_field_name']]);

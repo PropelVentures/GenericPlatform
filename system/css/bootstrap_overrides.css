@@ -64,3 +64,22 @@ Buttons will appear pressed (with a darker background, darker border, and inset 
 
 /* ---------------------------------------------
 --------------------------------------------- */
+
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #D3D3D3;
+  opacity: .8;
+  font-weight: 100;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #D3D3D3;
+  font-weight: 100;
+  opacity: .8;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #D3D3D3;
+  opacity: .8;
+  font-weight: 100;
+}
