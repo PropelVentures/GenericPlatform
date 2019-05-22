@@ -1868,7 +1868,7 @@ function showListViewSelection($row,$filters_srray,$selected_filter_index){
   }
 }
 
-function listColumnWidth($tbRow){
+function listColumnWidth($tbRow,$minLimit = 100){
   if(!empty(trim($tbRow['format_length']))){
   		$colWidth = explode(',',trim($tbRow['format_length']));
   		$colWidth = $colWidth[0];
@@ -1878,6 +1878,10 @@ function listColumnWidth($tbRow){
   }else{
   	$colWidth = parseFieldType($tbRow);
   }
+  if($colWidth < $minLimit){
+    $colWidth = $minLimit;
+  }
+
   return $colWidth;
 }
 
@@ -1891,4 +1895,11 @@ function calculateWidthsInPercentage($array){
     $array[$key] ='"'. ($value*97)/$total.'%"';
   }
   return $array;
+}
+
+function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
+  if($roundPxls){
+    $width = $width/6.7;
+  }
+  return substr($data, 0, $width);
 }

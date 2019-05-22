@@ -84,7 +84,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }else{
       $selected_row_filter = $row['list_filter'];
     }
-
     $selected_view_index = 0;
     if(count($view_types_array)>0){
       if(isset($_SESSION[$row['dict_id'].'_selected_view'])){
@@ -95,10 +94,10 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         $selected_row_view = $view_types_array[0]['filter'];
       }
     }else{
-      $selected_row_view = $row['list_filter'];
+      $selected_row_view = $row['list_views'];
     }
 
-    $listView = $selected_row_view;
+    $listView = strtolower($selected_row_view);
 
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck,$isExistFilter,$isExistField);
@@ -185,7 +184,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 		"popup_openChild" => $ret_array['popup_openChild']
 	);
 
-    if (count($list_sort) > 1 && ($listView == 'boxView' || $listView == 'boxView')) { ?>
+    if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby">
             <h3>Sort by </h3>
             <span>
@@ -379,22 +378,22 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             }//// if record is zero... ends here
 
 			switch($listView){
-				case 'mapView':
+				case 'mapview':
 					include_once('renderMapView.php');
 					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
 					break;
 
-				case 'mapAddress':
+				case 'mapaddress':
 					include_once('renderMapView.php');
 					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
 					break;
 
-				case 'boxView':
+				case 'boxview':
 					include_once('renderBoxView.php');
 					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
 
-                case 'boxWide':
+        case 'boxwide':
 					include_once('renderBoxWide.php');
 					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
 					break;
@@ -497,6 +496,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
      *
      * displaying of image in list
      */
+
     $tbl_img = $listRecord[$imageField['generic_field_name']];
     $filename = USER_UPLOADS . "" . $tbl_img;
     echo "<a href='" . (!empty($target_url2) ? $target_url2 : "#" ) . "' class='profile-image'>";
@@ -542,7 +542,12 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	echo "<div class='boxView_content list-data'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
-				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
+        if(isset($data['data_length'])){
+          $value = truncateLongDataAsPerAvailableWidth($data['field_value'],$data['data_length']);
+        }else{
+          $value = trim($data['field_value']);
+        }
+				echo "<div class='boxView_line ".$data['field_style']."'>".$value."</div>";
 			}
 		}
 	echo "</div>";

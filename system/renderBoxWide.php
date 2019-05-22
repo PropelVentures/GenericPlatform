@@ -92,7 +92,9 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 						//Code Change for Task 5.4.22 Palak End
 						$row['generic_field_name'] =  trim($row['generic_field_name']);
 						if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+							$colWidth = listColumnWidth($row);
 							$tmpData = array();
+							$tmpData['data_length']  = $colWidth;
 							$tmpData['field_style'] = $row['field_style'];
 							$tmpData['field_name'] = $row['generic_field_name'];
 							$tmpData['field_value'] = strip_tags($listRecord[$row['generic_field_name']]);

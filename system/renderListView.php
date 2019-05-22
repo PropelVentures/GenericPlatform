@@ -74,7 +74,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed !important;
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed !important;
     word-wrap:break-word;">
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
@@ -113,9 +113,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							// 		}
 							// }
 						$colWidth = listColumnWidth($tbRow);
-						if($colWidth < 100){
-							$colWidth = 100;
-						}
+					
 						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
 
@@ -226,17 +224,17 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							if (!empty($row[dropdown_alias])) {
 								$fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
 							}
-							//will temprory truncate
-							// $fieldValue = substr($fieldValue, 0, 30);
 							if($stripTags){
 								$fieldValue = strip_tags($fieldValue);
 							}
+							//truncating the lengths of data
+							$fieldValue =  truncateLongDataAsPerAvailableWidth($fieldValue,$colWidth);
 							//Code Change for Task 5.4.22 Start
 							if($flag == true){
 							//Code Change for Task 5.4.22 End
 							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
 
-								<td style=''> <?php echo $fieldValue; ?></td>
+								<td> <?php echo $fieldValue; ?></td>
 							<?php
 							}
 							//Code Change for Task 5.4.22 Start
