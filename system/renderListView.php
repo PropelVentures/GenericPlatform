@@ -68,6 +68,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	$display_id ='#'.$display_page . $dict_id.' .clearFunction';
 	$list_select_arr = getListSelectParams($list_select);
 	$column_widths_array = [];
+	$column_widths_array_with_name = [];
 	$stripTags = isStripHtmlTags($row['list_extra_options']);
 	?>
 
@@ -113,7 +114,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							// 		}
 							// }
 						$colWidth = listColumnWidth($tbRow);
-					
+						$$column_widths_array_with_name[$tbRow['generic_field_name']] = $colWidth;
 						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
 
@@ -228,7 +229,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 								$fieldValue = strip_tags($fieldValue);
 							}
 							//truncating the lengths of data
-							$fieldValue =  truncateLongDataAsPerAvailableWidth($fieldValue,$colWidth);
+							$fieldValue =  truncateLongDataAsPerAvailableWidth($fieldValue,$$column_widths_array_with_name[$row[generic_field_name]]);
 							//Code Change for Task 5.4.22 Start
 							if($flag == true){
 							//Code Change for Task 5.4.22 End

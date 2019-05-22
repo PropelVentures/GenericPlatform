@@ -1898,6 +1898,7 @@ function calculateWidthsInPercentage($array){
 }
 
 function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
+  $data= trim($data);
   if($roundPxls){
     $width = $width/6.7;
   }
