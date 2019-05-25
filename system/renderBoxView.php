@@ -32,11 +32,11 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				if($count > $limit){
 					break;
 				}
-
+				
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 					break;
 				}
-				
+
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 				$rs = $con->query($qry); ?>
 				<div style="<?= $css_style ?>" class="boxView  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">

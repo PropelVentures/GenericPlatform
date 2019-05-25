@@ -1687,7 +1687,6 @@ function isAllowedToShowByPrivilegeLevel($row){
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
-  return true;
   if($isExistField == null || $isExistFilter == null){
     return true;
   }

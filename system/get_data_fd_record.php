@@ -112,8 +112,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
           unset($_SESSION['link_in_case_of_DDetiable_2']);
         }
 
-        if(isset($_SESSION['form_open_for_edit']) && $_SESSION['form_open_for_edit_DD']==$row1['dict_id']){
-
+        if(isset($_SESSION['form_open_for_edit_DD']) && $_SESSION['form_open_for_edit_DD']==$row1['dict_id']){
           $form_open_for_edit = true;
           $row1['dd_editable']='11';
           unset($_SESSION['form_open_for_edit_DD']);

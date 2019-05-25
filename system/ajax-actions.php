@@ -275,7 +275,7 @@ if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enabl
     $check = getWhere('data_dictionary', array('dict_id' => $_GET["id"]));
 
     $dp_page = $check[0]['display_page'];
-
+    $_SESSION['form_open_for_edit_DD'] = $_GET["id"];
     $row = getWhere('data_dictionary', array('dd_editable' => '11', 'display_page' => $dp_page));
 
     if ($row) {
@@ -284,15 +284,15 @@ if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enabl
             exit('active');
         else {
 
-           query("update data_dictionary set dd_editable=1 where display_page='$dp_page' and dict_id != $_GET[id]");
+           // query("update data_dictionary set dd_editable=1 where display_page='$dp_page' and dict_id != $_GET[id]");
 
-           update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
+           // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
 
            exit('not-active');
         }
     } else {
 
-		 update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
+		 // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
 
          exit('not-active');
     }
