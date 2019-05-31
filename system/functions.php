@@ -440,8 +440,8 @@ function itemHasVisibility($visibility){
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
 	}
-	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) &&  $visibility >0 || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) ){
-		return true;
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) &&  $visibility >0 || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) || (!isset($_SESSION['user_privilege']) && $visibility > 0 ) ){
+    return true;
 	}
 	return false;
 }
@@ -1158,5 +1158,42 @@ function sendEmailNotification($page,$action){
 	} catch(Exception $e){
 		return $e->getMessage();
 	}
+}
+
+function sendMessageAsEmail($to,$messageText){
+	$subject = "Message Notification | Generic Platform";
+	$message = "<html><head><title>Message</title></head><body>";
+	$message .= "Hi,<br/>";
+  $message .= "User ".$_SESSION['current-user-first-lastname']." send you you a message.which is : <br> ".$messageText." <br/>";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
+
+function sendMessageAndAddLog(){
+  $reciverId = $_GET['reciverid'];
+  $table = $_GET['table'];
+  $message = trim($_GET['message']);
+  $user = get("user","user_id='$reciverId'");
+  $email = trim($user['email']);
+  sendMessageAsEmail($email,$message);
+  $data= [];
+  $data['sender'] = $_SESSION['uid'];
+  $data['reciver'] = $reciverId;
+  $data['message'] = $message;
+  insert($table,$data);
 }
 ?>

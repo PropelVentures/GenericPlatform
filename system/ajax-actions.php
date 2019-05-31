@@ -15,6 +15,11 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter')
   exit;
 }
 
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'contact_me') {
+  sendMessageAndAddLog();
+  exit;
+}
+
 /*on chnage of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_view') {
   if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){

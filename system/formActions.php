@@ -852,6 +852,8 @@ function resetPassword(){
 				$passwordValue = md5($passwordValue);
 				$update = $con->query("UPDATE $table SET $passwordField='$passwordValue' , token=NULL ,timeout=NULL WHERE token = '$token'");
 				unset($_SESSION['reset_token']);
+        $_SESSION['uid'] = $user[$_SESSION['update_table2']['keyfield']];
+        setUserDataInSession($con,$user);
 				$message = "Your password has been changed. Please login.";
 				$returnUrl = BASE_URL."index.php";
 			}
@@ -1341,11 +1343,9 @@ function redirectToResetPassword(){
 		}
 		$_SESSION['reset_token'] = $token;
 		$returnUrl = BASE_URL_SYSTEM."main.php?display=$display_page&layout=$layout&style=$itemStyle";
-
 	} else {
 		$message = "Invalid or expired token. Please check your email or try again.";
 	}
-
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}

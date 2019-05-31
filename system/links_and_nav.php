@@ -103,6 +103,7 @@ function is_FFFR_DD($tableType){
     || $tableType=='favorite'
     || $tableType=='rating'
     || $tableType=='votiing'
+    || $tableType=='contact_me'
   ){
     return true;
   }
@@ -775,4 +776,67 @@ function ShowTableTypeIcon($display_page,$tabNum=''){
 		}
 	}
 }
+
+
+function Footer($page, $menu_location = 'footer') {
+    $con = connect();
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
+
+    $classForNavBr2 = '';
+    /*
+     *
+     * Checking whether user have access to current page or not
+     */
+     $overRide = false;
+    if ($rs->num_rows > 0) {
+         $overRide = true;
+    }
+  	$navItems = getNavItems($page,$menu_location,$overRide);
+    if(count($navItems)==0){
+      return;
+    }
+    ?>
+    <!-- Navigation starts here -->
+    <div class="navbar navbar-default <?=$classForNavBr2 ?>">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">
+                    <?php echo TOGGLE_NAVIGATION ?>
+                </span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
+                <?php
+                if (isUserLoggedin()) {
+					             $loginRequired = true;
+                } else {
+					$loginRequired = false;
+					?>
+				<?php
+				}
+				echo $menu = generateTopNavigation($navItems,$loginRequired);
+				?>
+            <?php ///////else if ends here                                                                                           ?>
+
+            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
+                <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
+                    <?php
+                        if ($logo_image != '') {
+                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                        }
+                        echo $logo_text;
+                    ?>
+                </a>
+            <?php } ?>
+
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+
+
+    <?php
+}
+////////main navigation function ends here///
 ?>

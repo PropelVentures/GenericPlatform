@@ -78,6 +78,22 @@ function fffr_follow($row){
   echo "</div>";
 }
 
+function fffr_contact($row){
+  $title = 'Contact Me';
+  if(!empty(trim($row['tab_name']))){
+    $title = trim($row['tab_name']);
+  }
+  $css_class = trim($row['list_style']);
+  $dd_css_class = trim($row['dd_css_class']);
+  $dd_css_code = trim($row['dd_css_code']);
+  $table = trim($row['database_table_name']);
+  $_SESSION['fffr_search_id'] = $_GET['search_id'];
+  $reciverId = $_SESSION['fffr_search_id'];
+  echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
+  echo "<button type='button'  class='button contact_me_icon $css_class'  data-table='$table' data-reciver='$reciverId' title='" . $title . "'>$title</button>";
+  echo "</div>";
+}
+
 function fffr_rating($row){
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   $css_class = trim($row['list_style']);
@@ -183,7 +199,10 @@ function fffr_icons($display_page){
       $haveAnyFFFR = true;
         fffr_rating($row);
         break;
-
+      case 'contact_me':
+      $haveAnyFFFR = true;
+        fffr_contact($row);
+        break;
       default:
         break;
     }
