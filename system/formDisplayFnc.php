@@ -50,9 +50,7 @@
 
 
 function formating_Update($row, $method, $urow, $image_display = 'false', $page_editable = 'false') {
-
     /* temporary testing */
-
     // for transaction pop up i have used this if statement
 	$sigle_line_alignment="";
     if ($method != 'transaction') {
@@ -131,6 +129,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     ///////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
     $userPrivilege = false;
+
 	if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
 		$userPrivilege = true;
 	}
@@ -138,7 +137,6 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 	if(loginNotRequired()){
 		$userPrivilege = true;
 	}
-
 
     /*if ($row['visibility'] >= 1) {
 

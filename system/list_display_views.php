@@ -183,7 +183,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 		"popup_add" => $ret_array['popup_add'],
 		"popup_openChild" => $ret_array['popup_openChild']
 	);
-
     if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby">
             <h3>Sort by </h3>
@@ -311,7 +310,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
 				/// ADD BUTTON
                 if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
-
                   if($disableAddButton) { ?>
                     <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="limitIsFull()" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }else{ ?>

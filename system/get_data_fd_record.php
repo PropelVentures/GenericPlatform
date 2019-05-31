@@ -38,6 +38,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
       if($aboveThanTabs){
         $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }else{
+
           $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }
       while ($row = $rs->fetch_assoc()) {
@@ -68,6 +69,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 					break;
         default:
 					/////display_content.php////
+
 					display_content($row);
 					break;
 			}
@@ -267,6 +269,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
         $css_style = $row1['dd_css_code'];
 		$userPrivilege = false;
+    // $userPrivilege = isAllowedToShowByPrivilegeLevel($row1);
 		if(itemHasPrivilege($row1['dd_privilege_level'])){
 			$userPrivilege = true;
 		}
@@ -927,7 +930,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 			//}
             ////////page privilege if true
         } else {
-
             echo "<h3 style='color:red'>You don't have enough privilege to view contents</h3>";
             ///page privilege if its false
         }
