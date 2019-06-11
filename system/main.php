@@ -174,13 +174,13 @@
 
 					/* Tab Navigation Start*/
 					Get_Tab_Links($display_page,'center');
-
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
 						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
 					}
 				} else {
+
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
 					/* Side Bar Navigation Start*/
@@ -196,8 +196,10 @@
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
 						if (isset($_SESSION['tab'])) {
+
 							Get_Data_FieldDictionary_Record('',$_SESSION['tab'], $display_page, $tab_status);
 						} else {
+
 							Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
 						}
 						}
@@ -278,6 +280,29 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 								<button type="button" class="btn btn-default" onclick="AddOptionInTable()">Add</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="sendMessageModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Type Message Here..</h4>
+						</div>
+            <div class="modal-body">
+							<textarea style="width:100%" id='sendMessageModalText' rows = "5" >
+		            Enter your message
+		         </textarea>
+						 <input type='hidden' id='message_reciver_id'>
+						 <input type='hidden' id='message_log_table'>
+						</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default" onclick="sendMessaeg()">Send</button>
 
 			</div>
 		</div>
@@ -633,8 +658,8 @@
 				}else{
 				if (form_edit == 'changed') {
 					event.preventDefault();
-					// window.location = $(this).attr('href');
-					window.location = document.referrer;
+					window.location = $(this).attr('href');
+					//window.location = document.referrer;
 				}
 			}
 		});
@@ -700,6 +725,7 @@
 				setStyleOfFFFRafterAction(class_holder,msg,'follow_me_icon');
 			});
 		});
+
 		/*
 		*
 		* Favorite me ICONS CODE GOES HERE****************
@@ -945,6 +971,32 @@
 	}
 });
 	}
+	function sendMessaeg(){
+		var reciverId = 	$('#message_reciver_id').val();
+		var message = 	$('#sendMessageModalText').val();
+		var table  = $('#message_log_table').val();
+		$.ajax({
+				method: "GET",
+				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+				data: {reciverid: reciverId, message: message,table:table,check_action:'contact_me'}
+		}).done(function (returnUrl) {
+				$('#sendMessageModal').modal('hide');
+		});
+	}
+	/*
+	*
+	* Contact me ICONS CODE GOES HERE****************
+	* ************************************
+	* *****************************************************
+	* ********************************************************************
+	*/
+	$(".contact_me_icon").click(function (e) {
+		var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+		$('#message_reciver_id').val(fffr_search_id);
+		$('#message_log_table').val($(this).data('table'));
+		$('#sendMessageModalText').text('');
+		$('#sendMessageModal').modal('show');
+	});
 
 	function setStyleOfFFFRafterAction(element,result,type){
 		var action_type = $('#'+type+'_type').val();
@@ -969,4 +1021,4 @@
 
 	}
 </script>
-<?php include("footer.php"); ?>
+<?php Footer($display_page); ?>

@@ -63,9 +63,14 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
     if ($_GET['table_type'] == 'child') {
         $link_to_return = $_SESSION['child_return_url'];
     }
+
+    if(empty($link_to_return)){
+        $link_to_return = $_SESSION['return_url'];
+    }
     /*
       else if ($_GET['checkFlag'] == 'true')
-      $link_to_return = $_SESSION['return_url2']; */ else if ($_GET['addFlag'] == 'true')
+      $link_to_return = $_SESSION['return_url2']; */
+    else if ($_GET['addFlag'] == 'true')
         $link_to_return = BASE_URL . "system/main.php?display?" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
     else
         $link_to_return = $_SESSION['return_url2'];
@@ -77,9 +82,9 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
    }
 
     if ($_GET['fnc'] != 'onepage') {
-        echo "<script>window.location='$link_to_return'</script>";
+        //echo "<script>window.location='$link_to_return'</script>";
     } else {
-        echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
+        //echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
     }
 }
 
@@ -270,7 +275,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
     }
     if(!empty($_GET['edit']))
         $link_to_return .= "&edit={$_GET['edit']}";
-
     if ($_GET['fnc'] != 'onepage') {
         echo "<script>window.location='$link_to_return'</script>";
     } else {
@@ -321,12 +325,12 @@ function addData()
             ##$_SESSION['parent_key_value'] = $keyfield;
         }
         ###if the table is a child table - then the function must add the parent ID to every record
+
         else if ($tableType == 'child' && !empty($keyfield))
         {
             #$rowParent = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
             // DONT ASSIGN STRING VALUES, ONLY ASSIGN REAL PRIMARY KEYS WHICH WILL ALWAYS BE INTEGERS OR 0 IF TYPECASTED FROM STRING
-
-            if((int)$_SESSION['parent_value'] !== 0 ){
+            if((int)$_SESSION['parent_value'] !== 0 && empty($_POST["$keyfield"])){
               $_POST["$keyfield"] = $_SESSION['parent_value'];
             }
                 //SET KEYFIELD TO THE PARENT VALUE TO PRESERVE PARENT->CHILD RELATIONSHIP
@@ -852,6 +856,8 @@ function resetPassword(){
 				$passwordValue = md5($passwordValue);
 				$update = $con->query("UPDATE $table SET $passwordField='$passwordValue' , token=NULL ,timeout=NULL WHERE token = '$token'");
 				unset($_SESSION['reset_token']);
+        $_SESSION['uid'] = $user[$_SESSION['update_table2']['keyfield']];
+        setUserDataInSession($con,$user);
 				$message = "Your password has been changed. Please login.";
 				$returnUrl = BASE_URL."index.php";
 			}
@@ -1341,11 +1347,9 @@ function redirectToResetPassword(){
 		}
 		$_SESSION['reset_token'] = $token;
 		$returnUrl = BASE_URL_SYSTEM."main.php?display=$display_page&layout=$layout&style=$itemStyle";
-
 	} else {
 		$message = "Invalid or expired token. Please check your email or try again.";
 	}
-
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}

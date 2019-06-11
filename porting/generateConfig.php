@@ -6,7 +6,29 @@
  * Date: 10/13/14
  * Time: 9:37 AM
  */
-session_start();
+
+  // $Lifetime = 604800;
+  // $separator = (strstr(strtoupper(substr(PHP_OS, 0, 3)), "WIN")) ? "\\\\" : "/";
+  //
+  // $DirectoryPath = dirname(__FILE__) . "{$separator}SessionData";
+  // //in Wamp for Windows the result for $DirectoryPath
+  // //would be C:\\wamp\\www\\your_site\\SessionData
+  //
+  // is_dir($DirectoryPath) or mkdir($DirectoryPath, 0777);
+  //
+  // if (ini_get("session.use_trans_sid") == true) {
+  //     ini_set("url_rewriter.tags", "");
+  //     ini_set("session.use_trans_sid", false);
+  //
+  // }
+  //
+  // ini_set("session.gc_maxlifetime", $Lifetime);
+  // ini_set("session.gc_divisor", "1");
+  // ini_set("session.gc_probability", "1");
+  // ini_set("session.cookie_lifetime", "0");
+  // ini_set("session.save_path", $DirectoryPath);
+
+  session_start();
 
 function setDefinitionArray($GLOBALS1)
 {
