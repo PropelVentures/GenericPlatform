@@ -45,35 +45,34 @@ function Get_Links($display_page) {
     //////////////////////////////////////////////
     ///////////////////////////////////////////////////////////
 	if($rs->num_rows){
-            echo "<ul class='center-tab' role='tablist' >";
-    		while ($row = $rs->fetch_assoc()) {
-    			if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
-    				continue;
-    			}
+        echo "<ul class='center-tab' role='tablist' >";
+		while ($row = $rs->fetch_assoc()) {
+    		if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
+    			continue;
+    		}
 
-    			$tab_name = explode("/", $row['tab_name']);
+    		$tab_name = explode("/", $row['tab_name']);
 
-			$row['tab_name'] = trim($tab_name[0]);
-			$dd_css_class = $row['dd_css_class'];
-      $css_style = $row['dd_css_code'];
-			if ($i == 1 && !( isset($_SESSION['tab']) )) {
-				$tab = $row['table_alias'];
+    		$row['tab_name'] = trim($tab_name[0]);
+    		$dd_css_class = $row['dd_css_class'];
+            $css_style = $row['dd_css_code'];
+    		if ($i == 1 && !( isset($_SESSION['tab']) )) {
+    			$tab = $row['table_alias'];
 
     				$_SESSION['tab'] = $tab;
 
 
 
-                    ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
-    			} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
+                ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    		} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
+    			ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    		} else {
 
-    				ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
-    			} else {
-
-    				//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
-    				ShowTab($display_page, $rs, $row, $row['table_alias']);
-    			}
-    			$i++;
+    			//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+    			ShowTab($display_page, $rs, $row, $row['table_alias']);
     		}
+        		$i++;
+        }
 
     		echo "</ul>";
 	}

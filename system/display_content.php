@@ -84,7 +84,7 @@ function display_content($row) {
 				} else {
 					$dd_css_class = 'simple_edit_page';
 				}
-			}
+			}    
 
 			if ($row1['database_table_name'] == $_SESSION['select_table']['database_table_name'])
 				$_SESSION['search_id'] = $_SESSION['uid'];
@@ -302,10 +302,14 @@ function display_content($row) {
 
 				if ($_GET['checkFlag'] == 'true') {
 					if ($_GET['table_type'] == 'child'){
-						$link_to_return = $_SESSION['child_return_url'];
+                        $link_to_return = $_SESSION['child_return_url'];
 					} else {
 						$link_to_return = $_SESSION['return_url'];
 					}
+                    if(empty($link_to_return)){
+            			$link_to_return = $_SESSION['return_url'];
+            		}
+
 					$actual_link = $link_to_return;
 
 					$_SESSION['return_url2'] = $_SESSION['return_url'];
@@ -409,6 +413,10 @@ function display_content($row) {
 										$link_to_return = $_SESSION['child_return_url'];
 									else
 										$link_to_return = $_SESSION['return_url'];
+
+                                    if(empty($link_to_return)){
+                            			$link_to_return = $_SESSION['return_url'];
+                            		}
 
 									$actual_link = $link_to_return;
 

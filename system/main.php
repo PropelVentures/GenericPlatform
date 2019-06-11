@@ -658,8 +658,8 @@
 				}else{
 				if (form_edit == 'changed') {
 					event.preventDefault();
-					// window.location = $(this).attr('href');
-					window.location = document.referrer;
+					window.location = $(this).attr('href');
+					//window.location = document.referrer;
 				}
 			}
 		});
