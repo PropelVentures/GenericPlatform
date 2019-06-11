@@ -40,44 +40,36 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 }
 
 
+
 function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
-	$link_to_return = '';
-	if ($_GET['table_type'] == 'child'){
-		$link_to_return = $_SESSION['child_return_url'];
-	} else {
-		$link_to_return = $_SESSION['return_url'];
-	}
+		if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
+			if ($_GET['table_type'] == 'child'){
+				$link_to_return = $_SESSION['child_return_url'];
+			} else {
+				$link_to_return = $_SESSION['return_url'];
+			}
 
-	$link_to_return = '';
-	if ($_GET['table_type'] == 'child'){
-		$link_to_return = $_SESSION['child_return_url'];
-	} else {
-		$link_to_return = $_SESSION['return_url'];
-	}
-
-	if(empty($link_to_return)){
-		$link_to_return = $_SESSION['return_url'];
-	}
-
-
-	if ($home_test[1] == '=home'){
-		$breadcrumb_display = " Back To <span>Home</span> Page";
-	} else {
-
-		$backText = str_replace('*', '', $_SESSION['list_tab_name']);
-		$breadcrumb_display = " Back To <span>$backText</span> Lists";
-	}
-
-	if($onepage){
-		$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";
-	} else {
-		$url = "$link_to_return&button=cancel&table_type=$row1[table_type]" .($_GET['fnc']=='onepage' ? '&fnc=onepage' : '' );
-	}
-
-	echo "<br>
-		<div class='breadcrumb'>
-			<a href='$url' class='back-to-list'> $breadcrumb_display</a>
-		</div>";
+			if(empty($link_to_return)){
+				$link_to_return = $_SESSION['return_url'];
+			}
+			
+			$home_test = explode("display", $link_to_return);
+			if ($home_test[1] == '=home'){
+				$breadcrumb_display = " Back To <span>Home</span> Page";
+			} else {
+				$backText = str_replace('*', '', $_SESSION['list_tab_name']);
+				$breadcrumb_display = " Back To <span>$backText</span> Lists";
+			}
+			if($onepage){
+				$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";
+			} else {
+				$url = "$link_to_return&button=cancel&table_type=$row1[table_type]" .($_GET['fnc']=='onepage' ? '&fnc=onepage' : '' );
+			}
+			echo "<br>
+				<div class='breadcrumb'>
+					<a href='$url' class='back-to-list'> $breadcrumb_display</a>
+				</div>";
+		}
 }
 
 
