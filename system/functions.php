@@ -655,7 +655,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style=''>
-									<a class='$disable_child' $target_blank href='$target' title='$title'>".
+									<a class='$disable_child' onClick=urlVariables() $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -683,10 +683,23 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' >
-									<a class='$disable' $target_blank href='$target' title='$title'>
+									<a class='$disable' onClick=urlVariables() $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
-								</li>";
+								</li>
+                                <script>
+                                function urlVariables(){
+                                    $.ajax({
+                                        method: 'GET',
+                                        url: 'ajax-actions.php',
+                                        data:{ values_to_unset: 'abc' }
+                                    })
+                                    .done(function (msg) {
+                                        // alert(msg);
+                                    });
+                                }
+                                </script>
+                                ";
 						break;
 					}
 			}
