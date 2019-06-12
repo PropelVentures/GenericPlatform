@@ -17,6 +17,9 @@ if(!empty($_GET['values_to_unset'])){
     unset($_GET['search_id2']);
 
     unset($_SESSION['parent_value']);
+    unset($_SESSION['parent_url']);
+
+    // unset($_SESSION['parent_list_tabname']);
     return true;
 }
 
