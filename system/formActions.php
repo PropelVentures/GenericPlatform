@@ -417,7 +417,7 @@ function addData()
     if(!empty($save_add_url)){
 		$link_to_return = $save_add_url;
 	} else {
-		$link_to_return = BASE_URL . "system/main.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
+		$link_to_return = BASE_URL . "system/main.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'] . "&search_id=" . $_SESSION['search_id'];
 	}
 
     if ($_GET['fnc'] != 'onepage') {

@@ -231,6 +231,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
             #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
         }
 
+
 		/// setting for  save add button
 		if (!empty($save_add_array) ) {
 			$_SESSION['save_add_url'] = $addUrlInner;
@@ -760,6 +761,10 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
                                             $link_to_return = $_SESSION['child_return_url'];
                                         }else{
                                           $link_to_return = $_SESSION['return_url'];
+                                        }
+
+                                        if(empty($link_to_return)){
+                                            $link_to_return = $_SESSION['return_url'];
                                         }
 
                                         // if(empty($link_to_return)){
