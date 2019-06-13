@@ -797,7 +797,7 @@ function Footer($page, $menu_location = 'footer') {
     }
     ?>
     <!-- Navigation starts here -->
-    <div class="navbar navbar-default <?=$classForNavBr2 ?>">
+    <div class="navbar navbar-default navbar-fixed-bottom <?=$classForNavBr2 ?>">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">

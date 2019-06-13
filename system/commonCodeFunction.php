@@ -412,4 +412,46 @@ function parseExtraOptions($string){
 	}
 	return $temp;
 }
+
+function checkIfEmptyList($list,$row){
+	if ($list->num_rows == 0) {
+		$emptyListConfigs = emptyListConfigs($row['list_extra_options']);
+		$type  = strtoupper(trim($emptyListConfigs['type']));
+		$value = trim($emptyListConfigs['value']);
+
+		if($type ==='TEXT'){
+			echo "<h3 style='text-align:center'>$value</h3>";
+		}
+		if($type ==='IMAGE'){
+			echo "<div style='text-align:center'><img src='" . USER_UPLOADS . "" . $value . "' border='0' width='300' class='img-thumbnail img-responsive'/></div>";
+		}
+		return true;
+	}
+	return false;
+}
+
+function emptyListConfigs($value){
+	$result = [];
+	$result['type'] = 'text';
+	$result['value'] = EMPTY_LISTS_MESSAGE;
+	// $value = strtoupper(trim($value));
+	$position = strpos($value,"emptylist");
+	if($position!==false){
+		$all_options = explode(';',$value);
+		foreach ($all_options as $key => $sub_option) {
+			$position = strpos($sub_option,"emptylist");
+			if($position!==false){
+				$configs = explode(':',trim($sub_option));
+				if($configs[0]==='emptylist'){
+					$settings = explode(',',trim($configs[1]));
+					if(count($settings)==2){
+						$result['type'] = $settings[0];
+						$result['value'] = $settings[1];
+					}
+				}
+			}
+		}
+	}
+	return $result;
+}
 ?>

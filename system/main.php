@@ -1021,4 +1021,7 @@
 
 	}
 </script>
-<?php Footer($display_page); ?>
+<?php
+  echo "<div style='height:25px'></div>";
+	Footer($display_page);
+?>

@@ -75,6 +75,8 @@ define('PROJECT_LAUNCH_APPROVAL_NEEDED', false);
 /* * ************Project Type/Privacy Configurations @ends******************* */
 
 
+define('EMPTY_LISTS_MESSAGE','No Record Found');
+
 $MYPATH = APP_DIR;
 
 

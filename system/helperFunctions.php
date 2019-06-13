@@ -273,7 +273,6 @@ function uploadPdfFile($uploadCareURL, $imageName) {
  * @return array
  */
 function listExtraOptions($list_extra_options, $listOperations = false) {
-
 //echo "<pre>INSIDE listExtraOptions<br>";
 //print_r($list_extra_options);
 //echo "\$buttonOptions::<br>";
@@ -1441,12 +1440,10 @@ function popup_copy($label, $look) {
 }
 
 function popup_add($label, $look) {
-
     return array("label" => $label, "style" => $look);
 }
 
 function popup_openChild($label, $look) {
-
     return array("label" => $label, "style" => $look);
 }
 

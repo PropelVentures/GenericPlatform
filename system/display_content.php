@@ -168,7 +168,6 @@ function display_content($row) {
 					if(!empty(trim($row1['view_operations']) ) )
 						$operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
 				}
-        // pr($operationsVarArray);
 				list($popupmenu,
 					$popup_delete_array,
 					$popup_copy_array,
