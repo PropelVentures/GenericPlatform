@@ -576,7 +576,9 @@ function generateTopNavigation($navItems,$loginRequired){
 			}
       $label = dislayUserNameSelector($parent['item_label']);
 			$title = $parent['item_help'];
-			$item_style = $parent['item_style'];
+			$item_style = $parent['nav_css_class'];
+      $nav_css_code = $parent['nav_css_code'];
+
 			$item_icon = getNavItemIcon($parent['item_icon']);
 			$navTarget = getNavTarget($parent);
 			$target = $navTarget['target'];
@@ -590,28 +592,28 @@ function generateTopNavigation($navItems,$loginRequired){
 
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#break#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#space#":
-						$menu.="<li class'nav_item $item_style'>
+						$menu.="<li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						default:
-						$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
+						$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
 								<a class='' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
@@ -626,7 +628,8 @@ function generateTopNavigation($navItems,$loginRequired){
 					}
 					$label = dislayUserNameSelector($children['item_label']);
 					$title = $children['item_help'];
-					$item_style = $children['item_style'];
+					$item_style = $children['nav_css_class'];
+          $nav_css_code = $children['nav_css_code'];
 					$item_icon = getNavItemIcon($children['item_icon']);
 					$navTarget = getNavTarget($children);
 					$target = $navTarget['target'];
@@ -639,22 +642,22 @@ function generateTopNavigation($navItems,$loginRequired){
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class nav_item $item_style' style=''>
+						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
 									<a class='$disable_child' $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
@@ -667,22 +670,22 @@ function generateTopNavigation($navItems,$loginRequired){
 			} else {
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='nav_item $enable_class $item_style' >
+						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
 									<a class='$disable' $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
@@ -706,7 +709,8 @@ function generateSideBarNavigation($navItems,$menu){
 		}
 		$label = dislayUserNameSelector($parent['item_label']);
 		$title = $parent['item_help'];
-		$item_style = $parent['item_style'];
+		$item_style = $parent['nav_css_class'];
+    $nav_css_code = $parent['nav_css_code'];
 		$item_icon = getNavItemIcon($parent['item_icon']);
 		$navTarget = getNavTarget($parent);
 		$target = $navTarget['target'];
@@ -733,7 +737,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
+				$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
 						<a href='#nav_".$parent['nav_id']."' class='dropdown-toggle' data-toggle='collapse' title='$title'>
 							".$item_icon.getSaperator($label)."
 							<span class='caret'></span>
@@ -750,7 +754,8 @@ function generateSideBarNavigation($navItems,$menu){
 				}
 				$label = dislayUserNameSelector($children['item_label']);
 				$title = $children['item_help'];
-				$item_style = $children['item_style'];
+				$item_style = $children['nav_css_class'];
+        $nav_css_code = $children['nav_css_code'];
 				$item_icon = getNavItemIcon($children['item_icon']);
 				$navTarget = getNavTarget($children);
 				$target = $navTarget['target'];
@@ -774,7 +779,7 @@ function generateSideBarNavigation($navItems,$menu){
 							</li>";
 					break;
 					default:
-					$menu.="<li class='$enable_class $item_style' style=''>
+					$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 								<a $target_blank href='$target' title='$title'>".
 									$item_icon.
 									getSaperator($label)."
@@ -802,7 +807,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class $item_style' style=''>
+				$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 							<a $target_blank href='$target' title='$title'>
 								".$item_icon.getSaperator($label)."
 							</a>
@@ -953,7 +958,7 @@ function getDDUrl($list_select){
 			if($nav->num_rows > 0){
 				$navRecord = $nav->fetch_assoc();
 				$layout = $navRecord['page_layout_style'];
-				$itemStyle = $navRecord['item_style'];
+				$itemStyle = $navRecord['nav_css_class'];
 			}
 			return BASE_URL_SYSTEM ."main.php?display=" . $ddRecord['display_page'] . "&layout=$layout&style=$itemStyle";
 		}

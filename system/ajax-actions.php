@@ -256,7 +256,7 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
     $tab_num = trim($list_select_arr[1][1]);
     $result = get('data_dictionary',"display_page='$display_page' AND table_alias='$tab_alias' AND tab_num='$tab_num'");
     if(isAllowedToPerformListAction($result)){
-      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['nav_css_class']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
     }else{
       $target_url = 'false';
     }
