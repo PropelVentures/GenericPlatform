@@ -118,6 +118,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
           $form_open_for_edit = true;
           $row1['dd_editable']='11';
           unset($_SESSION['form_open_for_edit_DD']);
+          unset($_SESSION['form_open_for_edit']);
         }
 
         $show_with_edit_button = false;

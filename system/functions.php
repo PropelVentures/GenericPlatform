@@ -578,8 +578,7 @@ function generateTopNavigation($navItems,$loginRequired){
 			$title = $parent['item_help'];
 			$item_style = $parent['nav_css_class'];
       $nav_css_code = $parent['nav_css_code'];
-
-			$item_icon = getNavItemIcon($parent['item_icon']);
+			$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 			$navTarget = getNavTarget($parent);
 			$target = $navTarget['target'];
 			$enable_class=$navTarget['enable_class'];
@@ -614,7 +613,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
-								<a class='' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+								<a class='$item_style' style='$nav_css_code' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
 								</a>
@@ -630,7 +629,7 @@ function generateTopNavigation($navItems,$loginRequired){
 					$title = $children['item_help'];
 					$item_style = $children['nav_css_class'];
           $nav_css_code = $children['nav_css_code'];
-					$item_icon = getNavItemIcon($children['item_icon']);
+					$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 					$navTarget = getNavTarget($children);
 					$target = $navTarget['target'];
 					$enable_class=$navTarget['enable_class'];
@@ -642,23 +641,23 @@ function generateTopNavigation($navItems,$loginRequired){
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
-									<a class='$disable_child' $target_blank href='$target' title='$title'>".
+									<a class='$disable_child $item_style' $target_blank href='$target' title='$title' style='$nav_css_code'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -686,7 +685,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
-									<a class='$disable' $target_blank href='$target' title='$title'>
+									<a class='$disable $item_style' $target_blank href='$target' title='$title' style='$nav_css_code'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>";
@@ -711,7 +710,7 @@ function generateSideBarNavigation($navItems,$menu){
 		$title = $parent['item_help'];
 		$item_style = $parent['nav_css_class'];
     $nav_css_code = $parent['nav_css_code'];
-		$item_icon = getNavItemIcon($parent['item_icon']);
+		$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 		$navTarget = getNavTarget($parent);
 		$target = $navTarget['target'];
 		$enable_class=$navTarget['enable_class'];
@@ -756,7 +755,7 @@ function generateSideBarNavigation($navItems,$menu){
 				$title = $children['item_help'];
 				$item_style = $children['nav_css_class'];
         $nav_css_code = $children['nav_css_code'];
-				$item_icon = getNavItemIcon($children['item_icon']);
+				$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 				$navTarget = getNavTarget($children);
 				$target = $navTarget['target'];
 				$enable_class=$navTarget['enable_class'];
@@ -924,15 +923,15 @@ function getNavTarget($row){
 	];
 }
 
-function getNavItemIcon($item_icon){
+function getNavItemIcon($item_icon,$class,$style){
 	if(empty($item_icon)){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
 //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
-    return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
-		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
+		return "<img class='$class' style='$style' src='".BASE_IMAGES_URL.$item_icon."'>  ";
 	}
 	return "";
 
