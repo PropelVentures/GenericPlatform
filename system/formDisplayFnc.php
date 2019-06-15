@@ -192,14 +192,12 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
             case "list_fragment":
                 echo "<div class='$sigle_line_alignment $fd_css_class' style='overflow:auto!important;max-height:500px; $fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-
                 if ($urow != 'false')
                     list_fragment($row);
                 echo "</div></div><br>";
                 break;
 
             case "crf":
-
                 if ($method != 'add') {
                     echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 
@@ -241,30 +239,32 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                     checkbox($row);
                 echo "</div></div>";
                 break;
-						case "checklist":
-								echo "<br><div class='new_form $fd_css_class' style='$fd_css_style margin-bottom:0;'>";
-								if ($urow != 'false')
-										checklist($row, $urow, $page_editable);
-								else
-										checklist($row);
-								echo "</div>";
-								break;
-						case "progressbar":
 
-								$progressbarDimensions = getFieldFormatLength($row['format_length']);
-								$progressWidth = $progressbarDimensions['width'];
-								$progressHeight = $progressbarDimensions['height'];
-								$inputSize = getDefaultLengthsByType($row);
-								echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='boolen_label' class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-								if(!$readonly){
-									echo "<input type='text' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]'  class='form-control $fd_css_class' style='$fd_css_style'> ";
+			case "checklist":
+					echo "<br><div class='new_form $fd_css_class' style='$fd_css_style margin-bottom:0;'>";
+					if ($urow != 'false')
+							checklist($row, $urow, $page_editable);
+					else
+							checklist($row);
+					echo "</div>";
+					break;
 
-								}else{
-									progressbar($fieldValue,$fd_css_class,$fd_css_style,$progressWidth,$progressHeight);
-								}
-								echo "</div></div>";
-								break;
-            case "new_line":
+			case "progressbar":
+					$progressbarDimensions = getFieldFormatLength($row['format_length']);
+					$progressWidth = $progressbarDimensions['width'];
+					$progressHeight = $progressbarDimensions['height'];
+					$inputSize = getDefaultLengthsByType($row);
+					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='boolen_label' class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+					if(!$readonly){
+						echo "<input type='text' name='$field' value='$fieldValue' size='$inputSize' $row[strict_disabled] $readonly $required title='$row[help_message]'  class='form-control $fd_css_class' style='$fd_css_style'> ";
+
+					}else{
+						progressbar($fieldValue,$fd_css_class,$fd_css_style,$progressWidth,$progressHeight);
+					}
+					echo "</div></div>";
+					break;
+
+			case "new_line":
                 echo "<br>";
                 break;
 
@@ -274,11 +274,11 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 break;
 
             case "image":
-								if($readonly){
-									if(empty(trim($fieldValue))){
-										break;
-									}
-								}
+				if($readonly){
+					if(empty(trim($fieldValue))){
+						break;
+					}
+				}
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     image_upload($row, $urow, $image_display);
@@ -287,12 +287,12 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                 echo "</div></div>";
                 break;
 
-						case "image_only":
-								if($readonly){
-									if(empty(trim($fieldValue))){
-										break;
-									}
-								}
+			case "image_only":
+				if($readonly){
+					if(empty(trim($fieldValue))){
+						break;
+					}
+				}
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
                 if ($urow != 'false')
                     image_upload($row, $urow, $image_display);
@@ -309,38 +309,39 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
                     pdf_upload($row);
                 echo "</div></div>";
                 break;
-						case 'datetime':
-						echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 
-						dateTimePicker($row,$formatArray,$dimWidth,$dimStyle,$urow, $page_editable);
-						echo "</div></div>";
-							break;
+			case 'datetime':
+				echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
+
+				dateTimePicker($row,$formatArray,$dimWidth,$dimStyle,$urow, $page_editable);
+				echo "</div></div>";
+				break;
 
             case "video":
-							showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+				showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+				break;
+
+			case "video_only":
+				if($readonly){
+					if(empty(trim($fieldValue))){
 						break;
+					}
+				}
+				showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+				break;
 
-						case "video_only":
-							if($readonly){
-								if(empty(trim($fieldValue))){
-									break;
-								}
-							}
-							showVideo($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
-							break;
+			case "ppt":
+				showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+				break;
 
-							case "ppt":
-								showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
-							break;
-
-							case "ppt_only":
-								if($readonly){
-									if(empty(trim($fieldValue))){
-										break;
-									}
-								}
-								showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
-								break;
+			case "ppt_only":
+				if($readonly){
+					if(empty(trim($fieldValue))){
+						break;
+					}
+				}
+				showPPT($row,$sigle_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize);
+				break;
 
             case "pdf_inline":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
@@ -395,60 +396,61 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 							boolean_slider($row,$formatArray);
 						}
 						echo "</div></div>";
-					break;
+						break;
 
 					case "button":
 						echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='boolen_label' class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 							boolean_button($row,$formatArray,$urow, $page_editable);
 						echo "</div></div>";
 
-					break;
+						break;
 
 					default:
 						echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]' size=$dimWidth class='form-control $fd_css_class' style='$dimStyle;$fd_css_style'>";
 						echo "</div></div>";
 				}
-			break;
+				break;
+
 			case "number":
 				switch(@$formatArray[1]){
 					case "slider":
 						echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 							number_slider($row,$formatArray,$urow, $page_editable);
 						echo "</div></div>";
-					break;
+						break;
 
 					default:
 						echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 						echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $required title='$row[help_message]'  size=$dimWidth class='form-control $fd_css_class'  style='$dimStyle;$fd_css_style'>";
 						echo "</div></div>";
 				}
-			break;
+				break;
 
 			case "datepicker":
 				echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 					datepicker($row,$formatArray,$urow, $page_editable);
 				echo "</div></div>";
-			break;
+				break;
 
 			case "confirm_password":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
                 echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size=$dimWidth' class='form-control $fd_css_class' $dimStyle style='$fd_css_style'>";
                 echo "</div></div>";
-			break;
+				break;
 
 			case "old_password":
                 echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
                 echo "<input type='password' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]'  size=$dimWidth class='form-control $fd_css_class' style='$dimStyle;$fd_css_style'>";
                 echo "</div></div>";
-			break;
+				break;
 
             default :
                 /*Code Start for Task 5.4.112*/
 				if(("$row[format_type]" == "text")){
 					if(!empty("$row[format_length]")){
 						$params = explode(",","$row[format_length]");
-						}
+					}
 				}
 				if(isKeyField($row)){
 					$place_holder ='';
