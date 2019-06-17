@@ -2,6 +2,10 @@
 
 function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    if($_GET['edit'] || $_GET['addFlag']){
+        $actual_link = $_SESSION['return_url'];
+    }
+
     $con = connect();
     ///setting form editable if user click on list for editing purpose
     // if (!empty($_GET['edit']) && $_GET['edit'] == 'true') {
@@ -38,6 +42,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
       if($aboveThanTabs){
         $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }else{
+
           $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }
       while ($row = $rs->fetch_assoc()) {
@@ -68,6 +73,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 					break;
         default:
 					/////display_content.php////
+
 					display_content($row);
 					break;
 			}
@@ -100,7 +106,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
         }
         $row1 = $rs->fetch_assoc();
         $form_open_for_edit = false;
-
         $dd_EditAbleHaveValue2  = false;
 
         if($row1['dd_editable']=='2'){
@@ -225,6 +230,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
             #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
         }
 
+
 		/// setting for  save add button
 		if (!empty($save_add_array) ) {
 			$_SESSION['save_add_url'] = $addUrlInner;
@@ -267,6 +273,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
         $css_style = $row1['dd_css_code'];
 		$userPrivilege = false;
+    // $userPrivilege = isAllowedToShowByPrivilegeLevel($row1);
 		if(itemHasPrivilege($row1['dd_privilege_level'])){
 			$userPrivilege = true;
 		}
@@ -459,7 +466,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 				 */
 
 				$_SESSION['list_tab_name'] = $tab_name[0];
-
+                $_SESSION['return_url'] = $actual_link;
 				/////generating session for capturing parent List tabname
 				if ($row1['table_type'] == 'parent') {
 					$_SESSION['parent_list_tabname'] = $tab_name[0];
@@ -489,11 +496,12 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
 
 				if ((( $row1['list_views'] != 'NULL' || $row1['list_views'] != '' ) && trim($row1['table_type']) == 'child' && $_GET['edit'] != 'true' ) && $_GET['addFlag'] != 'true') {
-
-                    $backText = str_replace('*', '', $_SESSION['parent_list_tabname']);
-					echo "<br><ol class='breadcrumb'>
-								<li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$backText</span> List</a></li>
-							  </ol>";
+                    if(!empty($_SESSION['child_return_url'])){
+                        $backText = str_replace('*', '', $_SESSION['parent_list_tabname']);
+                        echo "<br><ol class='breadcrumb'>
+                                    <li><a href='$_SESSION[parent_url]&button=cancel' class='back-to-list'>Back To <span>$backText</span> List</a></li>
+                                  </ol>";
+                    }
 				}
 
 
@@ -541,12 +549,15 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
 
 					if ($_GET['checkFlag'] == 'true') {
-
-						if ($_GET['table_type'] == 'child')
-							$link_to_return = $_SESSION['child_return_url'];
-						else
+						if ($_GET['table_type'] == 'child'){
+                            $link_to_return = $_SESSION['child_return_url'];
+                        }
+						else {
 							$link_to_return = $_SESSION['return_url'];
-
+                        }
+                        if(empty($link_to_return)){
+                			$link_to_return = $_SESSION['return_url'];
+                		}
 						$actual_link = $link_to_return;
 
 						//   $cancel_value = formCancel;
@@ -746,17 +757,24 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 									if ($_GET['checkFlag'] == 'true' ||  $dd_EditAbleHaveValue2) {
 
 										if ($_GET['table_type'] == 'child'){
-                      $link_to_return = $_SESSION['child_return_url'];
-                    }else{
-                      $link_to_return = $_SESSION['return_url'];
-                    }
+                                            $link_to_return = $_SESSION['child_return_url'];
+                                        }else{
+                                          $link_to_return = $_SESSION['return_url'];
+                                        }
 
-                    if($dd_EditAbleHaveValue2){
-                      $_SESSION['link_in_case_of_DDetiable_2'] = $link_to_return;
-                    }
+                                        if(empty($link_to_return)){
+                                            $link_to_return = $_SESSION['return_url'];
+                                        }
+
+                                        // if(empty($link_to_return)){
+                                		// 	$link_to_return = $_SESSION['return_url'];
+                                		// }
+
+                                        if($dd_EditAbleHaveValue2){
+                                          $_SESSION['link_in_case_of_DDetiable_2'] = $link_to_return;
+                                        }
 
 										$actual_link = $link_to_return;
-
 										//   $cancel_value = formCancel;
 									}
 
@@ -861,7 +879,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 						} else {
 							#echo ("INSIDE FD RECORD.PHP called list_display()<br> ");
 	//                        echo "<pre>";
-                            // pr($_SESSION['parent_key_value']);
+
 							list_display($qry, $row1['tab_num']); //// list displays
 
 							echo "<div style='clear:both'></div>";
@@ -880,11 +898,15 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
 								if ($_GET['checkFlag'] == 'true') {
 
-									if ($_GET['table_type'] == 'child')
-										$link_to_return = $_SESSION['child_return_url'];
+									if ($_GET['table_type'] == 'child'){
+                                        $link_to_return = $_SESSION['child_return_url'];
+                                    }
 									else
 										$link_to_return = $_SESSION['return_url'];
 
+                                    if(empty($link_to_return)){
+                                        $link_to_return = $_SESSION['return_url'];
+                                    }
 									$actual_link = $link_to_return;
 
 									//$cancel_value = 'Cancel';
@@ -927,7 +949,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 			//}
             ////////page privilege if true
         } else {
-
             echo "<h3 style='color:red'>You don't have enough privilege to view contents</h3>";
             ///page privilege if its false
         }

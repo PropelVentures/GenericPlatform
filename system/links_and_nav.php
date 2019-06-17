@@ -45,35 +45,34 @@ function Get_Links($display_page) {
     //////////////////////////////////////////////
     ///////////////////////////////////////////////////////////
 	if($rs->num_rows){
-            echo "<ul class='center-tab' role='tablist' >";
-    		while ($row = $rs->fetch_assoc()) {
-    			if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
-    				continue;
-    			}
+        echo "<ul class='center-tab' role='tablist' >";
+		while ($row = $rs->fetch_assoc()) {
+    		if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
+    			continue;
+    		}
 
-    			$tab_name = explode("/", $row['tab_name']);
+    		$tab_name = explode("/", $row['tab_name']);
 
-			$row['tab_name'] = trim($tab_name[0]);
-			$dd_css_class = $row['dd_css_class'];
-      $css_style = $row['dd_css_code'];
-			if ($i == 1 && !( isset($_SESSION['tab']) )) {
-				$tab = $row['table_alias'];
+    		$row['tab_name'] = trim($tab_name[0]);
+    		$dd_css_class = $row['dd_css_class'];
+            $css_style = $row['dd_css_code'];
+    		if ($i == 1 && !( isset($_SESSION['tab']) )) {
+    			$tab = $row['table_alias'];
 
     				$_SESSION['tab'] = $tab;
 
 
 
-                    ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
-    			} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
+                ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    		} else if ($_SESSION['tab'] == $row['table_alias'] && $_GET['tabNum'] == $row['tab_num']) {
+    			ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
+    		} else {
 
-    				ShowTab($display_page, $rs, $row, $_SESSION['tab'], 'active');
-    			} else {
-
-    				//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
-    				ShowTab($display_page, $rs, $row, $row['table_alias']);
-    			}
-    			$i++;
+    			//echo "<li><a href=?display=$display_page&tab=$row[table_alias]&tabNum=$row[tab_num]&search_id=$_GET[search_id] class='tab-class' id='$list_style'>$row[tab_name]</a></li>";
+    			ShowTab($display_page, $rs, $row, $row['table_alias']);
     		}
+        		$i++;
+        }
 
     		echo "</ul>";
 	}
@@ -103,6 +102,7 @@ function is_FFFR_DD($tableType){
     || $tableType=='favorite'
     || $tableType=='rating'
     || $tableType=='votiing'
+    || $tableType=='contact_me'
   ){
     return true;
   }
@@ -775,4 +775,67 @@ function ShowTableTypeIcon($display_page,$tabNum=''){
 		}
 	}
 }
+
+
+function Footer($page, $menu_location = 'footer') {
+    $con = connect();
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
+
+    $classForNavBr2 = '';
+    /*
+     *
+     * Checking whether user have access to current page or not
+     */
+     $overRide = false;
+    if ($rs->num_rows > 0) {
+         $overRide = true;
+    }
+  	$navItems = getNavItems($page,$menu_location,$overRide);
+    if(count($navItems)==0){
+      return;
+    }
+    ?>
+    <!-- Navigation starts here -->
+    <div class="navbar navbar-default <?=$classForNavBr2 ?>">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">
+                    <?php echo TOGGLE_NAVIGATION ?>
+                </span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
+                <?php
+                if (isUserLoggedin()) {
+					             $loginRequired = true;
+                } else {
+					$loginRequired = false;
+					?>
+				<?php
+				}
+				echo $menu = generateTopNavigation($navItems,$loginRequired);
+				?>
+            <?php ///////else if ends here                                                                                           ?>
+
+            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
+                <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
+                    <?php
+                        if ($logo_image != '') {
+                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                        }
+                        echo $logo_text;
+                    ?>
+                </a>
+            <?php } ?>
+
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+
+
+    <?php
+}
+////////main navigation function ends here///
 ?>

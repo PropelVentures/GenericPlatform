@@ -4,13 +4,42 @@
 
 require_once 'functions_loader.php';
 
+echo $_SESSION['child_return_url'];
+if(!empty($_GET['values_to_unset'])){
 
+    unset($_SESSION['child_return_url']);
+    unset($_SESSION['child_return_url2']);
 
+    unset($_SESSION['search_id']);
+    unset($_GET['search_id']);
+
+    unset($_SESSION['search_id2']);
+    unset($_GET['search_id2']);
+
+    unset($_SESSION['parent_value']);
+    unset($_SESSION['parent_url']);
+
+    // unset($_SESSION['parent_list_tabname']);
+    return true;
+}
 
 /*on chnage of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter') {
   if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
     $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_filter'] = $_GET['selected_filter'];
+  }
+  exit;
+}
+
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'contact_me') {
+  sendMessageAndAddLog();
+  exit;
+}
+
+/*on chnage of list filter*/
+if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_view') {
+  if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
+    $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_view'] = $_GET['selected_filter'];
   }
   exit;
 }
@@ -202,6 +231,7 @@ if (isset($_GET["list_add"]) && !empty($_GET["list_add"]) && $_GET["check_action
  */
 
 if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"] == 'openChild') {
+    $_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
     $search_key = $_GET["childID"];
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");

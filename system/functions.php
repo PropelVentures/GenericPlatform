@@ -440,8 +440,8 @@ function itemHasVisibility($visibility){
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
 	}
-	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) &&  $visibility >0 || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) ){
-		return true;
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) &&  $visibility >0 || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) || (!isset($_SESSION['user_privilege']) && $visibility > 0 ) ){
+    return true;
 	}
 	return false;
 }
@@ -552,7 +552,6 @@ function getSideBarNavItems($page,$menu_location,$overRide= false){
  * For all menu location & loginrequired(true or false)
  */
 function generateTopNavigation($navItems,$loginRequired){
-  // pr($navItems);
   $isUserLoggedIn = true;
   if(isset($_SESSION['user_privilege'])){
     $currentUserPrivilege = $_SESSION['user_privilege'];
@@ -656,7 +655,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style=''>
-									<a class='$disable_child' $target_blank href='$target' title='$title'>".
+									<a class='$disable_child' onClick=urlVariables() $target_blank href='$target' title='$title'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -684,10 +683,23 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' >
-									<a class='$disable' $target_blank href='$target' title='$title'>
+									<a class='$disable' onClick=urlVariables() $target_blank href='$target' title='$title'>
 										".$item_icon.getSaperator($label)."
 									</a>
-								</li>";
+								</li>
+                                <script>
+                                function urlVariables(){
+                                    $.ajax({
+                                        method: 'GET',
+                                        url: 'ajax-actions.php',
+                                        data:{ values_to_unset: 'abc' }
+                                    })
+                                    .done(function (msg) {
+                                        // alert(msg);
+                                    });
+                                }
+                                </script>
+                                ";
 						break;
 					}
 			}
@@ -1159,5 +1171,42 @@ function sendEmailNotification($page,$action){
 	} catch(Exception $e){
 		return $e->getMessage();
 	}
+}
+
+function sendMessageAsEmail($to,$messageText){
+	$subject = "Message Notification | Generic Platform";
+	$message = "<html><head><title>Message</title></head><body>";
+	$message .= "Hi,<br/>";
+  $message .= "User ".$_SESSION['current-user-first-lastname']." send you you a message.which is : <br> ".$messageText." <br/>";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
+
+function sendMessageAndAddLog(){
+  $reciverId = $_GET['reciverid'];
+  $table = $_GET['table'];
+  $message = trim($_GET['message']);
+  $user = get("user","user_id='$reciverId'");
+  $email = trim($user['email']);
+  sendMessageAsEmail($email,$message);
+  $data= [];
+  $data['sender'] = $_SESSION['uid'];
+  $data['reciver'] = $reciverId;
+  $data['message'] = $message;
+  insert($table,$data);
 }
 ?>
