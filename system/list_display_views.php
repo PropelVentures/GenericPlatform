@@ -523,7 +523,7 @@ function listViews($boxStyles,$listData, $table_type, $target_url, $imageField, 
         }
     }
 
-    if ($_GET['table_type'] == 'child') {
+    if ($_GET['table_type'] == 'child' && !empty($_GET['search_id'])) {
         $_SESSION['child_return_url'] = $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     } else {
         ////parent link

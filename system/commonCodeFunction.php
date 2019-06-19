@@ -5,8 +5,7 @@
  *
  */
 function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
-
-	if(hideBreadCrumb($row1['list_extra_options'])){
+	if(hideBreadCrumb($row1['list_extra_options']) ){
 		return;
 	}
 
@@ -17,6 +16,9 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 			$link_to_return = $_SESSION['return_url'];
 		}
 
+		if(empty($link_to_return)){
+			$link_to_return = $_SESSION['return_url'];
+		}
 		$home_test = explode("display", $link_to_return);
 		if ($home_test[1] == '=home'){
 			$breadcrumb_display = " Back To <span>Home</span> Page";
@@ -37,6 +39,8 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 	}
 }
 
+
+
 function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
 		if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
 			if ($_GET['table_type'] == 'child'){
@@ -44,28 +48,30 @@ function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
 			} else {
 				$link_to_return = $_SESSION['return_url'];
 			}
-			$home_test = explode("display", $link_to_return);
 
+			if(empty($link_to_return)){
+				$link_to_return = $_SESSION['return_url'];
+			}
+
+			$home_test = explode("display", $link_to_return);
 			if ($home_test[1] == '=home'){
 				$breadcrumb_display = " Back To <span>Home</span> Page";
 			} else {
-
 				$backText = str_replace('*', '', $_SESSION['list_tab_name']);
 				$breadcrumb_display = " Back To <span>$backText</span> Lists";
 			}
-
 			if($onepage){
 				$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";
 			} else {
 				$url = "$link_to_return&button=cancel&table_type=$row1[table_type]" .($_GET['fnc']=='onepage' ? '&fnc=onepage' : '' );
 			}
-
 			echo "<br>
 				<div class='breadcrumb'>
 					<a href='$url' class='back-to-list'> $breadcrumb_display</a>
 				</div>";
 		}
 }
+
 
 
 function generateCustomFunctionArray($customFunctionArray,$showlineBreak=false ){
@@ -135,78 +141,7 @@ function generateCustomFunctionArray($customFunctionArray,$showlineBreak=false )
 				?>
 
 
-				<!-- addimport prompt Modal -->
-				<div class="modal fade" id="addimportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="myModalLabel">Import</h4>
-							</div>
-							<div class="modal-body">
-								<?= $importPromptMessage; ?>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-								<?= $buttonHtmlFileImport; ?>
-								<?= $buttonHtmlManualImport; ?>
-								<!--<button type="button" class="btn btn-primary">Save changes</button>-->
-							</div>
-						</div>
-					</div>
-				</div>
 
-				<!-- addimport Status Success/Error Modal -->
-				<div class="modal fade" id="addimportStatusModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="myModalLabel">Import Status</h4>
-							</div>
-							<div class="modal-body">
-								<?php
-
-								$statusText = "Completed... ";
-
-								if(!empty($_SESSION['SuccessAddImport']) )
-								{
-									$statusText .= count($_SESSION['SuccessAddImport']) . " records processed. ";
-								}
-								if(!empty($_SESSION['errorsAddImport']) )
-								{
-									$statusText .= count($_SESSION['errorsAddImport']) . " records did not process due to errors.";
-								}
-
-								echo $statusText;
-
-								?>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				<script>
-				jQuery(document).ready(function($){
-
-					//##SUCCESS/ERROR MODAL DISPLAYED ON REDIRECT USING SESSION##
-					//###NEED TO UNSET THE addimport SESSION for STATUS SINCE THIS FILE IS GETTING CALLED TWICE FOR SOME REASON, SO USED AJAX TO UNSET THOSE####
-					$.ajax({
-						method: "POST",
-						url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-						data: {action: 'addimport_session_unset'}
-					})
-					<?php
-					if(!empty($_SESSION['errorsAddImport']) || !empty($_SESSION['SuccessAddImport']) )
-					{
-						echo "$('#addimportStatusModal').modal('show');";
-					}
-					#unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
-					?>
-				});
-				</script>
 				<?php
 			}
 			else
@@ -214,108 +149,14 @@ function generateCustomFunctionArray($customFunctionArray,$showlineBreak=false )
 				echo "<button type='button' class='btn actionCustomfunction btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
 					data-function_params='{$customFunction['params']}' name='custom_function_$keyCustomFunction' >" . $customFunction['label'] . "</button>";
 				?>
-				<script>
-				jQuery(document).ready(function($){
-					$('#list-form').on('click', '.actionCustomfunction', function(event){
 
-						if (confirm( $(this).text() ) == true) {
-
-							$.ajax({
-								method: "POST",
-								url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-								data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
-							})
-							.done(function (msg) {
-								alert('Success');
-								//location.reload();
-							});
-
-						} else {
-							event.stopImmediatePropagation();
-						}
-					});
-				});
-				</script>
 		<?php
 			}
 
 		}
 
 		?>
-		<!--####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######-->
-		<!--File modal addimport-->
-		<div class="modal fade" id="addimportFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Import from CSV File</h4>
-					</div>
 
-					<form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
-
-						<div class="modal-body">
-
-							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
-								<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' />
-							</div>
-
-						</div>
-						<div class="modal-footer" style="border-top: none;">
-							<div class='new_form col-sm-12 text-right'>
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-								<button type="submit" class="btn btn-primary">Save</button>
-							</div>
-						</div>
-
-					</form>
-
-				</div>
-			</div>
-		</div>
-
-		<!--Manual import modal addimport-->
-		<div class="modal fade" id="addimportManualModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Import</h4>
-					</div>
-
-					<form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
-
-						<div class="modal-body">
-
-							<?php
-							#if(strtolower($_GET['addImportType']) == 'manual')
-							{
-								$customFunctionParameters = $_SESSION['addImportParameters'];
-
-								array_splice($customFunctionParameters, 0, 3);
-
-								$customFunctionParameters = array_map('ucwords', $customFunctionParameters);
-								###$_SESSION['addImportParameters']['1'] == description###
-							}
-							?>
-
-							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
-								<br>Fields : <?= implode(', ', $customFunctionParameters); ?> <br>
-								<textarea name="addImportText" class="form-control" cols="100" required ></textarea>
-							</div>
-
-						</div>
-						<div class="modal-footer" style="border-top: none;">
-							<div class='new_form col-sm-12 text-right'>
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-								<button type="submit" class="btn btn-primary">Save</button>
-							</div>
-						</div>
-
-					</form>
-				</div>
-			</div>
-		</div>
 		<?php
 	}
 }

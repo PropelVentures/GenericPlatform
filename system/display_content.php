@@ -190,7 +190,7 @@ function display_content($row) {
 
 			$tab_id = $row['display_page'].$row['dict_id'];
 			$DD_style_list = trim($row['dd_css_class']);
-      $DD_css_style = trim($row['dd_css_code']);
+            $DD_css_style = trim($row['dd_css_code']);
 			echo "<div id='$tab_id' class='$DD_style_list' style='$DD_css_style'>";
 			/* Show Table Type Header*/
 			// ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
@@ -290,6 +290,7 @@ function display_content($row) {
 				$_SESSION['update_table2']['database_table_name'] = $_SESSION['update_table']['database_table_name'];
 
 				$_SESSION['update_table2']['keyfield'] = $_SESSION['update_table']['keyfield'];
+                addCustomFunctionModal($customFunctionArray);
 
 				if ($_GET['checkFlag'] == 'true') {
 					###THIS IS USED FOR ADD FORM DISPLAY WHICH I WILL MODIFY FOR THE addimport UPLOAD FORM FIELDS################
@@ -301,10 +302,14 @@ function display_content($row) {
 
 				if ($_GET['checkFlag'] == 'true') {
 					if ($_GET['table_type'] == 'child'){
-						$link_to_return = $_SESSION['child_return_url'];
+                        $link_to_return = $_SESSION['child_return_url'];
 					} else {
 						$link_to_return = $_SESSION['return_url'];
 					}
+                    if(empty($link_to_return)){
+            			$link_to_return = $_SESSION['return_url'];
+            		}
+
 					$actual_link = $link_to_return;
 
 					$_SESSION['return_url2'] = $_SESSION['return_url'];
@@ -323,7 +328,7 @@ function display_content($row) {
 				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Top DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
-            $cancelButton
+                        $cancelButton
 						$saveAddButton
 						$facebookButton
 						$googleButton
@@ -346,7 +351,7 @@ function display_content($row) {
 				echo "<div class='form-footer'>
 						" . (!empty($debug) ? 'Bottom DD_EDITABLE addFlag|tableAlias' : '') . "
 						$updateSaveButton
-            $cancelButton
+                        $cancelButton
 						$saveAddButton
 						$facebookButton
 						$googleButton
@@ -354,7 +359,7 @@ function display_content($row) {
 						$copyButton
 						$addButton
 						$deleteButton";
-            generateCustomFunctionArray($customFunctionArray);
+                        generateCustomFunctionArray($customFunctionArray);
 					echo "</div>";
 
 
@@ -369,6 +374,7 @@ function display_content($row) {
 				 */
 
 				if (( ( $row1['list_views'] == 'NULL' || $row1['list_views'] == '' ) || ( isset($_GET['id'])) || ( $_GET['edit'] == 'true' && $_GET['tabNum'] == $row1['tab_num']) && $_GET['ta'] == $row1['table_alias'] ) && $row1['table_type'] != 'content') {
+                    addCustomFunctionModal($customFunctionArray);
 
 					if (isset($_SESSION['return_url']) && $_GET['checkFlag'] == 'true') {
 						echo "<form action='?action=update&checkFlag=true&tabNum=$row1[tab_num]&fnc=onepage' method='post' id='user_profile_form' enctype='multipart/form-data' class='$dd_css_class' style='$css_style'><br>";
@@ -409,6 +415,10 @@ function display_content($row) {
 									else
 										$link_to_return = $_SESSION['return_url'];
 
+                                    if(empty($link_to_return)){
+                            			$link_to_return = $_SESSION['return_url'];
+                            		}
+
 									$actual_link = $link_to_return;
 
 									//$cancel_value = 'Cancel';
@@ -419,9 +429,7 @@ function display_content($row) {
 								if ($tab_status != 'bars') {
 									echo "<div class='form-footer' >
 										$updateSaveButton
-
-                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
-
+                                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
 										$saveAddButton
 										$copyButton
 										$addButton
@@ -506,13 +514,13 @@ function display_content($row) {
 
 							echo "<div class='form-footer' >
 										$updateSaveButton
-                    <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
-                    $saveAddButton
+                                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
+                                        $saveAddButton
 										$copyButton
 										$addButton
 										$deleteButton
 										";
-                    generateCustomFunctionArray($customFunctionArray);
+                                        generateCustomFunctionArray($customFunctionArray);
 
 									echo "</div>";
 							/*echo "<div class='form-footer'>
@@ -524,7 +532,8 @@ function display_content($row) {
 					}
 
 					echo "<div style='clear:both'></div></form></section></div><!--<div class='h1-sep'><span></span></div>-->";
-				}
+
+                }
 			}
 			//break;
 		//}
@@ -535,4 +544,233 @@ function display_content($row) {
         echo "</section>";
         ///page privilege if its false
     }
+}
+
+
+function addCustomFunctionModal($customFunctionArray){
+	if (!empty($customFunctionArray) ) {
+
+		foreach($customFunctionArray as $keyCustomFunction => $customFunction)
+		{
+			##BUTTON FOR 'addimport' through CUSTOM FUNCTIONS##
+			if(strtolower($customFunction['function']) == 'addimport')
+			{
+				##FOR TESTING AND DEBUG,SHOULD BE REMOVED###
+				#$customFunction['params'] = 'add import` import multiple data` ` user_id` pname1` description` product_name';##THIRD param iS CI OR CP | TI OR TP##
+
+				###GET THIRD PARAM FOR I|P(IMPORT FROM FILE OR PROMPT FOR "Import from CSV File, or Manual Import?"#######STARTS####
+				$customFunctionParams = $customFunction['params'];
+				$customFunctionParams = explode("`", $customFunctionParams);
+				$customFunctionParams = array_map('trim', $customFunctionParams);
+
+				$customFunctionThirdParameter = $customFunctionParams['2'];
+
+				###SET SESSION var for holding addimport function parameters######
+				$_SESSION['addImportParameters'] = $customFunctionParams;
+
+				$addImportLink = $_SESSION['add_url_list'] . '&addImport=true';
+
+				$buttonHtmlFileImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=file' . '" data-prompt_action="importFile">Import from CSV File</a>';
+				$buttonHtmlManualImport = '<a class="btn btn-primary importPromptAction" href="' . $addImportLink . '&addImportType=manual' . '" data-prompt_action="importManual" >Manual Import</a>';
+				#<a data-dismiss="modal" data-toggle="modal" href="#lost">Click</a>
+
+				$buttonHtmlFileImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportFileModal" data-prompt_action="importFile">Import from CSV File</a>';
+				$buttonHtmlManualImport = '<a data-dismiss="modal" data-toggle="modal" class="btn btn-primary importPromptAction" href="#addimportManualModal" data-prompt_action="importManual" >Manual Import</a>';
+
+				$importPromptMessage = 'Import from CSV File, or Manual Import?';
+
+				###DEFAULT IMPORT TYPE = P i.e. prompt after every import###
+				$importButtonActionType = 'P';
+
+				if(stripos($customFunctionThirdParameter, 'I') !== false)
+				{
+					$importButtonActionType = 'I';
+					$importPromptMessage = 'Import from CSV File?';
+					$buttonHtmlManualImport = '';
+				}
+
+				?>
+
+				<!-- addimport prompt Modal -->
+				<div class="modal fade" id="addimportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="myModalLabel">Import</h4>
+							</div>
+							<div class="modal-body">
+								<?= $importPromptMessage; ?>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<?= $buttonHtmlFileImport; ?>
+								<?= $buttonHtmlManualImport; ?>
+								<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- addimport Status Success/Error Modal -->
+				<div class="modal fade" id="addimportStatusModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="myModalLabel">Import Status</h4>
+							</div>
+							<div class="modal-body">
+								<?php
+
+								$statusText = "Completed... ";
+
+								if(!empty($_SESSION['SuccessAddImport']) )
+								{
+									$statusText .= count($_SESSION['SuccessAddImport']) . " records processed. ";
+								}
+								if(!empty($_SESSION['errorsAddImport']) )
+								{
+									$statusText .= count($_SESSION['errorsAddImport']) . " records did not process due to errors.";
+								}
+
+								echo $statusText;
+
+								?>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<script>
+				jQuery(document).ready(function($){
+
+					//##SUCCESS/ERROR MODAL DISPLAYED ON REDIRECT USING SESSION##
+					//###NEED TO UNSET THE addimport SESSION for STATUS SINCE THIS FILE IS GETTING CALLED TWICE FOR SOME REASON, SO USED AJAX TO UNSET THOSE####
+					$.ajax({
+						method: "POST",
+						url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+						data: {action: 'addimport_session_unset'}
+					})
+					<?php
+					if(!empty($_SESSION['errorsAddImport']) || !empty($_SESSION['SuccessAddImport']) )
+					{
+						echo "$('#addimportStatusModal').modal('show');";
+					}
+					#unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
+					?>
+				});
+				</script>
+				<?php
+			}
+			else
+			{
+
+				?>
+				<script>
+				jQuery(document).ready(function($){
+					$('#list-form').on('click', '.actionCustomfunction', function(event){
+
+						if (confirm( $(this).text() ) == true) {
+
+							$.ajax({
+								method: "POST",
+								url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+								data: {function: $(this).data('function_name'), params: $(this).data('function_params'), action: 'custom_function'}
+							})
+							.done(function (msg) {
+								alert('Success');
+								//location.reload();
+							});
+
+						} else {
+							event.stopImmediatePropagation();
+						}
+					});
+				});
+				</script>
+		<?php
+			}
+
+		}
+
+		?>
+		<!--####addimport FORM FIELDS#######GET THE I | P for import from file or PROMPT#######-->
+		<!--File modal addimport-->
+		<div class="modal fade" id="addimportFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Import from CSV File</h4>
+					</div>
+
+					<form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
+
+						<div class="modal-body">
+
+							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
+								<input type='file' name='addImportFile' required title='' size='' class='form-control' style='height: auto;' />
+							</div>
+
+						</div>
+						<div class="modal-footer" style="border-top: none;">
+							<div class='new_form col-sm-12 text-right'>
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Save</button>
+							</div>
+						</div>
+
+					</form>
+
+				</div>
+			</div>
+		</div>
+
+		<!--Manual import modal addimport-->
+		<div class="modal fade" id="addimportManualModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Import</h4>
+					</div>
+
+					<form action='<?= $_SESSION[add_url_list]; ?>&action=add&actionType=addimport&search_id=<?= $_GET['search_id']; ?>&edit=<?= $_GET['edit']; ?>' method='post' id='user_profile_form' enctype='multipart/form-data' class=''>
+
+						<div class="modal-body">
+
+							<?php
+							#if(strtolower($_GET['addImportType']) == 'manual')
+							{
+								$customFunctionParameters = $_SESSION['addImportParameters'];
+
+								array_splice($customFunctionParameters, 0, 3);
+
+								$customFunctionParameters = array_map('ucwords', $customFunctionParameters);
+								###$_SESSION['addImportParameters']['1'] == description###
+							}
+							?>
+
+							<div class='new_form col-sm-12'><label><?= ucwords($_SESSION['addImportParameters']['1']); ?></label>
+								<br>Fields : <?= implode(', ', $customFunctionParameters); ?> <br>
+								<textarea name="addImportText" class="form-control" cols="100" required ></textarea>
+							</div>
+
+						</div>
+						<div class="modal-footer" style="border-top: none;">
+							<div class='new_form col-sm-12 text-right'>
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Save</button>
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
 }
