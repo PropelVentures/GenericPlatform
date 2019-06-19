@@ -1,6 +1,8 @@
 <?php
+
 	require_once("functions_loader.php");
 	include("header.php");
+
 	$display_page = $_GET['display'];
 
 	//log event

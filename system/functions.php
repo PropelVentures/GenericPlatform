@@ -927,7 +927,7 @@ function getNavItemIcon($item_icon,$class,$style){
 	if(empty($item_icon)){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
-//     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
     return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
@@ -942,9 +942,9 @@ function getDDUrl($list_select){
 	if (empty($list_select)) {
 		return "";
 	}
-	// Remove all illegal characters from a url
+	 // Remove all illegal characters from a url
 	$list_select = filter_var($list_select, FILTER_SANITIZE_URL);
-	// If Url is valid then et target as defined in DB
+	 // If Url is valid then et target as defined in DB
 	if (filter_var($list_select, FILTER_VALIDATE_URL)) {
 		return $list_select;
 	} else {
@@ -1199,5 +1199,42 @@ function sendMessageAndAddLog(){
   $data['reciver'] = $reciverId;
   $data['message'] = $message;
   insert($table,$data);
+}
+
+function setBoxStyles($listExtraOptions){
+  $result = [];
+  if(strpos($listExtraOptions,'boxstyles')!==false){
+    $stylesString = trim(get_string_between($listExtraOptions,'boxstyles[',']'));
+    if(!empty($stylesString)){
+      $allStyles = explode(',',$stylesString);
+      foreach ($allStyles as $key => $style) {
+        $style = trim($style);
+        if(!empty($style)){
+          $keyValue = explode(':',$style);
+          if(count($keyValue)>1){
+            if(!empty(trim($keyValue[0])) && !empty(trim($keyValue[1]))){
+              $result[trim($keyValue[0])] = trim($keyValue[1]);
+            }
+          }
+        }
+      }
+    }
+  }
+  return $result;
+}
+
+function issetStyleForBox($array,$filter){
+  if(isset($array[$filter]) && !is_null($array[$filter])  && !empty($array[$filter])){
+    return $filter.':'.$array[$filter].';';
+  }
+  return '';
+}
+
+function replaceStylesArrayWithString($array){
+  $string = '';
+  foreach ($array as $key => $value) {
+    $string = $string.$key.':'.$value.';';
+  }
+  return $string;
 }
 ?>

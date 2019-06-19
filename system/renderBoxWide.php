@@ -4,11 +4,13 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
-    $keyfield = firstFieldName($row['database_table_name']);
-    $table_type = trim($row['table_type']);
-    $table_name = trim($row['database_table_name']);
-    $list_fields = trim($row['list_fields']);
-    $dict_id = $row['dict_id'];
+  $keyfield = firstFieldName($row['database_table_name']);
+	$boxStyles = setBoxStyles($row['list_extra_options']);
+	$boxStyles =replaceStylesArrayWithString($boxStyles);
+  $table_type = trim($row['table_type']);
+  $table_name = trim($row['database_table_name']);
+  $list_fields = trim($row['list_fields']);
+  $dict_id = $row['dict_id'];
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<div class="boxWideContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
@@ -30,6 +32,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
 			}
 			while ($listRecord = $list->fetch_assoc()) {
+				$itemId = $listRecord[$row['generic_field_name']];
 				if($count > $limit){
 					break;
 				}
@@ -40,7 +43,8 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 				$rs = $con->query($qry); ?>
-				<div style="<?= $css_style ?>" class="boxWide  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+				<div style="<?= $boxStyles.$css_style ?>" class="boxWide  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+					<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
 					if (!empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
@@ -111,7 +115,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					wideListViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
 			<?php
@@ -126,7 +130,51 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
  			} else {
  				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
  			}
-		} else { ?>
+			global $popup_menu;
+			if ($popup_menu['popupmenu'] == 'true') {
+				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+				$_SESSION['popup_munu_array'][] = $popup_menu;
+			}?>
+
+			<script>
+			if (mobileDetector().any()) {
+				$(".boxWideContainer#content<?php echo $tab_num;?>").on("taphold", '.boxWide', function (event) {
+					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
+					var xPos = event.originalEvent.touches[0].pageX;
+					var yPos = event.originalEvent.touches[0].pageY;
+					$(this).addClass('tabholdEvent');
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//alert(popup_del);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: yPos + "px",
+						left: xPos + "px"
+					});
+				});
+			} else {
+				$(".boxWideContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxWide', function (event) {
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//console.log(dict_id);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: event.pageY + "px",
+						left: event.pageX + "px"
+					});
+				});
+			}
+		</script>
+
+		<?php } else { ?>
 	</div>
 		<?php
 	}

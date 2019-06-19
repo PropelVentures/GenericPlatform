@@ -283,8 +283,8 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 				<?php foreach ($column_widths_array as $key => $value) { ?>
 						{ "width": <?=$value?>, "targets": [<?=$key?>] },
 				<?php }?>
-			]
-			// bStateSave: true,
+			],
+			bStateSave: true
 		});
 
 		//Fixing the bug for default pagination values for the datatable//

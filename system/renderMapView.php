@@ -102,19 +102,29 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 									$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
 								}
 							}
+							// $recordId = $listRecord
+
 						}
 					}
+					$recordDbId = $listRecord[$keyfield];
+
 					if(!empty($tempLatLong['lat']) && !empty($tempLatLong['lng'])){
 						$tempLatLong['userImage'] = $thisUserImage;
 						$tempLatLong['list_data'] = array_filter($listData);
 						$tempLatLong['target_url'] = $target_url."&edit=true#$tab_anchor";
 						$tempLatLong['target_url2'] = $target_url2;
+						$tempLatLong['record_id'] = $recordDbId;
 						$mapData[] = $tempLatLong;
 					}
 				}
 			}/// end of mainIF ?>
 		<?php
 		$count++;
+		global $popup_menu;
+		if ($popup_menu['popupmenu'] == 'true') {
+			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+			$_SESSION['popup_munu_array'][] = $popup_menu;
+		}
 		}
 		} else { ?>
 		<div> No record found!</div>
@@ -166,8 +176,24 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 
 				/*For manage click event start*/
 				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'click', function() {
-					window_<?php echo $key; ?>.open(map,marker_obj_<?php echo $key; ?>);
+						window.location.href = '<?php echo $data['target_url']; ?>';
 				});
+
+				/*For manage right click event start*/
+				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'rightclick', function() {
+						dict_id = "<?php echo $dict_id; ?>";
+						popup_del = '<?php echo $data['record_id']; ?>';
+						event.preventDefault();
+						// Show contextmenu
+						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+						// In the right position (the mouse)
+						css({
+							top: event.pageY + "px",
+							left: event.pageX + "px"
+						});
+
+				});
+
 				/*For manage click event end*/
 
 				/*For mouseover event start*/

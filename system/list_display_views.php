@@ -289,8 +289,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	function clearFunction() {
 		document.getElementById("list-form").reset();
 		/*Palak Task 5.4.77 Changes Start
-		var table = $('#example').DataTable();*/
-		var table = $('.clear1').DataTable();
+		var table = $('#example').sble();*/
+		var table = $('.clear1').sble();
 		/*Palak Changes End*/
 		table.search( '' ).columns().search( '' ).draw();
 	}
@@ -490,7 +490,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
  * give LIST UI and data inside lists
  */
 
-function listViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function listViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -538,7 +538,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data'>";
+	echo "<div class='boxView_content list-data' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
         if(isset($data['data_length'])){
@@ -556,7 +556,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 
 
 
-function wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function wideListViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -605,7 +605,7 @@ function wideListViews($listData, $table_type, $target_url, $imageField, $listRe
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data'>";
+	echo "<div class='boxView_content list-data' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
 				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
