@@ -436,20 +436,18 @@ if (!empty($_GET["img_revert"]) && $_GET["img_revert"] == 'img-revert') {
  */
 
 if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'friend_me') {
-
-    $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-    if (empty($check[0])) {
-
-
-        insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('inserted');
-    } else {
-
-        delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('deleted');
-    }
+  $result = 'inserted';
+  $log_action = 'FRIEND';
+  $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  if (empty($check[0])) {
+      insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  } else {
+      delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+      $result = 'deleted';
+      $log_action = 'UNFRIEND';
+  }
+  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  exit($result);
 }
 
 
@@ -462,21 +460,18 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fri
  */
 
 if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'follow_me') {
-
-    $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-    if (empty($check[0])) {
-
-
-        insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('inserted');
-    } else {
-
-        delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('deleted');
-    }
+  $log_action = 'FOLLOW';
+  $result = 'inserted';
+  $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  if (empty($check[0])) {
+      insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  } else {
+      delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+      $result = 'deleted';
+      $log_action = 'UNFOLLOW';
+  }
+  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  exit($result);
 }
 
 
@@ -491,22 +486,18 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fol
 
 
 if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'favorite_me') {
-
-
-    $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-    if (empty($check[0])) {
-
-
-        insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('inserted');
-    } else {
-
-        delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-        exit('deleted');
-    }
+  $log_action = 'FAVORITE';
+  $result = 'inserted';
+  $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  if (empty($check[0])) {
+      insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+  } else {
+      delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
+      $result = 'deleted';
+      $log_action = 'UNFAVORITE';
+  }
+  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  exit($result);
 }
 
 
@@ -522,150 +513,77 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fav
 
 
 if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rate_me') {
-
     $check = getWhere($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
-
-    if (!empty($check[0]))
-        $oldvalue = $check[0]['value'];
-    else
-        $oldvalue = 0;
-
-
+    if (!empty($check[0])){
+      $oldvalue = $check[0]['value'];
+    }else{
+      $oldvalue = 0;
+    }
     if ($_GET['value'] == 'clear') {
-
         delete($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
         exit('deleted');
     } else {
-
         /////////Checking the limitsss
-
-
         $fffr = getWhere('data_dictionary', array('display_page' => $_SESSION[display], 'table_alias' => $_GET['ta'], 'tab_num' => $_GET['tabNum']));
-
         $icons_table = listExtraOptions($fffr[0]['list_extra_options']);
-
-
-
         $disable_status = 'false';
-
         $dilog_msg = '';
 
-
         ///////////total vote allowed for profile//////
-
-
         if (!empty(trim($icons_table['voteLimit']))) {
-
-
             $records = sumValues($icons_table['rating_tbl']);
-
-
             if ($icons_table['voteLimit'] < $records + $_GET['value'] - $oldvalue) {
-
-
                 $disable_status = 'true';
-
                 $dilog_msg .= "<p>Total Vote Limit Of $icons_table[voteLimit] Has Been Reached</p>";
             }
         }
 
-
-
-
-
-
         ///////////total vote allowed for SINGLE USER//////
-
-
         if (!empty(trim($icons_table['userVoteLimit']))) {
-
-
             $records = sumValues($icons_table['rating_tbl'], array('user_id' => $_SESSION['uid']));
-
             //print_r($records);die;
-
             if ($icons_table['userVoteLimit'] < $records + $_GET['value'] - $oldvalue) {
-
                 $disable_status = 'true';
-
                 $dilog_msg .= "<p>Your Total Vote Limit Of $icons_table[userVoteLimit] Has Been Reached</p>";
             }
         }
 
-
-
         ///////////Checking Upper Lower Limit//////
-
-
-
         if (!empty(trim($icons_table['lowerLimit'])) || !empty(trim($icons_table['upperLimit']))) {
-
-
-
             //print_r($records);die;
-
             if ($icons_table['lowerLimit'] > $_GET['value'] || $icons_table['upperLimit'] < $_GET['value']) {
-
-
                 $dilog_msg .= "<p>Lower Limit = $icons_table[lowerLimit] & Upper Limit = $icons_table[upperLimit]</p>";
             }
         }
 
-
         /*
          * Patter Checking here ,whether to accept only INTEGER
          */
-
         if (!empty(trim($icons_table['pattern']) && trim($icons_table['pattern']) == 'integer')) {
-
-
-
             if (!preg_match("/^[0-9]*$/", $_GET['value'])) {
-
-
                 $dilog_msg .= "<p>Only Integers are Allowed</p>";
             }
         }
 
-
-
         if (!empty(trim($icons_table['pattern']) && trim($icons_table['pattern']) == 'float')) {
-
-
-
             if (!preg_match("/^[0-9]*.[0-9]*$/", $_GET['value'])) {
-
-
                 $dilog_msg .= "<p>Only One Decimal Point is Allowed</p>";
             }
         }
 
-
-
         if (empty($dilog_msg) && $disable_status == 'false') {
-
-
             if (empty($check[0])) {
-
-
                 insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id'], 'value' => $_GET['value']));
-
+                log_event($_GET['display_page'],'VOTE',$_SESSION['uid'],$_GET['fffr_search_id']);
                 exit('deleted');
             } else {
-
                 update($_GET['table_name'], array('value' => $_GET['value']), array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
-
                 exit('deleted');
             }
         } else {
-
             /*
              * Limit Critera has not met
              */
-
-
             exit($dilog_msg);
         }
     }
