@@ -169,10 +169,10 @@ function getRecordAddUrl($list_select_arr,$table_type){
 	if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 		if (count($list_select_arr[0]) == 2) {
 			/// add button url
-			$addUrl = "?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+			$addUrl = "?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 		} else {
 			/// add button url
-			$addUrl = "?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+			$addUrl = "?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 		}
 	}
 	return trim($addUrl);
@@ -194,10 +194,10 @@ function getRecordAddUrlInner($row){
 		if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 			if (count($list_select_arr[0]) == 2) {
 				/// add button url
-				$addUrl = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+				$addUrl = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 			} else {
 				/// add button url
-				$addUrl = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+				$addUrl = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 			}
 		}
 	}
@@ -252,5 +252,47 @@ function parseExtraOptions($string){
 		}
 	}
 	return $temp;
+}
+
+function checkIfEmptyList($list,$row){
+	if ($list->num_rows == 0) {
+		$emptyListConfigs = emptyListConfigs($row['list_extra_options']);
+		$type  = strtoupper(trim($emptyListConfigs['type']));
+		$value = trim($emptyListConfigs['value']);
+
+		if($type ==='TEXT'){
+			echo "<h3 style='text-align:center'>$value</h3>";
+		}
+		if($type ==='IMAGE'){
+			echo "<div style='text-align:center'><img src='" . USER_UPLOADS . "" . $value . "' border='0' width='300' class='img-thumbnail img-responsive'/></div>";
+		}
+		return true;
+	}
+	return false;
+}
+
+function emptyListConfigs($value){
+	$result = [];
+	$result['type'] = 'text';
+	$result['value'] = EMPTY_LISTS_MESSAGE;
+	// $value = strtoupper(trim($value));
+	$position = strpos($value,"emptylist");
+	if($position!==false){
+		$all_options = explode(';',$value);
+		foreach ($all_options as $key => $sub_option) {
+			$position = strpos($sub_option,"emptylist");
+			if($position!==false){
+				$configs = explode(':',trim($sub_option));
+				if($configs[0]==='emptylist'){
+					$settings = explode(',',trim($configs[1]));
+					if(count($settings)==2){
+						$result['type'] = $settings[0];
+						$result['value'] = $settings[1];
+					}
+				}
+			}
+		}
+	}
+	return $result;
 }
 ?>

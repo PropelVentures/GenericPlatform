@@ -576,8 +576,9 @@ function generateTopNavigation($navItems,$loginRequired){
 			}
       $label = dislayUserNameSelector($parent['item_label']);
 			$title = $parent['item_help'];
-			$item_style = $parent['item_style'];
-			$item_icon = getNavItemIcon($parent['item_icon']);
+			$item_style = $parent['nav_css_class'];
+      $nav_css_code = $parent['nav_css_code'];
+			$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 			$navTarget = getNavTarget($parent);
 			$target = $navTarget['target'];
 			$enable_class=$navTarget['enable_class'];
@@ -590,29 +591,29 @@ function generateTopNavigation($navItems,$loginRequired){
 
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#break#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#space#":
-						$menu.="<li class'nav_item $item_style'>
+						$menu.="<li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						default:
-						$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
-								<a class='' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+						$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
+								<a class='$item_style' style='$nav_css_code' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
 								</a>
@@ -626,8 +627,9 @@ function generateTopNavigation($navItems,$loginRequired){
 					}
 					$label = dislayUserNameSelector($children['item_label']);
 					$title = $children['item_help'];
-					$item_style = $children['item_style'];
-					$item_icon = getNavItemIcon($children['item_icon']);
+					$item_style = $children['nav_css_class'];
+          $nav_css_code = $children['nav_css_code'];
+					$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 					$navTarget = getNavTarget($children);
 					$target = $navTarget['target'];
 					$enable_class=$navTarget['enable_class'];
@@ -639,23 +641,23 @@ function generateTopNavigation($navItems,$loginRequired){
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li class'nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class nav_item $item_style' style=''>
-									<a class='$disable_child' onClick=urlVariables() $target_blank href='$target' title='$title'>".
+						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
+									<a onClick=urlVariables() class='$disable_child $item_style' $target_blank href='$target' title='$title' style='$nav_css_code'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
@@ -667,23 +669,23 @@ function generateTopNavigation($navItems,$loginRequired){
 			} else {
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li class='nav_item $item_style'>
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='nav_item $enable_class $item_style' >
-									<a class='$disable' onClick=urlVariables() $target_blank href='$target' title='$title'>
+						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
+									<a onClick=urlVariables() class='$disable $item_style' $target_blank href='$target' title='$title' style='$nav_css_code'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>
@@ -719,8 +721,9 @@ function generateSideBarNavigation($navItems,$menu){
 		}
 		$label = dislayUserNameSelector($parent['item_label']);
 		$title = $parent['item_help'];
-		$item_style = $parent['item_style'];
-		$item_icon = getNavItemIcon($parent['item_icon']);
+		$item_style = $parent['nav_css_class'];
+    $nav_css_code = $parent['nav_css_code'];
+		$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 		$navTarget = getNavTarget($parent);
 		$target = $navTarget['target'];
 		$enable_class=$navTarget['enable_class'];
@@ -746,7 +749,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class dropdown nav_item $item_style' style=''>
+				$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
 						<a href='#nav_".$parent['nav_id']."' class='dropdown-toggle' data-toggle='collapse' title='$title'>
 							".$item_icon.getSaperator($label)."
 							<span class='caret'></span>
@@ -763,8 +766,9 @@ function generateSideBarNavigation($navItems,$menu){
 				}
 				$label = dislayUserNameSelector($children['item_label']);
 				$title = $children['item_help'];
-				$item_style = $children['item_style'];
-				$item_icon = getNavItemIcon($children['item_icon']);
+				$item_style = $children['nav_css_class'];
+        $nav_css_code = $children['nav_css_code'];
+				$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 				$navTarget = getNavTarget($children);
 				$target = $navTarget['target'];
 				$enable_class=$navTarget['enable_class'];
@@ -787,7 +791,7 @@ function generateSideBarNavigation($navItems,$menu){
 							</li>";
 					break;
 					default:
-					$menu.="<li class='$enable_class $item_style' style=''>
+					$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 								<a $target_blank href='$target' title='$title'>".
 									$item_icon.
 									getSaperator($label)."
@@ -815,7 +819,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class $item_style' style=''>
+				$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 							<a $target_blank href='$target' title='$title'>
 								".$item_icon.getSaperator($label)."
 							</a>
@@ -932,15 +936,15 @@ function getNavTarget($row){
 	];
 }
 
-function getNavItemIcon($item_icon){
+function getNavItemIcon($item_icon,$class,$style){
 	if(empty($item_icon)){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
-//     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
-    return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
-		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
+		return "<img class='$class' style='$style' src='".BASE_IMAGES_URL.$item_icon."'>  ";
 	}
 	return "";
 
@@ -951,9 +955,9 @@ function getDDUrl($list_select){
 	if (empty($list_select)) {
 		return "";
 	}
-	// Remove all illegal characters from a url
+	 // Remove all illegal characters from a url
 	$list_select = filter_var($list_select, FILTER_SANITIZE_URL);
-	// If Url is valid then et target as defined in DB
+	 // If Url is valid then et target as defined in DB
 	if (filter_var($list_select, FILTER_VALIDATE_URL)) {
 		return $list_select;
 	} else {
@@ -966,7 +970,7 @@ function getDDUrl($list_select){
 			if($nav->num_rows > 0){
 				$navRecord = $nav->fetch_assoc();
 				$layout = $navRecord['page_layout_style'];
-				$itemStyle = $navRecord['item_style'];
+				$itemStyle = $navRecord['nav_css_class'];
 			}
 			return BASE_URL_SYSTEM ."main.php?display=" . $ddRecord['display_page'] . "&layout=$layout&style=$itemStyle";
 		}
@@ -1208,5 +1212,42 @@ function sendMessageAndAddLog(){
   $data['reciver'] = $reciverId;
   $data['message'] = $message;
   insert($table,$data);
+}
+
+function setBoxStyles($listExtraOptions){
+  $result = [];
+  if(strpos($listExtraOptions,'boxstyles')!==false){
+    $stylesString = trim(get_string_between($listExtraOptions,'boxstyles[',']'));
+    if(!empty($stylesString)){
+      $allStyles = explode(',',$stylesString);
+      foreach ($allStyles as $key => $style) {
+        $style = trim($style);
+        if(!empty($style)){
+          $keyValue = explode(':',$style);
+          if(count($keyValue)>1){
+            if(!empty(trim($keyValue[0])) && !empty(trim($keyValue[1]))){
+              $result[trim($keyValue[0])] = trim($keyValue[1]);
+            }
+          }
+        }
+      }
+    }
+  }
+  return $result;
+}
+
+function issetStyleForBox($array,$filter){
+  if(isset($array[$filter]) && !is_null($array[$filter])  && !empty($array[$filter])){
+    return $filter.':'.$array[$filter].';';
+  }
+  return '';
+}
+
+function replaceStylesArrayWithString($array){
+  $string = '';
+  foreach ($array as $key => $value) {
+    $string = $string.$key.':'.$value.';';
+  }
+  return $string;
 }
 ?>

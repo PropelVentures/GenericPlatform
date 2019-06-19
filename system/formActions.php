@@ -1343,7 +1343,7 @@ function redirectToResetPassword(){
 		$layout = $itemStyle = "";
 		if(!empty($navigation)){
 			$layout = $navigation['page_layout_style'];
-			$itemStyle = $navigation['item_style'];
+			$itemStyle = $navigation['nav_css_class'];
 		}
 		$_SESSION['reset_token'] = $token;
 		$returnUrl = BASE_URL_SYSTEM."main.php?display=$display_page&layout=$layout&style=$itemStyle";

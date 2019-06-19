@@ -32,7 +32,7 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 			if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 				break;
 			}
-			
+
 			$thisUserImage = false;
 			if($showImageIconS !== false){
 				$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];
@@ -54,19 +54,19 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 					/// Extracting action ,when user click on edit button or on list
 					if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 						if (count($list_select_arr[0]) == 2) {
-							$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+							$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
 							/// add button url
-							$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+							$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 						} else {
 							$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
 							/// add button url
-							$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+							$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 						}
 					}
 					/// Extracting action, when user click on boxView Image of list
 					if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) {
 						if (count($list_select_arr[1]) == 2) {
-							$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+							$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 						} else {
 							$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 						}
@@ -102,19 +102,29 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 									$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
 								}
 							}
+							// $recordId = $listRecord
+
 						}
 					}
+					$recordDbId = $listRecord[$keyfield];
+
 					if(!empty($tempLatLong['lat']) && !empty($tempLatLong['lng'])){
 						$tempLatLong['userImage'] = $thisUserImage;
 						$tempLatLong['list_data'] = array_filter($listData);
 						$tempLatLong['target_url'] = $target_url."&edit=true#$tab_anchor";
 						$tempLatLong['target_url2'] = $target_url2;
+						$tempLatLong['record_id'] = $recordDbId;
 						$mapData[] = $tempLatLong;
 					}
 				}
 			}/// end of mainIF ?>
 		<?php
 		$count++;
+		global $popup_menu;
+		if ($popup_menu['popupmenu'] == 'true') {
+			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+			$_SESSION['popup_munu_array'][] = $popup_menu;
+		}
 		}
 		} else { ?>
 		<div> No record found!</div>
@@ -166,8 +176,24 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 
 				/*For manage click event start*/
 				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'click', function() {
-					window_<?php echo $key; ?>.open(map,marker_obj_<?php echo $key; ?>);
+						window.location.href = '<?php echo $data['target_url']; ?>';
 				});
+
+				/*For manage right click event start*/
+				google.maps.event.addListener(marker_obj_<?php echo $key; ?>, 'rightclick', function() {
+						dict_id = "<?php echo $dict_id; ?>";
+						popup_del = '<?php echo $data['record_id']; ?>';
+						event.preventDefault();
+						// Show contextmenu
+						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+						// In the right position (the mouse)
+						css({
+							top: event.pageY + "px",
+							left: event.pageX + "px"
+						});
+
+				});
+
 				/*For manage click event end*/
 
 				/*For mouseover event start*/

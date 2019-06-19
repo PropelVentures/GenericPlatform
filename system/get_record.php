@@ -55,7 +55,12 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
     }
 
     if($singleSort !=='false'){
-      $clause = $clause .' order by '.$singleSort;
+      $temp = strtoupper($singleSort);
+      if($temp==='RANDOM'){
+        $clause = $clause .' order by rand()';
+      }else{
+        $clause = $clause .' order by '.$singleSort;
+      }
     }
     $user = $con->query("SELECT * FROM $db_name $clause ");
     return $user;
