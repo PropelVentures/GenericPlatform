@@ -32,9 +32,10 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 			if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 				break;
 			}
-
+			$haveToShowImageIcon = 'NO';
 			$thisUserImage = false;
-			if($showImageIconS !== false){
+			if($showImageIcon !== false){
+				$haveToShowImageIcon = 'YES';
 				$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];
 				if(!file_exists($thisUserImage)){
 					$thisUserImage = USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg";
@@ -142,28 +143,33 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
         zoom: <?php echo MAP_ZOOM; ?>,
         center: latlng,
 		 }
+
+		 var haveToShowImageIcon = "<?= $haveToShowImageIcon ?>";
 			var map = new google.maps.Map(document.getElementById("<?php echo 'map_'.$dict_id; ?>"), mapOptions);
 			<?php foreach($mapData as $key=>$data){ ?>
 				var listData = '<?php echo substr(implode('<br>',$data['list_data']), 0, 200); ?>';
-					<?php if($showImageIconS !== flase){ ?>
+					if(haveToShowImageIcon == 'YES'){
 						var image = {
           		url:"<?php echo $data['userImage'] ?>",
           		scaledSize: new google.maps.Size(40, 40),
           		origin: new google.maps.Point(0, 0),
           		anchor: new google.maps.Point(0, 0)
         		};
-						<?php } ?>
+						var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
+							position:new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>),
+							id: '<?php echo $key ?>',
+							title: "<?php echo ucwords(@$data['list_data'][0]); ?>",
+							icon: image
+						});
+					}else{
+						var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
+							position:new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>),
+							id: '<?php echo $key ?>',
+							title: "<?php echo ucwords(@$data['list_data'][0]); ?>",
+							label: "<?php echo substr(@$data['list_data'][0],0,1); ?>"
+						});
+					}
 
-				var marker_obj_<?php echo $key; ?> = new google.maps.Marker({
-					position:new google.maps.LatLng(<?php echo $data['lat']; ?>,<?php echo $data['lng']; ?>),
-					id: '<?php echo $key ?>',
-					title: "<?php echo ucwords(@$data['list_data'][0]); ?>",
-					<?php if($showImageIconS !== flase){ ?>
-					icon: image,
-					<?php }else{ ?>
-					label: "<?php echo substr(@$data['list_data'][0],0,1); ?>",
-					<?php } ?>
-				});
 				marker_obj_<?php echo $key; ?>.setMap(map);
 
 				markers.push(marker_obj_<?php echo $key; ?>); //creating array for cluster
