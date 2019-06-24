@@ -5,8 +5,12 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
   $keyfield = firstFieldName($row['database_table_name']);
-	$boxStyles = setBoxStyles($row['list_extra_options']);
-	$boxStyles =replaceStylesArrayWithString($boxStyles);
+	$style_refrence_configs = false;
+	$category_styles = false;
+	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
+	if($style_refrence_configs !== flase){
+		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
+	}
   $table_type = trim($row['table_type']);
   $table_name = trim($row['database_table_name']);
   $list_fields = trim($row['list_fields']);
@@ -42,8 +46,12 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				}
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
-				$rs = $con->query($qry); ?>
-				<div style="<?= $boxStyles.$css_style ?>" class="boxWide  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+				$rs = $con->query($qry);
+				if($category_styles!==false && isset($category_styles[$listRecord[$style_refrence_configs['field']]])){
+					$boxStyleClass = $category_styles[$listRecord[$style_refrence_configs['field']]]['class'];
+					$boxStyleCode = $category_styles[$listRecord[$style_refrence_configs['field']]]['code'];
+				}?>
+				<div style="<?= $boxStyleCode.$css_style ?>" class="boxWide  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
 					<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
 					if (!empty($list_select) || $table_type == 'child') {
@@ -115,7 +123,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					wideListViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					wideListViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
 			<?php
