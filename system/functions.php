@@ -1263,6 +1263,7 @@ function findAndSetCategoryStyles($con,$category_styles){
 	while ($style = $allStyles->fetch_assoc()) {
     $dataSet[$style[$style_refrence_id]]['class'] =$style['css_class'];
     $dataSet[$style[$style_refrence_id]]['code'] =$style['css_code'];
+    $dataSet[$style[$style_refrence_id]]['icon'] =$style['map_icon'];
   }
   return $dataSet;
 }

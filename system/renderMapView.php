@@ -5,11 +5,17 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
-    $keyfield = firstFieldName($row['database_table_name']);
-    $table_type = trim($row['table_type']);
-    $table_name = trim($row['database_table_name']);
-    $list_fields = trim($row['list_fields']);
-    $dict_id = $row['dict_id'];
+  $keyfield = firstFieldName($row['database_table_name']);
+  $table_type = trim($row['table_type']);
+  $table_name = trim($row['database_table_name']);
+  $list_fields = trim($row['list_fields']);
+  $dict_id = $row['dict_id'];
+	$style_refrence_configs = false;
+	$category_styles = false;
+	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
+	if($style_refrence_configs !== flase){
+		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
+	}
 	$list_select_arr = getListSelectParams($list_select);
 	$mapData= array();
 	if ($list->num_rows > 0) {
@@ -28,7 +34,6 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 			if($count > $limit){
 				break;
 			}
-
 			if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 				break;
 			}
@@ -36,9 +41,18 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 			$thisUserImage = false;
 			if($showImageIcon !== false){
 				$haveToShowImageIcon = 'YES';
-				$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];
-				if(!file_exists($thisUserImage)){
-					$thisUserImage = USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg";
+				if(!empty($listRecord[$showImageIcon]) && file_exists(USER_UPLOADS.$listRecord[$showImageIcon])){
+					$thisUserImage = USER_UPLOADS.$listRecord[$showImageIcon];
+				}else{
+					$category_image = '';
+					if($style_refrence_configs !== false){
+						$category_image = $category_styles[$listRecord[$style_refrence_configs['field']]]['icon'];
+					}
+					if(!empty($category_image) && file_exists(USER_UPLOADS.$category_image)){
+							$thisUserImage = USER_UPLOADS.$category_image;
+					}else{
+							$thisUserImage = USER_UPLOADS . "NO-IMAGE-AVAILABLE-ICON.jpg";
+					}
 				}
 			}
 
@@ -103,12 +117,9 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 									$listData[] = strip_tags(trim(preg_replace('/\s\s+/', ' ', $listRecord[$row['generic_field_name']])));
 								}
 							}
-							// $recordId = $listRecord
-
 						}
 					}
 					$recordDbId = $listRecord[$keyfield];
-
 					if(!empty($tempLatLong['lat']) && !empty($tempLatLong['lng'])){
 						$tempLatLong['userImage'] = $thisUserImage;
 						$tempLatLong['list_data'] = array_filter($listData);
@@ -121,11 +132,11 @@ function renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list
 			}/// end of mainIF ?>
 		<?php
 		$count++;
-		global $popup_menu;
-		if ($popup_menu['popupmenu'] == 'true') {
-			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
-			$_SESSION['popup_munu_array'][] = $popup_menu;
-		}
+			global $popup_menu;
+			if ($popup_menu['popupmenu'] == 'true') {
+				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+				$_SESSION['popup_munu_array'][] = $popup_menu;
+			}
 		}
 		} else { ?>
 		<div> No record found!</div>

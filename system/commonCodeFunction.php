@@ -219,7 +219,6 @@ function getDataFromExtraOptionForField($extraOptions,$field){
 	$isExist = strpos($extraOptions,$field);
 	if($isExist !== false){
 		$parsed_array = parseExtraOptions($extraOptions);
-
 		foreach ($parsed_array as $key => $value) {
 			$temp  = explode(':',$value);
 			if(count($temp)> 1 && strtoupper(trim($temp[0]))===strtoupper($field)){
