@@ -1215,25 +1215,19 @@ function sendMessageAndAddLog(){
 }
 
 function setBoxStyles($listExtraOptions){
-  $result = [];
+  $dataSet = [];
   if(strpos($listExtraOptions,'boxstyles')!==false){
-    $stylesString = trim(get_string_between($listExtraOptions,'boxstyles[',']'));
-    if(!empty($stylesString)){
-      $allStyles = explode(',',$stylesString);
-      foreach ($allStyles as $key => $style) {
-        $style = trim($style);
-        if(!empty($style)){
-          $keyValue = explode(':',$style);
-          if(count($keyValue)>1){
-            if(!empty(trim($keyValue[0])) && !empty(trim($keyValue[1]))){
-              $result[trim($keyValue[0])] = trim($keyValue[1]);
-            }
-          }
-        }
+    $category_styles = trim(get_string_between($listExtraOptions,'boxstyles[',']'));
+    if(!empty($category_styles)){
+      $categories =   explode(',',$category_styles);
+      if(!empty(trim($categories[0])) && !empty(trim($categories[1]))){
+        $dataSet['table'] = trim($categories[0]);
+        $dataSet['field'] = trim($categories[1]);
+        return $dataSet;
       }
     }
   }
-  return $result;
+  return false;
 }
 
 function issetStyleForBox($array,$filter){
@@ -1243,11 +1237,34 @@ function issetStyleForBox($array,$filter){
   return '';
 }
 
-function replaceStylesArrayWithString($array){
-  $string = '';
-  foreach ($array as $key => $value) {
-    $string = $string.$key.':'.$value.';';
+function fetchStyleConfigs($category_styles){
+  $category_styles  = trim($category_styles);
+  $dataSet = [];
+  if(empty($category_styles)){
+    return false;
   }
-  return $string;
+  $categories =   explode(',',$category_styles);
+  if(empty(trim($categories[0])) ||  empty(trim($categories[1]))){
+    return false;
+  }
+
+  $dataSet['table'] = trim($categories[0]);
+  $dataSet['field'] = trim($categories[1]);
+
+  return $dataSet;
+}
+function findAndSetCategoryStyles($con,$category_styles){
+
+
+  $style_table = trim($category_styles['table']);
+  $style_refrence_id = trim($category_styles['field']);
+  $allStyles = $con->query("SELECT * FROM $style_table");
+
+	while ($style = $allStyles->fetch_assoc()) {
+    $dataSet[$style[$style_refrence_id]]['class'] =$style['css_class'];
+    $dataSet[$style[$style_refrence_id]]['code'] =$style['css_code'];
+    $dataSet[$style[$style_refrence_id]]['icon'] =$style['map_icon'];
+  }
+  return $dataSet;
 }
 ?>

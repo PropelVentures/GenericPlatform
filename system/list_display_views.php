@@ -490,7 +490,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
  * give LIST UI and data inside lists
  */
 
-function listViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function listViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -538,7 +538,7 @@ function listViews($boxStyles,$listData, $table_type, $target_url, $imageField, 
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data' style='$boxStyles'>";
+	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
         if(isset($data['data_length'])){
@@ -556,7 +556,7 @@ function listViews($boxStyles,$listData, $table_type, $target_url, $imageField, 
 
 
 
-function wideListViews($boxStyles,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function wideListViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -605,7 +605,7 @@ function wideListViews($boxStyles,$listData, $table_type, $target_url, $imageFie
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data' style='$boxStyles'>";
+	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
 				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
