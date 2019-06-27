@@ -484,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['old_audio']);
 			}
 			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-      if($ddRecord['dd_editable']=='11'){
+      if($ddRecord['dd_editable'][1]=='1'){
         $_SESSION['show_with_edit_button'] = true;
         $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
 

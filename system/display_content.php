@@ -345,7 +345,6 @@ function display_content($row) {
 
 
 				while ($row = $rs2->fetch_assoc()) {
-
 					formating_Update($row, $method = 'add', $urow);
 				}//// end of while loop
 
@@ -466,8 +465,8 @@ function display_content($row) {
 					if (isset($_GET['id'])) {
 						$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
 					}
-	//print_r($urow);die;
 					while ($row3 = $rs2->fetch_assoc()) {
+
 						formating_Update($row3, $method = 'edit', $urow, $image_display);
 					}//// end of while loop
 				} else {

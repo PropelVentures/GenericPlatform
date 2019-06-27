@@ -848,6 +848,7 @@ function itemHasEnable($enable){
 	}
 	return false;
 }
+
 function getSaperator($label=''){
 	$hash_start=strpos($label,'#');
 	$hash_end=strpos($label,'#',$hash_start+1);
@@ -936,7 +937,7 @@ function getNavItemIcon($item_icon){
 	if(empty($item_icon)){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
-//     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+    //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
     return  "<img class='nav_icon_test_class' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
@@ -1011,17 +1012,28 @@ function parseListExtraOption($listExtraOptions,$inPx=false){
 	return [$height,$width,$align,$divClass];
 }
 
-function getSliderImages($description){
+function getSliderImages($description,$dict_id){
 	$description =  trim($description);
 	if(empty($description)){
 		return array();
 	}
+  $counter = 0;
 	$sliders = array();
 	$images = explode(';',$description);
 	foreach($images as $image){
-		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$image)){
-			$sliders[] = BASE_URL_APP."banner-images/".$image;
-		}
+    if(!empty(trim($image))){
+      $configs = explode(',',$image);
+      $portion = [];
+  		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$configs[0])){
+        $portion['image'] = BASE_URL_APP."banner-images/".$configs[0];
+        $portion['id'] = 'slider_'.$dict_id.'_'.$counter;
+        $counter++;
+  		}
+      if(!empty($configs[1])){
+        $portion['url'] = $configs[1];
+      }
+      $sliders[] = $portion;
+    }
 	}
 	return $sliders;
 }
@@ -1238,5 +1250,21 @@ function getUserData($userId){
     $userData['name'] = $data['firstname'].' '.$data['lastname'];
   }
   return $userData;
+}
+
+function getSliderInterval($extra_options){
+  if(strpos($extra_options,'slider_delay') !== false){
+     $all_options = explode(";", trim($extra_options));
+     foreach ($all_options as $key => $option) {
+       if(strpos($option,'slider_delay') !==false){
+         $configs = explode(":",trim($option));
+         if(trim($configs[0])=='slider_delay' && !empty(trim($configs[1]))){
+           $result = (double)(trim($configs[1]));
+           return $result*1000;
+         }
+       }
+     }
+  }
+  return 3000;
 }
 ?>

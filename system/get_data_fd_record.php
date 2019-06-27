@@ -107,13 +107,24 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
         $row1 = $rs->fetch_assoc();
         $form_open_for_edit = false;
         $dd_EditAbleHaveValue2  = false;
-
+        $hide_update_cancel = false;
+        $DD_EDITABLE = $row1['dd_editable'];
+        $DD_EDITABLE_bit1 = $DD_EDITABLE[0];
+        if(is_null($DD_EDITABLE[1]) || empty($DD_EDITABLE[1])){
+          $DD_EDITABLE[1] = '0';
+        }
+        $DD_EDITABLE_bit2 = $DD_EDITABLE[1];
+        $row1['dd_editable'] = $DD_EDITABLE_bit1;
         if($row1['dd_editable']=='2'){
           $row1['dd_editable'] = '11';
-          $dd_EditAbleHaveValue2  = true;
+        }else if($row1['dd_editable']=='3'){
+          $row1['dd_editable'] = '11';
+          $hide_update_cancel = true;
         }
 
-        if(!$dd_EditAbleHaveValue2){
+        if($DD_EDITABLE_bit2=='2'){
+          $dd_EditAbleHaveValue2  = true;
+        }else{
           unset($_SESSION['link_in_case_of_DDetiable_2']);
         }
 
@@ -217,18 +228,21 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 		if(!empty($linkedin_array)){
 			$linkedinButton = generateLinkedinButton($linkedin_array);
 		}
-        /// setting for  Save/Update button
-        if (!empty($submit_array) ) {
-            $updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
-        } else if($operation == 'edit_operations') {
-            if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
-                $updateSaveButton = "<input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' /> &nbsp;";
-            } else {
-                $updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
-            }
-        } else if($operation == 'view_operations') {
-            #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
+    /// setting for  Save/Update button
+    if (!empty($submit_array) ) {
+        $updateSaveButton = "<input type='submit'  value='" . $submit_array['value'] . "' class='btn btn-primary update-btn " . $submit_array['style'] . "' /> &nbsp;";
+    } else if($operation == 'edit_operations') {
+        if (isset($_GET['addFlag']) && $_GET['addFlag'] == 'true' && $_GET['tabNum'] == $row1['tab_num'] && $_GET['tab'] == $row1['table_alias']) {
+            $updateSaveButton = "<input type='submit'  value='" . formSave . "' class='btn btn-primary update-btn' /> &nbsp;";
+        } else {
+            $updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
         }
+    } else if($operation == 'view_operations') {
+        #$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
+    }
+    if($hide_update_cancel){
+      $updateSaveButton = '';
+    }
 
 
 		/// setting for  save add button
@@ -566,7 +580,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 					$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
 
 					$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
-					if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
+					if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password']) || $hide_update_cancel){
 						$cancelButton = "";// empty
 					}
 
@@ -782,7 +796,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
 									$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
 
-									if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+									if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password']) || $hide_update_cancel){
 										$cancelButton = "";// empty
 									}
 									if ($tab_status != 'bars') {
@@ -845,7 +859,9 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 								}
 								$urow = array();
 							}
-              if($row['dd_editable']=='2'){
+
+              $row['dd_editable'] = $row['dd_editable'][0];
+              if($row['dd_editable']=='2' || $row['dd_editable']=='3'){
                 $row['dd_editable'] = '11';
               }
               if($form_open_for_edit){
@@ -853,7 +869,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
               }else if($show_with_edit_button){
                 $row['temp_dd_editable'] = '1';
               }
-
 							formating_Update($row, $method = 'edit', $urow, $image_display, $page_editable);
 						}//// end of while loop
 					} else {
@@ -917,7 +932,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 								//if( $row1['dd_editable'] != 0 ){
 
 								$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>";
-								if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password'])){
+								if(in_array($table_type,['login','signup','forgotpassword','reset_password','change_password']) || $hide_update_cancel){
 									$cancelButton = "";// empty
 								}
 
