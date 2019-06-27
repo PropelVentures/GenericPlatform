@@ -666,7 +666,6 @@
 		/******************************************************/
 		/************** Enabling submit and cancel button *******/
 		/********** *****************************************/
-
 		$(".edit-btn").click(function () {
 			var id = $(this).attr('id');
 			/*Code Changes by Palak*/

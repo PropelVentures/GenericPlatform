@@ -4,7 +4,6 @@
 //////////////***** DISPALY TABS AS H1 TAG ******
 
 function display_content($row) {
-    #echo "<font colo=brown>function display_content() called.</font><br>";die("shiv");
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
     $editable = 'true';
@@ -123,6 +122,42 @@ function display_content($row) {
 
 			$_SESSION['list_tab_name'] = $row1['tab_name'];
 
+      $form_open_for_edit = false;
+      $dd_EditAbleHaveValue2  = false;
+      $hide_update_cancel = false;
+
+      $DD_EDITABLE = $row1['dd_editable'];
+      $DD_EDITABLE_bit1 = $DD_EDITABLE[0];
+      if(is_null($DD_EDITABLE[1]) || empty($DD_EDITABLE[1])){
+        $DD_EDITABLE[1] = '0';
+      }
+      $DD_EDITABLE_bit2 = $DD_EDITABLE[1];
+
+      if($DD_EDITABLE_bit2=='0' || $DD_EDITABLE_bit2=='1'){
+        $_SESSION[$row1['dict_id'].'current_dd_url_in_tab'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+      }
+      $row1['dd_editable'] = $DD_EDITABLE_bit1;
+      if($row1['dd_editable']=='2'){
+        $row1['dd_editable'] = '11';
+      }else if($row1['dd_editable']=='3'){
+        $row1['dd_editable'] = '11';
+        $hide_update_cancel = true;
+      }
+
+      if(isset($_SESSION['form_open_for_edit_DD']) && $_SESSION['form_open_for_edit_DD']==$row1['dict_id']){
+        $form_open_for_edit = true;
+        $row1['dd_editable']='11';
+        unset($_SESSION['form_open_for_edit_DD']);
+      }
+
+      $show_with_edit_button = false;
+      if(isset($_SESSION['show_with_edit_button']) && $_SESSION['show_with_edit_button_DD']==$row1['dict_id']){
+        $show_with_edit_button = true;
+        $row1['dd_editable']='1';
+        unset($_SESSION['show_with_edit_button']);
+        unset($_SESSION['show_with_edit_button_DD']);
+      }
+
 			if ($row1['dd_editable'] == '11') {
 
 				$_SESSION['dict_id'] = $row1['dict_id'];
@@ -168,7 +203,6 @@ function display_content($row) {
 					if(!empty(trim($row1['view_operations']) ) )
 						$operationsVarArray = getOperationsData($row1['view_operations'], 'view_operations');
 				}
-        // pr($operationsVarArray);
 				list($popupmenu,
 					$popup_delete_array,
 					$popup_copy_array,
@@ -225,6 +259,10 @@ function display_content($row) {
 			} else if($operation == 'view_operations') {
 				#$updateSaveButton = "<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' /> &nbsp;";
 			}
+
+      if($hide_update_cancel){
+        $updateSaveButton = '';
+      }
 
 			/// setting for  save add button
 			if (!empty($save_add_array) ) {
@@ -320,7 +358,7 @@ function display_content($row) {
 				//$actual_link = $_SESSION['return_url2'] . "&fnc=onepage";
 
 				$cancelButton = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp;";
-				if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password'])){
+				if(in_array(trim(strtolower($row1['table_type'])),['login','signup','forgotpassword','reset_password','change_password']) || $hide_update_cancel){
 					$cancelButton = "";// empty
 				}
 
@@ -425,11 +463,14 @@ function display_content($row) {
 								}
 
 								$actual_link = $actual_link . "&button=cancel&fnc=onepage";
-
-								if ($tab_status != 'bars') {
+                $cancel_button = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp";
+                if($hide_update_cancel){
+                  $cancel_button="";
+                }
+                if ($tab_status != 'bars') {
 									echo "<div class='form-footer' >
 										$updateSaveButton
-                                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
+                    $cancel_button
 										$saveAddButton
 										$copyButton
 										$addButton
@@ -438,10 +479,7 @@ function display_content($row) {
                     generateCustomFunctionArray($customFunctionArray);
 
 									echo "</div>";
-									/*echo "<div class='form-footer'>
-											<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />
-											<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-										</div>";*/
+
 								}
 							}/// if for submit and cancel ends here
 							// profile-image }
@@ -466,8 +504,17 @@ function display_content($row) {
 						$urow = get_single_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $_GET['id']);
 					}
 					while ($row3 = $rs2->fetch_assoc()) {
-
+            $row3['dd_editable'] = $row3['dd_editable'][0];
+            if($row3['dd_editable']=='2' || $row3['dd_editable']=='3'){
+              $row3['dd_editable'] = '11';
+            }
+            if($form_open_for_edit){
+              $row3['temp_dd_editable'] = '11';
+            }else if($show_with_edit_button){
+              $row3['temp_dd_editable'] = '1';
+            }
 						formating_Update($row3, $method = 'edit', $urow, $image_display);
+
 					}//// end of while loop
 				} else {
 	//// fetching child list
@@ -511,11 +558,15 @@ function display_content($row) {
 							}
 
 							$actual_link = $_SESSION['return_url2'] . "&button=cancel&fnc=onepage";
+              $cancel_button = "<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp";
+              if($hide_update_cancel){
+                $cancel_button= "";
+              }
 
 							echo "<div class='form-footer' >
 										$updateSaveButton
-                                        <a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>&nbsp
-                                        $saveAddButton
+                    $cancel_button
+                    $saveAddButton
 										$copyButton
 										$addButton
 										$deleteButton
@@ -523,10 +574,7 @@ function display_content($row) {
                                         generateCustomFunctionArray($customFunctionArray);
 
 									echo "</div>";
-							/*echo "<div class='form-footer'>
-									<input type='submit'  value='" . formUpdate . "' class='btn btn-primary update-btn' />
-									<a href='$actual_link' ><input type='button' name='profile_cancel' value='" . formCancel . "' class='btn btn-primary update-btn' /></a>
-								</div>";*/
+
 						}/// if for submit and cancel ends here
 						//profile-image }
 					}

@@ -73,7 +73,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 					break;
         default:
 					/////display_content.php////
-
 					display_content($row);
 					break;
 			}
