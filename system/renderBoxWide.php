@@ -8,7 +8,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	$style_refrence_configs = false;
 	$category_styles = false;
 	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
-	if($style_refrence_configs !== flase){
+	if($style_refrence_configs !== false){
 		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
 	}
   $table_type = trim($row['table_type']);
