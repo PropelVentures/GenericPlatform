@@ -942,6 +942,7 @@ function getNavItemIcon($item_icon,$class,$style){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
     //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+
     return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
@@ -1242,7 +1243,7 @@ function sendMessageAndAddLog(){
 
 function getUserData($userId){
   $userData = [];
-  if(false){
+  if($userId==$_SESSION['uid']){
     $userData['id'] = $_SESSION['uid'];
     $userData['email'] = $_SESSION['current-user-email'];
     $userData['name'] = $_SESSION['current-user-first-lastname'];
@@ -1269,6 +1270,7 @@ function getSliderInterval($extra_options){
      }
   }
   return 3000;
+}
 function setBoxStyles($listExtraOptions){
   $dataSet = [];
   if(strpos($listExtraOptions,'boxstyles')!==false){
@@ -1302,15 +1304,11 @@ function fetchStyleConfigs($category_styles){
   if(empty(trim($categories[0])) ||  empty(trim($categories[1]))){
     return false;
   }
-
   $dataSet['table'] = trim($categories[0]);
   $dataSet['field'] = trim($categories[1]);
-
   return $dataSet;
 }
 function findAndSetCategoryStyles($con,$category_styles){
-
-
   $style_table = trim($category_styles['table']);
   $style_refrence_id = trim($category_styles['field']);
   $allStyles = $con->query("SELECT * FROM $style_table");
