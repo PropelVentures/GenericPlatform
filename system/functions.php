@@ -1132,7 +1132,6 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
     $userId = $_SESSION['uid'];
     $targetUserId = $_SESSION['uid'];
   }
-
   if($event_action_default && $event_action_default>0){
     $data = [];
     $data['display_page'] = $display_page;
@@ -1142,7 +1141,7 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
     $data['event_log_code'] = $event_log_code['event_log_code_id'];
     $data['notification_type'] = $event_notification_alert_type_default;
     $log_id =insert('event_log',$data);
-    log_notification($event_notification_alert_type_default,$display_page,$action,$senderId,$reciverId);
+    log_notification($event_notification_alert_type_default,$display_page,$action,$userId,$targetUserId);
   }
 }
 

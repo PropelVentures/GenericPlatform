@@ -686,7 +686,7 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 								<div class="carousel-inner">
 									<?php foreach($sliders as $key=>$slider){ ?>
 										<div style="height:<?php echo $height; ?>;" class="item <?php echo ($key==0 ?'active':''); ?>">
-											<img id="<?php echo $slider['id']; ?>" style="height:<?php echo $height; ?>;" src="<?php echo $slider['image']; ?>" alt="" class="img-responsive">
+											<img data-url="<?php echo $slider['url']; ?>" id="<?php echo $slider['id']; ?>" style="height:<?php echo $height; ?>;" src="<?php echo $slider['image']; ?>" alt="" class="img-responsive">
 											<!--<div class="container">
 												<div class="carousel-caption slide2">
 													<h1><?php //echo HOME_SLIDER_TITLE2 ?></h1>
@@ -705,9 +705,12 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
           <script>
           <?php foreach ($sliders as $key => $slider) { ?>
             var image_id = "#"+"<?php echo $slider['id']; ?>";
-            var image_url = "<?php echo $slider['url']; ?>";
             $(image_id).on("click", function(){
-            window.location.href= image_url;
+              var image_url  = $(this).data('url');
+              if(image_url!==''){
+                 var win = window.open(image_url, '_blank');
+                 win.focus();
+              }
             });
           <?php } ?>
             </script>
