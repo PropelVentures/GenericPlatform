@@ -40,7 +40,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				if($count > $limit){
 					break;
 				}
-
+				
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
 					break;
 				}

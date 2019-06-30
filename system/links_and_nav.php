@@ -668,7 +668,9 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
 
 			if (isAllowedToShowByPrivilegeLevel($row)) {
-				$sliders = getSliderImages($row['description']);
+				$sliders = getSliderImages($row['description'],$row['dict_id']);
+        $slider_interval = 0;
+        $slider_interval = getSliderInterval($row['list_extra_options']);
 				$dd_css_class = $row['dd_css_class'];
         $css_style = $row['dd_css_code'];
 				//$url = getDDUrl($row['list_select']);
@@ -676,7 +678,7 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 				if(!empty($sliders)){ ?>
 					<div class="<?php echo $divClass; ?><?=$dd_css_class ?>" style="<?=$css_style?>">
 						<div  style="width:<?php echo $width; ?>;" class="slider">
-							<div id="myCarousel" style="height:<?php echo $height; ?>;" class="carousel slide" data-ride="carousel">
+							<div id="myCarousel" style="height:<?php echo $height; ?>;" data-interval="<?php echo $slider_interval; ?>" class="carousel slide" data-ride="carousel" >
 								<!-- Indicators -->
 								<ol class="carousel-indicators">
 									<?php foreach($sliders as $key=>$slider){ ?>
@@ -686,7 +688,7 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 								<div class="carousel-inner">
 									<?php foreach($sliders as $key=>$slider){ ?>
 										<div style="height:<?php echo $height; ?>;" class="item <?php echo ($key==0 ?'active':''); ?>">
-											<img style="height:<?php echo $height; ?>;" src="<?php echo $slider; ?>" alt="" class="img-responsive">
+											<img data-url="<?php echo $slider['url']; ?>" id="<?php echo $slider['id']; ?>" style="height:<?php echo $height; ?>;" src="<?php echo $slider['image']; ?>" alt="" class="img-responsive">
 											<!--<div class="container">
 												<div class="carousel-caption slide2">
 													<h1><?php //echo HOME_SLIDER_TITLE2 ?></h1>
@@ -702,6 +704,18 @@ function ShowTableTypeSlider($display_page,$tabNum=''){
 							<!-- /.carousel -->
 						</div>
 					</div>
+          <script>
+          <?php foreach ($sliders as $key => $slider) { ?>
+            var image_id = "#"+"<?php echo $slider['id']; ?>";
+            $(image_id).on("click", function(){
+              var image_url  = $(this).data('url');
+              if(image_url!==''){
+                 var win = window.open(image_url, '_blank');
+                 win.focus();
+              }
+            });
+          <?php } ?>
+            </script>
 					<?php
 				}
 			}

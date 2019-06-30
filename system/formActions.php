@@ -366,6 +366,7 @@ function addData()
             $user = array($uid => $_SESSION['uid']);
         }
     }
+    checkImageesInDataANdUpload();
     $data = $_POST;
     if (!empty($user)) {
         $userKey = key($user);
@@ -483,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['old_audio']);
 			}
 			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-      if($ddRecord['dd_editable']=='11'){
+      if($ddRecord['dd_editable'][1]=='1'){
         $_SESSION['show_with_edit_button'] = true;
         $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
 
@@ -523,45 +524,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['pdf']);
 
 			/*****For images********** */
-			foreach ($_POST['imgu'] as $img => $img2) {
-				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-					$ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
-					$oldImage = $_POST[$img]['img_extra'];
-					if (!empty($ret['image'])) {
-						unset($_POST['imgu'][$img]);
-						$_POST[$img] = $ret['image'];
-					}
-					//if user want to replace current image
-					if (!empty($oldImage)) {
-						@unlink(USER_UPLOADS . "$oldImage");
-						@unlink(USER_UPLOADS . "thumbs/$oldImage");
-					}
-					//if user didn't touch the with images
-				} else {
-					//if user clicks on remove current image
-					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-						if (!empty($_POST[$img]['img_extra'])) {
-							@unlink(USER_UPLOADS . "$img2[imageName]");
-							@unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
-							unset($_POST['imgu'][$img]);
-							$_POST[$img] = '';
-						} else {
-                            if (empty($_POST['user_id'])){
-                                echo "<script>
-                                        alert('Please upload some photo and then update.');
-                                        window.location.href = document.referrer;
-                                    </script>";
-                            }
-							unset($_POST['imgu'][$img]);
-						}
-					} else {
-						unset($_POST['imgu'][$img]);
-					}
-				}
-			}
-			//deleting array which is used for holding imgu values
-			if (empty($_POST['imgu']))
-				unset($_POST['imgu']);
+      checkImageesInDataANdUpload();
 
     $recordedFileNmae = '';
     if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
@@ -612,7 +575,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 			$status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
 
       // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
-
+      $dd_editable_bit2 = $ddRecord['dd_editable'][1];
+      if(empty($dd_editable_bit2) || is_null($dd_editable_bit2)){
+        $dd_editable_bit2 = '0';
+      }
+      //
+      if($dd_editable_bit2=='0' || $dd_editable_bit2=='1'){
+          $current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
+          if(!empty($current_link_in_tab)){
+            unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
+            echo "<script> window.location='$current_link_in_tab'; </script>";
+          }
+      }
 			if ($_GET['checkFlag'] == 'true') {
 				if($save_add_url){
 					$link_to_return = $save_add_url;
@@ -623,15 +597,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 						$link_to_return = $_SESSION['return_url2'];
 					}
 
-                    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
-                     $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
-                     unset($_SESSION['link_in_case_of_DDetiable_2']);
-                   }
+          if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+           $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+           unset($_SESSION['link_in_case_of_DDetiable_2']);
+         }
 				}
 				if ($_GET['fnc'] != 'onepage') {
 					//exit($link_to_return);
-					if($status === true)
-						echo "<script>window.location='$link_to_return';</script>";
+					if($status === true){
+            echo "<script>window.location='$link_to_return';</script>";
+          }
 					else
 					{
 						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
@@ -923,7 +898,48 @@ function changePassword(){
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 
-
+function checkImageesInDataANdUpload(){
+  foreach ($_POST['imgu'] as $img => $img2) {
+    if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+      $ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
+      $oldImage = $_POST[$img]['img_extra'];
+      if (!empty($ret['image'])) {
+        unset($_POST['imgu'][$img]);
+        $_POST[$img] = $ret['image'];
+      }
+      //if user want to replace current image
+      if (!empty($oldImage)) {
+        @unlink(USER_UPLOADS . "$oldImage");
+        @unlink(USER_UPLOADS . "thumbs/$oldImage");
+      }
+      //if user didn't touch the with images
+    } else {
+      //if user clicks on remove current image
+      if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+        if (!empty($_POST[$img]['img_extra'])) {
+          @unlink(USER_UPLOADS . "$img2[imageName]");
+          @unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
+          unset($_POST['imgu'][$img]);
+          $_POST[$img] = '';
+        } else {
+                        if (empty($_POST['user_id'])){
+                            echo "<script>
+                                    alert('Please upload some photo and then update.');
+                                    window.location.href = document.referrer;
+                                </script>";
+                        }
+          unset($_POST['imgu'][$img]);
+        }
+      } else {
+        unset($_POST['imgu'][$img]);
+      }
+    }
+  }
+  //deleting array which is used for holding imgu values
+  if (empty($_POST['imgu'])){
+    unset($_POST['imgu']);
+  }
+}
 function sendResetLinkEmail($data,$email){
 	$returnUrl = $_SESSION['return_url2'];
 	$to = $email;

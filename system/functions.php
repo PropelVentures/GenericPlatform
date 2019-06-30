@@ -852,6 +852,7 @@ function itemHasEnable($enable){
 	}
 	return false;
 }
+
 function getSaperator($label=''){
 	$hash_start=strpos($label,'#');
 	$hash_end=strpos($label,'#',$hash_start+1);
@@ -941,6 +942,7 @@ function getNavItemIcon($item_icon,$class,$style){
 		return "";
 	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
     //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+
     return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
   }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
@@ -1015,17 +1017,28 @@ function parseListExtraOption($listExtraOptions,$inPx=false){
 	return [$height,$width,$align,$divClass];
 }
 
-function getSliderImages($description){
+function getSliderImages($description,$dict_id){
 	$description =  trim($description);
 	if(empty($description)){
 		return array();
 	}
+  $counter = 0;
 	$sliders = array();
 	$images = explode(';',$description);
 	foreach($images as $image){
-		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$image)){
-			$sliders[] = BASE_URL_APP."banner-images/".$image;
-		}
+    if(!empty(trim($image))){
+      $configs = explode(',',$image);
+      $portion = [];
+  		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$configs[0])){
+        $portion['image'] = BASE_URL_APP."banner-images/".$configs[0];
+        $portion['id'] = 'slider_'.$dict_id.'_'.$counter;
+        $counter++;
+  		}
+      if(!empty($configs[1])){
+        $portion['url'] = $configs[1];
+      }
+      $sliders[] = $portion;
+    }
 	}
 	return $sliders;
 }
@@ -1104,7 +1117,7 @@ function setUserDataInSession($con,$user){
     $_SESSION['current-user-profile-image'] = $user['image'];
 }
 
-function log_event($display_page,$action){
+function log_event($display_page,$action,$senderId=false,$reciverId=false){
   if(EVENT_LOGGING_ON !=='ON'){
     return;
   }
@@ -1116,49 +1129,63 @@ function log_event($display_page,$action){
     $event_action_default = $event_log_code['event_action_default'];
     $event_notification_alert_type_default = $event_log_code['event_notification_alert_type_default'];
   }
+
+  if($senderId!== false){
+    $userId = $senderId;
+    $targetUserId = $reciverId;
+  }else{
+    $userId = $_SESSION['uid'];
+    $targetUserId = $_SESSION['uid'];
+  }
   if($event_action_default && $event_action_default>0){
     $data = [];
     $data['display_page'] = $display_page;
     $data['action_taken'] = $action;
-    $data['user_id'] = $_SESSION['uid'];
-    $data['target_user_id'] = $_SESSION['uid'];
+    $data['user_id'] = $userId;
+    $data['target_user_id'] = $targetUserId;
     $data['event_log_code'] = $event_log_code['event_log_code_id'];
     $data['notification_type'] = $event_notification_alert_type_default;
     $log_id =insert('event_log',$data);
-    log_notification($event_notification_alert_type_default,$display_page,$action);
+    log_notification($event_notification_alert_type_default,$display_page,$action,$userId,$targetUserId);
   }
 }
 
-function log_notification($type,$displayPage,$action){
+function log_notification($type,$displayPage,$action,$senderId,$reciverId){
   if(NOTIFICATION_ALERTS_ON !=='ON'){
     return;
   }
   $data = [];
   $data['notification_type'] = $type;
-  $data['user_id'] = $_SESSION['uid'];
-  $data['target_user_id'] = 0;
+  $data['user_id'] = $senderId;
+  $data['target_user_id'] = $reciverId;
   $data['response_type'] = 0;
   $data['alert_type'] = 0;
   $notif_id = insert('notification_log',$data);
   if($type>1){
-    send_notification_alert($type,$displayPage,$action);
+    send_notification_alert($type,$displayPage,$action,$senderId,$reciverId);
   }
 }
 
-function send_notification_alert($type,$displayPage,$action){
+function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId){
   if($type=='2'){
-    sendEmailNotification($displayPage,$action);
+    sendEmailNotification($displayPage,$action,$senderId,$reciverId);
   }else if($type=='3'){
     //push notification
   }
 }
 
-function sendEmailNotification($page,$action){
-	$to = $_SESSION['current-user-email'];
+function sendEmailNotification($page,$action,$senderId,$reciverId){
+  $sender = getUserData($senderId);
+  $reciver = getUserData($reciverId);
+	$to = $reciver['email'];
 	$subject = "Action Notification | Generic Platform";
 	$message = "<html><head><title>Notification</title></head><body>";
-	$message .= "Hi,<br/>";
-  $message .= "An Action ".$action." has occured at ".$page." page<br/>";
+	$message .= "Hi ".$reciver['name'].",<br/>";
+  $message .= "An Action '".$action."' has occured at '".$page."' page";
+  if($senderId != $reciverId){
+    $message .=" by ".$sender['name'].".";
+  }
+  $message .= "<br/>";
 	$message .= "<br/><br/>Regards,<br>Generic Platform";
 	$message .= "</body></html>";
 	// Always set content-type when sending HTML email
@@ -1214,6 +1241,36 @@ function sendMessageAndAddLog(){
   insert($table,$data);
 }
 
+function getUserData($userId){
+  $userData = [];
+  if($userId==$_SESSION['uid']){
+    $userData['id'] = $_SESSION['uid'];
+    $userData['email'] = $_SESSION['current-user-email'];
+    $userData['name'] = $_SESSION['current-user-first-lastname'];
+  }else{
+    $data = get('user',"user_id='$userId'");
+    $userData['id'] =$data['user_id'];
+    $userData['email'] = $data['email'];
+    $userData['name'] = $data['firstname'].' '.$data['lastname'];
+  }
+  return $userData;
+}
+
+function getSliderInterval($extra_options){
+  if(strpos($extra_options,'slider_delay') !== false){
+     $all_options = explode(";", trim($extra_options));
+     foreach ($all_options as $key => $option) {
+       if(strpos($option,'slider_delay') !==false){
+         $configs = explode(":",trim($option));
+         if(trim($configs[0])=='slider_delay' && !empty(trim($configs[1]))){
+           $result = (double)(trim($configs[1]));
+           return $result*1000;
+         }
+       }
+     }
+  }
+  return 3000;
+}
 function setBoxStyles($listExtraOptions){
   $dataSet = [];
   if(strpos($listExtraOptions,'boxstyles')!==false){
@@ -1247,15 +1304,11 @@ function fetchStyleConfigs($category_styles){
   if(empty(trim($categories[0])) ||  empty(trim($categories[1]))){
     return false;
   }
-
   $dataSet['table'] = trim($categories[0]);
   $dataSet['field'] = trim($categories[1]);
-
   return $dataSet;
 }
 function findAndSetCategoryStyles($con,$category_styles){
-
-
   $style_table = trim($category_styles['table']);
   $style_refrence_id = trim($category_styles['field']);
   $allStyles = $con->query("SELECT * FROM $style_table");

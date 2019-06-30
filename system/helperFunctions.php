@@ -1706,7 +1706,6 @@ function isStripHtmlTags($value){
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
-  return true;
   if($isExistField == null || $isExistFilter == null){
     return true;
   }

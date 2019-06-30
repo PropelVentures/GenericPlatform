@@ -667,7 +667,6 @@
 		/******************************************************/
 		/************** Enabling submit and cancel button *******/
 		/********** *****************************************/
-
 		$(".edit-btn").click(function () {
 			var id = $(this).attr('id');
 			/*Code Changes by Palak*/
@@ -697,11 +696,12 @@
 		var class_holder;
 		$(".friend_me_icon").click(function () {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			class_holder = this;
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "friend_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "friend_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
 				setStyleOfFFFRafterAction(class_holder,msg,'friend_me_icon');
@@ -716,11 +716,12 @@
 		*/
 		$(".follow_me_icon").click(function () {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			class_holder = this;
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "follow_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "follow_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
 				setStyleOfFFFRafterAction(class_holder,msg,'follow_me_icon');
@@ -735,13 +736,14 @@
 		* ********************************************************************
 		*/
 		$(".favorite_me_icon").click(function () {
+			var display_page = '<?= $_GET['display'] ?>';
 			// $(this).css('color','red');
 			class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "favorite_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "favorite_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
 				setStyleOfFFFRafterAction(class_holder,msg,'favorite_me_icon');
@@ -755,12 +757,13 @@
 		* ********************************************************************
 		*/
 		$('.rate_me').on('rating.change', function (event, value, caption) {
+			var display_page = '<?= $_GET['display'] ?>';
 			// class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value}
 			})
 			.done(function (msg) {
 				if (msg != '' && msg != 'deleted') {
@@ -772,10 +775,11 @@
 		///////////when rating is reset////////////
 		$('.rate_me').on('rating.clear', function (event) {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: 'clear'}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: 'clear'}
 			})
 		});
 		/*
@@ -786,13 +790,14 @@
 		* ********************************************************************
 		*/
 		$('.voting-number:not(.disabled)').on('click', function () {
+			var display_page = '<?= $_GET['display'] ?>';
 			// class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			var value = $(this).siblings(".fffr-input").val();
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value,ta:'<?= $_GET[tab]?>',tabNum:'<?= $_GET[tabNum]?>'}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value,ta:'<?= $_GET[tab]?>',tabNum:'<?= $_GET[tabNum]?>'}
 			})
 			.done(function (msg) {
 				console.log(msg);
