@@ -1,6 +1,7 @@
 <?php
 include_once("functions_loader.php");
-session_start();
+// session_start();
+start_app_session();
 
 /*
 require_once 'config.php';

@@ -4,11 +4,17 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
-    $keyfield = firstFieldName($row['database_table_name']);
-    $table_type = trim($row['table_type']);
-    $table_name = trim($row['database_table_name']);
-    $list_fields = trim($row['list_fields']);
-    $dict_id = $row['dict_id'];
+  $keyfield = firstFieldName($row['database_table_name']);
+  $table_type = trim($row['table_type']);
+  $table_name = trim($row['database_table_name']);
+  $list_fields = trim($row['list_fields']);
+  $dict_id = $row['dict_id'];
+	$style_refrence_configs = false;
+	$category_styles = false;
+	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
+	if($style_refrence_configs !== false){
+		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
+	}
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
@@ -30,6 +36,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
 			}
 			while ($listRecord = $list->fetch_assoc()) {
+				$itemId = $listRecord[$row['generic_field_name']];
 				if($count > $limit){
 					break;
 				}
@@ -39,8 +46,14 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				}
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
-				$rs = $con->query($qry); ?>
-				<div style="<?= $css_style ?>" class="boxView  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" data-scroll-reveal="enter bottom over 1s and move 100px">
+				$rs = $con->query($qry);
+				$boxStyleClass = '';$boxStyleCode = '';
+				if($category_styles!==false && isset($category_styles[$listRecord[$style_refrence_configs['field']]])){
+					$boxStyleClass = $category_styles[$listRecord[$style_refrence_configs['field']]]['class'];
+					$boxStyleCode = $category_styles[$listRecord[$style_refrence_configs['field']]]['code'];
+				}?>
+				<div style="<?=  $boxStyleCode.$css_style ?>" class="boxView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
+						<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
 					if (!empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
@@ -53,19 +66,19 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 							/// Extracting action ,when user click on edit button or on list
 							if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 								if (count($list_select_arr[0]) == 2) {
-									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
 									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 								} else {
 									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
 									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
 								}
 							}
 							/// Extracting action, when user click on boxView Image of list
 							if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) {
 								if (count($list_select_arr[1]) == 2) {
-									$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+									$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 								} else {
 									$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 								}
@@ -111,7 +124,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					listViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					listViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
 			<?php
@@ -126,7 +139,49 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
  			} else {
  				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
  			}
-		} else { ?>
+			global $popup_menu;
+			if ($popup_menu['popupmenu'] == 'true') {
+				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
+				$_SESSION['popup_munu_array'][] = $popup_menu;
+			}?>
+			<script>
+			if (mobileDetector().any()) {
+				$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
+					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
+					var xPos = event.originalEvent.touches[0].pageX;
+					var yPos = event.originalEvent.touches[0].pageY;
+					$(this).addClass('tabholdEvent');
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//alert(popup_del);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: yPos + "px",
+						left: xPos + "px"
+					});
+				});
+			} else {
+				$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//console.log(dict_id);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: event.pageY + "px",
+						left: event.pageX + "px"
+					});
+				});
+			}
+		</script>
+		<?php } else { ?>
 	</div>
 		<?php
 	}

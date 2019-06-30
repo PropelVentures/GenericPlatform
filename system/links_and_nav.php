@@ -287,7 +287,9 @@ function Navigation($page, $menu_location = 'header') {
                     $nav_menu_location = strtoupper($row['menu_location']);
                     $logo_image = BASE_IMAGES_URL . $row['item_target'];
                     $logo_text = $row['item_label'];
-                    $logo_style = $row['item_style'];
+                    $logo_class = $row['nav_css_class'];
+                    $logo_code = $row['nav_css_code'];
+
 
                     if ($nav_menu_location == 'LOGO-CENTER') {
                         $logo_position = 'center';
@@ -300,7 +302,7 @@ function Navigation($page, $menu_location = 'header') {
                     <?php
 
                         if ($logo_image != '') {
-                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                            echo "<img src='$logo_image' alt='$logo_text' class='$logo_class' style='$logo_code'>";
                         }
                         echo $logo_text;
                     ?>
@@ -338,7 +340,7 @@ function Navigation($page, $menu_location = 'header') {
                 <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
                     <?php
                         if ($logo_image != '') {
-                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
+                            echo "<img src='$logo_image' alt='$logo_text' class='$logo_class' style='$logo_code'>";
                         }
                         echo $logo_text;
                     ?>
@@ -810,7 +812,7 @@ function Footer($page, $menu_location = 'footer') {
     }
     ?>
     <!-- Navigation starts here -->
-    <div class="navbar navbar-default <?=$classForNavBr2 ?>">
+    <div class="navbar navbar-default navbar-fixed-bottom <?=$classForNavBr2 ?>">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">
@@ -832,16 +834,7 @@ function Footer($page, $menu_location = 'footer') {
 				?>
             <?php ///////else if ends here                                                                                           ?>
 
-            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
-                <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
-                    <?php
-                        if ($logo_image != '') {
-                            echo "<img src='$logo_image' alt='$logo_text' style='$logo_style'>";
-                        }
-                        echo $logo_text;
-                    ?>
-                </a>
-            <?php } ?>
+          
 
             </ul>
         </div>

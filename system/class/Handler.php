@@ -175,7 +175,7 @@ class Handler{
 		if($nav->num_rows > 0){
 			$navRecord = $nav->fetch_assoc();
 			$layout = $navRecord['page_layout_style'];
-			$itemStyle = $navRecord['item_style'];
+			$itemStyle = $navRecord['nav_css_class'];
 		}
 		return "&layout=$layout&style=$itemStyle";
 	}

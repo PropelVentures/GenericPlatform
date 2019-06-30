@@ -273,7 +273,7 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
     $tab_num = trim($list_select_arr[1][1]);
     $result = get('data_dictionary',"display_page='$display_page' AND table_alias='$tab_alias' AND tab_num='$tab_num'");
     if(isAllowedToPerformListAction($result)){
-      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['item_style']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['nav_css_class']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
     }else{
       $target_url = 'false';
     }
@@ -299,31 +299,23 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
  */
 
 if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enable_edit') {
-
-
-
     $check = getWhere('data_dictionary', array('dict_id' => $_GET["id"]));
-
     $dp_page = $check[0]['display_page'];
-    $_SESSION['form_open_for_edit_DD'] = $_GET["id"];
     $row = getWhere('data_dictionary', array('dd_editable' => '11', 'display_page' => $dp_page));
-
     if ($row) {
-
         if ($_GET['form_edit_conf'] == 'changed')
             exit('active');
         else {
-
+          $_SESSION['form_open_for_edit'] = true;
+          $_SESSION['form_open_for_edit_DD'] = $_GET['id'];
            // query("update data_dictionary set dd_editable=1 where display_page='$dp_page' and dict_id != $_GET[id]");
-
            // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
-
            exit('not-active');
         }
     } else {
-
+      $_SESSION['form_open_for_edit'] = true;
+      $_SESSION['form_open_for_edit_DD'] = $_GET['id'];
 		 // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
-
          exit('not-active');
     }
 }

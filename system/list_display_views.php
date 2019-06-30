@@ -172,7 +172,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     if(empty($row['list_extra_options']) || $row['list_extra_options'] == NULL){
       $row['list_extra_options'] = $defaultOptions['list_extra_options'];
     }
-
     $ret_array = listExtraOptions($row['list_extra_options'], $buttonOptions);
     global $popup_menu;
 
@@ -290,8 +289,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 	function clearFunction() {
 		document.getElementById("list-form").reset();
 		/*Palak Task 5.4.77 Changes Start
-		var table = $('#example').DataTable();*/
-		var table = $('.clear1').DataTable();
+		var table = $('#example').sble();*/
+		var table = $('.clear1').sble();
 		/*Palak Changes End*/
 		table.search( '' ).columns().search( '' ).draw();
 	}
@@ -363,44 +362,46 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 /// Extracting action ,when user click on edit button or on list
                 if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
                     if (count($list_select_arr[0]) == 2) {
-                        $target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+                        $target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
                         /// add button url
-                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
                     } else {
                         $target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
                         /// add button url
-                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['item_style'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+                        $_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
                     }
                 }
                 $_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             }//// if record is zero... ends here
+            //if no record to display
+      if(!checkIfEmptyList($list,$row)){
 
-			switch($listView){
-				case 'mapview':
-					include_once('renderMapView.php');
-					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
-					break;
+  			switch($listView){
+  				case 'mapview':
+  					include_once('renderMapView.php');
+  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
+  					break;
 
-				case 'mapaddress':
-					include_once('renderMapView.php');
-					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
-					break;
+  				case 'mapaddress':
+  					include_once('renderMapView.php');
+  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+  					break;
 
-				case 'boxview':
-					include_once('renderBoxView.php');
-					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-					break;
+  				case 'boxview':
+  					include_once('renderBoxView.php');
+  					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+  					break;
 
-        case 'boxwide':
-					include_once('renderBoxWide.php');
-					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-					break;
+          case 'boxwide':
+  					include_once('renderBoxWide.php');
+  					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+  					break;
 
-				default:
-					include_once('renderListView.php');
-					renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
-					break;
-			} ?>
+  				default:
+  					include_once('renderListView.php');
+  					renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
+  					break;
+  			} }?>
         </form>
     </div>
 
@@ -489,7 +490,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
  * give LIST UI and data inside lists
  */
 
-function listViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function listViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -537,7 +538,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data'>";
+	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
         if(isset($data['data_length'])){
@@ -555,7 +556,7 @@ function listViews($listData, $table_type, $target_url, $imageField, $listRecord
 
 
 
-function wideListViews($listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+function wideListViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
     /*
      *
      * displaying of image in list
@@ -604,7 +605,7 @@ function wideListViews($listData, $table_type, $target_url, $imageField, $listRe
 	// first line of the text, and successive lines
 	$listData = array_filter($listData);
 	//  This is the
-	echo "<div class='boxView_content list-data'>";
+	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
 				echo "<div class='boxView_line ".$data['field_style']."'>".$data['field_value']."</div>";
