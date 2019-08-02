@@ -1706,13 +1706,13 @@ function isStripHtmlTags($value){
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
+  $isExistField = str_replace(';','',$isExistField);
   if($isExistField == null || $isExistFilter == null){
     return true;
   }
   if(!isset($row[$isExistField])){
     return true;
   }
-
   $value = trim($row[$isExistField]);
   if($isExistFilter=='exist'){
     if(empty($value)){
@@ -1724,6 +1724,9 @@ function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
       return false;
     }
   }else if($isExistFilter=='not_exist'){
+    if(empty($value)){
+      return true;
+    }
     if(file_exists(USER_UPLOADS.$value)){
       return false;
     }else{

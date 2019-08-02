@@ -149,7 +149,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 					}
 
 					if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-						break;
+						continue;
 					}
 
 					$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);

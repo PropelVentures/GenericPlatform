@@ -21,8 +21,16 @@
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
 
-	Navigation($display_page,'header');
-	Navigation($display_page,'header2');
+	?>
+	
+	<div class="navbar navbar-default navbar-fixed-top">
+		<?php 
+			Navigation($display_page,'header');
+			Navigation($display_page,'header2');
+		?>
+
+	</div>
+	<?php
 
 	$haveParalax = false;
 	ShowTableTypeParallaxBanner($display_page,$haveParalax);
@@ -43,6 +51,12 @@
 				* Finding page layout by DD->tab_num
 			*/
 			$con = connect();
+			$cond = 'display_page="'.$display_page.'"';
+			$rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
+			$list_sort = '';
+			while ($row1 = $rsList->fetch_assoc()) {
+				$list_sort = $row1['list_sort'];
+			}
 			Get_Data_FieldDictionary_Record('above',$_SESSION['tab'], $display_page, 'true');
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 			$right_sidebar = $left_sidebar = '';
@@ -178,7 +192,7 @@
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
-						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
+						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status,'','',$list_sort);
 					}
 				} else {
 
@@ -1029,5 +1043,5 @@
 </script>
 <?php
   echo "<div style='height:25px'></div>";
-	Footer($display_page);
+	Footer($display_page,'footer2');
 ?>

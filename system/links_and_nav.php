@@ -231,21 +231,14 @@ function headersAndSubHeaders($display_page){
  * Navigations fucntions starts here
  */
 
-function Navigation($page, $menu_location = 'header') {
+function Navigation($page, $menu_location="header") {
     $con = connect();
     $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
 
-    $classForNavBr2 = '';
+    /*$classForNavBr2 = '';
     if($menu_location=='header2'){
       $classForNavBr2 = 'navbar-lower';
-      echo "<style>
-      .navbar-lower{
-        margin-top:75px;
-        z-index:800;
-      }
-
-      </style>";
-    }
+    }*/
     /*
      *
      * Checking whether user have access to current page or not
@@ -264,7 +257,7 @@ function Navigation($page, $menu_location = 'header') {
     }
     ?>
     <!-- Navigation starts here -->
-    <div class="navbar navbar-default navbar-fixed-top <?=$classForNavBr2 ?>">
+    <div class="" >
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">
@@ -296,8 +289,8 @@ function Navigation($page, $menu_location = 'header') {
                     }
                 }
             ?>
-            <?php if ($nav_menu_location != 'LOGO-RIGHT') {
-              if($menu_location=='header'){ ?>
+            <?php if ($nav_menu_location != 'LOGO-RIGHT' && $menu_location == 'header') {
+              /*if($menu_location=='header'){*/ ?>
                 <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
                     <?php
 
@@ -307,7 +300,7 @@ function Navigation($page, $menu_location = 'header') {
                         echo $logo_text;
                     ?>
                 </a>
-            <?php } }?>
+            <?php /*}*/ }?>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
@@ -334,9 +327,9 @@ function Navigation($page, $menu_location = 'header') {
 				}
 				echo $menu = generateTopNavigation($navItems,$loginRequired);
 				?>
-            <?php ///////else if ends here                                                                                           ?>
+            <?php ///////else if ends here ?>
 
-            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
+            <?php if ($nav_menu_location == 'LOGO-RIGHT' && $menu_location == 'header') { ?>
                 <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
                     <?php
                         if ($logo_image != '') {
