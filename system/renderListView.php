@@ -94,13 +94,6 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
 							$count++;
-							if(isset($row['list_sort']) && !empty($row['list_sort'])){
-								$list_sort = explode('-',$row['list_sort']);
-								if(isset($list_sort[0]) && !empty($list_sort[0])){
-									$sort_parameter = $list_sort[0];
-									$sort_order = 'asc';
-								}else{
-									$sort_parameter = $list_sort[1];
 							// if(isset($row['list_sort']) && !empty($row['list_sort'])){
 
 							foreach ($list_sort as $key => $value) {
@@ -114,8 +107,6 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 								}
 								if($tbRow['generic_field_name'] == $sort_parameter){
 										$sort_index=$count;
-								}
-							}
 										$mulit_sort[$sort_index] = $sort_order;
 								}
 							}
@@ -145,7 +136,6 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 					}
                 }
                 ?>
-                
             </tr>
 		</thead>
 		<tbody>

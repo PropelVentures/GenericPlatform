@@ -40,7 +40,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     if (strtolower(trim($row['table_type']) ) == 'child')# || $tableTypeUppercase == $internal_table_types['0'] || $tableTypeUppercase == $internal_table_types['1']
     {
 
-
         // **********************************************************************************
         //  CJ-NOTE ***
         // Two comments - see below
@@ -54,7 +53,6 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         if(!empty($_REQUEST['search_id'])  && !empty($row['keyfield']) )
         {
             $search_key = $_REQUEST['search_id'];
-
         // **********************************************************************************
         // 2) The $row[keyfield]  term below also MAY be the source of the problem
         // because it would have been easy or likelyy for the prior coder to capture the wrong value beforehand
@@ -62,9 +60,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             $row['list_filter'] = array('list_filter' => $row['list_filter'], 'child_filter' => "$row[database_table_name].$row[keyfield]='$search_key'");
         }
         //      if(empty($row['list_filter']) && $row['parent_table'] == 'product' )
-        //	{
+        //  {
         //            $row['list_filter'] = "projects=$row[keyfield]";#'projects=DD.keyfield' from the child dict_id
-        //	}
+        //  }
     }
     else
         $search_key = $_SESSION['search_id'];
@@ -132,22 +130,22 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
       $disableAddButton = true;
     }
     // $listView = trim($row['list_views']);
-	//Added BY Dharmesh 2018-10-07
-	$list_views = listvalues($row['list_views']);
-	//Code End//
-	//Added BY Dharmesh 2018-10-12
+    //Added BY Dharmesh 2018-10-07
+    $list_views = listvalues($row['list_views']);
+    //Code End//
+    //Added BY Dharmesh 2018-10-12
 
     $list_pagination = listpageviews($row['list_pagination']);
 
-	if (!isset($list_pagination['itemsperpage']) || empty($list_pagination['itemsperpage'])){
-		$list_pagination['itemsperpage'] = 9 ;// set default
-	}
-	if (!isset($list_pagination['totalpages']) || empty($list_pagination['totalpages'])){
-		$list_pagination['totalpages'] = "#".( ceil($list->num_rows/$list_pagination['itemsperpage']) ) ;
-	}else{
+    if (!isset($list_pagination['itemsperpage']) || empty($list_pagination['itemsperpage'])){
+        $list_pagination['itemsperpage'] = 9 ;// set default
+    }
+    if (!isset($list_pagination['totalpages']) || empty($list_pagination['totalpages'])){
+        $list_pagination['totalpages'] = "#".( ceil($list->num_rows/$list_pagination['itemsperpage']) ) ;
+    }else{
         $list_pagination['totalpages'] = '#'.$list_pagination['totalpages'];
     }
-	//Code End//
+    //Code End//
 
     /*
      * @function listExtraOptions
@@ -159,7 +157,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     ##CHECK DD.list_select if empty then its for single page/profile view then we check DD.dd_editable=11 for page editable(dd_editable=1 for view only). If list_select is not empty its for a list page.
     /*Code Change Start Task ID 5.6.4*/
-	/*if(!empty($row['list_select']) )
+    /*if(!empty($row['list_select']) )
         $buttonOptions = $row['list_operations'];
     else if($row['dd_editable'] == '11' )
         $buttonOptions = $row['edit_operations'];
@@ -167,28 +165,28 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         $buttonOptions = $row['view_operations'];*/
 
   $defaultOptions = getDefaultListViewExtraOptions($con,$row['display_page']);
-	if(!empty($row['list_select']) ){
-			if((empty($row['list_operations'])) || ($row['list_operations'] == NULL)){
+    if(!empty($row['list_select']) ){
+            if((empty($row['list_operations'])) || ($row['list_operations'] == NULL)){
         $buttonOptions = $defaultOptions['list_operations'];
-			}else{
-				$buttonOptions = $row['list_operations'];
-			}
+            }else{
+                $buttonOptions = $row['list_operations'];
+            }
     }else if($row['dd_editable'] == '11' ){
-  		if((empty($row['edit_operations'])) || ($row['edit_operations'] == NULL)){
+        if((empty($row['edit_operations'])) || ($row['edit_operations'] == NULL)){
           $buttonOptions = $defaultOptions['edit_operations'];
-  		}else{
-  				$buttonOptions = $row['edit_operations'];
-  		}
-		//$buttonOptions = $row['edit_operations'];
+        }else{
+                $buttonOptions = $row['edit_operations'];
+        }
+        //$buttonOptions = $row['edit_operations'];
     }else if($row['dd_editable'] == '1' ){
-     	if((empty($row['view_operations'])) || ($row['view_operations'] == NULL)){
+        if((empty($row['view_operations'])) || ($row['view_operations'] == NULL)){
           $buttonOptions = $defaultOptions['view_operations'];
-  		}else{
-  				$buttonOptions = $row['view_operations'];
-  		}
-		//$buttonOptions = $row['view_operations'];
-	}
-	/*Code Change End Task ID 5.6.4*/
+        }else{
+                $buttonOptions = $row['view_operations'];
+        }
+        //$buttonOptions = $row['view_operations'];
+    }
+    /*Code Change End Task ID 5.6.4*/
     if(empty($row['list_extra_options']) || $row['list_extra_options'] == NULL){
       $row['list_extra_options'] = $defaultOptions['list_extra_options'];
     }
@@ -196,24 +194,24 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     global $popup_menu;
 
     $popup_menu = array(
-		"popupmenu" => $ret_array['popupmenu'],
-		"popup_delete" => $ret_array['popup_delete'],
-		"popup_copy" => $ret_array['popup_copy'],
-		"popup_add" => $ret_array['popup_add'],
-		"popup_openChild" => $ret_array['popup_openChild']
-	);
+        "popupmenu" => $ret_array['popupmenu'],
+        "popup_delete" => $ret_array['popup_delete'],
+        "popup_copy" => $ret_array['popup_copy'],
+        "popup_add" => $ret_array['popup_add'],
+        "popup_openChild" => $ret_array['popup_openChild']
+    );
     if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby">
             <h3>Sort by </h3>
             <span>
                 <div class="btn-group select2">
                     <button type="button" class="btn btn-danger main-select2" id="sort_popular_users_value">
-						---Select----
-					</button>
+                        ---Select----
+                    </button>
                     <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-						<span class="caret"></span>
-						<span class="sr-only">Toggle navigation</span>
-					</button>
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle navigation</span>
+                    </button>
                     <ul class="dropdown-menu" role="menu" id="sort_popular_users">
                         <?php
                         $tbl = $row['table_alias'];
@@ -257,9 +255,9 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 
     /********* setting DisplayView icons **** *//////
     $list_select = trim($row['list_select']);
-  	$table_type = trim($row['table_type']);
-  	$list_select_arr = getListSelectParams($list_select);
-  	$addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
+    $table_type = trim($row['table_type']);
+    $list_select_arr = getListSelectParams($list_select);
+    $addRecordUrl = getRecordAddUrl($list_select_arr,$table_type);
     $list_style = $row['dd_css_class'];
     $keyfield = firstFieldName($row['database_table_name']);
     $table_name = trim($row['database_table_name']);
@@ -305,38 +303,38 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     }
     //exit($tbQry);
     ?>
-	<script>
-	function clearFunction() {
-		document.getElementById("list-form").reset();
-		/*Palak Task 5.4.77 Changes Start
-		var table = $('#example').sble();*/
-		var table = $('.clear1').sble();
-		/*Palak Changes End*/
-		table.search( '' ).columns().search( '' ).draw();
-	}
-	</script>
+    <script>
+    function clearFunction() {
+        document.getElementById("list-form").reset();
+        /*Palak Task 5.4.77 Changes Start
+        var table = $('#example').sble();*/
+        var table = $('.clear1').sble();
+        /*Palak Changes End*/
+        table.search( '' ).columns().search( '' ).draw();
+    }
+    </script>
     <div class="row" id="popular_users" >
         <form name="list-form" id="list-form" action="ajax-actions.php" method="post">
-			<?php if(!empty(array_filter($ret_array))) { ?>
+            <?php if(!empty(array_filter($ret_array))) { ?>
             <div id='checklist-div'>
                 <?php
                 if ($list_views['checklist'] == 'true') {
                     echo "  <input type='hidden' name='checkHidden' id='checkHidden'>
                             <input type='checkbox' id='selectAll'> &nbsp;<strong>Select All </strong>
                         &nbsp;&nbsp;";
-				}
+                }
 
 
-				/// ADD BUTTON
+                /// ADD BUTTON
                 if (isset($ret_array['add_array']) && !empty($ret_array['add_array'])) {
                   if($disableAddButton) { ?>
                     <button  class="  btn action-add  <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="limitIsFull()" title="Maximum limit reached" ><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }else{ ?>
                   <button type="submit" class="btn action-add <?php echo $ret_array['add_array']['style'] ; ?>" name="add" onclick="window.location.href='<?php echo $addRecordUrl.$_SESSION['anchor_tag']; ?>'"><?php echo $ret_array['add_array']['label'] ; ?></button>
                 <?php }
-				}
+                }
 
-				if ($list_views['checklist'] == 'true') {
+                if ($list_views['checklist'] == 'true') {
             $thisDDid  = $row['dict_id'];
                     /// setting for  delete button
                     if (isset($ret_array['del_array']) && !empty($ret_array['del_array'])) {
@@ -360,7 +358,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 /// select checkbox div ends here
                 ?>
             </div>
-			<?php } ?>
+            <?php } ?>
             <?php
 
             if(count($filters_srray)>1){
@@ -376,8 +374,8 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
              */
 
 
-			if ($list->num_rows == 0) {
-				$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
+            if ($list->num_rows == 0) {
+                $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
                 $navList = $nav->fetch_assoc();
                 /// Extracting action ,when user click on edit button or on list
                 if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
@@ -396,32 +394,32 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             //if no record to display
       if(!checkIfEmptyList($list,$row)){
 
-  			switch($listView){
-  				case 'mapview':
-  					include_once('renderMapView.php');
-  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
-  					break;
+            switch($listView){
+                case 'mapview':
+                    include_once('renderMapView.php');
+                    renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
+                    break;
 
-  				case 'mapaddress':
-  					include_once('renderMapView.php');
-  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
-  					break;
+                case 'mapaddress':
+                    include_once('renderMapView.php');
+                    renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+                    break;
 
-  				case 'boxview':
-  					include_once('renderBoxView.php');
-  					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-  					break;
+                case 'boxview':
+                    include_once('renderBoxView.php');
+                    renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+                    break;
 
           case 'boxwide':
-  					include_once('renderBoxWide.php');
-  					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-  					break;
+                    include_once('renderBoxWide.php');
+                    renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+                    break;
 
-  				default:
-  					include_once('renderListView.php');
-  					renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
-  					break;
-  			} }?>
+                default:
+                    include_once('renderListView.php');
+                    renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor); // renderListView.php
+                    break;
+            } }?>
         </form>
     </div>
 

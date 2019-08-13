@@ -235,7 +235,6 @@ function Navigation($page, $menu_location="header") {
     $con = connect();
     $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
 
-
     /*$classForNavBr2 = '';
     if($menu_location=='header2'){
       $classForNavBr2 = 'navbar-lower';

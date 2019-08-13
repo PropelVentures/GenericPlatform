@@ -90,6 +90,7 @@ function updateString($data) {
           //5.4.202 trimiing spaces
         // trimSpacesAroundSepraters($value,',');
         // trimSpacesAroundSepraters($value,';',',');
+
         $i[] = "$key = '$value'";
     }
 
