@@ -1,6 +1,6 @@
 <?php
 
-function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true') {
+function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_page, $tab_status = 'false', $tab_num = 'false', $editable = 'true', $list_sort = 'tab_num') {
     $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     if($_GET['edit'] || $_GET['addFlag']){
         $actual_link = $_SESSION['return_url'];
@@ -40,42 +40,42 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
      */
     if ($tab_status == 'true') {
       if($aboveThanTabs){
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' order by tab_num");
       }else{
 
-          $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+          $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by $list_sort");
       }
       while ($row = $rs->fetch_assoc()) {
           if(!isAllowedToShowByPrivilegeLevel($row)){
             continue;
           }
-			switch($row['table_type']){
-				case 'slider':
-					ShowTableTypeSlider($row['display_page'],$row['tab_num']);
-					break;
-				case 'banner':
-					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
-					break;
-        // case 'p_banner':
-        //     ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
-        //     break;
-				case 'url':
-					ShowTableTypeURL($row['display_page'],$row['tab_num']);
-					break;
-                case 'content':
-					ShowTableTypeContent($row['display_page'],$row['tab_num']);
-					break;
-				case 'image':
-					ShowTableTypeImage($row['display_page'],$row['tab_num']);
-					break;
-				case 'icon':
-					ShowTableTypeIcon($row['display_page'],$row['tab_num']);
-					break;
-        default:
-					/////display_content.php////
-					display_content($row);
-					break;
-			}
+    			switch(true){
+    				case $row['table_type'] == 'slider':
+    					ShowTableTypeSlider($row['display_page'],$row['tab_num']);
+    					break;
+    				case $row['table_type'] == 'banner':
+    					ShowTableTypeBanner($row['display_page'],$row['tab_num']);
+    					break;
+            // case 'p_banner':
+            //     ShowTableTypeParallaxBanner($row['display_page'],$row['tab_num']);
+            //     break;
+    				case $row['table_type'] == 'url':
+    					ShowTableTypeURL($row['display_page'],$row['tab_num']);
+    					break;
+            case $row['table_type'] == 'content':
+    					ShowTableTypeContent($row['display_page'],$row['tab_num']);
+    					break;
+    				case $row['table_type'] == 'image':
+    					ShowTableTypeImage($row['display_page'],$row['tab_num']);
+    					break;
+    				case $row['table_type'] == 'icon':
+    					ShowTableTypeIcon($row['display_page'],$row['tab_num']);
+    					break;
+            default:
+    					/////display_content.php////
+    					display_content($row);
+    					break;
+    			}
         }
     } else {
         /* ******************
@@ -113,6 +113,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
           $DD_EDITABLE[1] = '0';
         }
         $DD_EDITABLE_bit2 = $DD_EDITABLE[1];
+        $row1['real_dd_editable'] = $row1['dd_editable'];
         $row1['dd_editable'] = $DD_EDITABLE_bit1;
         if($row1['dd_editable']=='2'){
           $row1['dd_editable'] = '11';
@@ -536,7 +537,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 					 */
 					generateBreadcrumbsAndBackPageForAdd($row1,$onePage=false); // in codeCommonFunction.php
 
-
 					$dd_css_class = $row1['dd_css_class'];
 
 					$_SESSION['dict_id'] = $row1['dict_id'];
@@ -727,7 +727,6 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 						 * Short solution for back to home page
 						 */
 						generateBreadcrumbsAndBackPage($row1,$primary_key,$onePage=false); // in codeCommonFunction.php
-
 						##VIEW OPERATION CUSTOM BUTTONS
 						if($operation == 'view_operations')
 						{

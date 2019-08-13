@@ -8,7 +8,6 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 	if(hideBreadCrumb($row1['list_extra_options']) ){
 		return;
 	}
-
 	if ($_GET['checkFlag'] == 'true' && $row1['dd_editable'] == 11) {
 		if ($_GET['table_type'] == 'child'){
 			$link_to_return = $_SESSION['child_return_url'];

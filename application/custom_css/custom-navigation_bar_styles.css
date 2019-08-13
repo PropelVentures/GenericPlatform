@@ -2,11 +2,11 @@
 
 /*********Navigation has mostly bootstrap classes. some classes below are modified for the header and logo*****/
 .navbar{
-/*
- white-space: nowrap;
-   overflow-x:auto;
-     overflow-y: hidden;
-*/
+    /*
+    white-space: nowrap;
+    overflow-x:auto;
+    overflow-y: hidden;
+    */
 }
 .navbar-brand{}
 .navbar-default{}
@@ -39,14 +39,21 @@
 
 #cj_test_nav1
 {
-color: red;
-background-color: black;
+    color: red;
+    background-color: black;
 }
 
 .cj_test_nav1
 {
-color: red;
-background-color: black;
+    color: red;
+    background-color: black;
+}
+
+
+.cj_test_nav1
+{
+    color: red;
+    background-color: black;
 }
 
 label.cj_test_nav2
@@ -54,16 +61,47 @@ label.cj_test_nav2
 color: red;
 background-color: black;
 }
-
 input.cj_test_nav2
 {
-color: green;
-background-color: blue;
+    color: green;
+    background-color: blue;
 }
 
 .new_form.cj_test_nav2
 {
-background-color: gray;
-padding: 20px;
-border: 4px;
+    background-color: gray;
+    padding: 20px;
+    border: 4px;
 }
+
+/* Edited by k */
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
+body *, body{font-family: 'Lato', sans-serif !important;}
+.navbar-default { background: #fff; box-shadow: 0 0 10px #949494; padding: 0 7%; /*border-top: 3px solid #32ca70;*/ margin: 0; padding-top: 55px; opacity: 1;}
+.navbar-right { margin: 0; padding-top: 14px; }
+img.nav_icon_test_class { border-radius: 50%; border: 0px solid #4fafd9; margin-right: 6px; }
+.navbar-default .navbar-nav>li>a { color: #4c4c4c; text-transform: uppercase; }
+.navbar-default .navbar-brand { color: #090e49; font-family: 'Lato', sans-serif; text-transform: uppercase; }
+li.nav_item.nav_icon_test_class{position: absolute !important; top: -55px; right:80px;}
+li.nav_item.nav_icon_test_class:hover a,li.nav_item.nav_icon_test_class a{color: #fff;}
+li.nav_item.nav_icon_test_class:hover a{opacity: 0.8}
+li.nav_item.nav_test_1{position: absolute !important; top: -55px; right:0;}
+li.nav_item.nav_test_1 a{color: #fff;}
+li.nav_item.nav_test_1 a:hover{color: #fff; opacity: 0.8}
+.dropdown-menu>li>a{color: #000 !important;}
+.navbar-right{position: relative;}
+.navbar-default.navbar-fixed-top:after{position: absolute; content: ''; width: 100%; left: 0; top: 0; height: 55px; background: #090e49; z-index: -1;}
+.logo span{color: #7e7e7e;}
+body>.parallax-mirror{opacity: 0; visibility: hidden;}
+#myCarousel.carousel{height: 660px;}
+#myCarousel .container{ width: 100%;padding: 0 7%;}
+#myCarousel.carousel .item{background: #090f49;height: 660px;}
+#myCarousel.carousel .item img{opacity: 0.4}
+body #myCarousel .carousel-caption{    max-width: 650px; left: 0; right: 0}
+body #myCarousel .carousel-caption .btn:hover {background-color: #090f49;border-color: #ffffff;}
+.main-content-container .center-container{ box-shadow: 0 0 15px #e8e8e8;padding-top: 30px; margin-top: 40px;}
+body .section-title{color: #090f49 !important; text-transform: uppercase; font-weight: 400; border-left: 4px solid #1d2891; padding-left: 15px;border-left: 9px solid #8d8fb7;}
+
+body>.parallax-mirror{opacity: 1 !important}
+.cus-btn{padding: 2px 20px;background-color: #2199e8;color: #fff;}
+.cus-btn:hover{background-color: #000;color: #fff;}

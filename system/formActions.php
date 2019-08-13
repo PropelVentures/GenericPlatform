@@ -484,11 +484,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['old_audio']);
 			}
 			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-      if($ddRecord['dd_editable'][1]=='1'){
-        $_SESSION['show_with_edit_button'] = true;
-        $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
+            if($ddRecord['dd_editable'][1]=='1'){
+                $_SESSION['show_with_edit_button'] = true;
+                $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
 
-      }
+            }
 			$ddRecord['keyfield'] = firstFieldName($ddRecord['database_table_name']);
 			/****** for pdf files ********** */
 			foreach ($_POST['pdf'] as $img => $img2) {
@@ -524,15 +524,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['pdf']);
 
 			/*****For images********** */
-      checkImageesInDataANdUpload();
+            checkImageesInDataANdUpload();
 
-    $recordedFileNmae = '';
-    if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
-      $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
-      if(!empty($recordedFileNmae)){
-        $_POST['temp_audio_file'] = $recordedFileNmae;
-      }
-    }
+            $recordedFileNmae = '';
+            if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
+              $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
+              if(!empty($recordedFileNmae)){
+                $_POST['temp_audio_file'] = $recordedFileNmae;
+              }
+            }
 			foreach ($_FILES as $file => $file2) {
 				//checking if audio file is not empty
 				if (!empty($file2['name'])) {
@@ -554,10 +554,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				}
 			}
 
-      if(isset($_POST['temp_audio_file'])){
-        $_POST['audio_file'] = $_POST['temp_audio_file'];
-      }
-      // die();
+              if(isset($_POST['temp_audio_file'])){
+                $_POST['audio_file'] = $_POST['temp_audio_file'];
+              }
+              // die();
 			/* Storing Base Latitude and Longitude Start*/
 			$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
 			$_POST = setBaseGpsCordinate($dataFdRecord,$_POST);
@@ -574,19 +574,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 			/* removing extra fields that are not preset in table end */
 			$status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
 
-      // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
-      $dd_editable_bit2 = $ddRecord['dd_editable'][1];
-      if(empty($dd_editable_bit2) || is_null($dd_editable_bit2)){
-        $dd_editable_bit2 = '0';
-      }
-      //
-      if($dd_editable_bit2=='0' || $dd_editable_bit2=='1'){
-          $current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
-          if(!empty($current_link_in_tab)){
-            unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
-            echo "<script> window.location='$current_link_in_tab'; </script>";
-          }
-      }
+
+              // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
+              $dd_editable_bit2 = $ddRecord['dd_editable'][1];
+              if(empty($dd_editable_bit2) || is_null($dd_editable_bit2)){
+                $dd_editable_bit2 = '0';
+              }
+              //
+              if($dd_editable_bit2=='0' || $dd_editable_bit2=='1'){
+                  $current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
+                  if(!empty($current_link_in_tab)){
+                    unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
+                    echo "<script> window.location='$current_link_in_tab'; </script>";
+                  }
+              }
+
 			if ($_GET['checkFlag'] == 'true') {
 				if($save_add_url){
 					$link_to_return = $save_add_url;
@@ -597,16 +599,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 						$link_to_return = $_SESSION['return_url2'];
 					}
 
-          if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
-           $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
-           unset($_SESSION['link_in_case_of_DDetiable_2']);
-         }
+                    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+                       $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+                       unset($_SESSION['link_in_case_of_DDetiable_2']);
+                    }
 				}
 				if ($_GET['fnc'] != 'onepage') {
 					//exit($link_to_return);
 					if($status === true){
-            echo "<script>window.location='$link_to_return';</script>";
-          }
+                        echo "<script>window.location='$link_to_return';</script>";
+                      }
 					else
 					{
 						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
@@ -1434,7 +1436,6 @@ function setBaseGpsCordinate($dataFdRecord,$postData){
 					if (array_key_exists($base_latitude_field, $postData)) {
 						$postData[$base_latitude_field] = $gpsCordinate['lat'];
 					}
-
 					if (array_key_exists($base_longitude_field, $postData)) {
 						$postData[$base_longitude_field] = $gpsCordinate['lng'];
 					}

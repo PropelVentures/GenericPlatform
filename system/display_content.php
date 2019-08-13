@@ -128,6 +128,7 @@ function display_content($row) {
 
       $DD_EDITABLE = $row1['dd_editable'];
       $DD_EDITABLE_bit1 = $DD_EDITABLE[0];
+      $row1['real_dd_editable'] = $row1['dd_editable'];
       if(is_null($DD_EDITABLE[1]) || empty($DD_EDITABLE[1])){
         $DD_EDITABLE[1] = '0';
       }

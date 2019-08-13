@@ -21,17 +21,48 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox2";
 	$config['db_user'] = "genericsandbox2";
-	$config['db_password'] = "Dublin0707**";
+	$config['db_password'] = "Lennin1002##";
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox3.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox3";
 	$config['db_user'] = "genericsandbox3";
-	$config['db_password'] = "Lennin1009##";
+	$config['db_password'] = "Lennin1003##";
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox4.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox4";
 	$config['db_user'] = "genericsandbox4";
-	$config['db_password'] = "Paris##0703";
+	$config['db_password'] = "Lennin1009##";
+} elseif($_SERVER['HTTP_HOST'] == 'genericsandbox5.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericsandbox5";
+	$config['db_user'] = "genericsandbox5";
+	$config['db_password'] = "Lennin1005##";
+
+} elseif($_SERVER['HTTP_HOST'] == 'genericsandbox6.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericsandbox6";
+	$config['db_user'] = "genericsandbox6";
+	$config['db_password'] = "Lennin1006##";
+
+} elseif($_SERVER['HTTP_HOST'] == 'genericsandbox7.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericsandbox7";
+	$config['db_user'] = "genericsandbox7";
+	$config['db_password'] = "Lennin1007##";
+
+
+} elseif($_SERVER['HTTP_HOST'] == 'genericsandbox8.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericsandbox8";
+	$config['db_user'] = "genericsandbox8";
+	$config['db_password'] = "Lennin1008##";
+
+
+} elseif($_SERVER['HTTP_HOST'] == 'genericsandbox9.cjcornell.net') {
+	$config['db_host'] = "localhost";
+	$config['db_name'] = "genericsandbox9";
+	$config['db_user'] = "genericsandbox9";
+	$config['db_password'] = "Lennin1009##";
 
 } elseif($_SERVER['HTTP_HOST'] == 'generic.cjcornell.net') {
 	$config['db_host'] = "localhost";
@@ -43,7 +74,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "CyranoProduction";
 	$config['db_user'] = "CyranoProduction";
-	$config['db_password'] = "Upwork081461!";
+	$config['db_password'] = "Melinda0315#";
 
 } else {
 	$config['db_host'] = "localhost";

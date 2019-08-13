@@ -13,7 +13,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $rs = $con->query($qry);
     $row = $rs->fetch_assoc();
     $listCheck = 'yes';
-    $list_sort = array_filter( array_map('trim', explode(',', $row['list_sort'])) );
+    $list_sort = array_filter( array_map('trim', explode(';', $row['list_sort'])) );
 
     ####SET SESSION VAR FOR HOLDING TABLE_TYPE='parent' data_dictionary.`keyfield` and its relevant value for that keyfield column if it exists in the table#########
     $keyfield = $row['keyfield'];
@@ -26,38 +26,39 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
         unset($_SESSION['parent_key_value']);
     }
 
-// **********************************************************************************
-//  CJ-NOTE ***
-//  Below ... this is BAD coding .... defining internal_table_types as 0,1 ...
-//  vague for coding and for other programmers to look at ... we need to change soon
-//  using defined constants for different table types  eg ... define("TABLE_TYPE_PARENT",...)
-// **********************************************************************************
-    ###if table_type="parent" OR table_type= $internal_table_types[0] OR table_type= $internal_table_types[1]
-    ###`$internal_table_types` array so `$internal_table_types[0]` == 'USER'` and  `$internal_table_types[1]` == 'PROJECT'`
-    ###(adjusting for lower case)
-
+    // **********************************************************************************
+    //  CJ-NOTE ***
+    //  Below ... this is BAD coding .... defining internal_table_types as 0,1 ...
+    //  vague for coding and for other programmers to look at ... we need to change soon
+    //  using defined constants for different table types  eg ... define("TABLE_TYPE_PARENT",...)
+    // **********************************************************************************
+        ###if table_type="parent" OR table_type= $internal_table_types[0] OR table_type= $internal_table_types[1]
+        ###`$internal_table_types` array so `$internal_table_types[0]` == 'USER'` and  `$internal_table_types[1]` == 'PROJECT'`
+        ###(adjusting for lower case)
 
     $tableTypeUppercase = strtoupper(trim($row['table_type']) );
     if (strtolower(trim($row['table_type']) ) == 'child')# || $tableTypeUppercase == $internal_table_types['0'] || $tableTypeUppercase == $internal_table_types['1']
     {
 
-// **********************************************************************************
-//  CJ-NOTE ***
-// Two comments - see below
-// **********************************************************************************
 
-// **********************************************************************************
-// 1) it is confusing right now to know where $_SESSION['update_table']['search'] comes from ...
-// but it is important - because this may be the critical problem wiith parent-child processing
-// **********************************************************************************
+        // **********************************************************************************
+        //  CJ-NOTE ***
+        // Two comments - see below
+        // **********************************************************************************
+
+        // **********************************************************************************
+        // 1) it is confusing right now to know where $_SESSION['update_table']['search'] comes from ...
+        // but it is important - because this may be the critical problem wiith parent-child processing
+        // **********************************************************************************
         $search_key = $_SESSION['update_table']['search'];
         if(!empty($_REQUEST['search_id'])  && !empty($row['keyfield']) )
         {
             $search_key = $_REQUEST['search_id'];
-// **********************************************************************************
-// 2) The $row[keyfield]  term below also MAY be the source of the problem
-// because it would have been easy or likelyy for the prior coder to capture the wrong value beforehand
-// **********************************************************************************
+
+        // **********************************************************************************
+        // 2) The $row[keyfield]  term below also MAY be the source of the problem
+        // because it would have been easy or likelyy for the prior coder to capture the wrong value beforehand
+        // **********************************************************************************
             $row['list_filter'] = array('list_filter' => $row['list_filter'], 'child_filter' => "$row[database_table_name].$row[keyfield]='$search_key'");
         }
         //      if(empty($row['list_filter']) && $row['parent_table'] == 'product' )
@@ -100,7 +101,26 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     $listView = strtolower($selected_row_view);
 
     if (count($list_sort) == 1 && !empty($row['list_sort'])) {
-        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $list_sort[0], $listCheck,$isExistFilter,$isExistField);
+        $field_lists = explode(',',$list_sort[0]);
+        $field_str = '';
+        foreach ($field_lists as $key => $value) {
+            if(strpos($value,'~') !==false){
+                $value = str_replace('~', '', $value);
+                if($key==0){
+                    $field_str .= $value.' DESC'; 
+                }else{
+                    $field_str .= ','.$value.' DESC'; 
+                }
+            }else{
+                if($key==0){
+                    $field_str .= $value; 
+                }else{
+                    $field_str .= ','.$value; 
+                }
+            }
+        }
+        
+        $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $field_str, $listCheck,$isExistFilter,$isExistField);
     } else {
         $list = get_multi_record($_SESSION['update_table']['database_table_name'], $_SESSION['update_table']['keyfield'], $search_key, $selected_row_filter, $listSort = 'false', $listCheck,$isExistFilter,$isExistField);
     }
@@ -262,7 +282,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 $tbQry = $qry = "SELECT * FROM field_dictionary INNER JOIN data_dictionary ON data_dictionary.`table_alias` = field_dictionary.`table_alias` where data_dictionary.table_alias = '$row[table_alias]' and data_dictionary.display_page='$row[display_page]' and tab_num='$tab_num'  order by field_dictionary.display_field_order LIMIT " . $row['list_fields'];
             }
         } else {
-            $fields = array_filter( array_map('trim',explode(",", $row['list_fields'])) );
+            $fields = array_filter( array_map('trim',explode(",", implode(',',explode(';',$row['list_fields'])) )) );
             $fieldsFinal = '';
             foreach ($fields as $f) {
                 if (empty($fieldsFinal))

@@ -17,7 +17,8 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	}
 	$list_select_arr = getListSelectParams($list_select);
 	?>
-	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
+
+	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id="content<?php echo $tab_num; ?>">
 		<!-- the input fields that will hold the variables we will use -->
 		<input type='hidden' class='current_page' />
 		<input type='hidden' class='show_per_page' />
@@ -40,9 +41,8 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				if($count > $limit){
 					break;
 				}
-				
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-					break;
+					continue;
 				}
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
@@ -85,7 +85,6 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 							}
 						}
 					}
-
 					/*
 					 * @while loop
 					 * get FD info and put data into @lisdata array
@@ -127,9 +126,10 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					listViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
-			<?php
-			$count++;
+				<?php
+				$count++;
 			}
+			
 			/*
 			 *
 			 * Pagination Function goes here
