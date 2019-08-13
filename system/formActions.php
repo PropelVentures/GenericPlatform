@@ -1,5 +1,4 @@
 <?php
-
 /*
  *
  * masterFunctions file all forms Actions are recorded here
@@ -44,39 +43,50 @@
  *
  *
  */
-
-
-
+// if( isset($_GET['action']) && $_GET['action'] =='user_recorded_file'){
+//   foreach ($_FILES as $file => $file2) {
+//     //checking if audio file is not empty
+//     if (!empty($file2['name'])) {
+//         $file_name = uploadRecordedAudio($file2);
+//         echo $file_name;
+//         exit();
+//       }
+//     }
+// }
 if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'cancel') {
 
 
-
-    update("data_dictionary", array("dd_editable" => '1'), array("display_page" => $_GET['display']));
-
+  //5.6.112 as this was crashing evrything
+    // update("data_dictionary", array("dd_editable" => '1'), array("display_page" => $_GET['display']));
 
     // exit($_SESSION[return_url2]);
-
-
     if ($_GET['table_type'] == 'child') {
-
         $link_to_return = $_SESSION['child_return_url'];
+    }
+
+    if(empty($link_to_return)){
+        $link_to_return = $_SESSION['return_url'];
     }
     /*
       else if ($_GET['checkFlag'] == 'true')
-      $link_to_return = $_SESSION['return_url2']; */ else if ($_GET['addFlag'] == 'true')
+      $link_to_return = $_SESSION['return_url2']; */
+    else if ($_GET['addFlag'] == 'true')
         $link_to_return = BASE_URL . "system/main.php?display?" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
     else
         $link_to_return = $_SESSION['return_url2'];
 
 
-    if ($_GET['fnc'] != 'onepage') {
+    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+     $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+     unset($_SESSION['link_in_case_of_DDetiable_2']);
+   }
 
-        echo "<script>window.location='$link_to_return'</script>";
+    if ($_GET['fnc'] != 'onepage') {
+        //echo "<script>window.location='$link_to_return'</script>";
     } else {
-        echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
+        //echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
     }
 }
-
 
 
 
@@ -98,66 +108,48 @@ if (isset($_GET["button"]) && !empty($_GET["button"]) && $_GET["button"] == 'can
 // THIS HANDLES addimport FILEIMPORT and textarea manual import
 // ALL FIELDS NEEDS TO BE ASSIGNED TO THE $_POST ARRAY WITH FEILD AS KEY AND RESPECTIVE VALUE ASSIGNED TO IT SO IT CAN BE USED INSIDE addData() function
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET['actionType'] == 'addimport') {
-
     // GET THE IMPORT FIELDS(DB TABLE COLUMNS FROM ADDIMPORT FUNCTION PARAMTERS i.e. 4rth field and onwards
+    log_event($_GET['display'],'add');
     $customFunctionImportFields = $_SESSION['addImportParameters'];
     array_splice($customFunctionImportFields, 0, 3);
-
-//    echo "<pre>\$customFunctionImportFields<br>";
-//    print_r($customFunctionImportFields);
-//    echo "</pre>";
-
-//    echo "<pre>";
-//    print_r($_GET); die;
-
-
+    //    echo "<pre>\$customFunctionImportFields<br>";
+    //    print_r($customFunctionImportFields);
+    //    echo "</pre>";
+    //    echo "<pre>";
+    //    print_r($_GET); die;
     $importFieldsLength = count($customFunctionImportFields);
-
     // HANDLE addimport POPUP FORM SUBMIT for csv file import
     if(!empty($_FILES['addImportFile']['name']) )
     {
         #$file_mimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream',
         #    'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain');
-
-
-//        echo "<pre>";
-//        print_r($_FILES);
-//        print_r($_SESSION);
-//        print_r($_SESSION['addImportParameters']);
-//        echo "</pre>";
-
+        //        echo "<pre>";
+        //        print_r($_FILES);
+        //        print_r($_SESSION);
+        //        print_r($_SESSION['addImportParameters']);
+        //        echo "</pre>";
         $customFunctionThirdParameter = $_SESSION['addImportParameters']['2'];
-
         ###DEFAULT TO C IF C|T IS NOT PRESENT IN THIRD PARAM OF ADDIMPORT
         $importFieldSeparator = 'C';
         if(stripos($customFunctionThirdParameter, 'T') !== false)
         {
             $importFieldSeparator = 'T';
         }
-
-
-//        $csvFile = fopen($_FILES['addImportFile']['tmp_name'], 'r');
-//        fclose($csvFile);
-//        print_r(fgetcsv($csvFile) );
-//        die;
-
-
+        //         $csvFile = fopen($_FILES['addImportFile']['tmp_name'], 'r');
+        //        fclose($csvFile);
+        //        print_r(fgetcsv($csvFile) );
+        //        die;
         #  [0] => 18 [1] => csv test product1 [2] => Description of test product 1 [3]
         if (!empty($_FILES['addImportFile']['name']) ) { ##&& in_array($_FILES['file']['type'], $file_mimes)
             if (is_uploaded_file($_FILES['addImportFile']['tmp_name'])) {
                 $csvFile = fopen($_FILES['addImportFile']['tmp_name'], 'r');
                 //fgetcsv($csv_file);
-
                 $csvRowNumber = 1;
                 $errorCsvRows = array();
                 $successCsvRows = array();
-
                 // get data records from csv file
                 while (($csvRowData = fgetcsv($csvFile)) !== FALSE) {
-
                     $fieldCountCsvRow = count($csvRowData);
-
-
                     if(!empty($csvRowData) && $fieldCountCsvRow == $importFieldsLength)
                     {
                         #"$csvRowData[0], $csvRowData[1], $csvRowData[2], $csvRowData[3], $csvRowData[4]";
@@ -172,13 +164,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
                         #    $mysql_insert = "INSERT INTO emp (emp_name, emp_email, emp_salary, emp_age )VALUES('" . $emp_record[1] . "', '" . $emp_record[2] . "', '" . $emp_record[3] . "', '" . $emp_record[4] . "')";
                         #    mysqli_query($conn, $mysql_insert) or die("database error:" . mysqli_error($conn));
                         #}
-
                         ###ASSIGN DATA TO $_POST WITH RESPECTIVE FIELD KEYS FROM addimport Parameters AND VALUES FROM CSV FILE###
                         for($i = 0; $i < $importFieldsLength; $i++)
                         {
                             $_POST[$customFunctionImportFields[$i]] = $csvRowData[$i];
                         }
-
                         ###CALL addData() to insert each single row#####
                         $insertStatus = addData();
                         if($insertStatus == false)
@@ -189,18 +179,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
                         {
                             $successCsvRows[$csvRowNumber] = "CSV Row imported Successfully.";
                         }
-
-
-                    }
+					/*Code Changes for Task 5.4.108 start*/
+					}elseif(count($csvRowData)>0){
+							//echo "skip empty record";
+					}
+					/*Code Changes for Task 5.4.108 end*/
                     else
                     {
                         $errorCsvRows[$csvRowNumber] = "Either field count didn't match or some other error occured while importing from CSV.";
                     }
-
                     $csvRowNumber++;
-
                 }
-
                 fclose($csvFile);
             }
         }
@@ -211,9 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
     ###HANDLE addimport POPUP FORM SUBMIT for csv file import###
     else if(!empty($_POST['addImportText']) )
     {
-//        echo "<pre>";
-//        var_dump($_POST['addImportText']);
-
+        //        echo "<pre>";
+        //        var_dump($_POST['addImportText']);
         $textAreaAddImporTData = $_POST['addImportText'];
 
         ###UNSET THE $_POST FOR TEXTAREA AS THE addData() function Relies on $_POST###
@@ -253,9 +241,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
                 {
                     $successTextRows[$textRowNumber] = "Manual Row data imported Successfully.";
                 }
-
-
-            }
+				/*Code Changes for Task 5.4.108 start*/
+            }elseif(count($importTextRowFeildsData)>0){
+					//echo "skip empty record";
+			}
+			/*Code Changes for Task 5.4.108 end*/
             else
             {
                 $errorTextRows[$textRowNumber] = "Either field count didn't match or some other error occured while importing from Manual input.";
@@ -268,10 +258,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
         $_SESSION['errorsAddImport'] = $errorTextRows;
         $_SESSION['SuccessAddImport'] = $successTextRows;
     }
-
-//    print_r($_SESSION['errorsAddImport']);
-//    print_r($_SESSION['SuccessAddImport']);
-//    die("TESING CSV");
+    //    print_r($_SESSION['errorsAddImport']);
+    //    print_r($_SESSION['SuccessAddImport']);
+    //    die("TESING CSV");
 
     ###REDIRECT TO THE LIST FROM WHICH USER CAME AND SHOW A POPUP MESSAGE REGARDING SUCCESS/ERRORS ACCORDINGLY############
     $link_to_return = BASE_URL . "system/main.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
@@ -286,7 +275,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
     }
     if(!empty($_GET['edit']))
         $link_to_return .= "&edit={$_GET['edit']}";
-
     if ($_GET['fnc'] != 'onepage') {
         echo "<script>window.location='$link_to_return'</script>";
     } else {
@@ -294,31 +282,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add' && $_GET[
     }
 
 }
+
+
 #####THIS WILL HANDLE ALL ADD OPERATIONS IN COMMON SO IT WILL BE A FUNCTION INSTEAD. IT SHOULD HANDLE INDIVIDUAL ADD AS WELL AS BULK IMPORT/ADD#####
 else if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'add') {
-
-    addData();
-
+  log_event($_GET['display'],'add');
+  addData();
 }
-
 
 function addData()
 {
-    if (array_key_exists('field_name_unique', $_POST)) {
+
+	$save_add_url = "";
+    if (array_key_exists('save_add_record', $_POST)) {
+		$save_add_url = $_SESSION['save_add_url'];
+        unset($_POST['save_add_record']);
+		unset($_SESSION['save_add_url']);
+    }
+
+	if (array_key_exists('field_name_unique', $_POST)) {
         unset($_POST['field_name_unique']);
     }
     if (array_key_exists('old_audio', $_POST)) {
         unset($_POST['old_audio']);
     }
-
-//    echo "<pre>";
-//    $_SESSION['dict_id'] .
-//    $_SESSION['update_table2']['database_table_name'] .
-//    $_SESSION['update_table2']['keyfield'] . "<br>" . $_SESSION[return_url2];
-//    die("TETING ADD SESSION");
-//    print_r($_POST);die;
-
+    if (array_key_exists('recorded_audio', $_POST)) {
+        unset($_POST['recorded_audio']);
+    }
     $row = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+
 
     ### if addimport then CHECK FOR DD.table_type = PARENT/CHILD AND IF CHILD THEN FIELD ITS PARENT DD.dict_id and its keyfield and autoincrement it###
     if($_GET['actionType'] == 'addimport' || 1)
@@ -333,148 +325,103 @@ function addData()
             ##$_SESSION['parent_key_value'] = $keyfield;
         }
         ###if the table is a child table - then the function must add the parent ID to every record
+
         else if ($tableType == 'child' && !empty($keyfield))
         {
             #$rowParent = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-            if((int)$_SESSION['parent_value'] !== 0 );
             // DONT ASSIGN STRING VALUES, ONLY ASSIGN REAL PRIMARY KEYS WHICH WILL ALWAYS BE INTEGERS OR 0 IF TYPECASTED FROM STRING
-                $_POST["$keyfield"] = $_SESSION['parent_value'];
+            if((int)$_SESSION['parent_value'] !== 0 && empty($_POST["$keyfield"])){
+              $_POST["$keyfield"] = $_SESSION['parent_value'];
+            }
                 //SET KEYFIELD TO THE PARENT VALUE TO PRESERVE PARENT->CHILD RELATIONSHIP
         }
     }
-
-//    echo "<pre>TESTING AddDATA POST";
-//    print_r($_POST);
-//    #print_r($row);
-//    #print_r($_SESSION);
-//    echo "</pre>";#die;
-
     if (!empty($row['list_filter'])) {
-
-        $keyfield = explode(";", $row['list_filter']);
-
-        $firstParent = $keyfield[0];
-        //print_r($keyfield);die;
-
-        if (!empty($keyfield[1])) {
-            $listCond = $keyfield[1];
+        $listFilter = explode(";", $row['list_filter']);
+        $firstParent = $listFilter[0];
+        if (!empty($listFilter[1])) {
+            $listCond = $listFilter[1];
         }
-
-
-        //  $checkFlag = false;
-
-        if (!empty($keyfield[0])) {
+        if (!empty($listFilter[0])) {
             $i = 0;
-
-            $keyfield = explode(",", $keyfield[0]);
-
-            foreach ($keyfield as $val) {
-
-                $keyField = explode("=", $val);
-
-                $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
-
+            $firstListFilter = explode(",", $listFilter[0]);
+            foreach ($firstListFilter as $val) {
+                $condition = explode("=", $val);
+                $keyVal[$i] = array(trim($condition[0]) => trim($condition[1]));
                 $i++;
             }
         }
-
         foreach ($keyVal as $val) {
-
             if (!empty($val['projects'])) {
-
                 $pid = $val['projects'];
             }
-
             if (!empty($val['users'])) {
-
                 $uid = $val['users'];
             }
         }
-        //print_r($pid);die;
-
         if (!empty($pid)) {
             $project = array($pid => $_SESSION['search_id2']);
         }
-
         if (!empty($uid)) {
             $user = array($uid => $_SESSION['uid']);
         }
     }
-
+    checkImageesInDataANdUpload();
     $data = $_POST;
-
     if (!empty($user)) {
-
         $userKey = key($user);
-
         if (array_key_exists($userKey, $data))
             unset($data[$userKey]);
-
         $data = array_merge($user, $data);
     }
 
     if (!empty($project)) {
-
         $projectKey = key($project);
-
-        // print_r($projectKey);die;
 
         if (array_key_exists($projectKey, $data))
             unset($data[$projectKey]);
 
         $data = array_merge($project, $data);
-
-        //  print_r($data);die;
     }
-
     unset($data['imgu']);
-
     ////assigning user_id field a value of current session if list_filter doesn't' have
-
     $field = 'false';
-
     if (empty($user)) {
-
         $tblName = $_SESSION['update_table2']['database_table_name'];
-
         $con = connect();
         $rs = $con->query("SHOW COLUMNS FROM $tblName");
-
         while ($fdCol = $rs->fetch_assoc()) {
-
             if ($fdCol['Field'] == 'user_id') {
-
                 $field = 'true';
-
                 break;
             }
         }
     }
-
     if ($field == 'true') {
-
         $additional_array = array('user_id' => $_SESSION['uid']);
-
         $data = array_merge($additional_array, $data);
     }
-
-    // echo "<pre>";print_r($data);die;
-
+    if(empty(trim($_POST[$keyfield]))){
+      if($row['parent_table'] =='user'){
+        $data[$keyfield] = $_SESSION['uid'];
+      }
+    }
+	/* Storing Base Latitude and Longitude Start*/
+	//$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
+	//$data = setBaseGpsCordinate($dataFdRecord,$data);
+	/* Storing Base Latitude and Longitude End*/
     $check = insert($_SESSION['update_table2']['database_table_name'], $data);
-
     ###RETURN INSTEAD OF REDIRECT FOR addimport ACTION
-    if($_GET['actionType'] == 'addimport')
-    {
+    if($_GET['actionType'] == 'addimport') {
         return $check;
     }
-
-    /* if ($_GET['table_type'] == 'child' && $_GET['checkFlag'] == 'true')
-      $link_to_return = $_SESSION['add_url_list'];
-      else */
-    $link_to_return = BASE_URL . "system/main.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'];
+    if(!empty($save_add_url)){
+		$link_to_return = $save_add_url;
+	} else {
+		$link_to_return = BASE_URL . "system/main.php?display=" . $_GET['display'] . "&tab=" . $_GET['tab'] . "&tabNum=" . $_GET['tabNum'] . "&checkFlag=true" . "&table_type=" . $_GET['table_type'] . "&search_id=" . $_SESSION['search_id'];
+	}
 
     if ($_GET['fnc'] != 'onepage') {
-
         echo "<script>window.location='$link_to_return'</script>";
     } else {
         echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]'</script>";
@@ -491,44 +438,58 @@ function addData()
  *
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-	$_GET['table_type'] = trim(strtolower($_GET['table_type']));
+    $_GET['table_type'] = trim(strtolower($_GET['table_type']));
 	switch($_GET['table_type']){
 		case 'login':
 			callToLogin();
 			break;
-			
+
 		case 'signup':
 			callToSignup();
 			break;
-			
+
 		case 'facebooklogin':
 			echo json_encode(facebookLogin());
 			break;
-			
+
 		case 'linkedinlogin':
 			echo json_encode(linkedInLogin());
 			break;
-			
+
 		case 'linkedinimportprofile':
 			echo json_encode(importProfileFromLinkedIn());
 			break;
-		
+
 		case 'forgotpassword':
 			forgotPassword();
 			break;
-			
+
 		case 'reset_password':
 			resetPassword();
 			break;
-		
+
 		case 'change_password':
 			changePassword();
 			break;
-			
+
 		default:
+			$save_add_url = "";
+			if (array_key_exists('save_add_record', $_POST)) {
+				$save_add_url = $_SESSION['save_add_url'];
+				unset($_POST['save_add_record']);
+				unset($_SESSION['save_add_url']);
+			}
+
 			if (array_key_exists('old_audio', $_POST)) {
 				unset($_POST['old_audio']);
 			}
+			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+            if($ddRecord['dd_editable'][1]=='1'){
+                $_SESSION['show_with_edit_button'] = true;
+                $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
+
+            }
+			$ddRecord['keyfield'] = firstFieldName($ddRecord['database_table_name']);
 			/****** for pdf files ********** */
 			foreach ($_POST['pdf'] as $img => $img2) {
 				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
@@ -563,53 +524,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 				unset($_POST['pdf']);
 
 			/*****For images********** */
-			foreach ($_POST['imgu'] as $img => $img2) {
-				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-					$ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
-					$oldImage = $_POST[$img]['img_extra'];
-					if (!empty($ret['image'])) {
-						unset($_POST['imgu'][$img]);
-						$_POST[$img] = $ret['image'];
-					}
-					//if user want to replace current image
-					if (!empty($oldImage)) {
-						@unlink(USER_UPLOADS . "$oldImage");
-						@unlink(USER_UPLOADS . "thumbs/$oldImage");
-					}
-					//if user didn't touch the with images
-				} else {
-					//if user clicks on remove current image
-					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-						if (!empty($_POST[$img]['img_extra'])) {
-							@unlink(USER_UPLOADS . "$img2[imageName]");
-							@unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
-							unset($_POST['imgu'][$img]);
-							$_POST[$img] = '';
-						} else {
-							unset($_POST['imgu'][$img]);
-						}
-					} else {
-						unset($_POST['imgu'][$img]);
-					}
-				}
-			}
-			//deleting array which is used for holding imgu values
-			if (empty($_POST['imgu']))
-				unset($_POST['imgu']);
+            checkImageesInDataANdUpload();
 
+            $recordedFileNmae = '';
+            if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
+              $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
+              if(!empty($recordedFileNmae)){
+                $_POST['temp_audio_file'] = $recordedFileNmae;
+              }
+            }
 			foreach ($_FILES as $file => $file2) {
 				//checking if audio file is not empty
-				if (!empty($_FILES[$file]['name'])) {
-					$file_name = uploadAudioFile($file2);
-					// if file successfully uploaded to target dir
-					if (!empty($file_name)) {
-						$_POST[$file] = $file_name;
-					}
+				if (!empty($file2['name'])) {
+            $file_name = uploadAudioFile($file2);
+  					// if file successfully uploaded to target dir
+  					if (!empty($file_name)) {
+  						$_POST[$file] = $file_name;
+  					}
 				} else {
 					$_POST[$file] = '';
 				}
 				//Dealing with database now
-				$row = getWhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+				$row = getWhere($ddRecord['database_table_name'], array($ddRecord['keyfield'] => $_SESSION['search_id2']));
 				$oldFile = $row[0][$file];
 				if ($oldFile != "") {
 					if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
@@ -617,20 +553,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
 					}
 				}
 			}
-			$status = update($_SESSION['update_table2']['database_table_name'], $_POST, array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
-			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
-			
+              if(isset($_POST['temp_audio_file'])){
+                $_POST['audio_file'] = $_POST['temp_audio_file'];
+              }
+              // die();
+			/* Storing Base Latitude and Longitude Start*/
+			$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
+			$_POST = setBaseGpsCordinate($dataFdRecord,$_POST);
+			/* Storing Base Latitude and Longitude End*/
+
+			/* removing extra fields that are not preset in table start */
+			$tableFields = getColumnNames($ddRecord['database_table_name']);
+			$fieldsNotPresent = array_diff_key($_POST,$tableFields);
+			if(!empty($fieldsNotPresent)){
+				foreach($fieldsNotPresent as $key=>$value){
+					unset($_POST[$key]);
+				}
+			}
+			/* removing extra fields that are not preset in table end */
+			$status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
+
+              // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
+              $dd_editable_bit2 = $ddRecord['dd_editable'][1];
+              if(empty($dd_editable_bit2) || is_null($dd_editable_bit2)){
+                $dd_editable_bit2 = '0';
+              }
+              //
+              if($dd_editable_bit2=='0' || $dd_editable_bit2=='1'){
+                  $current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
+                  if(!empty($current_link_in_tab)){
+                    unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
+                    echo "<script> window.location='$current_link_in_tab'; </script>";
+                  }
+              }
 			if ($_GET['checkFlag'] == 'true') {
-				if ($_GET['table_type'] == 'child')
-					$link_to_return = $_SESSION['child_return_url2'];
-				else
-					$link_to_return = $_SESSION['return_url2'];
+				if($save_add_url){
+					$link_to_return = $save_add_url;
+				}else{
+					if ($_GET['table_type'] == 'child'){
+						$link_to_return = $_SESSION['child_return_url2'];
+					} else {
+						$link_to_return = $_SESSION['return_url2'];
+					}
 
+                    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
+                       $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+                       unset($_SESSION['link_in_case_of_DDetiable_2']);
+                    }
+				}
 				if ($_GET['fnc'] != 'onepage') {
 					//exit($link_to_return);
-					if($status === true)
-						echo "<script>window.location='$link_to_return';</script>";
+					if($status === true){
+                        echo "<script>window.location='$link_to_return';</script>";
+                      }
 					else
 					{
 						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
@@ -672,10 +648,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
  * // To Do: Login Function functionality
  *
  */
+
 function callToLogin(){
 	$table = $_SESSION['update_table2']['database_table_name'];
-    $primaryKey = $_SESSION['update_table2']['keyfield'];
-    $con = connect();
+  $primaryKey = $_SESSION['update_table2']['keyfield'];
+  $con = connect();
 	$message = "Please enter required fields";
 	$returnUrl = $_SESSION['return_url2'];
 	if(!empty($_POST)){
@@ -696,8 +673,7 @@ function callToLogin(){
 				$user = $userQuery->fetch_assoc();
 				if($user['isActive'] == 1){
 					$_SESSION['uid'] = $user[$primaryKey];
-					$_SESSION['user_privilege'] = $user['user_privilege_level'];
-					$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                    setUserDataInSession($con,$user);
 					$message = '';
 					//$message = PROFILE_COMPLETE_MESSAGE;
 					$returnUrl = BASE_URL."index.php";
@@ -705,13 +681,19 @@ function callToLogin(){
 					$message = "Your account is Inactive. Please contact to administrator";
 				}
 			} else {
-				$message = "Invalid Username/Email or Password";
+			    $message = resetPasswordIfFlagIsSet($con);
+                if($message === false){
+                  $message = "Invalid Username/Email or Password";
+                }else{
+                  $returnUrl = BASE_URL."index.php";
+                }
 			}
 		}
 	}
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}
+  log_event('login','login');
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 /*
@@ -719,6 +701,9 @@ function callToLogin(){
  *
  */
 function callToSignup(){
+
+  log_event($_GET['display'],'signup');
+
 	$table = $_SESSION['update_table2']['database_table_name'];
     $primaryKey = $_SESSION['update_table2']['keyfield'];
     $con = connect();
@@ -728,7 +713,7 @@ function callToSignup(){
 		$emailField = $_SESSION['user_field_email'];
 		$passField = $_SESSION['user_field_password'];
 		$unameField = $_SESSION['user_field_uname'];
-		
+
 		$emailValue = trim($_POST[$_SESSION['user_field_email']]);
 		$passValue = trim($_POST[$_SESSION['user_field_password']]);
 		$unameValue = trim($_POST[$_SESSION['user_field_uname']]);
@@ -763,7 +748,7 @@ function callToSignup(){
 				$message = $status;
 			}
 		}
-		
+
 	}
 	if($message){
 		echo "<script>alert('$message');</script>";
@@ -809,7 +794,7 @@ function forgotPassword(){
 				$message = "Your account is Inactive. Please contact to administrator";
 			}
 		}
-		
+
 	}
 	if($message){
 		echo "<script>alert('$message');</script>";
@@ -846,6 +831,8 @@ function resetPassword(){
 				$passwordValue = md5($passwordValue);
 				$update = $con->query("UPDATE $table SET $passwordField='$passwordValue' , token=NULL ,timeout=NULL WHERE token = '$token'");
 				unset($_SESSION['reset_token']);
+        $_SESSION['uid'] = $user[$_SESSION['update_table2']['keyfield']];
+        setUserDataInSession($con,$user);
 				$message = "Your password has been changed. Please login.";
 				$returnUrl = BASE_URL."index.php";
 			}
@@ -911,7 +898,48 @@ function changePassword(){
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 
-
+function checkImageesInDataANdUpload(){
+  foreach ($_POST['imgu'] as $img => $img2) {
+    if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+      $ret = uploadImageFile($img2['uploadcare'], $img2['imageName']);
+      $oldImage = $_POST[$img]['img_extra'];
+      if (!empty($ret['image'])) {
+        unset($_POST['imgu'][$img]);
+        $_POST[$img] = $ret['image'];
+      }
+      //if user want to replace current image
+      if (!empty($oldImage)) {
+        @unlink(USER_UPLOADS . "$oldImage");
+        @unlink(USER_UPLOADS . "thumbs/$oldImage");
+      }
+      //if user didn't touch the with images
+    } else {
+      //if user clicks on remove current image
+      if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
+        if (!empty($_POST[$img]['img_extra'])) {
+          @unlink(USER_UPLOADS . "$img2[imageName]");
+          @unlink(USER_UPLOADS . "thumbs/$img2[imageName]");
+          unset($_POST['imgu'][$img]);
+          $_POST[$img] = '';
+        } else {
+                        if (empty($_POST['user_id'])){
+                            echo "<script>
+                                    alert('Please upload some photo and then update.');
+                                    window.location.href = document.referrer;
+                                </script>";
+                        }
+          unset($_POST['imgu'][$img]);
+        }
+      } else {
+        unset($_POST['imgu'][$img]);
+      }
+    }
+  }
+  //deleting array which is used for holding imgu values
+  if (empty($_POST['imgu'])){
+    unset($_POST['imgu']);
+  }
+}
 function sendResetLinkEmail($data,$email){
 	$returnUrl = $_SESSION['return_url2'];
 	$to = $email;
@@ -925,7 +953,7 @@ function sendResetLinkEmail($data,$email){
 	$message .= "$url";
 	$message .= "<br/><br/>Regards,<br>Generic Platform";
 	$message .= "</body></html>";
-	
+
 	// Always set content-type when sending HTML email
 	$headers = "MIME-Version: 1.0" . "\r\n";
 	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -958,7 +986,7 @@ function sendVerificationEmail($data){
 	$message .= "$url";
 	$message .= "<br/><br/>Regards,<br>Generic Platform";
 	$message .= "</body></html>";
-	
+
 	// Always set content-type when sending HTML email
 	$headers = "MIME-Version: 1.0" . "\r\n";
 	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -1015,8 +1043,7 @@ function facebookLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-				$_SESSION['user_privilege'] = $user['user_privilege_level'];
-				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                setUserDataInSession($con,$user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1067,8 +1094,7 @@ function linkedInLogin(){
 			}
 			if($user['isActive'] == 1){
 				$_SESSION['uid'] = $user[$primaryKey];
-				$_SESSION['user_privilege'] = $user['user_privilege_level'];
-				$_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+                setUserDataInSession($con,$user);
 				$message = '';
 				$returnUrl = BASE_URL."index.php";
 			} else {
@@ -1091,12 +1117,12 @@ function importProfileFromLinkedIn(){
 	$returnUrl = BASE_URL."index.php";
 	$message = "";
 	$con = connect();
-	$query = "SELECT * FROM field_dictionary 
+	$query = "SELECT * FROM field_dictionary
 					INNER JOIN data_dictionary ON (data_dictionary.`table_alias` = field_dictionary.`table_alias`)
 					where data_dictionary.table_alias = '$display_page' ORDER BY field_dictionary.display_field_order";
 	$ddQuery = $con->query($query);
 	if($ddQuery->num_rows > 0){
-		
+
 		$data = array();
 		while($ddRecord = $ddQuery->fetch_assoc()){
 			$table = $ddRecord['database_table_name'];
@@ -1106,20 +1132,24 @@ function importProfileFromLinkedIn(){
 				case 'firstname':
 					$data[$ddRecord['generic_field_name']] = $_POST['firstName'];
 					break;
-					
+
 				case 'lastname':
 					$data[$ddRecord['generic_field_name']] = $_POST['lastName'];
 					break;
-					
+
 				case 'country':
-					$address = explode(",",$_POST['location']['name']);
-					$data[$ddRecord['generic_field_name']] = @$address[1];
+					$countryCode = strtolower($_POST['location']['country']['code']);
+					$countryDetails = file_get_contents("https://restcountries.eu/rest/v2/alpha/$countryCode");
+					$countryDetails = json_decode($countryDetails,true);
+					if(!empty($countryDetails)){
+						$data[$ddRecord['generic_field_name']] = $countryDetails['name'];
+					}
 					break;
-					
+
 				case 'about':
 					$data[$ddRecord['generic_field_name']] = $_POST['headline'];
 					break;
-					
+
 				case 'profileimage':
 					if(isset($_POST['pictureUrl']) && !empty($_POST['pictureUrl'])){
 						$content = file_get_contents($_POST['pictureUrl']);
@@ -1131,7 +1161,7 @@ function importProfileFromLinkedIn(){
 						$data[$ddRecord['generic_field_name']] = $image_name;
 					}
 					break;
-					
+
 				case 'description':
 					$data[$ddRecord['generic_field_name']] = $_POST['summary'];
 					break;
@@ -1226,7 +1256,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'login') {
 			exit();
 		}
 	} else {
-		//pr($_POST['uri']);
 		FlashMessage::add('UserName or Password Incorrect.');
 		echo "<META http-equiv='refresh' content='0;URL=" . BASE_URL_SYSTEM . "login.php'>";
 		exit();
@@ -1247,7 +1276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['action'] == 'genericlogin') 
     $value1 = $_POST[$loginKeys[0]];
 
     $value2 = $_POST[$loginKeys[1]];
-	
+
 	if(!empty($value1) && !empty($value2)){
 		$rs = $con->query("SELECT * FROM $tbl where $loginKeys[0] = '$value1' and $loginKeys[1] = '$value2' ");
 		$row = $rs->fetch_assoc();
@@ -1306,7 +1335,7 @@ function verifyEmail(){
 	} else {
 		$message = "Invalid or expired token. Please check your email or try again.";
 	}
-	
+
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}
@@ -1330,20 +1359,158 @@ function redirectToResetPassword(){
 		$layout = $itemStyle = "";
 		if(!empty($navigation)){
 			$layout = $navigation['page_layout_style'];
-			$itemStyle = $navigation['item_style'];
+			$itemStyle = $navigation['nav_css_class'];
 		}
 		$_SESSION['reset_token'] = $token;
 		$returnUrl = BASE_URL_SYSTEM."main.php?display=$display_page&layout=$layout&style=$itemStyle";
-		
 	} else {
 		$message = "Invalid or expired token. Please check your email or try again.";
 	}
-	
 	if($message){
 		echo "<script>alert('$message');</script>";
 	}
 	echo "<script>window.location='".$returnUrl."';</script>";
 }
 
+/*
+ * GET Data FD Record
+ */
+function getDataFieldRecordByDictId($dict_id){
+	$con = connect();
+	$ddFDRecord = array();
+	$ddFdQuery = $con->query("SELECT * FROM data_dictionary DD INNER JOIN field_dictionary FD ON(DD.table_alias = FD.table_alias) WHERE DD.dict_id ='$dict_id' ORDER BY FD.display_field_order");
+	if($ddFdQuery->num_rows >0){
+		while($row = $ddFdQuery->fetch_assoc()){
+			$ddFDRecord[] = $row;
+		}
+	}
+	return $ddFDRecord;
+}
+
+/*
+ * SET Base Gps Cordinate
+ */
+function setBaseGpsCordinate($dataFdRecord,$postData){
+	$base_latitude_field = $base_longitude_field = "";
+	$addressFields = array();
+	if(!empty($dataFdRecord)){
+		foreach($dataFdRecord as $fd){
+			$fd['generic_field_name'] =  trim($fd['generic_field_name']);
+			$fd['field_identifier'] =  trim(strtolower($fd['field_identifier']));
+			if($fd['field_identifier'] == 'base_latitude'){
+				$base_latitude_field = $fd['generic_field_name'];
+			} elseif($fd['field_identifier'] == 'base_longitude'){
+				$base_longitude_field = $fd['generic_field_name'];
+			} elseif($fd['field_identifier'] == 'address'){
+				$addressFields['address'] = $fd['generic_field_name'];
+			} elseif($fd['field_identifier'] == 'city'){
+				$addressFields['city'] = $fd['generic_field_name'];
+			} elseif($fd['field_identifier'] == 'state'){
+				$addressFields['state'] = $fd['generic_field_name'];
+			} elseif($fd['field_identifier'] == 'zip'){
+				$addressFields['zip'] = $fd['generic_field_name'];
+			}  elseif($fd['field_identifier'] == 'country'){
+				$addressFields['country'] = $fd['generic_field_name'];
+			}
+		}
+		if(!empty($base_latitude_field) && !empty($base_longitude_field) && !empty($addressFields)){
+			$formatedAddress = [];
+			if (array_key_exists($addressFields['address'], $postData)) {
+				$formatedAddress[] = $postData[$addressFields['address']];
+			}
+			if (array_key_exists($addressFields['city'], $postData)) {
+				$formatedAddress[] = $postData[$addressFields['city']];
+			}
+			if (array_key_exists($addressFields['zip'], $postData)) {
+				$formatedAddress[] = $postData[$addressFields['zip']];
+			}
+			if (array_key_exists($addressFields['country'], $postData)) {
+				$formatedAddress[] = $postData[$addressFields['country']];
+			}
+			$formatedAddress = array_filter($formatedAddress);
+			if(!empty($formatedAddress)){
+				$gpsCordinate = getLatLong($formatedAddress);
+				if(!empty($gpsCordinate['lat']) && !empty($gpsCordinate['lng'])){
+					if (array_key_exists($base_latitude_field, $postData)) {
+						$postData[$base_latitude_field] = $gpsCordinate['lat'];
+					}
+
+					if (array_key_exists($base_longitude_field, $postData)) {
+						$postData[$base_longitude_field] = $gpsCordinate['lng'];
+					}
+				}
+			}
+		}
+	}
+	return $postData;
+}
+
+/*
+ * calculate lat lng based on address
+ */
+function getLatLong($formatedAddress){
+	//Formatted address
+	$arr['lat'] = $arr['lng'] = "";
+
+	$formattedAddr = urlencode(implode(',',$formatedAddress));
+  $geocode=file_get_contents('https://maps.google.com/maps/api/geocode/json?address='.$formatedAddress.'&sensor=false'.'&key='.GOOGLE_GEO_API_KEY);
+  $output= json_decode($geocode);
+
+  $arr['lat'] = $output->results[0]->geometry->location->lat;
+	$arr['lng']  = $output->results[0]->geometry->location->lng;
+	//Send request and receive json data by address
+	// $url="https://maps.googleapis.com/maps/api/geocode/json?address=$formattedAddr&key=".GOOGLE_GEO_API_KEY;
+	// $curl = curl_init();
+	// curl_setopt($curl, CURLOPT_URL, $url);
+	// curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	// curl_setopt($curl, CURLOPT_HEADER, false);
+	// $geocodeFromAddr = curl_exec($curl);
+	// curl_close($curl);
+	// $output = json_decode($geocodeFromAddr);
+	// if($output->status =='OK'){
+	// 	//Get latitude and longitute from json data
+	// 	$arr['lat']  = $output->results[0]->geometry->location->lat;
+	// 	$arr['lng'] = $output->results[0]->geometry->location->lng;
+	// }
+	//Return latitude and longitude of the given address
+	return $arr;
+}
 
 
+/**
+ * a temporary method to reset user password if its reset_password flag is on
+ */
+function resetPasswordIfFlagIsSet($con){
+
+  $table = $_SESSION['update_table2']['database_table_name'];
+  $primaryKey = $_SESSION['update_table2']['keyfield'];
+
+  $query = "SELECT * FROM $table WHERE ";
+  $emailValue = trim($_POST[$_SESSION['user_field_email']]);
+  $usernameValue = trim($_POST[$_SESSION['user_field_uname']]);
+  $passValue = trim($_POST[$_SESSION['user_field_password']]);
+
+  if( (!empty($emailValue) || !empty($usernameValue) ) && !empty($passValue)){
+    $passValue = md5($passValue);
+    if($emailValue){
+      $query .= "$_SESSION[user_field_email] = '$emailValue'" ;
+    } elseif($usernameValue){
+      $query .= "$_SESSION[user_field_uname] = '$usernameValue'" ;
+    }
+  }
+  $userQuery = $con->query($query) OR $message = mysqli_error($con);
+  if($userQuery->num_rows > 0){
+    $user = $userQuery->fetch_assoc();
+    if(empty($user['password']) && ($user['reset_password'] || $user['reset_password_flag'])){
+      $data = array('password' => $passValue,'reset','reset_password'=>0,'reset_password_flag'=>0);
+      $where = array('user_id' => $user['user_id']);
+      $result = update($table,$data,$where);
+      $_SESSION['uid'] = $user[$primaryKey];
+      setUserDataInSession($con,$user);
+      return '';
+    }else{
+      return false;
+    }
+  }
+  return "Invalid Username/Email or Password";
+}

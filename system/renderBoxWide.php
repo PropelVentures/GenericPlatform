@@ -1,23 +1,23 @@
 <?php
-function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
+function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
 	$con = connect();
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
   $keyfield = firstFieldName($row['database_table_name']);
-  $table_type = trim($row['table_type']);
-  $table_name = trim($row['database_table_name']);
-  $list_fields = trim($row['list_fields']);
-  $dict_id = $row['dict_id'];
 	$style_refrence_configs = false;
 	$category_styles = false;
 	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
 	if($style_refrence_configs !== false){
 		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
 	}
+  $table_type = trim($row['table_type']);
+  $table_name = trim($row['database_table_name']);
+  $list_fields = trim($row['list_fields']);
+  $dict_id = $row['dict_id'];
 	$list_select_arr = getListSelectParams($list_select);
 	?>
-	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id="content<?php echo $tab_num; ?>">
+	<div class="boxWideContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
 		<!-- the input fields that will hold the variables we will use -->
 		<input type='hidden' class='current_page' />
 		<input type='hidden' class='show_per_page' />
@@ -35,25 +35,24 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 			if(!isset($list_pagination['totalpages']) || isset($list_pagination['totalitems'])){
 				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
 			}
-
 			while ($listRecord = $list->fetch_assoc()) {
 				$itemId = $listRecord[$row['generic_field_name']];
 				if($count > $limit){
 					break;
 				}
+
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-					continue;
+					break;
 				}
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 				$rs = $con->query($qry);
-				$boxStyleClass = '';$boxStyleCode = '';
 				if($category_styles!==false && isset($category_styles[$listRecord[$style_refrence_configs['field']]])){
 					$boxStyleClass = $category_styles[$listRecord[$style_refrence_configs['field']]]['class'];
 					$boxStyleCode = $category_styles[$listRecord[$style_refrence_configs['field']]]['code'];
 				}?>
-				<div style="<?=  $boxStyleCode.$css_style ?>" class="boxView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
-						<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
+				<div style="<?= $boxStyleCode.$css_style ?>" class="boxWide  <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
+					<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
 					if (!empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
@@ -85,7 +84,6 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 							}
 						}
 					}
-
 
 					/*
 					 * @while loop
@@ -125,13 +123,12 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					listViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					wideListViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
-				<?php
-				$count++;
+			<?php
+			$count++;
 			}
-			
 			/*
 			 *
 			 * Pagination Function goes here
@@ -146,9 +143,10 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
 				$_SESSION['popup_munu_array'][] = $popup_menu;
 			}?>
+
 			<script>
 			if (mobileDetector().any()) {
-				$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
+				$(".boxWideContainer#content<?php echo $tab_num;?>").on("taphold", '.boxWide', function (event) {
 					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
 					var xPos = event.originalEvent.touches[0].pageX;
 					var yPos = event.originalEvent.touches[0].pageY;
@@ -167,7 +165,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					});
 				});
 			} else {
-				$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
+				$(".boxWideContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxWide', function (event) {
 					popup_del = $(this).find('.list-del').attr('id');
 					dict_id = $(this).find('.list-del').attr('name');
 					//console.log(dict_id);
@@ -183,6 +181,7 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				});
 			}
 		</script>
+
 		<?php } else { ?>
 	</div>
 		<?php

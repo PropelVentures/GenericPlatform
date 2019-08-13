@@ -1,6 +1,7 @@
 <?php
 include_once("functions_loader.php");
-session_start();
+// session_start();
+start_app_session();
 
 /*
 require_once 'config.php';
@@ -74,7 +75,7 @@ if (isUserLoggedin())
                 <?php
                 if (USER_TYPES_ENABLED && USER_TYPES_SELF_SELECT)
                 {
-                  $obj = new CustomHtml;
+//                  $obj = new CustomHtml;
                   $obj->getDropDown('user_type');
                 }
                 ?>

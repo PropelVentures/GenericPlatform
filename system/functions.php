@@ -431,7 +431,7 @@ function send_mail_to($to, $subject, $message_to, $headers)
   }
 
  * ******Relationship management class@ends ******** */
- 
+
 function userHasPrivilege(){
 	//var_dump(defined("USER_PRIVILEGE"));die;
 }
@@ -440,8 +440,8 @@ function itemHasVisibility($visibility){
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
 	}
-	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) ){
-		return true;
+	if( (USER_PRIVILEGE == 'YES' && $_SESSION['user_privilege'] >= $visibility) &&  $visibility >0 || (USER_PRIVILEGE == 'NO' && $visibility > 0 ) || (!isset($_SESSION['user_privilege']) && $visibility > 0 ) ){
+    return true;
 	}
 	return false;
 }
@@ -470,7 +470,7 @@ function loginNotRequired(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-	if(!empty($navigation) && $navigation['loginRequired'] == 'false'){
+	if(!empty($navigation) && strtoupper($navigation['loginRequired']) == '2'){
 		return true;
 	}
 	return false;
@@ -480,9 +480,22 @@ function loginNotRequired(){
  * Get Nav Items according to Parent & Children
  * For all menu location & loginrequired(true or false)
  */
-function getNavItems($page,$menu_location,$loginRequired='true'){
+function getNavItems($page,$menu_location,$overRide= false){
 	$con = connect();
-	$rs = $con->query("SELECT * FROM navigation where (display_page='$page' OR display_page='ALL' ) and menu_location='$menu_location' AND nav_id>0 AND loginRequired='$loginRequired' ORDER BY item_number ASC");
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
+  }else{
+    $loginRequired=='false';
+    $notThis = '1';
+  }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where  display_page='ALL'  and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
 	$navItems = array();
 	$arr = array();
 	$i = 0;
@@ -500,95 +513,174 @@ function getNavItems($page,$menu_location,$loginRequired='true'){
 	return $navItems;
 }
 
+function getSideBarNavItems($page,$menu_location,$overRide= false){
+	$con = connect();
+
+  if(isUserLoggedin()){
+    $loginRequired = 'true';
+    $notThis = '2';
+  }else{
+    $loginRequired=='false';
+    $notThis = '1';
+  }
+  if($overRide){
+    $rs = $con->query("SELECT * FROM navigation where display_page='$page' and menu_location='$menu_location' AND item_number>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }else{
+    $rs = $con->query("SELECT * FROM navigation where  (display_page='$page' OR display_page='ALL' )  and menu_location='$menu_location' AND nav_id>0 AND loginRequired!=$notThis ORDER BY item_number ASC");
+  }
+
+	$navItems = array();
+	$arr = array();
+	$i = 0;
+	while ($row = $rs->fetch_assoc()) {
+		if(strpos($row['item_number'],".0")){
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		} elseif(strpos($row['item_number'],".")){
+			$navItems[floor($row['item_number'])]['children'][] = $row;
+		} else {
+			$row['children'] = array();
+			$navItems[floor($row['item_number'])] = $row;
+		}
+	}
+	return $navItems;
+}
+
+
 /* TO DO//
- * Generate Top Nav Items 
+ * Generate Top Nav Items
  * For all menu location & loginrequired(true or false)
  */
 function generateTopNavigation($navItems,$loginRequired){
+  $isUserLoggedIn = true;
+  if(isset($_SESSION['user_privilege'])){
+    $currentUserPrivilege = $_SESSION['user_privilege'];
+  }else{
+    $isUserLoggedIn = false;
+    $currentUserPrivilege = 0;
+  }
 	$menu = '';
+
+    echo '<style>
+        .disabled_nav {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+    }
+    </style>';
+
 	if(!empty($navItems)){
 		foreach($navItems as $parent){
-			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
+			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id']) || $parent['item_number']==0)){
 				continue;
 			}
-			$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+      $label = dislayUserNameSelector($parent['item_label']);
 			$title = $parent['item_help'];
-			$item_style = $parent['item_style'];
-			$item_icon = getNavItemIcon($parent['item_icon']);
+			$item_style = $parent['nav_css_class'];
+      $nav_css_code = $parent['nav_css_code'];
+			$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 			$navTarget = getNavTarget($parent);
 			$target = $navTarget['target'];
 			$enable_class=$navTarget['enable_class'];
 			$target_blank = $navTarget['target_blank'];
+      $disable = '';
+      if($currentUserPrivilege < $parent['item_privilege'] ){
+        $disable ='disabled_nav';
+      }
 			if(!empty($parent['children'])){
-				
+
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						case "#space#":
-						$menu.="<li >
+						$menu.="<li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 									<span class='caret'></span>
 								</li>
 								<ul class='dropdown-menu'>";
 						break;
 						default:
-						$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
-								<a href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
+						$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
+								<a class='$item_style' style='$nav_css_code' href='#' class='dropdown-toggle' data-toggle='dropdown' title='$title'>
 									".$item_icon.getSaperator($label)."
 									<span class='caret'></span>
 								</a>
 								<ul class='dropdown-menu'>";
 						break;
 					}
-				
+
 				foreach($parent['children'] as $children){
 					if($loginRequired && !itemHasVisibility($children['item_visibility'])){
 						continue;
 					}
-					$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+					$label = dislayUserNameSelector($children['item_label']);
 					$title = $children['item_help'];
-					$item_style = $children['item_style'];
-					$item_icon = getNavItemIcon($children['item_icon']);
+					$item_style = $children['nav_css_class'];
+          $nav_css_code = $children['nav_css_code'];
+					$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 					$navTarget = getNavTarget($children);
 					$target = $navTarget['target'];
 					$enable_class=$navTarget['enable_class'];
 					$target_blank = $navTarget['target_blank'];
+          $disable_child = '';
+          if($currentUserPrivilege < $children['item_privilege'] && $isUserLoggedIn){
+            $disable_child ='disabled_nav';
+          }
 					#$label=$label.'#line#';
 					switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class' id='$item_style'>
-									<a $target_blank href='$target' title='$title'>".
+						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
+									<a onClick=urlVariables(this) class='$disable_child $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>".
 										$item_icon.
 										getSaperator($label)."
 									</a>
-								</li>";
+								</li>
+                <script>
+                                function urlVariables(e){
+                                  var target = $(e).data('link');
+                                  if(target != '' && target != null){
+                                    if (!e) e = window.event;
+
+                                    if (!e.ctrlKey) {
+                                      $.ajax({
+                                          method: 'GET',
+                                          url: 'ajax-actions.php',
+                                          data:{ values_to_unset: 'abc' }
+                                      })
+                                      .done(function (msg) {
+                                          window.location = target;
+                                      });
+                                    }
+                                  }
+                                }
+                                </script>";
 						break;
 					}
 				}
@@ -596,26 +688,46 @@ function generateTopNavigation($navItems,$loginRequired){
 			} else {
 				switch(strtolower($label)){
 						case "#line#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='saperator_line'></div>
 								</li>";
 						break;
 						case "#break#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<br/>
 								</li>";
 						break;
 						case "#space#":
-						$menu.=" <li >
+						$menu.=" <li class='nav_item $item_style' style='$nav_css_code'>
 									<div class='margin_bottom_list'></div>
 								</li>";
 						break;
 						default:
-						$menu.="<li class='$enable_class' id='$sub_item_style'>
-									<a $target_blank href='$target' title='$title'>
+						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
+									<a onClick=urlVariables(this) class='$disable $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>
 										".$item_icon.getSaperator($label)."
 									</a>
-								</li>";
+								</li>
+                                <script>
+                                function urlVariables(e){
+                                  var target = $(e).data('link');
+                                  if(target != '' && target != null){
+                                    if (!e) e = window.event;
+
+                                    if (!e.ctrlKey) {
+                                      $.ajax({
+                                          method: 'GET',
+                                          url: 'ajax-actions.php',
+                                          data:{ values_to_unset: 'abc' }
+                                      })
+                                      .done(function (msg) {
+                                          window.location = target;
+                                      });
+                                    }
+                                  }
+                                }
+                                </script>
+                                ";
 						break;
 					}
 			}
@@ -630,13 +742,14 @@ function generateTopNavigation($navItems,$loginRequired){
  */
 function generateSideBarNavigation($navItems,$menu){
 	foreach($navItems as $parent){
-		if($parent['loginRequired']== 'true' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
+		if(strtoupper($parent['loginRequired'])== '1' && !itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])){
 			continue;
 		}
-		$label = ucwords($parent['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $parent['item_label']);
+		$label = dislayUserNameSelector($parent['item_label']);
 		$title = $parent['item_help'];
-		$item_style = $parent['item_style'];
-		$item_icon = getNavItemIcon($parent['item_icon']);
+		$item_style = $parent['nav_css_class'];
+    $nav_css_code = $parent['nav_css_code'];
+		$item_icon = getNavItemIcon($parent['item_icon'],$item_style,$nav_css_code);
 		$navTarget = getNavTarget($parent);
 		$target = $navTarget['target'];
 		$enable_class=$navTarget['enable_class'];
@@ -662,7 +775,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class dropdown newone' id='$item_style'>
+				$menu.="<li class='$enable_class dropdown nav_item $item_style' style='$nav_css_code'>
 						<a href='#nav_".$parent['nav_id']."' class='dropdown-toggle' data-toggle='collapse' title='$title'>
 							".$item_icon.getSaperator($label)."
 							<span class='caret'></span>
@@ -672,15 +785,16 @@ function generateSideBarNavigation($navItems,$menu){
 			$menu .= "<div id='nav_".$parent['nav_id']."' class='panel-collapse collapse'>
 							<div class='panel-body'>
 								<ul class='nav navbar-nav'>";
-			
+
 			foreach($parent['children'] as $children){
-				if($children['loginRequired']== 'true' && !itemHasVisibility($children['item_visibility'])){
+				if($children['loginRequired']== '1' && !itemHasVisibility($children['item_visibility'])){
 					continue;
 				}
-				$label = ucwords($children['item_label'] =='CURRENTUSERNAME' ?  $_SESSION['uname'] : $children['item_label']);
+				$label = dislayUserNameSelector($children['item_label']);
 				$title = $children['item_help'];
-				$item_style = $children['item_style'];
-				$item_icon = getNavItemIcon($children['item_icon']);
+				$item_style = $children['nav_css_class'];
+        $nav_css_code = $children['nav_css_code'];
+				$item_icon = getNavItemIcon($children['item_icon'],$item_style,$nav_css_code);
 				$navTarget = getNavTarget($children);
 				$target = $navTarget['target'];
 				$enable_class=$navTarget['enable_class'];
@@ -703,7 +817,7 @@ function generateSideBarNavigation($navItems,$menu){
 							</li>";
 					break;
 					default:
-					$menu.="<li class='$enable_class' id='$item_style'>
+					$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 								<a $target_blank href='$target' title='$title'>".
 									$item_icon.
 									getSaperator($label)."
@@ -731,7 +845,7 @@ function generateSideBarNavigation($navItems,$menu){
 						</li>";
 				break;
 				default:
-				$menu.="<li class='$enable_class' id='$item_style'>
+				$menu.="<li class='$enable_class $item_style' style='$nav_css_code'>
 							<a $target_blank href='$target' title='$title'>
 								".$item_icon.getSaperator($label)."
 							</a>
@@ -749,8 +863,7 @@ function navHasVisibility(){
 	$display_page = $_GET['display'];
 	$nav = $con->query("SELECT * FROM navigation WHERE target_display_page='$display_page' LIMIT 1") or die($con->error);
 	$navigation = $nav->fetch_assoc();
-	
-	if(empty($navigation) || $navigation['loginRequired'] == 'false'){
+	if(empty($navigation) || $navigation['loginRequired'] == '2'){
 		return true;
 	}
 	return itemHasVisibility($navigation['item_visibility']);
@@ -765,13 +878,14 @@ function itemHasEnable($enable){
 	}
 	return false;
 }
+
 function getSaperator($label=''){
 	$hash_start=strpos($label,'#');
 	$hash_end=strpos($label,'#',$hash_start+1);
 	$saperator_name = "";
 	if(!empty($hash_start) && !empty($hash_end)){
 		$saperator_name=substr($label,$hash_start+1,$hash_end-$hash_start-1);
-	} 
+	}
 	switch($saperator_name){
 		case "line":
 			$label=str_replace("#$saperator_name#","<div class='saperator_line'></div>",$label);
@@ -793,10 +907,10 @@ function getSaperator($label=''){
 			break;
 	}
 	return $label;
-	
+
 	/* if(!empty($hash_start) && !empty($hash_end)){
 		$saperator_name=substr($label,$hash_start+1,$hash_end-$hash_start-1);
-	} 
+	}
 	switch(strtolower($saperator_name)){
 		case "line":
 			$html_saperator="<div class='saperator_li'></div>";
@@ -817,10 +931,10 @@ function getSaperator($label=''){
 
 function getNavTarget($row){
 	$target_blank = "";
-	if($row['loginRequired'] == 'true' && !itemHasPrivilege($row['item_privilege'])){
+	if($row['loginRequired'] == '1' && !itemHasPrivilege($row['item_privilege'])){
 		$target = "javascript:void(0);";
 		$enable_class = "disabled ";
-	}else if($row['loginRequired'] == 'true' && !itemHasEnable($row['enabled']) ){
+	}else if($row['loginRequired'] == '1' && !itemHasEnable($row['enabled']) ){
 		$target = "javascript:void(0);";
 		$enable_class = "disabled ";
 	} else {
@@ -841,7 +955,7 @@ function getNavTarget($row){
 			$target = BASE_URL_SYSTEM . $item_target . "?display=" . $row['target_display_page'] . "&layout=" . $row['page_layout_style'] . "&style=" . $row['page_layout_style'];
 		}
 	}
-	
+
 	return [
 		'target' => $target,
 		'target_blank' => $target_blank,
@@ -849,15 +963,19 @@ function getNavTarget($row){
 	];
 }
 
-function getNavItemIcon($item_icon){
+function getNavItemIcon($item_icon,$class,$style){
 	if(empty($item_icon)){
 		return "";
-	}
+	}elseif(strtoupper($item_icon)=='#CURRENT-USER-PROFILE-IMAGE'){
+    //     return  "<img width='16' height='16' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+
+    return  "<img class='$class' style='$style' src='".USER_UPLOADS.$_SESSION['current-user-profile-image']."'>  ";
+  }
 	if(file_exists($GLOBALS['APP_DIR']."system/system_images/".$item_icon)){
-		return "<img src='".BASE_IMAGES_URL.$item_icon."'>  ";
+		return "<img class='$class' style='$style' src='".BASE_IMAGES_URL.$item_icon."'>  ";
 	}
 	return "";
-	
+
 }
 
 function getDDUrl($list_select){
@@ -865,9 +983,9 @@ function getDDUrl($list_select){
 	if (empty($list_select)) {
 		return "";
 	}
-	// Remove all illegal characters from a url
+	 // Remove all illegal characters from a url
 	$list_select = filter_var($list_select, FILTER_SANITIZE_URL);
-	// If Url is valid then et target as defined in DB
+	 // If Url is valid then et target as defined in DB
 	if (filter_var($list_select, FILTER_VALIDATE_URL)) {
 		return $list_select;
 	} else {
@@ -880,7 +998,7 @@ function getDDUrl($list_select){
 			if($nav->num_rows > 0){
 				$navRecord = $nav->fetch_assoc();
 				$layout = $navRecord['page_layout_style'];
-				$itemStyle = $navRecord['item_style'];
+				$itemStyle = $navRecord['nav_css_class'];
 			}
 			return BASE_URL_SYSTEM ."main.php?display=" . $ddRecord['display_page'] . "&layout=$layout&style=$itemStyle";
 		}
@@ -925,17 +1043,28 @@ function parseListExtraOption($listExtraOptions,$inPx=false){
 	return [$height,$width,$align,$divClass];
 }
 
-function getSliderImages($description){
+function getSliderImages($description,$dict_id){
 	$description =  trim($description);
 	if(empty($description)){
 		return array();
 	}
+  $counter = 0;
 	$sliders = array();
 	$images = explode(';',$description);
 	foreach($images as $image){
-		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$image)){
-			$sliders[] = BASE_URL_APP."banner-images/".$image;
-		}
+    if(!empty(trim($image))){
+      $configs = explode(',',$image);
+      $portion = [];
+  		if(file_exists($GLOBALS['APP_DIR']."application/banner-images/".$configs[0])){
+        $portion['image'] = BASE_URL_APP."banner-images/".$configs[0];
+        $portion['id'] = 'slider_'.$dict_id.'_'.$counter;
+        $counter++;
+  		}
+      if(!empty($configs[1])){
+        $portion['url'] = $configs[1];
+      }
+      $sliders[] = $portion;
+    }
 	}
 	return $sliders;
 }
@@ -979,5 +1108,263 @@ function getIframeUrl($description){
 	} else {
 		return "";
 	}
+}
+
+/**
+ * This method is to chose in nave-bar that how to show user name in nav bar
+ */
+function dislayUserNameSelector($selector){
+  $tempSelector = strtoupper($selector);
+  if($tempSelector=='#CURRENT-USERNAME'){
+    return $_SESSION['current-username'];
+  }elseif($tempSelector=='#CURRENT-USER-FIRSTNAME'){
+    return $_SESSION['current-user-firstname'];
+  }elseif($tempSelector=='#CURRENT-USER-FIRST-LASTNAME'){
+    return $_SESSION['current-user-first-lastname'];
+  }else{
+    return $selector;
+  }
+}
+
+function setUserDataInSession($con,$user){
+    $name = 'uname';
+    $userNameQuery = "SELECT * FROM field_dictionary WHERE field_identifier='username'";
+      $fieldQuery = $con->query($userNameQuery) OR $message = mysqli_error($con);
+      if($fieldQuery->num_rows > 0){
+        $field = $fieldQuery->fetch_assoc();
+        $name = $field['generic_field_name'];
+      }
+    $_SESSION['user_privilege'] = $user['user_privilege_level'];
+    $_SESSION['uname'] = $user[$_SESSION['user_field_email']];
+    $_SESSION['current-username'] = $user[$name];
+    $_SESSION['current-user-email'] = $user['email'];
+    $_SESSION['current-user-firstname'] = $user['firstname'];
+    $_SESSION['current-user-first-lastname'] = $user['firstname'].' '.$user['lastname'];
+    $_SESSION['current-user-profile-image'] = $user['image'];
+}
+
+function log_event($display_page,$action,$senderId=false,$reciverId=false){
+  if(EVENT_LOGGING_ON !=='ON'){
+    return;
+  }
+  $action = strtoupper(trim($action));
+  $event_log_code = get('event_log_codes',"event_name='$action'");
+  $event_action_default = false;
+  $event_notification_alert_type_default = false;
+  if(!empty($event_log_code)){
+    $event_action_default = $event_log_code['event_action_default'];
+    $event_notification_alert_type_default = $event_log_code['event_notification_alert_type_default'];
+  }
+
+  if($senderId!== false){
+    $userId = $senderId;
+    $targetUserId = $reciverId;
+  }else{
+    $userId = $_SESSION['uid'];
+    $targetUserId = $_SESSION['uid'];
+  }
+  if($event_action_default && $event_action_default>0){
+    $data = [];
+    $data['display_page'] = $display_page;
+    $data['action_taken'] = $action;
+    $data['user_id'] = $userId;
+    $data['target_user_id'] = $targetUserId;
+    $data['event_log_code'] = $event_log_code['event_log_code_id'];
+    $data['notification_type'] = $event_notification_alert_type_default;
+    $log_id =insert('event_log',$data);
+    log_notification($event_notification_alert_type_default,$display_page,$action,$userId,$targetUserId);
+  }
+}
+
+function log_notification($type,$displayPage,$action,$senderId,$reciverId){
+  if(NOTIFICATION_ALERTS_ON !=='ON'){
+    return;
+  }
+  $data = [];
+  $data['notification_type'] = $type;
+  $data['user_id'] = $senderId;
+  $data['target_user_id'] = $reciverId;
+  $data['response_type'] = 0;
+  $data['alert_type'] = 0;
+  $notif_id = insert('notification_log',$data);
+  if($type>1){
+    send_notification_alert($type,$displayPage,$action,$senderId,$reciverId);
+  }
+}
+
+function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId){
+  if($type=='2'){
+    sendEmailNotification($displayPage,$action,$senderId,$reciverId);
+  }else if($type=='3'){
+    //push notification
+  }
+}
+
+function sendEmailNotification($page,$action,$senderId,$reciverId){
+  $sender = getUserData($senderId);
+  $reciver = getUserData($reciverId);
+	$to = $reciver['email'];
+	$subject = "Action Notification | Generic Platform";
+	$message = "<html><head><title>Notification</title></head><body>";
+	$message .= "Hi ".$reciver['name'].",<br/>";
+  $message .= "An Action '".$action."' has occured at '".$page."' page";
+  if($senderId != $reciverId){
+    $message .=" by ".$sender['name'].".";
+  }
+  $message .= "<br/>";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
+
+function sendMessageAsEmail($to,$messageText){
+	$subject = "Message Notification | Generic Platform";
+	$message = "<html><head><title>Message</title></head><body>";
+	$message .= "Hi,<br/>";
+  $message .= "User ".$_SESSION['current-user-first-lastname']." send you you a message.which is : <br> ".$messageText." <br/>";
+	$message .= "<br/><br/>Regards,<br>Generic Platform";
+	$message .= "</body></html>";
+	// Always set content-type when sending HTML email
+	$headers = "MIME-Version: 1.0" . "\r\n";
+	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+	// More headers
+	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+	try{
+		$sent = mail($to,$subject,$message,$headers);
+		if($sent){
+			return true;
+		}
+		return "Unable to send email";
+	} catch(Exception $e){
+		return $e->getMessage();
+	}
+}
+
+function sendMessageAndAddLog(){
+  $reciverId = $_GET['reciverid'];
+  $table = $_GET['table'];
+  $message = trim($_GET['message']);
+  $user = get("user","user_id='$reciverId'");
+  $email = trim($user['email']);
+  sendMessageAsEmail($email,$message);
+  $data= [];
+  $data['sender'] = $_SESSION['uid'];
+  $data['reciver'] = $reciverId;
+  $data['message'] = $message;
+  insert($table,$data);
+}
+
+function getUserData($userId){
+  $userData = [];
+  if($userId==$_SESSION['uid']){
+    $userData['id'] = $_SESSION['uid'];
+    $userData['email'] = $_SESSION['current-user-email'];
+    $userData['name'] = $_SESSION['current-user-first-lastname'];
+  }else{
+    $data = get('user',"user_id='$userId'");
+    $userData['id'] =$data['user_id'];
+    $userData['email'] = $data['email'];
+    $userData['name'] = $data['firstname'].' '.$data['lastname'];
+  }
+  return $userData;
+}
+
+function getSliderInterval($extra_options){
+  if(strpos($extra_options,'slider_delay') !== false){
+     $all_options = explode(";", trim($extra_options));
+     foreach ($all_options as $key => $option) {
+       if(strpos($option,'slider_delay') !==false){
+         $configs = explode(":",trim($option));
+         if(trim($configs[0])=='slider_delay' && !empty(trim($configs[1]))){
+           $result = (double)(trim($configs[1]));
+           return $result*1000;
+         }
+       }
+     }
+  }
+  return 3000;
+}
+function setBoxStyles($listExtraOptions){
+  $dataSet = [];
+  if(strpos($listExtraOptions,'boxstyles')!==false){
+    $category_styles = trim(get_string_between($listExtraOptions,'boxstyles[',']'));
+    if(!empty($category_styles)){
+      $categories =   explode(',',$category_styles);
+      if(!empty(trim($categories[0])) && !empty(trim($categories[1]))){
+        $dataSet['table'] = trim($categories[0]);
+        $dataSet['field'] = trim($categories[1]);
+        return $dataSet;
+      }
+    }
+  }
+  return false;
+}
+
+function issetStyleForBox($array,$filter){
+  if(isset($array[$filter]) && !is_null($array[$filter])  && !empty($array[$filter])){
+    return $filter.':'.$array[$filter].';';
+  }
+  return '';
+}
+
+function fetchStyleConfigs($category_styles){
+  $category_styles  = trim($category_styles);
+  $dataSet = [];
+  if(empty($category_styles)){
+    return false;
+  }
+  $categories =   explode(',',$category_styles);
+  if(empty(trim($categories[0])) ||  empty(trim($categories[1]))){
+    return false;
+  }
+  $dataSet['table'] = trim($categories[0]);
+  $dataSet['field'] = trim($categories[1]);
+  return $dataSet;
+}
+function findAndSetCategoryStyles($con,$category_styles){
+  $style_table = trim($category_styles['table']);
+  $style_refrence_id = trim($category_styles['field']);
+  $allStyles = $con->query("SELECT * FROM $style_table");
+
+	while ($style = $allStyles->fetch_assoc()) {
+    $dataSet[$style[$style_refrence_id]]['class'] =$style['css_class'];
+    $dataSet[$style[$style_refrence_id]]['code'] =$style['css_code'];
+    $dataSet[$style[$style_refrence_id]]['icon'] =$style['map_icon'];
+  }
+  return $dataSet;
+}
+function getListSortingValue($list_sort){
+  $field_lists = explode(';',$list_sort);
+  $field_str = '';
+  foreach ($field_lists as $key => $value) {
+      if(strpos($value,'~') !==false){
+          $value = str_replace('~', '', $value);
+          if($key==0){
+              $field_str .= $value.' DESC'; 
+          }else{
+              $field_str .= ','.$value.' DESC'; 
+          }
+      }else{
+          if($key==0){
+              $field_str .= $value; 
+          }else{
+              $field_str .= ','.$value; 
+          }
+      }
+  }
+  return $field_str;
 }
 ?>

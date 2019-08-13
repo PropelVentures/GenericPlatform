@@ -87,8 +87,12 @@ function delete($table, $where) {
 function updateString($data) {
     $i = array();
     foreach ($data as $key => $value) {
+          //5.4.202 trimiing spaces
+        // trimSpacesAroundSepraters($value,',');
+        // trimSpacesAroundSepraters($value,';',',');
         $i[] = "$key = '$value'";
     }
+
     return implode(", ", $i);
 }
 
@@ -100,14 +104,13 @@ function whereString($data) {
     return implode(" AND ", $w);
 }
 
-function getWhere($table, $where = "false", $order = "") {
+function getWhere($table, $where = "false", $order = "",$setwhereString = true) {
 
     if ($where != 'false') {
-        $ws = whereString($where);
-
-        //exit("SELECT * FROM $table WHERE $ws $order");
-
-        $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $ws $order");
+      if($setwhereString){
+        $where = whereString($where);
+      }
+        $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $where $order");
     } else {
 
         $result = mysqli_query(connect(), "SELECT * FROM $table $order");
@@ -140,7 +143,6 @@ function getMulti($table, $ws, $field='false') {
     while ($row = mysqli_fetch_assoc($result)) {
         $r[] = $row;
     }
-
     return $r;
 }
 
@@ -198,6 +200,30 @@ function firstFieldName($tableName) {
     $row = mysqli_fetch_assoc($res);
 
     return $row['Field'];
+}
+
+/*
+ * ****
+ * ************************
+ * ************************
+ *
+ * @function getColumnNamee
+ *
+ * ********
+ * *************
+ * ******************************************
+ */
+
+function getColumnNames($tableName) {
+    $con = connect();
+    $res = $con->query("SHOW COLUMNS FROM $tableName");
+	$data = array();
+	if($res->num_rows){
+		while($row = $res->fetch_assoc()){
+			$data[$row['Field']] = $row['Field'];
+		}
+	}
+    return $data;
 }
 
 function nextKey($tblName, $pkey, $current_id, $clause) {
@@ -275,7 +301,7 @@ function lastKey($tblName, $pkey, $clause) {
 
 /**
  * secure
- * 
+ *
  * @param string $value
  * @param string $type
  * @param boolean $quoted
@@ -306,8 +332,8 @@ function secure($value, $type = "", $quoted = true) {
                 } else {
                     $value = (!is_empty($value))? "'%%".$value."%%'" : "''";
                 }
-                break; 
-				
+                break;
+
 			case 'NULL':
                 $value = NULL;
                 break;
@@ -321,7 +347,7 @@ function secure($value, $type = "", $quoted = true) {
 
 /**
  * is_empty
- * 
+ *
  * @param string $value
  * @return boolean
  */
@@ -340,7 +366,7 @@ function is_empty($value) {
 
 /**
  * set_datetime
- * 
+ *
  * @param string $date
  * @return string
  */
@@ -351,7 +377,7 @@ function set_datetime($date) {
 
 /**
  * get_datetime
- * 
+ *
  * @param string $date
  * @return string
  */
@@ -370,7 +396,32 @@ $con = connect();
 //
 //print_r($uname);
 
+/**
+ * took a string by reference and a $separator and parse it such that if there are extra spaces around that $separator
+ *it trims out those spaces like width=5px ; height=10px   ;  it will become width=5px;height=10px;
+ */
+function trimSpacesAroundSepraters(&$string, $separator,$unsetIfRaw = false){
+  if(!empty($string) && is_string($string)){
+    $parts = explode($separator, $string);
+    if(count($parts)> 1){
+      $string = '';
+      foreach ($parts as $key => $value) {
+        if(!empty($value)){
+          if($value!==$unsetIfRaw){
+            $string = $string.trim($value).$separator;
+          }
+        }
+      }
+    }
+  }
+}
 
-
+function unsetExtraRows(&$data){
+  foreach ($data as $key => $value) {
+    if(is_numeric($key)){
+      unset($data[$key]);
+    }
+  }
+}
 
 ?>

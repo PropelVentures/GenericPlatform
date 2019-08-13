@@ -1,22 +1,21 @@
 <?php
 
 /*
- * 
+ *
  * function get_single_record($db_name, $pkey, $search) {
  * ***********
- * 
+ *
  * function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false')
- * 
+ *
  * **********************
  * **********************************
- * 
+ *
  * function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit = 'false', $fields = 'false')
  * ****
  * ***********************8
  */
 
 function get_single_record($db_name, $pkey, $search) {
-
 
     $_SESSION['update_table']['search'] = $search;
 
@@ -29,12 +28,12 @@ function get_single_record($db_name, $pkey, $search) {
 		return $user->fetch_assoc();
 	}
 	return array();
-    
+
 }
 
 /**
  * Get multi records for list display
- * 
+ *
  * @param type $db_name
  * @param type $pkey
  * @param type $search
@@ -43,38 +42,27 @@ function get_single_record($db_name, $pkey, $search) {
  * @param type $listCheck
  * @return type
  */
-function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false') {
-
-//echo "<font color=red>\$db_name:$db_name, \$pkey:$pkey, \$search:$search, \$listFilter:$listFilter, \$singleSort:$singleSort, \$listCheck:$listCheck</font><br>";
-//echo "<pre>";
-//print_r(USER_TABLETYPE);
-//echo "</pre>";
-
+function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false',&$isExistFilter,&$isExistField) {
     $_SESSION['update_table']['search'] = $search;
-
-
     $con = connect();
 
-// exit(" db=$db_name, keyfield = $pkey, search_id = $search, list_filter = $listFilter, single_sort = $singleSort, listCheck = $listCheck");
-
-
     if ($listFilter != 'false')
-        $clause = listFilter($listFilter, $search);
-
-//    echo "\$clause:$clause<br>";die;
+        $clause = listFilter($listFilter, $search,$isExistFilter,$isExistField);
 
     // exit("select * from $db_name $clause");
+    if (!empty(trim($clause))){
+      $clause ='WHERE ' . $clause;
+    }
 
-    if (!empty($clause))
-        $clause = 'WHERE ' . $clause;
-
-//    echo ("SELECT * FROM $db_name $clause");
-
-    $user = $con->query("SELECT * FROM $db_name $clause");
-
-
-//exit("select * from $db_name where $pkey=$search order by $singleSort");
-
+    if($singleSort !=='false'){
+      $temp = strtoupper($singleSort);
+      if($temp==='RANDOM'){
+        $clause = $clause .' order by rand()';
+      }else{
+        $clause = $clause .' order by '.$singleSort;
+      }
+    }
+    $user = $con->query("SELECT * FROM $db_name $clause ");
     return $user;
 }
 
@@ -84,9 +72,9 @@ function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit 
     $con = connect();
 
 
-
+    $isExistFilter;$isExistField;
     if ($listFilter != 'false')
-        $clause = listFilter($listFilter, $search);
+        $clause = listFilter($listFilter, $search,$isExistFilter,$isExistField);
 
 
     // exit("select * from $db_name $clause");
@@ -95,10 +83,10 @@ function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit 
         $clause = 'where ' . $clause;
 
     // exit("select * from $db_name $clause");
-    
+
     if(!$fields)
         $fields = "*";
-    
+
     if ($limit)
         $user = $con->query("select $fields from $db_name $clause limit 0, $limit");
     else

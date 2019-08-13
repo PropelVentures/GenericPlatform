@@ -1,7 +1,13 @@
 <?php
+
 	require_once("functions_loader.php");
 	include("header.php");
+
 	$display_page = $_GET['display'];
+
+	//log event
+	log_event($_GET['display'],'page view');
+
 	$page_layout_style = $_GET['layout'];
 	$style = $_GET['style'];
 	if (isset($_GET['tab']) || !empty($_GET['tab'])) {
@@ -10,17 +16,33 @@
 		$_SESSION['tab'] = '';
 		unset($_SESSION['tab']);
 	}
+	unset($_SESSION['popup_munu_array']);
 	//echo($_SESSION['return_url']) . "<br>";
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
-	Navigation($display_page);
+
+	?>
+	
+	<div class="navbar navbar-default navbar-fixed-top">
+		<?php 
+			Navigation($display_page,'header');
+			Navigation($display_page,'header2');
+		?>
+
+	</div>
+	<?php 
+
+	$haveParalax = false;
+	ShowTableTypeParallaxBanner($display_page,$haveParalax);
+
 	//////////////
 	if ($display_page == 'home') {
 		include("../system/home-slider.php");
 	}
+
 ?>
 <div class="container main-content-container">
-	<?php 
+	<?php
 		/* CHECKING NAV HAS VISIBILITY  START*/
 		if(navHasVisibility()){ ?>
 		<!-- Left sidebar content Area -->
@@ -29,11 +51,17 @@
 				* Finding page layout by DD->tab_num
 			*/
 			$con = connect();
+			$cond = 'display_page="'.$display_page.'"';
+			$rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
+			$list_sort = '';
+			while ($row1 = $rsList->fetch_assoc()) {
+				$list_sort = $row1['list_sort'];
+			}
+			Get_Data_FieldDictionary_Record('above',$_SESSION['tab'], $display_page, 'true');
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 			$right_sidebar = $left_sidebar = '';
 			$left_sidebar_width = $right_sidebar_width = 0;
 			while ($row = $rs->fetch_assoc()) {
-				//pr($row);
 				$r1 = explode('w', trim($row['tab_num']));
 				if (!empty($r1[1])) {
 					if ($r1[0] == 'R1')
@@ -49,13 +77,13 @@
 				}
 			}
 			/* Nav Body-Left or Body-right Code Start*/
-			$navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='true' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+			$navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
 			if($navBodyLeftQuery->num_rows){
 				if($left_sidebar ==''){
 					$left_sidebar = 'left';
 				}
 			}
-			$navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='true' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+			$navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
 			if($navBodyRightQuery->num_rows){
 				if($right_sidebar ==''){
 					$right_sidebar = 'right';
@@ -79,78 +107,139 @@
 			if ($left_sidebar == 'left' && $right_sidebar == 'right') {
 				$both_sidebar = 'both';
 			}
+
 			/*
-				* left sidebar code
+			 * Check If middle content exist
+			 * If not exist then check the width of aone and asign the other
+			 * or if width not exist then divide 50% each
+			 */
+			$middleContentExist = true;
+			$checkMiddleContentQuery = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'  and tab_num REGEXP '^[0-9]+$' AND tab_num >'0'");
+			if($checkMiddleContentQuery->num_rows == 0 ){
+				$middleContentExist = false;
+				if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					// do nothing
+				} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+					$left_sidebar_width = 100 - $right_sidebar_width;
+				} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$right_sidebar_width = 100 - $left_sidebar_width;
+				} else {
+					if ($both_sidebar == 'both') {
+						$left_sidebar_width = $right_sidebar_width = 50;
+					} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+						$left_sidebar_width = $right_sidebar_width = 50;
+					} else {
+						$left_sidebar_width = $right_sidebar_width = 0;
+					}
+				}
+			}
+
+			/*
+			* left sidebar code
 			*/
-			sidebar($left_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
+			sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
 			/*
 				* displaying tab area
 			*/
 			// $total_width = 0;
 			if ($_GET['child_list_active'] == 'isSet')
 			echo "<a href='#' class='goBackToParent'>click me</a>";
-			if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-				$total_width = 100 - ( $right_sidebar_width + $left_sidebar );
-				echo "<div class='center-container' style='width:$total_width%;float:left;' >";
-			} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
-				$total_width = 100 - $right_sidebar_width;
-				echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
-			} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
-				$total_width = 100 - $left_sidebar;
-				echo "<div class='center-container' style='width:$total_width%;float:left;'>";
-			} else {
-				if ($both_sidebar == 'both') {
-					echo "<div class='col-lg-8 center-container'>";
-				} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
-					echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
+
+			if($middleContentExist){
+				if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$total_width = 100 - ( $right_sidebar_width + $left_sidebar_width );
+					echo "<div class='center-container' style='width:$total_width%;float:left;' >";
+				} else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+					$total_width = 100 - $right_sidebar_width;
+					echo "<div class='center-container content-manual' style='width:$total_width%;float:left;'>";
+				} else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+					$total_width = 100 - $left_sidebar_width;
+					echo "<div class='center-container' style='width:$total_width%;float:left;'>";
 				} else {
-					echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
+					if ($both_sidebar == 'both') {
+						echo "<div class='col-lg-8 center-container'>";
+					} else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+						echo "<div class='col-9 col-sm-9 col-lg-9 center-container' >";
+					} else {
+						echo "<div class='col-12 col-sm-12 col-lg-12 center-container'>";
+					}
 				}
 			}
+
 			//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 		<!-- Tab Content area .. -->
 		<?php
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
 				serial_layout($display_page, $style);
+
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
-					/* Side Bar Navigation Start*/ 
-					GetSideBarNavigation($display_page,'body-center');
-					/* Side Bar Navigation End*/ 
-					/* Tab Navigation Start*/ 
+					/* Side Bar Navigation Start*/
+
+					 GetSideBarNavigation($display_page,'body-center');
+					/* Side Bar Navigation End*/
+					fffr_icons($display_page);
+
+					headersAndSubHeaders($display_page);
+
+					/* Tab Navigation Start*/
 					Get_Tab_Links($display_page,'center');
-					/* Tab Navigation End*/ 
-					Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
+					/* Tab Navigation End*/
+					if($middleContentExist){
+						// renderHeadersAndSubheaders($display_page);
+						if($list_sort!=''){
+							$field_str = getListSortingValue($list_sort);
+							$field_str = rtrim($field_str,',');
+						}else{
+							$field_str = 'tab_num';
+						}
+						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status,'false','true',$field_str);
+					}
 				} else {
+
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
-					/* Side Bar Navigation Start*/ 
+					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
-					/* Side Bar Navigation End*/ 
+					/* Side Bar Navigation End*/
+					fffr_icons($display_page);
+
+					headersAndSubHeaders($display_page);
+
 					echo Get_Links($display_page);
 					global $tab;
 					$tab_status = 'false';
-					if (isset($_SESSION['tab'])) {
-						Get_Data_FieldDictionary_Record($_SESSION['tab'], $display_page, $tab_status);
-					} else {
-						Get_Data_FieldDictionary_Record($tab, $display_page, $tab_status);
-					}
+					if($middleContentExist){
+						// renderHeadersAndSubheaders($display_page);
+						if (isset($_SESSION['tab'])) {
+
+							Get_Data_FieldDictionary_Record('',$_SESSION['tab'], $display_page, $tab_status);
+						} else {
+
+							Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
+						}
+						}
 				}/// tab_num else ends here
 			}//// page_layout
+
+
+
 		?>
-		<div style="clear:both"></div>
+	<?php if($middleContentExist){ ?>
+	<div style="clear:both"></div>
 	</div>
+	<?php } ?>
 	<!-- Right sidebar content Area -->
 	<?php
 		/*
 		* Right sidebar code
 		*/
-		sidebar($right_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+		sidebar($right_sidebar, $both_sidebar, $display_page, $right_sidebar_width);
 	} else { ?>
 		<div class="center-body-message-box">
 			<h2><?php echo ERROR_403; ?></h2>
@@ -159,7 +248,11 @@
 	/* CHECKING NAV HAS VISIBILITY  END*/
 ?>
 </div>
+<?php if($haveParalax){?>
+</div>
+<?php } ?>
 <script src="<?= BASE_URL_SYSTEM ?>ckeditor/ckeditor.js"></script>
+
 <!-- modal view dialog to display  Enlarge image -->
 <div id="imgModal" class="modal fade">
     <div class="modal-dialog">
@@ -194,6 +287,50 @@
 		</div>
 	</div>
 </div>
+
+
+<div id="addOptionModel" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+						</div>
+            <div class="modal-body">
+						</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default" onclick="AddOptionInTable()">Add</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="sendMessageModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Type Message Here..</h4>
+						</div>
+            <div class="modal-body">
+							<textarea style="width:100%" id='sendMessageModalText' rows = "5" >
+		            Enter your message
+		         </textarea>
+						 <input type='hidden' id='message_reciver_id'>
+						 <input type='hidden' id='message_log_table'>
+						</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default" onclick="sendMessaeg()">Send</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <!-- Modal For Transaction Dialog display -->
 <div class="modal fade" id="transModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -224,114 +361,51 @@
 </ul>
 <?php
 	/*
-		* Popup Menu codes starts here
+	* Popup Menu codes starts here
 	*/
-	global $popup_menu;
-
-	if ($popup_menu['popupmenu'] == 'true') {
-		echo "<ul class='custom-menu'>";
-		if (isset($popup_menu['popup_delete']) && !empty($popup_menu['popup_delete'])) {
-			echo "<li data-action='delete'  class='" . $popup_menu['popup_delete']['style'] . "'>" . $popup_menu['popup_delete']['label'] . "</li>";
+	if(!empty($_SESSION['popup_munu_array'])){
+		foreach($_SESSION['popup_munu_array'] as $popup_menu){
+			if ($popup_menu['popupmenu'] == 'true') {
+				echo "<ul id='".$popup_menu['popup_menu_id']."' class='custom-menu'>";
+				if (isset($popup_menu['popup_delete']) && !empty($popup_menu['popup_delete'])) {
+					echo "<li data-action='delete'  class='" . $popup_menu['popup_delete']['style'] . "'>" . $popup_menu['popup_delete']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_add']) && !empty($popup_menu['popup_add'])) {
+					echo "<li data-action='add'  class='" . $popup_menu['popup_add']['style'] . "'>" . $popup_menu['popup_add']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_copy']) && !empty($popup_menu['popup_copy'])) {
+					echo "<li data-action='copy'  class='" . $popup_menu['popup_copy']['style'] . "'>" . $popup_menu['popup_copy']['label'] . "</li>";
+				}
+				if (isset($popup_menu['popup_openChild']) && !empty($popup_menu['popup_openChild'])) {
+					echo "<li data-action='openChild'  class='" . $popup_menu['popup_openChild']['style'] . "'>" . $popup_menu['popup_openChild']['label'] . "</li>";
+				}
+				echo "</ul>";
+			}
 		}
-		if (isset($popup_menu['popup_add']) && !empty($popup_menu['popup_add'])) {
-			echo "<li data-action='add'  class='" . $popup_menu['popup_add']['style'] . "'>" . $popup_menu['popup_add']['label'] . "</li>";
-		}
-		if (isset($popup_menu['popup_copy']) && !empty($popup_menu['popup_copy'])) {
-			echo "<li data-action='copy'  class='" . $popup_menu['popup_copy']['style'] . "'>" . $popup_menu['popup_copy']['label'] . "</li>";
-		}
-		if (isset($popup_menu['popup_openChild']) && !empty($popup_menu['popup_openChild'])) {
-			echo "<li data-action='openChild'  class='" . $popup_menu['popup_openChild']['style'] . "'>" . $popup_menu['popup_openChild']['label'] . "</li>";
-		}
-		// echo "<br>got here<br><br>"; die;
-		echo "</ul>";
 	}
 ?>
 <a href="#" class="scrollToTop">Scroll To Top</a>
-<?php
-	/* $page_no = '';
-		$pagination_no = explode(';',$_SESSION['list_pagination']);
-		for($j=0;$j<count($pagination_no);$j++)
-		{
-		$newvar =  explode(',',$pagination_no[$j]);
-		//echo strpos(trim($newvar[0]),'pagination')."<br>";
-		if(strpos(trim($newvar[0]),'pagination')=='0')
-		{
-		//echo "hello";
-		$page_no = $newvar[1]; break;
+<!-- Css To Fix center tab on top -->
+<style>.center_tab_fix{position:fixed; top:75px; z-index:9; border-bottom:1px solid #e7e7e7; left:0; padding-left:calc(50% - 550px); width:100%; background:#fff;}</style>
+<script type="text/javascript">
+	<!-- Script To Fix center tab on top -->
+	$(window).scroll(function() {
+		var scroll = $(window).scrollTop();
+		if (scroll >= 30) {
+			$(".center-tab-fixed").addClass("center_tab_fix");
+		} else {
+			$(".center-tab-fixed").removeClass("center_tab_fix");
 		}
-	} */
-	#Added By Dharmesh 2018-10-17#
-	//Setting the Pagination Number and Records per Page
-	if(empty($_GET['edit'])){
-		$page_no = @$_SESSION['list_pagination'][0];
-		$pagination_no = !empty($_SESSION['list_pagination'][1])?$_SESSION['list_pagination'][1]:0;
-		if($page_no == 'hscroll'){
-			$page_no = 0;
-		}
-	}
-?>
-<script>
-	$(document).ready(function () {
-		//Added By Dharmesh 2018-10-17//
-		<?php if(!empty($pagination_no)) {?>
-			/* $.fn.DataTable.ext.pager.numbers_length = <?= $pagination_no ?>;
-			$.fn.DataTable.ext.pager.numbers_no_ellipses = function(page, pages){
-				var numbers = [];
-				var buttons = $.fn.DataTable.ext.pager.numbers_length;
-				var half = Math.floor( buttons / 2 );
-				var _range = function ( len, start ){
-					var end;
-					if ( typeof start === "undefined" ){
-						start = 0;
-						end = len;
-						} else {
-						end = start;
-						start = len;
-					}
-					var out = [];
-					for ( var i = start ; i < end; i++ ){ out.push(i); }
-					return out;
-				};
-				if ( pages <= buttons ) {
-					numbers = _range( 0, pages );
-					} else if ( page <= half ) {
-					numbers = _range( 0, buttons);
-					}  else if ( page >= pages - 1 - half ) {
-					numbers = _range( 0, pages );
-					} else {
-					numbers = _range( 0, buttons);
-				}
-				numbers.DT_el = 'span';
-				//return ["first","previous", numbers , "next", "last" ];
-				return [ numbers  ];
-			}; */
-			var pagingType = 'full_numbers';
-			<?php }else { ?>
-			var pagingType = 'full_numbers';
-		<?php } ?>
-		//Code End//
-		var dTable = $('.display').DataTable({
-            "scrollX": true,
-			"pagingType": pagingType,
-			"lengthMenu": <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			"bStateSave": true,
-		});
-		//Fixing the bug for default pagination values for the datatable//
-		<?php $page_no = empty($page_no)?10:$page_no; ?>
-		setTimeout(function(){
-			//Setting the time to
-			//$("select[name='example_length'] option[text='ALL']").attr("selected","selected") ;
-			$('select[name="example_length"]').val(<?= "'".($page_no=="ALL"?'-1':$page_no)."'" ?>);
-			$("select[name=example_length]").trigger('change');
-		}, 1000);
-        //// to stop from going to edit screen//
-        /* $('.list-checkbox').on('click', function () {
-            //event.stopImmediatePropagation();
-		}); */
-        /*
-			*
-			* Selecting all checkboxes
-			*
+	});
+	/*Code Changes by Palak*/
+	$(document).ready(function(){
+	//$(document).ready(function () {
+	/*Code Changes by Palak*/
+	   /*
+		**
+		*
+		* Selecting all checkboxes
+		*
 		*/
         $('#selectAll').click(function (event) {  //on click
             if (this.checked) { // check select status
@@ -345,66 +419,90 @@
 			}
 		});
 		///when click on delete button////
-        $(".action-delete").on('click', function () {
+        $(".action-delete").on('click', function (event) {
+						var dict_id = $(this).data('id');
+			event.preventDefault();
             if (confirm("<?= deleteConfirm ?>") == true) {
                 $("#checkHidden").val('delete');
-                $('#list-form').ajaxForm(function (data) {
-					//console.log(data);
-					//return false;
-                    location.reload();
-				});
+								var selected = [];
+								$('#list-form input:checked').each(function() {
+										selected.push($(this).val());
+								});
+								$.ajax({
+										method: "POST",
+										url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+										data: {checkHidden: 'delete',list:selected,dict_id:dict_id}
+								})
+								.done(function (returnUrl) {
+										location.reload();
+								});
 				} else {
                 $(this).parents('#list-form').attr('action', '');
 			}
 		});
         ///// when click on delete icon
         $(".list-del").click(function (event) {
-            if (confirm("ok") == true) {
+			event.preventDefault();
+            if (confirm("<?= deleteConfirm ?>") == true) {
                 var del_id = $(this).attr('id');
                 var dict_id = $(this).attr('name');
+                var fnc = $(this).attr('fnc');
                 $.ajax({
                     method: "GET",
                     url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                    data: {list_delete: del_id, check_action: "delete", dict_id: dict_id}
+                    data: {list_delete: del_id, check_action: "delete", dict_id: dict_id, fnc: fnc}
 				})
-				.done(function (msg) {
+				.done(function (returnUrl) {
+					window.location.href=returnUrl;
 					location.reload();
 				});
-				} else {
+			} else {
                 event.stopImmediatePropagation();
 			}
 		});
 		///copy button .. multi select
-        $(".action-copy").on('click', function () {
+        $(".action-copy").on('click', function (event) {
+					var dict_id = $(this).data('id');
+			event.preventDefault();
             if (confirm("<?= copyConfirm ?>") == true) {
                 $("#checkHidden").val('copy');
-                $('#list-form').ajaxForm(function (data) {
-                    // console.log(data);
-                    location.reload();
-				});
+								var selected = [];
+								$('#list-form input:checked').each(function() {
+										selected.push($(this).val());
+								});
+								$.ajax({
+										method: "POST",
+										url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+										data: {checkHidden: 'copy',list:selected,dict_id:dict_id}
+								})
+								.done(function (returnUrl) {
+									  location.reload();
+								});
 				} else {
                 $(this).parents('#list-form').attr('action', '');
 			}
 		});
         //// single copy icon
-        $(".list-copy").click(function () {
+        $(".list-copy").click(function (event) {
+			event.preventDefault();
             if (confirm("Are you sure ,You want to Copy the Record!") == true) {
                 var del_id = $(this).attr('id');
                 var dict_id = $(this).attr('name');
+				var fnc = $(this).attr('fnc');
                 $.ajax({
                     method: "GET",
                     url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
-                    data: {list_copy: del_id, check_action: "copy", dict_id: dict_id}
+                    data: {list_copy: del_id, check_action: "copy", dict_id: dict_id, fnc: fnc}
 				})
-				.done(function (msg) {
-					location.reload();
+				.done(function (returnUrl) {
+					window.location.href=returnUrl;
 				});
 			}
 		});
 		/******************* ADD BUTTON CODE **********************************/
 		$(".action-add").click(function (event) {
 			event.preventDefault();
-			window.location.href = '<?= $_SESSION['add_url_list'] ?>';
+			//window.location.href = '<?= $_SESSION['add_url_list'] ?>';
 		});
 		/*
 			var test = 'something ';
@@ -413,74 +511,7 @@
 			alert(test);
 			});
 		*/
-		/* Sorting function on SORT button click */
-		/* action perform by list_select button on click */
-		/*
-			* *****
-			* *************
-			* ******************MAKING TR CLICKABLE AND TAKIGN TO EDIT PAGE........
-			* ........................
-			* ............................................
-			* .......................................................
-		*/
-		$('#example tbody').on('click', 'tr td:not(:first-child)', function () {
-			event.stopImmediatePropagation();
-			if ($(this).hasClass('tabholdEvent')) {
-				return false;
-				} else {
-				window.location = $(this).parent().attr('id');
-			}
-		});
-		/* 		        $('#example').on('click', 'tbody tr td:not(:first-child)', function () {
-			if ($(this).hasClass('tabholdEvent')) {
-			return false;
-			} else {
-			window.location = $(this).attr('id');
-			}
-		}); */
-		/*
-			* it calls when right click on single line list
-		*/
-		var popup_del;
-		var dict_id;
-		// Trigger action when the contexmenu is about to be shown
-		/// it will be shown for boxView
-		if (mobileDetector().any()) {
-			$("#example tbody").on("taphold", 'tr', function (event) {
-				// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
-				var xPos = event.originalEvent.touches[0].pageX;
-				var yPos = event.originalEvent.touches[0].pageY;
-				$(this).addClass('tabholdEvent');
-				popup_del = $(this).find('.list-del').attr('id');
-				dict_id = $(this).find('.list-del').attr('name');
-				//alert(popup_del);
-				// Avoid the real one
-				event.preventDefault();
-				// Show contextmenu
-				$(".custom-menu").finish().toggle(100).
-				// In the right position (the mouse)
-				css({
-					top: yPos + "px",
-					left: xPos + "px"
-				});
-			});
-		} else {
-			////context MEnu will be shown for TableView
-			$("#example tbody").on("contextmenu", 'tr', function (event) {
-				popup_del = $(this).find('.list-del').attr('id');
-				dict_id = $(this).find('.list-del').attr('name');
-				//console.log(dict_id);
-				// Avoid the real one
-				event.preventDefault();
-				// Show contextmenu
-				$(".custom-menu").finish().toggle(100).
-				// In the right position (the mouse)
-				css({
-					top: event.pageY + "px",
-					left: event.pageX + "px"
-				});
-			});
-		}
+
 		// If the document is clicked somewhere
 		$(document).bind("mousedown", function (e) {
 			// If the clicked element is not the menu
@@ -519,10 +550,15 @@
 					data: {list_delete: del_id, check_action: "delete", dict_id: dict_id}
 				})
 				.done(function (msg) {
-					location.reload();
+					if(msg=='false'){
+							alert('Permission Denied');
+					}else{
+							location.reload();
+					}
 				});
 			}
 		}
+
 		/***** popup COPY Function ****/
 		function popup_copy(del_id) {
 			if (confirm("Are you sure ,You want to copy the Record!") == true) {
@@ -532,7 +568,11 @@
 					data: {list_copy: del_id, check_action: "copy"}
 				})
 				.done(function (msg) {
-					location.reload();
+					if(msg=='false'){
+							alert('Permission Denied');
+					}else{
+							location.reload();
+					}
 				});
 			}
 		}
@@ -561,7 +601,11 @@
 				data: {childID: del_id, check_action: "openChild", dict_id: dict_id, display: "<?= $_GET['display']; ?>"}
 			})
 			.done(function (child_url) {
-				window.location = child_url;
+				if(child_url=='false'){
+					alert('Permission Denied');
+				}else{
+					window.location = child_url;
+				}
 				// window.open(msg,'','width=800,height=768,left=300');
 			});
 			//}
@@ -635,10 +679,8 @@
 				}else{
 				if (form_edit == 'changed') {
 					event.preventDefault();
-					if (confirm("<?= backAlertMsg ?>") == true) {
-						//console.log($(this).attr('href'));
-						window.location = $(this).attr('href');
-					}
+					window.location = $(this).attr('href');
+					//window.location = document.referrer;
 				}
 			}
 		});
@@ -647,6 +689,10 @@
 		/********** *****************************************/
 		$(".edit-btn").click(function () {
 			var id = $(this).attr('id');
+			/*Code Changes by Palak*/
+			//alert(id);
+			//var form_edit = 'changed';
+			/*Code Changes by Palak*/
 			$.ajax({
 				method: "GET",
 				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
@@ -670,18 +716,15 @@
 		var class_holder;
 		$(".friend_me_icon").click(function () {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			class_holder = this;
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "friend_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "friend_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).text('<?= friendOn ?>');
-					} else {
-					$(class_holder).text('<?= friendOff ?>');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'friend_me_icon');
 			});
 		});
 		/*
@@ -693,20 +736,18 @@
 		*/
 		$(".follow_me_icon").click(function () {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			class_holder = this;
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "follow_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "follow_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).text('<?= followOn ?>');
-					} else {
-					$(class_holder).text('<?= followOff ?>');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'follow_me_icon');
 			});
 		});
+
 		/*
 		*
 		* Favorite me ICONS CODE GOES HERE****************
@@ -715,22 +756,17 @@
 		* ********************************************************************
 		*/
 		$(".favorite_me_icon").click(function () {
+			var display_page = '<?= $_GET['display'] ?>';
 			// $(this).css('color','red');
 			class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "favorite_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
+				data: {display_page:display_page,action: "favorite_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id')}
 			})
 			.done(function (msg) {
-				if (msg == 'deleted') {
-					$(class_holder).removeClass('favorite_me_icon_selected');
-					$(class_holder).addClass('favorite_me_icon');
-					} else {
-					$(class_holder).removeClass('favorite_me_icon');
-					$(class_holder).addClass('favorite_me_icon_selected');
-				}
+				setStyleOfFFFRafterAction(class_holder,msg,'favorite_me_icon');
 			});
 		});
 		/*
@@ -741,12 +777,13 @@
 		* ********************************************************************
 		*/
 		$('.rate_me').on('rating.change', function (event, value, caption) {
+			var display_page = '<?= $_GET['display'] ?>';
 			// class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value}
 			})
 			.done(function (msg) {
 				if (msg != '' && msg != 'deleted') {
@@ -758,10 +795,11 @@
 		///////////when rating is reset////////////
 		$('.rate_me').on('rating.clear', function (event) {
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+			var display_page = '<?= $_GET['display'] ?>';
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: 'clear'}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: 'clear'}
 			})
 		});
 		/*
@@ -772,13 +810,14 @@
 		* ********************************************************************
 		*/
 		$('.voting-number:not(.disabled)').on('click', function () {
+			var display_page = '<?= $_GET['display'] ?>';
 			// class_holder = this;
 			var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
 			var value = $(this).siblings(".fffr-input").val();
 			$.ajax({
 				method: "GET",
 				url: "ajax-actions.php",
-				data: {action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value,ta:'<?= $_GET[tab]?>',tabNum:'<?= $_GET[tabNum]?>'}
+				data: {display_page:display_page,action: "rate_me", fffr_search_id: fffr_search_id, table_name: $(this).attr('id'), value: value,ta:'<?= $_GET[tab]?>',tabNum:'<?= $_GET[tabNum]?>'}
 			})
 			.done(function (msg) {
 				console.log(msg);
@@ -871,5 +910,144 @@
 			});
 		});
 	});
+	function limitIsFull(){
+		alert("Maximum records limit reach, You can not add more records");
+	}
+
+	function listFilterChange(e){
+		dict_id = $(e).data('dd');
+		value = $(e).val();
+		$.ajax({
+			method: "GET",
+			url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+			data: {dict_id_to_apply_filter: dict_id, selected_filter: value,check_action: "set_list_filter"}
+		})
+		.done(function (msg) {
+				location.reload();
+		});
+	}
+
+	function listViewChange(e){
+		dict_id = $(e).attr('name');
+		value = $(e).val();
+		$.ajax({
+			method: "GET",
+			url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+			data: {dict_id_to_apply_filter: dict_id, selected_filter: value,check_action: "set_list_view"}
+		})
+		.done(function (msg) {
+				location.reload();
+		});
+	}
+
+	function addnewOption(e){
+		if($(e).find('option:selected').val()!='Add NEW'){
+			return;
+		}
+		var name = $(e).attr('name');
+		var table = $(e).data('table');
+		var label = $(e).data('label');
+		var keyField = $(e).data('key');
+		var primaryvalue = $(e).data('primaryvalue');
+		var inputFieldes = $(e).data('inputfields');
+		$('#addOptionModel .modal-header .modal-title').html('');
+		$('#addOptionModel .modal-header .modal-title').html('Add '+label);
+
+		inputFieldes = inputFieldes.split(',');
+		$('#addOptionModel .modal-body').html('');
+		inputFieldes.forEach (function(value){
+			if(value!==''){
+				$('#addOptionModel .modal-body').append($('<input>', {type: 'text',name:value,placeholder:value}));
+			}
+		});
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedTable',value:table}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedKeyField',value:keyField}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedinputFieldes',value:inputFieldes}));
+		$('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedprimaryvalue',value:primaryvalue}));
+		 $('#addOptionModel .modal-body').append($('<input>', {type: 'hidden',id: 'selectedName',value:name}));
+		$('#addOptionModel').modal('show');
+
+	}
+
+	function AddOptionInTable(){
+		var table = $('#selectedTable').val();
+		var selectedKeyField = $('#selectedKeyField').val();
+		var selectedinputFieldes = $('#selectedinputFieldes').val();
+		var selectedprimaryvalue = $('#selectedprimaryvalue').val();
+		var name = $('#selectedName').val();
+		var data ={};
+		$("#addOptionModel .modal-body input[type=text]").each(function(){
+				 data[this.name] = this.value;
+		});
+		$.ajax({
+				method: "GET",
+				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+				data: {table: table, selectedKeyField: selectedKeyField, selectedprimaryvalue: selectedprimaryvalue, data: data,'check_action':'adding_new_options'}
+}).done(function (returnUrl) {
+	var mystring = '';
+	if(returnUrl > 0){
+		Object.keys(data).forEach(function(key) {mystring = mystring+ data[key]+' ';});
+		$("[name='"+name+"']").append($('<option>', {
+		    value: returnUrl,
+		    text:mystring
+		}));
+			$('#addOptionModel').modal('hide');
+	}else{
+		alert('Some Error accourd');
+	}
+});
+	}
+	function sendMessaeg(){
+		var reciverId = 	$('#message_reciver_id').val();
+		var message = 	$('#sendMessageModalText').val();
+		var table  = $('#message_log_table').val();
+		$.ajax({
+				method: "GET",
+				url: "<?= BASE_URL_SYSTEM ?>ajax-actions.php",
+				data: {reciverid: reciverId, message: message,table:table,check_action:'contact_me'}
+		}).done(function (returnUrl) {
+				$('#sendMessageModal').modal('hide');
+		});
+	}
+	/*
+	*
+	* Contact me ICONS CODE GOES HERE****************
+	* ************************************
+	* *****************************************************
+	* ********************************************************************
+	*/
+	$(".contact_me_icon").click(function (e) {
+		var fffr_search_id = '<?= $_SESSION['fffr_search_id'] ?>';
+		$('#message_reciver_id').val(fffr_search_id);
+		$('#message_log_table').val($(this).data('table'));
+		$('#sendMessageModalText').text('');
+		$('#sendMessageModal').modal('show');
+	});
+
+	function setStyleOfFFFRafterAction(element,result,type){
+		var action_type = $('#'+type+'_type').val();
+		var selected = $('#'+type+'_selected').val();
+		var unselected = $('#'+type+'_unselected').val();
+
+		if(action_type=='text'){
+			if (result == 'deleted') {
+				$(element).text(selected);
+				} else {
+				$(element).text(unselected);
+			}
+		}else{
+			if (result == 'deleted') {
+				$(element).removeClass(unselected);
+				$(element).addClass(selected);
+			}else{
+				$(element).removeClass(selected);
+				$(element).addClass(unselected);
+			}
+		}
+
+	}
 </script>
-<?php include("footer.php"); ?>											
+<?php
+  echo "<div style='height:25px'></div>";
+	Footer($display_page,'footer2');
+?>

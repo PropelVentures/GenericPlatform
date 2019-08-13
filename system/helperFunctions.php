@@ -44,9 +44,7 @@ function parseFieldType($row) {
             $field_type = $result_rec['Type'];
         }
     }
-
     $field_type = explode("(", $field_type);
-
     $field_length = '40';
 
     if ($field_type[0] == 'varchar') {
@@ -69,6 +67,30 @@ function parseFieldType($row) {
     return $field_length;
 }
 
+function getDefaultLengthsByType($row){
+  $con = connect();
+
+  $result = $con->query("describe $row[database_table_name]");
+
+  while ($result_rec = $result->fetch_assoc()) {
+      if ($result_rec['Field'] == $row['generic_field_name']) {
+
+          $field_type = $result_rec['Type'];
+      }
+  }
+
+  return get_string_between($field_type,'(',')');
+}
+
+function get_string_between($string, $start, $end){
+    $string = ' ' . $string;
+    $ini = strpos($string, $start);
+    if ($ini == 0) return '';
+    $ini += strlen($start);
+    $len = strpos($string, $end, $ini) - $ini;
+    return substr($string, $ini, $len);
+}
+
 function getColumnsNames($table){
 	$con = connect();
 	$columns = array();
@@ -85,25 +107,23 @@ function getColumnsNames($table){
  */
 
 function uploadAudioFile($parameters) {
-
     $target_dir = USER_UPLOADS . "audio";
     $randName = rand(124, 1000);
     $fileName = $randName . $parameters['name'];
 
     $target_file = $target_dir . '/' . $fileName;
     $uploadOk = 1;
-
-    if ($parameters['type'] != "audio/wav" /* || $parameters['type'] != "audio/ogg" || $parameters['type'] != "audio/mpeg" */) {
-        // throw new Exception("This file type is not allowed to upload");
-        $uploadOk = 0;
+    $allowedType = ['audio/mp3','audio/wav'];
+    if(!in_array($parameters['type'],$allowedType)){
+      $uploadOk = 0;
+      // throw new Exception("This file type is not allowed to upload")
     }
+
 // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         throw new Exception("UploadFail");
 // if everything is ok, try to upload file
     } else {
-
-
         if (@move_uploaded_file($parameters["tmp_name"], $target_file)) {
 
             return $fileName;
@@ -114,6 +134,23 @@ function uploadAudioFile($parameters) {
     }
 }
 
+
+function uploadRecordedAudio($string){
+  $target_dir = USER_UPLOADS . "audio";
+  $fileName = time().'.mp3';
+  $randName = rand(124, 1000);
+  $fileName = $randName . $fileName;
+  $target_file = $target_dir . '/' . $fileName;
+  $fileDecoded = str_replace('data:audio/mpeg;base64,', '',  $string);
+
+  $uploadOk = file_put_contents($target_file, base64_decode($fileDecoded));
+
+  if($uploadOk){
+
+    return $fileName;
+  }
+  return false;
+}
 /*
  *
  * Function @uploadImageFile
@@ -236,7 +273,6 @@ function uploadPdfFile($uploadCareURL, $imageName) {
  * @return array
  */
 function listExtraOptions($list_extra_options, $listOperations = false) {
-
 //echo "<pre>INSIDE listExtraOptions<br>";
 //print_r($list_extra_options);
 //echo "\$buttonOptions::<br>";
@@ -378,7 +414,6 @@ function listExtraOptions($list_extra_options, $listOperations = false) {
     if($listOperations !== false)
     {
         $operationsVarArray = getOperationsData($listOperations, 'list_operations');
-
         list($popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
             $customFunctionArray,
             $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array) = $operationsVarArray;
@@ -398,7 +433,6 @@ function listExtraOptions($list_extra_options, $listOperations = false) {
         "editPagePagination" => $editPagePagination, "numberLabel" => $numberLabel, "pattern" => $pattern
     );
 
-	//pr($listOptionsArray);
     return $listOptionsArray;
 }
 
@@ -511,7 +545,9 @@ function getOperationsData($operations, $operationType = 'list_operations') {
         else if(stripos($operationsKeywordData, 'topmenu[') !== false )
         {
             $actions['topmenu'] = trim(str_ireplace ('topmenu[', '', $operationsKeywordData) );
+			/*Code Change Start Task ID 5.6.4*/
             $actions['topmenu'] = parseCsvParameters($actions['topmenu']);
+			/*Code Change End Task ID 5.6.4*/
         }
 
     }
@@ -569,7 +605,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 				}
 				break;
 			}
-			
+
             case 'topmenu': {
 				foreach ($actionData as $actionKey => $actionValue) {
 					if($actionKey === 'customFunction')
@@ -592,6 +628,9 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 							case 'add':
 								$add_array = list_add(trim($actionValue[1]), trim($actionValue[2]));
 								break;
+							case 'saveadd':
+								$save_add_array = list_add(trim($actionValue[1]), trim($actionValue[2]));
+								break;
 							case 'single_delete':
 								$single_delete_array = single_delete(trim($actionValue[1]), trim($actionValue[2]));
 								break;
@@ -604,19 +643,19 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 							case 'submit':
 								$submit_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'facebook_auth':
 								$facebook_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'google_auth':
 								$google_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							case 'linkedin_auth':
 								$linkedin_array = submitOptions(trim($actionValue[1]), trim($actionValue[2]));
 								break;
-								
+
 							default:
 						}
 
@@ -625,7 +664,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
 				}
 				break;
 			}
-			
+
             default:
         }
 
@@ -635,7 +674,7 @@ function getOperationsData($operations, $operationType = 'list_operations') {
             $popupmenu, $popup_delete_array, $popup_copy_array, $popup_add_array, $popup_openChild_array,
             $customFunctionArray,
             $del_array, $copy_array, $add_array, $single_delete_array, $single_copy_array,
-            $submit_array,$facebook_array,$google_array,$linkedin_array
+            $submit_array,$facebook_array,$google_array,$linkedin_array,$save_add_array
         );
 
 }
@@ -719,10 +758,18 @@ function listvalues($setlistviews) {
 
 
 function listpageviews($setpageviews) {
-
-    $pageviews = array_filter( array_map('trim', explode(',', $setpageviews)) );
-
-    return $pageviews;
+  $data = explode(';',$setpageviews);
+  $result = [];
+  foreach ($data as $key => $value) {
+    if(empty($value)){
+      continue;
+    }
+    $temp = explode(':',$value);
+    if(!empty(trim($temp[1]))){
+      $result[trim($temp[0])] = trim($temp[1]);
+    }
+  }
+    return $result;
 }
 
 /* To Do:-
@@ -741,8 +788,8 @@ function getListSelectParams($list_select){
 /* To Do:-
  * Get Alignment Class
  * For Edit & View Operation
- * @params To check 
- * single_line_left , single_line_right, single_line_center 
+ * @params To check
+ * single_line_left , single_line_right, single_line_center
  */
 function getAlignmentClass($operation){
 	$operations = array_filter( array_map('trim', explode(';', $operation)) );
@@ -794,9 +841,10 @@ function editPagePagination($list_extra_options, $pkey) {
 
     ///////fetching forigen keys
 
-
+    $isExistFilter;
+    $isExistField;
     if (!empty($record[0]['list_filter']))
-        $clause = listFilter($record[0]['list_filter'], $search_key);
+        $clause = listFilter($record[0]['list_filter'], $search_key,$isExistFilter,$isExistField);
 
 
 
@@ -890,159 +938,168 @@ function helperOfEPP($id, $mode = 'false') {
  *
  *
  */
+function translateSpecialKeysValueTOSQL($array,&$isexistFilter,&$isExistField){
 
-function listFilter($listFilter, $search) {
+  $result = '';
+  if(empty($array[0]) || empty($array[1])){
+    return $result;
+  }
+  $condition = trim($array[0]);
+  $key = trim($array[1]);
+  if(strtoupper($condition) ==='EMPTY'){
+    $result = "$key=''";
+  }else if(strtoupper($condition) ==='!EMPTY'){
+    $result = "$key!=''";
+  }else if(strtoupper($condition) ==='NULL'){
+    $result = "$key=NULL";
+  }else if(strtoupper($condition) ==='!NULL'){
+    $result = "$key!=NULL";
+  }else if(strtoupper($condition) ==='FILEEXISTS'){
+    $isexistFilter = 'exist';
+    $isExistField = $key;
+  }else if(strtoupper($condition) ==='!FILEEXISTS'){
+    $isexistFilter = 'not_exist';
+    $isExistField = $key;
+  }
+  return $result;
+}
 
-//echo "<pre>";
-//print_r($listFilter);
-//print_r($search);
-//die;
+function convertVariableValuesToRealValues($value){
+  if(strpos($value,'#current_user_id') !==false){
+    $value = str_replace('#current_user_id',$_SESSION[uid],$value);
+  }else if(strpos($value,'#current_user_name') !==false){
+    $value = str_replace('#current_user_name',"'".$_SESSION[uname]."'",$value);
+  }
+  return $value;
+}
 
-    ###HANDLE PARENT->CHILD RELATIONSHIPT BASED ON DD.keyfield and DD.table_type = 'child'####
+function convertFilterToSQL($filter,&$isexistFilter,&$isExistField){
+  $filter = trim($filter);
+  $result = '';
+  if(empty($filter)){
+    return $result;
+  }else{
+    $specialKeys = explode(':',$filter);
+    if(count($specialKeys) > 1){
+      $result = translateSpecialKeysValueTOSQL($specialKeys,$isexistFilter,$isExistField);
+      $result = convertVariableValuesToRealValues($result);
+    }else{
+      $result = $filter;
+    }
+
+    return convertVariableValuesToRealValues($result);
+  }
+}
+
+function checkORConditionAndConvertToSQL($filter,&$isexistFilter,&$isExistField){
+  $filter = trim($filter);
+  if(empty($filter)){
+    return '';
+  }else{
+    $allConditions = explode('OR',$filter);
+    if(count($allConditions) > 1){
+      foreach ($allConditions as $key => $value) {
+        $allConditions[$key] = convertFilterToSQL($value,$isexistFilter,$isExistField);
+      }
+      $result = '';
+      $length = count($allConditions);
+      foreach ($allConditions as $key => $value) {
+        $result .= $value;
+        if($key+1 != $length){
+          $result .= ' OR ';
+        }
+      }
+      return $result;
+    }else{
+      return convertFilterToSQL($filter,$isexistFilter,$isExistField);
+    }
+  }
+}
+
+function listFilter($listFilter, $search,&$isexistFilter,&$isExistField) {
+
     if(is_array($listFilter) )
     {
         $listFilterParentChildClause = $listFilter['child_filter'];
         $listFilter = $listFilter['list_filter'];
     }
+    $allFilters = explode('AND',$listFilter);
 
-    $keyfield = explode(";", $listFilter);
-
-
-    $firstParent = $keyfield[0];
-    // print_r($keyfield);die;
-
-    if (!empty($keyfield[1])) {
-
-        $listCond = $keyfield[1];
-    }
-
-    //  $checkFlag = false;
-
-    ###CREATES AN ARRAY OF ARRAY WITH KEYFIELD=>DYNAMIC_PART BASED ON CSV##
-    if (!empty($keyfield[0])) {
-        $i = 0;
-
-        $keyfield = explode(",", $keyfield[0]);
-
-        foreach ($keyfield as $val) {
-
-            $keyField = explode("=", $val);
-
-            $keyVal[$i] = array(trim($keyField[0]) => trim($keyField[1]));
-
-            $i++;
-        }
-    }
-    ###'projects=child_product_id'; kind of parameters, same for 'users='
-//    foreach ($keyVal as $val) {
-//
-//        if (!empty($val['projects'])) {
-//
-//            $pid = $val['projects'];
-//        }
-//
-//        if (!empty($val['users'])) {
-//
-//            $uid = $val['users'];
-//        }
-//    }
-
-    ###DETECT THESE #KEYWORDS AND REPLACE THEM WITH RESPECTIVE DYNAMIC ID FROM USER SESSION
-    ###$filterIdKeywordsArray = array('#current_user_id', '#current_user_name', '#current_product_id', '#current_product_name');
-
-    $sqlClause = '';
-
-    foreach ($keyVal as $dataVal) {
-
-        $keywordId = reset($dataVal);
-        $keyField = key($dataVal);
-
-        switch ($keywordId) {
-            case "#current_user_id":
-                $sqlClause .= "$keyField=$_SESSION[uid] ";
-                break;
-            case "#current_user_name":
-                $sqlClause .= "$keyField='$_SESSION[uname]' ";
-                break;
-            case "#current_product_id":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            case "#current_product_name":
-                #$sqlClause .= "$keyField=$_SESSION[product_id] ";
-                break;
-            default:
-                $sqlClause .= '';
-        }
+    foreach ($allFilters as $key => $value) {
+      if(empty(trim($value))){
+        unset($allFilters[$key]);
+      }else{
+        $allFilters[$key] = checkORConditionAndConvertToSQL($value,$isexistFilter,$isExistField);
+      }
 
     }
-    $sqlClause = str_replace(' ', ' AND ', trim($sqlClause) );
+    $result = '';
+    $itration = 1;
+    $length = count($allFilters);
+    foreach ($allFilters as $key => $value) {
+      $result = $result.' '.trim($value).' ';
 
-
-//    if (!empty($pid) && !empty($search)) {
-//
-//        $clause = "$pid = '$search'";
-//
-//        //$checkFlag = true;
-//    }
-//
-//    if (!empty($uid)) {
-//
-//        if (!empty($clause)) {
-//
-//            $clause = $clause . " and " . $uid . "=" . $_SESSION['uid'];
-//        } else {
-//
-//            $clause = $uid . "=" . $_SESSION['uid'];
-//        }
-//
-//        //  $checkFlag = true;
-//    }
-
-    if (!empty($sqlClause) && !empty($listCond)) {
-        $sqlClause = $sqlClause . " and " . $listCond;
-    } else if (empty($sqlClause) && !empty($firstParent)) {
-        $sqlClause = $firstParent;
+      if($length > $itration){
+        $result .= "AND";
+        $itration++;
+      }
     }
-
-    ###BIND PARENT CHILD FILTER CLAUSE BASED ON RELATIONSHIP AND DD.keyfield###
-    if(!empty($listFilterParentChildClause) && !empty($sqlClause) )
+    if(!empty($listFilterParentChildClause) && !empty($result) )
     {
-        $sqlClause .= " AND $listFilterParentChildClause";
+        $result .= " AND $listFilterParentChildClause";
     }
     else if(!empty($listFilterParentChildClause) )
     {
-        $sqlClause .= " $listFilterParentChildClause";
+        $result .= " $listFilterParentChildClause";
     }
+    return $result;
 
-    // exit($clause);
-
-    return $sqlClause;
 }
 
+function getFiltersArray($list_filters){
+  $result = [];
+  $counter =0;
+  $allFilters = explode(';',trim($list_filters));
+  foreach ($allFilters as $key => $value) {
+    $value = trim($value);
+    if(!empty($value)){
+        $keyValue = explode(',',$value);
+        if(count($keyValue)>1){
+          $result[$counter]['label'] = trim($keyValue[1]);
+          $result[$counter]['filter'] = trim($keyValue[0]);
+          $counter++;
+        }
+    }
+  }
+  return $result;
+}
 /* boxView hScroll Start */
 function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
-	<a href="javascript:void(0);" class="prev_slider" onclick="plusDivs(-<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10094;</a>
-	<a href="javascript:void(0);" class="next_slider" onclick="plusDivs(+<?php echo $pagination[0]; ?>,<?php echo $tab_num; ?>)">&#10095;</a>
-	
+
+	<a href="javascript:void(0);" class="prev_slider" onclick="plusDivs(-<?php echo $pagination['itemsperpage']; ?>,<?php echo $tab_num; ?>)">&#10094;</a>
+	<a href="javascript:void(0);" class="next_slider" onclick="plusDivs(+<?php echo $pagination['itemsperpage']; ?>,<?php echo $tab_num; ?>)">&#10095;</a>
+
 	</div>
-	
+
 	<?php
+    if(!isset($pagination['itemsperpage']))
+        $pagination['itemsperpage'] = 9;
+
 	if (!empty($list_select_arr[2][0])) {
 		echo "<a href='" . BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[2][2] . "&tab=" . $list_select_arr[2][0] . "&tabNum=" . $list_select_arr[2][1] . "' class='show_all ' id='test-super'>" . SHOW_ALL . "</a>";
 	}
-	
-	if(isset($pagination[1])){
-		if(strpos($pagination[1],'#') !== false){
-			preg_match_all('!\d+!', $pagination[1], $limitPage);
-			$limit = @$limitPage[0][0] * $pagination[0];
+	if(isset($pagination['totalpages'])){
+		if(strpos($pagination['totalpages'],'#') !== false){
+			preg_match_all('!\d+!', $pagination['totalpages'], $limitPage);
+			$limit = @$limitPage[0][0] * $pagination['itemsperpage'];
 		}
 	}
 	?>
-	
+
 	<script>
 	var tab_num = <?php echo $tab_num; ?>;
 	var limit = <?php echo $limit; ?>;
-	var per_page = <?php echo $pagination[0]; ?>;
+	var per_page = <?php echo $pagination['itemsperpage'];?>;
 	if(typeof slideIndex == 'undefined'){
 		var slideIndex = [];
 	}
@@ -1057,7 +1114,7 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 	function showDivs(n,per_page,tab_num) {
 		var i;
 		var box = $("#content"+tab_num+" .boxView");
-		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)} 
+		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)}
 		if (n < Math.abs(per_page)) {slideIndex[tab_num] = box.length} ;
 		for (i = 0; i < box.length; i++) {
 			box[i].classList.remove("showDiv"+tab_num);
@@ -1067,7 +1124,7 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 		var start = parseInt(slideIndex[tab_num] - Math.abs(per_page));
 		for(var item = start; item < slideIndex[tab_num]; item++){
 			box[item].classList.add("hideDiv"+tab_num);
-			box[item].style.display = "block"; 
+			box[item].style.display = "block";
 		}
 	}
 	</script>
@@ -1085,23 +1142,19 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 
 
 function boxViewPagination($pagination, $tab_num, $list_select_arr) {
-
 //    echo "1 - stop here"; die;
 
-	//pr($list_select_arr);
     //Added By Dharmesh 2018-10-12//
-    foreach($pagination as $k=>$v){
-            if(strpos($v, '#') !== FALSE){
-                    preg_match_all('!\d+!',$v, $no_of_pages);
-                    $no_of_pages = $no_of_pages[0][0];
-            }else {
-                    $no_of_pages = 0;
-            }
+    if(isSet($pagination['totalpages'])){
+        preg_match_all('!\d+!',$pagination['totalpages'], $no_of_pages);
+        $no_of_pages = $no_of_pages[0][0];
+    }else{
+        $no_of_pages = 0;
     }
     if(count($pagination)==1) {
-            $pagination = $pagination[0];
+            $pagination = $pagination['itemsperpage'];
     }else{
-            $pagination = $pagination[0];
+            $pagination = $pagination['itemsperpage'];
     }
 
 
@@ -1111,15 +1164,15 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
 
     <br>
     <div class='page_navigation'></div>
-	
+
 
     <?php
 	/* By Shaily Start*/
-	
-	if(isset($list_pagination[1])){
-		if(strpos($list_pagination[1],'#') !== false){
-			preg_match_all('!\d+!', $list_pagination[1], $limitPage);
-			$limit = @$limitPage[0][0] * $list_pagination[0];
+
+	if(isset($list_pagination['totalpages'])){
+		if(strpos($list_pagination['totalpages'],'#') !== false){
+			preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
+			$limit = @$limitPage[0][0] * $list_pagination['itemsperpage'];
 		}
 	}
     if (!empty($list_select_arr[2][0])) {
@@ -1155,7 +1208,8 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
                     <?php
                     if (!empty($pagination) && !empty($no_of_pages)) {
                     ?>
-                        var number_of_pages = <?= $no_of_pages; ?>;
+                        var number_of_pages = Math.ceil(number_of_items / 8);
+                        //var number_of_pages = <?= $no_of_pages; ?>;
                         var without_added_pages = <?= $no_of_pages; ?>;
                         var pagination = <?= $pagination; ?>;
                         var totalleft = without_added_pages*pagination;
@@ -1289,7 +1343,7 @@ function callBxSlider($tab_num,$list_pagination){
 	}
 	?>
 	</div>
-	
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#content<?php echo $tab_num; ?>').bxSlider({
@@ -1307,7 +1361,7 @@ function callBxSlider($tab_num,$list_pagination){
 			});
 		});
 	</script>
-<?php 
+<?php
 }
 
 
@@ -1387,12 +1441,10 @@ function popup_copy($label, $look) {
 }
 
 function popup_add($label, $look) {
-
     return array("label" => $label, "style" => $look);
 }
 
 function popup_openChild($label, $look) {
-
     return array("label" => $label, "style" => $look);
 }
 
@@ -1414,7 +1466,7 @@ function generateFacebookButton($facebook_array){
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.8' // use graph api version 2.8
 		});
-		
+
 		// Check whether the user already logged in
 		/* FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
@@ -1455,7 +1507,7 @@ function generateFacebookButton($facebook_array){
 				dataType: 'json',
 				data: response,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){
@@ -1508,7 +1560,7 @@ function generateGoogleButton($google_array){
 						dataType: 'json',
 						data: { email : googleUser.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
 						beforeSend: function(xhr) {
-							
+
 						},
 						success: function(response){
 							if(response.message){
@@ -1528,10 +1580,10 @@ function generateGoogleButton($google_array){
 				}
 			);
 		}
-		
+
 		googleSignup();
 		</script>
-	<?php 
+	<?php
 	return $googleButton;
 }
 
@@ -1546,22 +1598,20 @@ function generateLinkedinButton($linkedin_array){
 		scope		: r_basicprofile r_emailaddress
 	</script>
 	<script>
-		// Setup an event listener to make an API call once auth is complete
 		function onLinkedInLoad() {
-			IN.UI.Authorize().place();   
-			IN.Event.on(IN, "auth", getProfileData());
-			//IN.Event.on(IN, "auth", function () { getProfileData(); }); 
-			//IN.Event.on(IN, "logout", function () { onLogout(); });
-		} 
-		// Use the API call wrapper to request the member's profile data
-		function getProfileData() {
-			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address").result(displayProfileData).error(onError);
+			IN.UI.Authorize().place();
+			<?php if (stripos($_SERVER['HTTP_USER_AGENT'], 'Edge/') !== false) {  ?>
+				IN.Event.on(IN, "auth", getProfileData());
+			<?php } else {  ?>
+				IN.Event.on(IN, "auth", getProfileData);
+			<?php } ?>
 		}
-		// Handle the successful return from the API call
+		function getProfileData() {
+			//IN.API.Raw("/people/~").result(displayProfileData).error(onError);
+			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address","summary").result(displayProfileData).error(onError);
+		}
 		function displayProfileData(data){
 			var user = data.values[0];
-			
-			console.log(user);
 			/* document.getElementById("picture").innerHTML = '<img src="'+user.pictureUrl+'" />';
 			document.getElementById("name").innerHTML = user.firstName+' '+user.lastName;
 			document.getElementById("intro").innerHTML = user.headline;
@@ -1569,10 +1619,9 @@ function generateLinkedinButton($linkedin_array){
 			document.getElementById("location").innerHTML = user.location.name;
 			document.getElementById("link").innerHTML = '<a href="'+user.publicProfileUrl+'" target="_blank">Visit profile</a>';
 			document.getElementById('profileData').style.display = 'block'; */
-			// Save user data
 			saveUserData(user);
 		}
-		
+
 		// Save user data to the database
 		function saveUserData(userData){
 			$.ajax({
@@ -1582,7 +1631,7 @@ function generateLinkedinButton($linkedin_array){
 				//data: { email : userData.getBasicProfile().getEmail() , name : googleUser.getBasicProfile().getName() },
 				data: userData,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){
@@ -1602,17 +1651,256 @@ function generateLinkedinButton($linkedin_array){
 		function onError(error) {
 			console.log(error);
 		}
-		
+
 		// Destroy the session of linkedin
 		function logout(){
 			IN.User.logout(removeProfileData);
 		}
-		
+
 		// Remove profile data from page
 		function removeProfileData(){
 			//document.getElementById('profileData').remove();
 		}
 		</script>
-	<?php 
+	<?php
 	return $linkedinButton;
+}
+
+
+/**
+ * function to use in all over the project to set the privalleges either have to show or not
+ */
+function isAllowedToShowByPrivilegeLevel($row){
+  $user_privilege = $_SESSION['user_privilege'];
+  $DD_privilege = $row['dd_privilege_level'];
+  $DD_visibility = $row['dd_visibility'];
+  if(is_null($user_privilege)){
+    $user_privilege = 0;
+  }
+  if($DD_visibility ==0){
+    return false;
+  }
+
+  if($user_privilege >= $DD_privilege){
+    return true;
+  }
+  return false;
+}
+
+
+/**
+ * to check either we have to show data with html tags in lists or we have to strip those tags,
+ * by default it strip tags but if there is a keyworld available in list_extra_options
+ *which is "showtags" then we do not strip them
+ */
+function isStripHtmlTags($value){
+  $value = strtoupper(trim($value));
+  $position = strpos($value,"SHOWTAGS");
+  if($position===false){
+    return true;
+  }
+  $all_options = explode(';',$value);
+  if(in_array("SHOWTAGS", $all_options)){
+    return false;
+  }
+  return true;
+}
+
+function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
+  $isExistField = str_replace(';','',$isExistField);
+  if($isExistField == null || $isExistFilter == null){
+    return true;
+  }
+  if(!isset($row[$isExistField])){
+    return true;
+  }
+  $value = trim($row[$isExistField]);
+  if($isExistFilter=='exist'){
+    if(empty($value)){
+      return false;
+    }
+    if(file_exists(USER_UPLOADS.$value)){
+      return true;
+    }else{
+      return false;
+    }
+  }else if($isExistFilter=='not_exist'){
+    if(empty($value)){
+      return true;
+    }
+    if(file_exists(USER_UPLOADS.$value)){
+      return false;
+    }else{
+      return true;
+    }
+  }
+}
+
+function getDefaultListViewExtraOptions($con,$displaypage){
+  $sql1 = $con->query("SELECT * FROM data_dictionary where data_dictionary.display_page='$displaypage' and data_dictionary.table_type='default'");
+  $defaultOptions = $sql1->fetch_assoc();
+  return $defaultOptions;
+}
+
+
+// function renderTheMianStructure($con,$display_page,$page_layout_style,$posittion=''){
+//
+//   $left_sidebar;
+//   $right_sidebar;
+//   $both_sidebar;
+//   $left_sidebar_width;
+//   $right_sidebar_width;
+//   // setLeftRightSideBars($con,$display_page,$posittion,$left_sidebar,$right_sidebar,$both_sidebar,$left_sidebar_width,$right_sidebar_width)
+//   //
+// 	// sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+//
+// }
+//
+// function setLeftRightSideBars($con,$display_page,$posittion,&$left_sidebar,&$right_sidebar,&$both_sidebar,&$left_sidebar_width,&$right_sidebar_width){
+//   if(strtoupper($posittion) =='TOP'){
+//     $positionCheck = ' position="top"';
+//   }else{
+//     $positionCheck = ' position != "top"';
+//   }
+//   $rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' AND $positionCheck ");
+//   $right_sidebar = $left_sidebar = '';
+//   $left_sidebar_width = $right_sidebar_width = 0;
+//   while ($row = $rs->fetch_assoc()) {
+//     $r1 = explode('w', trim($row['tab_num']));
+//     if (!empty($r1[1])) {
+//       if ($r1[0] == 'R1')
+//       $right_sidebar_width = $r1[1];
+//       else
+//       $left_sidebar_width = $r1[1];
+//     }
+//     if ($r1[0] == 'R1') {
+//       $right_sidebar = 'right';
+//     }
+//     if ($r1[0] == 'L1') {
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code Start*/
+//   $navBodyLeftQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-left') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyLeftQuery->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $navBodyRightQuery = $con->query("SELECT * FROM navigation where (display_page='$display_page' OR display_page='ALL' ) AND (menu_location='body-right') AND nav_id > 0 AND loginRequired='1' AND (item_number LIKE '%.0' OR item_number REGEXP '^[0-9]$') ORDER BY item_number ASC");
+//   if($navBodyRightQuery->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Nav Body-Left or Body-right Code End*/
+//   /* Tab TTl1 or Tl2 Start */
+//   $tabLeftExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-L%' AND $positionCheck ");
+//   if($tabLeftExist->num_rows){
+//     if($left_sidebar ==''){
+//       $left_sidebar = 'left';
+//     }
+//   }
+//   $tabRightExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-R%' AND $positionCheck ");
+//   if($tabRightExist->num_rows){
+//     if($right_sidebar ==''){
+//       $right_sidebar = 'right';
+//     }
+//   }
+//   /* Tab TTl1 or Tl2 End */
+//   if ($left_sidebar == 'left' && $right_sidebar == 'right') {
+//     $both_sidebar = 'both';
+//   }
+//
+//   /*
+//    * Check If middle content exist
+//    * If not exist then check the width of aone and asign the other
+//    * or if width not exist then divide 50% each
+//    */
+//   $middleContentExist = true;
+//   $checkMiddleContentQuery = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'  and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND $positionCheck");
+//   if($checkMiddleContentQuery->num_rows == 0 ){
+//     $middleContentExist = false;
+//     if (!empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       // do nothing
+//     } else if (!empty($right_sidebar_width) && empty($left_sidebar_width)) {
+//       $left_sidebar_width = 100 - $right_sidebar_width;
+//     } else if (empty($right_sidebar_width) && !empty($left_sidebar_width)) {
+//       $right_sidebar_width = 100 - $left_sidebar_width;
+//     } else {
+//       if ($both_sidebar == 'both') {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else if ($both_sidebar != 'both' && ( $right_sidebar == 'right' || $left_sidebar == 'left' )) {
+//         $left_sidebar_width = $right_sidebar_width = 50;
+//       } else {
+//         $left_sidebar_width = $right_sidebar_width = 0;
+//       }
+//     }
+//   }
+// }
+
+function showListFilterSelection($row,$filters_srray,$selected_filter_index){
+  $select_menu_id = $row['dict_id'].'filter_select_box';
+  $this_DD_id = $row['dict_id'];
+  echo "<select id='$select_menu_id' data-dd='$this_DD_id' onChange=listFilterChange(this)>";
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    if($key==$selected_filter_index){
+      echo "<option value='$key' selected>$label</option>";
+    }else{
+      echo "<option value='$key' >$label</option>";
+    }
+  }
+  echo "</select>";
+}
+
+function showListViewSelection($row,$filters_srray,$selected_filter_index){
+  $this_DD_id = $row['dict_id'];
+  foreach ($filters_srray as $key => $value) {
+    $label = $value['label'];
+    $checked = '';
+    if($key ==$selected_filter_index){
+      $checked = 'checked';
+    }
+    echo "<label style='margin-left:15px' class='radio-inline'>
+    <input onchange='listViewChange(this)' type='radio'".$checked." name='$this_DD_id' value='$key'>$label
+    </label>";
+  }
+}
+
+function listColumnWidth($tbRow,$minLimit = 100){
+  if(!empty(trim($tbRow['format_length']))){
+  		$colWidth = explode(',',trim($tbRow['format_length']));
+  		$colWidth = $colWidth[0];
+  		if(empty($colWidth) ||  $colWidth<100){
+  			$colStyle = 40;
+  		}
+  }else{
+  	$colWidth = parseFieldType($tbRow);
+  }
+  if($colWidth < $minLimit){
+    $colWidth = $minLimit;
+  }
+
+  return $colWidth;
+}
+
+function calculateWidthsInPercentage($array){
+  $count  = count($array)+1;
+  $total = 0;
+  foreach ($array as $key => $value) {
+    $total = $total+$value;
+  }
+  foreach ($array as $key => $value) {
+    $array[$key] ='"'. ($value*97)/$total.'%"';
+  }
+  return $array;
+}
+
+function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
+  $data= trim($data);
+  if($roundPxls){
+    $width = $width/6.7;
+  }
+  return substr($data, 0, $width);
 }

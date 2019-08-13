@@ -10,6 +10,9 @@ define("CHILD", "Child");
 define("USER", "User");
 
 
+// For Key Fields
+define('KEYFIELD_PLACEHOLDER', "******");
+
 
 define("SITE_TITLE", "Generic Platform");
 define("BRAND_LOGO", "Generic <span>LOGO</span>");
@@ -150,6 +153,14 @@ define("defaultFieldLenText", "40");
 define("defaultFieldLenTextarea", "50");
 define("defaultFieldLenBoolean", "10");
 
+
+/******
+ *
+ * Defining default limit for multi select
+ */
+ define("maxSelectLimit", "5");
+
+
 define("showClear", "true"); ///set rating icon
 define("dropdownSeparator", "&nbsp;");///dropdown separator
 define("favoriteTitle", "Favorite");///FFFR favorite title
@@ -216,6 +227,17 @@ define("pdfInline", "Click Me!");
 define("noFile", "No File!");
 
 
+/************* Notification and event logging tables and veriables**************/
+define("eventLog", "event_log");
+define("eventCodes", "event_codes");
+define("notificationAlertTypes", "notification_alert_types");
+define("notificationLog", "notification_log");
+define("notificationTypes", "notification_types");
+define("EVENT_LOGGING_ON", "ON");
+define("NOTIFICATION_ALERTS_ON", "ON");
+
+
+
 
 /******** Constant use for user_privilege_level *******/
 define("user_privilege_level", "user_privilege_level");
@@ -230,10 +252,12 @@ define("transFail", "Transaction Fail, Please Try again!");
 define("ERROR_403","You don't have enough privilege to view contents");
 
 /******************MAP CONSTANT****************************/
+define("GOOGLE_GEO_API_KEY" , "AIzaSyD2XMNK3swWjkiGUIGxnD34A3nHxDZxHM4");
 define("GOOGLE_MAP_API_KEY" , "AIzaSyB_RG_AlKVthUJnPJ_I73siI_YhkrIhcOk");
-define("MAP_CENTER_LATITUDE" , 28.628454); //float value
-define("MAP_CENTER_LONGITUDE" , 77.376945); //float value
-define("MAP_ZOOM" , 9); //integer
+//define("GOOGLE_MAP_API_KEY" , "AIzaSyBS34pdyzNxNbjrDmaytiyskwFH5vtIRKI");
+define("MAP_CENTER_LATITUDE" , 31.3259); //float value
+define("MAP_CENTER_LONGITUDE" , 74.2037); //float value
+define("MAP_ZOOM" , 10); //integer
 
 /********************SOCIAL CREDENTIALS********************/
 //define("FACEBOOK_APP_ID" , "372901176588464");
@@ -243,7 +267,8 @@ define("LINKEDIN_APP_ID" , "86j4ktoqu4eouz");
 //define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
 
 
-
+//Message to show when a record limit is reached for a list
+define("MAXIMUM_LIMIT_REACHED","Maximum records limit reach, You can not add more records");
 
 /* * *Form labels for PROFILE page** */
 /* THESE ARE NO LONGER NEEDED!

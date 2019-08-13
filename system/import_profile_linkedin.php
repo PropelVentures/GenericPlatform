@@ -9,17 +9,18 @@ if($nav->num_rows > 0){
 	<script type="text/javascript" src="//platform.linkedin.com/in.js">
 		api_key		: <?php echo LINKEDIN_APP_ID. PHP_EOL; ?>
 		authorize	: true
-		scope		: r_basicprofile r_emailaddress 
+		scope		: r_basicprofile r_emailaddress
 		onLoad		: onLinkedInLoad
 	</script>
 	<script>
 		// Setup an event listener to make an API call once auth is complete
 		function onLinkedInLoad() {
+			IN.UI.Authorize().place();
 			IN.Event.on(IN, "auth", getProfileData);
-		} 
+		}
 		// Use the API call wrapper to request the member's profile data
 		function getProfileData() {
-			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address").result(displayProfileData).error(onError);
+			IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-url", "public-profile-url", "email-address","summary").result(displayProfileData).error(onError);
 		}
 		// Handle the successful return from the API call
 		function displayProfileData(data){
@@ -36,7 +37,7 @@ if($nav->num_rows > 0){
 				dataType: 'json',
 				data: userData,
 				beforeSend: function(xhr) {
-					
+
 				},
 				success: function(response){
 					if(response.message){
