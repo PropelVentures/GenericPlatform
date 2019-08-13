@@ -84,24 +84,33 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 				<?php $tbRs = $con->query($tbQry);
 				$sort_index = 0;
 				$count = 0;
+				$mulit_sort = array();
+				if(isset($row['list_sort']) && !empty($row['list_sort'])){
+					$list_sort = explode(';',$row['list_sort']);
+				}
+				array_filter($list_sort);
 				while ($tbRow = $tbRs->fetch_assoc()) {
 					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
 							$count++;
-							if(isset($row['list_sort']) && !empty($row['list_sort'])){
-								$list_sort = explode('-',$row['list_sort']);
-								if(isset($list_sort[0]) && !empty($list_sort[0])){
-									$sort_parameter = $list_sort[0];
+							// if(isset($row['list_sort']) && !empty($row['list_sort'])){
+
+							foreach ($list_sort as $key => $value) {
+								$list_sort1 = explode('~',$value);
+								if(isset($list_sort1[0]) && !empty($list_sort1[0])){
+									$sort_parameter = $list_sort1[0];
 									$sort_order = 'asc';
 								}else{
-									$sort_parameter = $list_sort[1];
+									$sort_parameter = $list_sort1[1];
 									$sort_order = 'desc';
 								}
 								if($tbRow['generic_field_name'] == $sort_parameter){
 										$sort_index=$count;
+										$mulit_sort[$sort_index] = $sort_order;
 								}
 							}
+							//}
 							// $colStyle = '';
 							// if(!empty(trim($tbRow['format_length']))){
 							// 		$colWidth = explode(',',trim($tbRow['format_length']));
@@ -125,7 +134,8 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 						}
 						//Code Change for Task 5.4.22 End
 					}
-                } ?>
+                }
+                ?>
             </tr>
 		</thead>
 		<tbody>
@@ -278,13 +288,23 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
 			pagingType: 'full_numbers',
 			lengthMenu: <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			order: [<?php echo $sort_index; ?>, <?php echo "'" . $sort_order . "'"; ?>],
+			aaSorting: [
+					<?php 
+					$str='';
+					foreach ($mulit_sort as $key => $value) {
+						$str .= "['".$key."','".$value."'],"; 
+					}
+					$str  =rtrim($str,",");
+					?>
+			<?php echo $str;?>],
 			columnDefs:[
 				<?php foreach ($column_widths_array as $key => $value) { ?>
 						{ "width": <?=$value?>, "targets": [<?=$key?>] },
 				<?php }?>
 			],
-			bStateSave: true
+			bStateSave: true,drawCallback: function() {
+			    this.api().state.clear();
+			}
 		});
 
 		//Fixing the bug for default pagination values for the datatable//

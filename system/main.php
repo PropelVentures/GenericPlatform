@@ -192,7 +192,13 @@
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
-						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status,'','',$list_sort);
+						if($list_sort!=''){
+							$field_str = getListSortingValue($list_sort);
+							$field_str = rtrim($field_str,',');
+						}else{
+							$field_str = 'tab_num';
+						}
+						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status,'false','true',$field_str);
 					}
 				} else {
 

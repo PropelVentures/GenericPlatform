@@ -67,3 +67,5 @@ background-color: gray;
 padding: 20px;
 border: 4px;
 }
+.cus-btn{padding: 2px 20px;background-color: #2199e8;color: #fff;}
+.cus-btn:hover{background-color: #000;color: #fff;}

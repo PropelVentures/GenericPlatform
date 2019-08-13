@@ -1208,7 +1208,8 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
                     <?php
                     if (!empty($pagination) && !empty($no_of_pages)) {
                     ?>
-                        var number_of_pages = <?= $no_of_pages; ?>;
+                        var number_of_pages = Math.ceil(number_of_items / 8);
+                        //var number_of_pages = <?= $no_of_pages; ?>;
                         var without_added_pages = <?= $no_of_pages; ?>;
                         var pagination = <?= $pagination; ?>;
                         var totalleft = without_added_pages*pagination;
