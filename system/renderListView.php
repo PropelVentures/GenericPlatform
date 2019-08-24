@@ -73,6 +73,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	?>
 
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
+
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
 	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed !important;
@@ -84,33 +85,25 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 				<?php $tbRs = $con->query($tbQry);
 				$sort_index = 0;
 				$count = 0;
-				$mulit_sort = array();
-				if(isset($row['list_sort']) && !empty($row['list_sort'])){
-					$list_sort = explode(';',$row['list_sort']);
-				}
-				array_filter($list_sort);
 				while ($tbRow = $tbRs->fetch_assoc()) {
 					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
+						
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
 							$count++;
-							// if(isset($row['list_sort']) && !empty($row['list_sort'])){
-
-							foreach ($list_sort as $key => $value) {
-								$list_sort1 = explode('~',$value);
-								if(isset($list_sort1[0]) && !empty($list_sort1[0])){
-									$sort_parameter = $list_sort1[0];
+							if(isset($row['list_sort']) && !empty($row['list_sort'])){
+								$list_sort = explode('-',$row['list_sort']);
+								if(isset($list_sort[0]) && !empty($list_sort[0])){
+									$sort_parameter = $list_sort[0];
 									$sort_order = 'asc';
 								}else{
-									$sort_parameter = $list_sort1[1];
+									$sort_parameter = $list_sort[1];
 									$sort_order = 'desc';
 								}
 								if($tbRow['generic_field_name'] == $sort_parameter){
 										$sort_index=$count;
-										$mulit_sort[$sort_index] = $sort_order;
 								}
 							}
-							//}
 							// $colStyle = '';
 							// if(!empty(trim($tbRow['format_length']))){
 							// 		$colWidth = explode(',',trim($tbRow['format_length']));
@@ -134,8 +127,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 						}
 						//Code Change for Task 5.4.22 End
 					}
-                }
-                ?>
+                } ?>
             </tr>
 		</thead>
 		<tbody>
@@ -159,12 +151,13 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 					}
 
 					if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-						continue;
+						break;
 					}
 
 					$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
 					$rs = $con->query($qry);
-					if (!empty($list_select) || $table_type == 'child') {
+					
+					if (!empty($list_select) || empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
 							exit('function calls');
 						} elseif (strpos($list_select, '.php')) {
@@ -192,7 +185,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 									$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 								}
 							} ?>
-							<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr">
+							<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr<?=(empty($list_select) ? ' list_row_no_clickable' : '')?>">
 								<td class='dt-body-center'>
 									<?php $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
 									/*
@@ -257,9 +250,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 						} else {
 							$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 						}
-						?>
-
-					<?php } /// end of mainIF ?>
+					}/// end of mainIF ?>
 							</tr>
 				<?php
 				$count++;
@@ -270,6 +261,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	<?php
 
 		global $popup_menu;
+		echo "<pre>", print_r($popup_menu); die('-');
 		if ($popup_menu['popupmenu'] == 'true') {
 			$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
 			$_SESSION['popup_munu_array'][] = $popup_menu;
@@ -281,7 +273,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	<?php $page_no = $list_pagination['itemsperpage']; ?>
 		$('#table_<?php echo $dict_id;?>').DataTable({
 			pageLength: <?php echo $page_no; ?>,
-  		scrollX: <?php echo $list_pagination['scrollX'];?>,
+			scrollX: <?php echo $list_pagination['scrollX'];?>,
 			paging: <?php echo $list_pagination['paging'];?>,
 			scrollY:<?php echo $list_pagination['scrollY'];?>,
 			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
@@ -290,23 +282,13 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			lengthChange: <?php echo $list_pagination['lengthChange'];?>,
 			pagingType: 'full_numbers',
 			lengthMenu: <?php if($page_no!='ALL') { ?> [[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100";}?>],[<?php if(!empty($page_no)){echo $page_no.','.(2*$page_no).','.(3*$page_no).','.(4*$page_no);}else{ echo "10,25,50,100,'ALL'";}?>]] <?php }else { ?> [ [10, 25, 50, -1], [10, 25, 50, "ALL"] ] <?php } ?>,
-			aaSorting: [
-					<?php 
-					$str='';
-					foreach ($mulit_sort as $key => $value) {
-						$str .= "['".$key."','".$value."'],"; 
-					}
-					$str  =rtrim($str,",");
-					?>
-			<?php echo $str;?>],
+			order: [<?php echo $sort_index; ?>, <?php echo "'" . $sort_order . "'"; ?>],
 			columnDefs:[
 				<?php foreach ($column_widths_array as $key => $value) { ?>
 						{ "width": <?=$value?>, "targets": [<?=$key?>] },
 				<?php }?>
 			],
-			bStateSave: true,drawCallback: function() {
-			    this.api().state.clear();
-			}
+			bStateSave: true
 		});
 
 		//Fixing the bug for default pagination values for the datatable//

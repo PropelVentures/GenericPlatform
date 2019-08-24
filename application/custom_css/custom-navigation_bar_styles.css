@@ -49,18 +49,12 @@
     background-color: black;
 }
 
-
-.cj_test_nav1
+label.cj_test_nav2
 {
     color: red;
     background-color: black;
 }
 
-label.cj_test_nav2
-{
-color: red;
-background-color: black;
-}
 input.cj_test_nav2
 {
     color: green;
@@ -73,6 +67,7 @@ input.cj_test_nav2
     padding: 20px;
     border: 4px;
 }
+
 /* Edited by k */
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
 body *, body{font-family: 'Lato', sans-serif !important;}
@@ -102,5 +97,8 @@ body #myCarousel .carousel-caption .btn:hover {background-color: #090f49;border-
 body .section-title{color: #090f49 !important; text-transform: uppercase; font-weight: 400; border-left: 4px solid #1d2891; padding-left: 15px;border-left: 9px solid #8d8fb7;}
 
 body>.parallax-mirror{opacity: 1 !important}
-.cus-btn{padding: 2px 20px;background-color: #2199e8;color: #fff;}
-.cus-btn:hover{background-color: #000;color: #fff;}
+
+@media only screen and (max-width:768px){
+    li.nav_item.nav_test_1{position: relative !important}
+    li.nav_item.nav_test_1 a{color: #4c4c4c}
+}

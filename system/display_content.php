@@ -514,6 +514,7 @@ function display_content($row) {
             }else if($show_with_edit_button){
               $row3['temp_dd_editable'] = '1';
             }
+
 						formating_Update($row3, $method = 'edit', $urow, $image_display);
 
 					}//// end of while loop

@@ -571,7 +571,7 @@ function generateTopNavigation($navItems,$loginRequired){
 
 	if(!empty($navItems)){
 		foreach($navItems as $parent){
-			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id']) || $parent['item_number']==0)){
+			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
 				continue;
 			}
       $label = dislayUserNameSelector($parent['item_label']);
@@ -657,30 +657,11 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
-									<a onClick=urlVariables(this) class='$disable_child $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>"
-										.$item_icon.
+									<a onClick=urlVariables(this) class='$disable_child $item_style' $target_blank data-link='$target' href='javascript:;' title='$title' style='$nav_css_code'>".
+										$item_icon.
 										getSaperator($label)."
 									</a>
-								</li>
-                <script>
-                                function urlVariables(e){
-                                  var target = $(e).data('link');
-                                  if(target != '' && target != null){
-                                    if (!e) e = window.event;
-
-                                    if (!e.ctrlKey) {
-                                      $.ajax({
-                                          method: 'GET',
-                                          url: 'ajax-actions.php',
-                                          data:{ values_to_unset: 'abc' }
-                                      })
-                                      .done(function (msg) {
-                                          window.location = target;
-                                      });
-                                    }
-                                  }
-                                }
-                                </script>";
+								</li>";
 						break;
 					}
 				}
@@ -704,7 +685,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
-									<a onClick=urlVariables(this) class='$disable $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>
+									<a onClick=urlVariables(this) class='$disable $item_style' $target_blank data-link='$target' href='javascript:;' title='$title' style='$nav_css_code'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>
@@ -712,18 +693,15 @@ function generateTopNavigation($navItems,$loginRequired){
                                 function urlVariables(e){
                                   var target = $(e).data('link');
                                   if(target != '' && target != null){
-                                    if (!e) e = window.event;
-
-                                    if (!e.ctrlKey) {
-                                      $.ajax({
-                                          method: 'GET',
-                                          url: 'ajax-actions.php',
-                                          data:{ values_to_unset: 'abc' }
-                                      })
-                                      .done(function (msg) {
-                                          window.location = target;
-                                      });
-                                    }
+                                    $.ajax({
+                                        method: 'GET',
+                                        url: 'ajax-actions.php',
+                                        data:{ values_to_unset: 'abc' }
+                                    })
+                                    .done(function (msg) {
+                                        console.log(target)
+                                        window.location = target;
+                                    });
                                   }
                                 }
                                 </script>
@@ -1345,26 +1323,5 @@ function findAndSetCategoryStyles($con,$category_styles){
     $dataSet[$style[$style_refrence_id]]['icon'] =$style['map_icon'];
   }
   return $dataSet;
-}
-function getListSortingValue($list_sort){
-  $field_lists = explode(';',$list_sort);
-  $field_str = '';
-  foreach ($field_lists as $key => $value) {
-      if(strpos($value,'~') !==false){
-          $value = str_replace('~', '', $value);
-          if($key==0){
-              $field_str .= $value.' DESC'; 
-          }else{
-              $field_str .= ','.$value.' DESC'; 
-          }
-      }else{
-          if($key==0){
-              $field_str .= $value; 
-          }else{
-              $field_str .= ','.$value; 
-          }
-      }
-  }
-  return $field_str;
 }
 ?>

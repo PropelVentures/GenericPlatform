@@ -65,6 +65,7 @@ function update($table, $data, $where, $config = 'false') {
     $ws = whereString($where);
     $us = updateString($data);
 //    echo ("UPDATE $table SET $us WHERE $ws");echo "<br>";
+	
 
     $con = connect($config);
     if(!$status = mysqli_query($con, "UPDATE $table SET $us WHERE $ws") )
@@ -88,9 +89,8 @@ function updateString($data) {
     $i = array();
     foreach ($data as $key => $value) {
           //5.4.202 trimiing spaces
-        // trimSpacesAroundSepraters($value,',');
-        // trimSpacesAroundSepraters($value,';',',');
-
+        trimSpacesAroundSepraters($value,',');
+        trimSpacesAroundSepraters($value,';',',');
         $i[] = "$key = '$value'";
     }
 
@@ -413,6 +413,8 @@ function trimSpacesAroundSepraters(&$string, $separator,$unsetIfRaw = false){
           }
         }
       }
+	  
+	  $string = rtrim($string,$separator);
     }
   }
 }

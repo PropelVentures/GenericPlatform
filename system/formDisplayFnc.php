@@ -114,6 +114,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 		if(!loginNotRequired() && !itemEditable($row['editable'])){
 			$row['strict_disabled'] = 'disabled';
 		}
+
         $fieldValue = ($urow != 'false') ? $urow[$field] : '';
     }
 
@@ -454,6 +455,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 				}
 				if(isKeyField($row)){
 					$place_holder ='';
+					
 					if(empty($fieldValue) && $fieldValue!==0 && $fieldValue!=='0'){
 						$place_holder =KEYFIELD_PLACEHOLDER;
 					}

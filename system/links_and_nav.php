@@ -231,15 +231,21 @@ function headersAndSubHeaders($display_page){
  * Navigations fucntions starts here
  */
 
-function Navigation($page, $menu_location="header") {
+function Navigation($page, $menu_location = 'header') {
     $con = connect();
     $rs = $con->query("SELECT * FROM navigation where display_page='$page' and item_number=0 and menu_location='$menu_location' AND item_target='override'");
 
-    /*$classForNavBr2 = '';
+    $classForNavBr2 = '';
     if($menu_location=='header2'){
       $classForNavBr2 = 'navbar-lower';
-    }*/
+      echo "<style>
+      .navbar-lower{
+        margin-top:75px;
+        z-index:800;
+      }
 
+      </style>";
+    }
     /*
      *
      * Checking whether user have access to current page or not
@@ -258,7 +264,7 @@ function Navigation($page, $menu_location="header") {
     }
     ?>
     <!-- Navigation starts here -->
-    <div class="" >
+    <div class="navbar navbar-default navbar-fixed-top <?=$classForNavBr2 ?>">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">
@@ -290,8 +296,8 @@ function Navigation($page, $menu_location="header") {
                     }
                 }
             ?>
-            <?php if ($nav_menu_location != 'LOGO-RIGHT' && $menu_location == 'header') {
-              /*if($menu_location=='header'){*/ ?>
+            <?php if ($nav_menu_location != 'LOGO-RIGHT') {
+              if($menu_location=='header'){ ?>
                 <a class="navbar-brand logo <?php echo $logo_position ?>" href="<?php echo $logo_link ?>">
                     <?php
 
@@ -301,7 +307,7 @@ function Navigation($page, $menu_location="header") {
                         echo $logo_text;
                     ?>
                 </a>
-            <?php /*}*/ }?>
+            <?php } }?>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">
@@ -310,12 +316,27 @@ function Navigation($page, $menu_location="header") {
 					             $loginRequired = true;
                 } else {
 					$loginRequired = false;
+					?>
+					<!--
+					<li>
+						<a href="<?php echo BASE_URL_SYSTEM ?>login.php" class="top-btns btn-primary login"><i class="fa fa-sign-in"></i>
+							<?php echo LOGIN_MENU ?>
+						</a>
+					</li>
+					<li>
+						<a href="<?php echo BASE_URL_SYSTEM ?>register.php" class="top-btns btn-primary"><i class="fa fa-edit"></i>
+							<?php echo SIGNUP_MENU ?>
+						</a>
+					</li>
+					--!>
+
+				<?php
 				}
 				echo $menu = generateTopNavigation($navItems,$loginRequired);
 				?>
-            <?php ///////else if ends here ?>
+            <?php ///////else if ends here                                                                                           ?>
 
-            <?php if ($nav_menu_location == 'LOGO-RIGHT' && $menu_location == 'header') { ?>
+            <?php if ($nav_menu_location == 'LOGO-RIGHT') { ?>
                 <a class="navbar-brand logo right" href="<?php echo $logo_link ?>">
                     <?php
                         if ($logo_image != '') {
@@ -359,7 +380,7 @@ function GetSideBarNavigation($display_page,$menu_location){
 function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 	$con = connect();
 	if($tabNum){
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'header%'  ORDER BY table_type ASC");
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num='$tabNum' AND table_type LIKE 'header%' ORDER BY table_type ASC");
 	} else {
 		if (empty($_GET['tabNum'])) {
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page' and tab_num REGEXP '^[0-9]+$' AND table_type LIKE 'header%' AND tab_num >'0' order by tab_num");
@@ -368,7 +389,7 @@ function ShowTableTypeHeaderContent($display_page,$tabNum=''){
 		} else {
 			$tabNum = $_GET['tabNum'];
 		}
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'header%' ORDER BY table_type ASC");
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'header%'  ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
@@ -401,7 +422,7 @@ function ShowTableTypeSubHeaderContent($display_page,$tabNum=''){
 		} else {
 			$tabNum = $_GET['tabNum'];
 		}
-		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND table_type LIKE 'subheader%' ORDER BY table_type ASC");
+		$tableTypeHeaderQuery = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND table_type LIKE 'subheader%' ORDER BY table_type ASC");
 	}
 	if($tableTypeHeaderQuery->num_rows > 0){
 		While($row = $tableTypeHeaderQuery->fetch_assoc()) {
@@ -813,6 +834,8 @@ function Footer($page, $menu_location = 'footer') {
 				?>
             <?php ///////else if ends here                                                                                           ?>
 
+          
+
             </ul>
         </div>
         <!--/.nav-collapse -->
@@ -822,4 +845,41 @@ function Footer($page, $menu_location = 'footer') {
     <?php
 }
 ////////main navigation function ends here///
+
+/**
+* Function which generates the header section 
+* for pages (header1, header2, subheader1, subheader2)
+*/
+function topComponents($dict_id){
+	$con = connect();
+	
+	// Get DD components from database
+	$top_query = $con->query('SELECT * FROM data_dictionary WHERE dict_id = '.$dict_id);
+	
+	if($top_query->num_rows > 0) {
+		while($row = $top_query->fetch_assoc()) {
+			if (isAllowedToShowByPrivilegeLevel($row)) { // check privilege level
+				$header = $row['description'];
+				$dd_css_class = $row['dd_css_class'];
+        		$css_style = $row['dd_css_code'];
+				$url = getDDUrl($row['list_select']);
+				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
+				
+				if(strpos($row["table_type"], "header") === 0) { // show different DIV structure for header
+				?>
+					<h1 class="<?php echo $dd_css_class; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?><?= $css_style?>">
+						<?php echo $header; ?>
+					</h1>
+				<?php
+				} else if(strpos($row["table_type"], "subheader") === 0) { // show different DIV structure for subheader
+				?>
+					<h2 class="<?php echo $dd_css_class; ?>" style="width:<?php echo $width; ?>;height:<?php echo $height; ?>;text-align:<?php echo $align; ?><?= $css_style?>>">
+						<?php echo $header; ?>
+					</h2>
+				<?php
+				}
+			}
+		}
+	}
+}
 ?>
