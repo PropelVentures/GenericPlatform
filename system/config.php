@@ -77,11 +77,6 @@ define('PROJECT_LAUNCH_APPROVAL_NEEDED', false);
 
 define('EMPTY_LISTS_MESSAGE','No Record Found');
 
-/* ****** Top & Bottom table types @starts ******* */
-define("DD_DEFAULT_TOP", "'header', 'header1', 'header2', 'subheader1', 'subheader2'");
-define("DD_DEFAULT_BOTTOM", "");
-/* ****** Top & Bottom table types @ends ******* */
-
 $MYPATH = APP_DIR;
 
 

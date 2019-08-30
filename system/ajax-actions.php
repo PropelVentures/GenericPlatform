@@ -4,7 +4,7 @@
 
 require_once 'functions_loader.php';
 
-echo $_SESSION['child_return_url'];
+// echo $_SESSION['child_return_url'];
 if(!empty($_GET['values_to_unset'])){
 
     unset($_SESSION['child_return_url']);

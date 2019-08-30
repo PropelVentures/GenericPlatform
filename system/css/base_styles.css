@@ -327,8 +327,9 @@ pdf-content-clone {
 .scrollToTop {
     width: 100px;
     height: 130px;
-    padding: 10px 0px 5px 20px;
+    padding: 10px;
     text-align: center;
+
     font-weight: bold;
     color: #444;
     text-decoration: none;
@@ -336,8 +337,7 @@ pdf-content-clone {
     bottom: 40px;
     right: 40px;
     display: none;
-    background: url('../system_images/arrow.png') no-repeat 30px 22px;
-    background-size: 50px;
+    background: url('../system_images/arrow.png') no-repeat -8px 20px;
     opacity: .5;
     -webkit-transition: opacity .3s 0s;
     -moz-transition: opacity .3s 0s;

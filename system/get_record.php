@@ -22,7 +22,7 @@ function get_single_record($db_name, $pkey, $search) {
     $con = connect();
 
 //exit("select * from $db_name where $pkey='$search'");
-	
+
     $user = $con->query("select * from $db_name where $pkey='$search'");
 	if($user>num_rows){
 		return $user->fetch_assoc();

@@ -21,8 +21,16 @@
 	//exit( $_SESSION['add_url_list']);
 	///// copy these two files for displaying navigation/////
 
-	Navigation($display_page,'header');
-	Navigation($display_page,'header2');
+	?>
+	
+	<div class="navbar navbar-default navbar-fixed-top">
+		<?php 
+			Navigation($display_page,'header');
+			Navigation($display_page,'header2');
+		?>
+
+	</div>
+	<?php
 
 	$haveParalax = false;
 	ShowTableTypeParallaxBanner($display_page,$haveParalax);
@@ -34,7 +42,6 @@
 
 ?>
 <div class="container main-content-container">
-
 	<?php
 		/* CHECKING NAV HAS VISIBILITY  START*/
 		if(navHasVisibility()){ ?>
@@ -44,7 +51,13 @@
 				* Finding page layout by DD->tab_num
 			*/
 			$con = connect();
-			Get_Data_FieldDictionary_Record('top',$_SESSION['tab'], $display_page, 'true');
+			$cond = 'display_page="'.$display_page.'"';
+			$rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
+			$list_sort = '';
+			while ($row1 = $rsList->fetch_assoc()) {
+				$list_sort = $row1['list_sort'];
+			}
+			Get_Data_FieldDictionary_Record('above',$_SESSION['tab'], $display_page, 'true');
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 			$right_sidebar = $left_sidebar = '';
 			$left_sidebar_width = $right_sidebar_width = 0;
@@ -94,7 +107,6 @@
 			if ($left_sidebar == 'left' && $right_sidebar == 'right') {
 				$both_sidebar = 'both';
 			}
-
 			/*
 			 * Check If middle content exist
 			 * If not exist then check the width of aone and asign the other
@@ -159,6 +171,7 @@
 		<?php
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
 				serial_layout($display_page, $style);
+
 			} else {
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
@@ -170,50 +183,51 @@
 					 GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
 					fffr_icons($display_page);
-				
-					// Top area
-					Get_Data_FieldDictionary_Record('top', $tab, $display_page, $tab_status);
-					//topHeaders($display_page);
-					//headersAndSubHeaders($display_page);
+
+					headersAndSubHeaders($display_page);
 
 					/* Tab Navigation Start*/
-					//Get_Tab_Links($display_page,'center');
+					Get_Tab_Links($display_page,'center');
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
-						Get_Data_FieldDictionary_Record('body', $tab, $display_page, $tab_status);
+						if($list_sort!=''){
+							$field_str = getListSortingValue($list_sort);
+							$field_str = rtrim($field_str,',');
+						}else{
+							$field_str = 'tab_num';
+						}
+						Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status,'false','true',$field_str);
 					}
-					
-					//bottomFooter($display_page);
-					Get_Data_FieldDictionary_Record('bottom', $tab, $display_page, $tab_status);
 				} else {
-					$tab_status = 'false';
+
 					$_SESSION['display2'] = '';
 					unset($_SESSION['display2']);
 					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
 					fffr_icons($display_page);
-					
-					//Get_Data_FieldDictionary_Record('top', $_SESSION['tab'], $display_page, $tab_status);
-					//topHeaders($display_page);
-					//headersAndSubHeaders($display_page);
-	
+
+					headersAndSubHeaders($display_page);
+
 					echo Get_Links($display_page);
 					global $tab;
-					
+					$tab_status = 'false';
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
 						if (isset($_SESSION['tab'])) {
-						 	Get_Data_FieldDictionary_Record('body', $_SESSION['tab'], $display_page, $tab_status);
+
+							Get_Data_FieldDictionary_Record('',$_SESSION['tab'], $display_page, $tab_status);
 						} else {
-							Get_Data_FieldDictionary_Record('body', $tab, $display_page, $tab_status);
+
+							Get_Data_FieldDictionary_Record('',$tab, $display_page, $tab_status);
 						}
-					}
-					//Get_Data_FieldDictionary_Record('bottom', $tab, $display_page, $tab_status);
-					//bottomFooter($display_page);
+						}
 				}/// tab_num else ends here
 			}//// page_layout
+
+
+
 		?>
 	<?php if($middleContentExist){ ?>
 	<div style="clear:both"></div>
@@ -1034,5 +1048,5 @@
 </script>
 <?php
   echo "<div style='height:25px'></div>";
-	Footer($display_page);
+	Footer($display_page,'footer2');
 ?>
