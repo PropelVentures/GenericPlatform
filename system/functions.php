@@ -1143,6 +1143,7 @@ function setUserDataInSession($con,$user){
     $_SESSION['current-user-profile-image'] = $user['image'];
 }
 
+//Code Change for Task 8.5.101 Start
 function log_event($display_page,$action,$senderId=false,$reciverId=false){
   if(EVENT_LOGGING_ON !=='ON'){
     return;
@@ -1150,10 +1151,10 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
   $action = strtoupper(trim($action));
   $event_log_code = get('event_log_codes',"event_name='$action'");
   $event_action_default = false;
-  $event_notification_alert_type_default = false;
+  $notification_alert_type = false;
   if(!empty($event_log_code)){
     $event_action_default = $event_log_code['event_action_default'];
-    $event_notification_alert_type_default = $event_log_code['event_notification_alert_type_default'];
+    $notification_alert_type = $event_log_code['notification_alert_type'];
   }
 
   if($senderId!== false){
@@ -1163,16 +1164,16 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
     $userId = $_SESSION['uid'];
     $targetUserId = $_SESSION['uid'];
   }
-  if($event_action_default && $event_action_default>0){
+  if($event_action_default ){
     $data = [];
     $data['display_page'] = $display_page;
     $data['action_taken'] = $action;
     $data['user_id'] = $userId;
     $data['target_user_id'] = $targetUserId;
     $data['event_log_code'] = $event_log_code['event_log_code_id'];
-    $data['notification_type'] = $event_notification_alert_type_default;
+    $data['notification_type'] = $notification_alert_type;
     $log_id =insert('event_log',$data);
-    log_notification($event_notification_alert_type_default,$display_page,$action,$userId,$targetUserId);
+    log_notification($notification_alert_type,$display_page,$action,$userId,$targetUserId);
   }
 }
 
@@ -1187,47 +1188,52 @@ function log_notification($type,$displayPage,$action,$senderId,$reciverId){
   $data['response_type'] = 0;
   $data['alert_type'] = 0;
   $notif_id = insert('notification_log',$data);
-  if($type>1){
+  if($type=='Email' || $type=='Alert 1'){
     send_notification_alert($type,$displayPage,$action,$senderId,$reciverId);
   }
 }
 
 function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId){
-  if($type=='2'){
+  if($type=='Email'){
     sendEmailNotification($displayPage,$action,$senderId,$reciverId);
-  }else if($type=='3'){
+  }else if($type=='Alert 1'){
     //push notification
   }
 }
+//Code Change for Task 8.5.101 End
 
 function sendEmailNotification($page,$action,$senderId,$reciverId){
+  $str =  $_SERVER['HTTP_HOST'];
   $sender = getUserData($senderId);
   $reciver = getUserData($reciverId);
-	$to = $reciver['email'];
-	$subject = "Action Notification | Generic Platform";
-	$message = "<html><head><title>Notification</title></head><body>";
-	$message .= "Hi ".$reciver['name'].",<br/>";
+      $to = $reciver['email'];
+      $subject = "Action Notification | Generic Platform";
+      $message = "<html><head><title>Notification</title></head><body>";
+      $message .= "Hi ".$reciver['name'].",<br/>";
   $message .= "An Action '".$action."' has occured at '".$page."' page";
   if($senderId != $reciverId){
     $message .=" by ".$sender['name'].".";
   }
   $message .= "<br/>";
-	$message .= "<br/><br/>Regards,<br>Generic Platform";
-	$message .= "</body></html>";
-	// Always set content-type when sending HTML email
-	$headers = "MIME-Version: 1.0" . "\r\n";
-	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-	// More headers
-	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
-	try{
-		$sent = mail($to,$subject,$message,$headers);
-		if($sent){
-			return true;
-		}
-		return "Unable to send email";
-	} catch(Exception $e){
-		return $e->getMessage();
-	}
+  $message .= "<br/><br/>Regards,<br>Generic Platform";
+  $message .= "</body></html>";
+  // Always set content-type when sending HTML email
+  $headers = "MIME-Version: 1.0" . "\r\n";
+  $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+  // More headers
+  //$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+  //Code Change for Task 8.4.104 Start
+  $headers .= 'From: Generic Platform<noreply@'.$str.'>' . "\r\n";
+  //Code Change for Task 8.4.104 End
+  try{
+    $sent = mail($to,$subject,$message,$headers);
+    if($sent){
+      return true;
+    }
+    return "Unable to send email";
+  } catch(Exception $e){
+    return $e->getMessage();
+  }
 }
 
 function sendMessageAsEmail($to,$messageText){

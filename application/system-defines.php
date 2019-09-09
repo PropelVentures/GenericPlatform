@@ -153,6 +153,19 @@ define("defaultFieldLenText", "40");
 define("defaultFieldLenTextarea", "50");
 define("defaultFieldLenBoolean", "10");
 
+//Code Change for Task 8.4.603 Start
+define("defaultFieldLenIntegerMax", "30");
+define("defaultFieldLenOtherIntegerMax", "20");
+define("defaultFieldLenTextMax", "40");
+define("defaultFieldLenTextareaMax", "50");
+define("defaultFieldLenBooleanMax", "10");
+
+define("defaultFieldLenIntegerMin", "15");
+define("defaultFieldLenOtherIntegerMin", "10");
+define("defaultFieldLenTextMin", "12");
+define("defaultFieldLenTextareaMin", "25");
+define("defaultFieldLenBooleanMin", "5");
+//Code Change for Task 8.4.603 End
 
 /******
  *

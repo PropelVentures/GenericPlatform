@@ -36,3 +36,6 @@
     font-size: 16pt;
 
 }
+/*Code Change for Task 8.4.601 Start*/
+.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody td{padding: 10px 8px; box-sizing: content-box; min-width: 140px;}
+/*Code Change for Task 8.4.601 End*/
