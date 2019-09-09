@@ -122,7 +122,10 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							// 			// $colStyle = "style='width:100px'";
 							// 		}
 							// }
-						$colWidth = listColumnWidth($tbRow);
+						//$colWidth = listColumnWidth($tbRow);
+						//Code Change for Task 8.4.603 Start
+						$colWidth = listColumnMinMaxWidth($tbRow);
+						//Code Change for Task 8.4.603 End
 						$$column_widths_array_with_name[$tbRow['generic_field_name']] = $colWidth;
 						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
