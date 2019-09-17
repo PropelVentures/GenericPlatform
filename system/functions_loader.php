@@ -22,6 +22,7 @@ require_once("fffr_icons.php");
 require_once("sidebars.php");
 
 require_once("links_and_nav.php");
+
 require_once("serial_layout.php");
 require_once("display_content.php");
 require_once("get_data_fd_record.php");

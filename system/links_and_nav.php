@@ -484,7 +484,7 @@ function ShowTableTypeParallaxBanner($display_page,&$haveParalax,$tabNum=''){
 				$url = getDDUrl($row['list_select']);
 				list($height,$width,$align,$divClass) =  parseListExtraOption($row['list_extra_options']);
 				if(!empty($banner)) {
-          $haveParalax = true;?>
+          			$haveParalax = true;?>
 
           <script src="<?= BASE_URL_SYSTEM ?>js/parallax.min.js"></script>
 

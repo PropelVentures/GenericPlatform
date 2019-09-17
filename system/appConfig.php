@@ -1,5 +1,8 @@
 <?php
-
+/*
+*  start_app_session function for making the session of the user and same it 
+*  in the specific path on the server to cross check the user session or not 
+*/
 function start_app_session(){
   //to set the session saving path .
   $DirectoryPath = "/tmp"."/".$_SERVER['HTTP_HOST'];
@@ -11,6 +14,10 @@ function start_app_session(){
 start_app_session();
 
 require_once("../application/system-config.php");
+
+/* The dbFunctions.php file responsible for making the connecting with db and all 
+*the action like get data, update, fetch, delete and other function are defined 
+*/
 require_once("dbFunctions.php");
 
 $now = time();

@@ -1,15 +1,33 @@
 <?php
-
+	/*
+    *	This the main layout page or parent page which defines how the  page looks according to URL.
+	* 	It's for including all the Class, Lib and Component (header,footer, sidebar, database connection, 
+	*	session for user login/	logout check ).
+	* 	Its identified which page load by getting value from the "display" parameters from the URL.
+	*	Layout of the page is defind by the "layout" parameters from the URL.
+	*   Which Css file will be include defind by the "style" parameters from the URL.
+	*/
 	require_once("functions_loader.php");
+
 	include("header.php");
 
+	
+	// get which page have to render as per the user request 
 	$display_page = $_GET['display'];
 
 	//log event
 	log_event($_GET['display'],'page view');
 
+	// Which layout have to use for the page.
 	$page_layout_style = $_GET['layout'];
+
+	// get the css file name for the current page 
 	$style = $_GET['style'];
+
+	/* Check if the tab value is set or not.
+	*  If yes then add that value in the current user session tab value.
+	*  If not then set it blank.
+	*/
 	if (isset($_GET['tab']) || !empty($_GET['tab'])) {
 			$_SESSION['tab'] = $_GET['tab'];
 	} else {
@@ -17,25 +35,42 @@
 		unset($_SESSION['tab']);
 	}
 	unset($_SESSION['popup_munu_array']);
-	//echo($_SESSION['return_url']) . "<br>";
-	//exit( $_SESSION['add_url_list']);
-	///// copy these two files for displaying navigation/////
 
 	?>
 	
 	<div class="navbar navbar-default navbar-fixed-top">
 		<?php 
+
+			/*
+			* "Navigation" is function which is inhireted from the links_and_nav.php file, Which is include functions_loader.php 
+			*  Navigation this function take two params 
+			*  		display_page => name of the page 
+			*		header => this is the location of the menu
+			*  For details defination is given in the "links_and_nav.php" file	
+			*/	
+	
 			Navigation($display_page,'header');
 			Navigation($display_page,'header2');
 		?>
 
 	</div>
 	<?php
+		/*
+		* "ShowTableTypeParallaxBanner" is function which is inhireted from the links_and_nav.php file, Which is include functions_loader.php 
+		*  Navigation this function take two params 
+		*  		display_page => name of the page 
+		*		haveParalax => its contents bool true/false , default value is false
+		*  For details defination is given in the "links_and_nav.php" file	
+		*/	
+
 
 	$haveParalax = false;
 	ShowTableTypeParallaxBanner($display_page,$haveParalax);
 
-	//////////////
+	/* 
+	* if that is the homepage then include this file
+	*/
+
 	if ($display_page == 'home') {
 		include("../system/home-slider.php");
 	}
@@ -43,7 +78,12 @@
 ?>
 <div class="container main-content-container">
 	<?php
-		/* CHECKING NAV HAS VISIBILITY  START*/
+		/* CHECKING NAV HAS VISIBILITY  START
+		*  navHasVisibility is function which is inhireted from the functions.php file, Which is include functions_loader.php.
+		*  This function is responsible for check to show the header navigation on the current page or not.
+		*  for more defination please check the function.php file.
+		*/
+
 		if(navHasVisibility()){ ?>
 		<!-- Left sidebar content Area -->
 		<?php
@@ -54,9 +94,17 @@
 			$cond = 'display_page="'.$display_page.'"';
 			$rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
 			$list_sort = '';
+
 			while ($row1 = $rsList->fetch_assoc()) {
 				$list_sort = $row1['list_sort'];
 			}
+
+			/* 
+			* Get_Data_FieldDictionary_Record is function which is inhireted from the get_data_fd_record.php file, Which is include *functions_loader.php.
+			*  This function is responsible for get content of navigation, their order , parents menu, sub menu.
+			*  for more defination please check the get_data_fd_record.php file.
+			*/
+
 			Get_Data_FieldDictionary_Record('above',$_SESSION['tab'], $display_page, 'true');
 			$rs = $con->query("SELECT tab_num FROM data_dictionary where display_page='$display_page'");
 			$right_sidebar = $left_sidebar = '';
@@ -89,8 +137,8 @@
 					$right_sidebar = 'right';
 				}
 			}
-			/* Nav Body-Left or Body-right Code End*/
-			/* Tab TTl1 or Tl2 Start */
+			/* Nav Body-Left  or Body-right Code End*/
+			/* Tab TTl1  or Tl2 Start */
 			$tabLeftExist = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' AND tab_num LIKE 'S-L%'");
 			if($tabLeftExist->num_rows){
 				if($left_sidebar ==''){
@@ -138,7 +186,7 @@
 			*/
 			sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
 			/*
-				* displaying tab area
+			* displaying tab area
 			*/
 			// $total_width = 0;
 			if ($_GET['child_list_active'] == 'isSet')
@@ -169,10 +217,26 @@
 		?>
 		<!-- Tab Content area .. -->
 		<?php
+			/* 
+			*  if the page its on style file and that is equal to "serial-layout" then get the serial layout data for current page.
+			*/
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
+				
+			/* 
+			*  serial_layout is function which is inhireted from the serial_layout.php file, Which is include functions_loader.php.
+			*  This function is responsible for get the content for the page, assign the css how it will look like .
+			*
+			*  Its take two params: 
+			*        display_page => name of current page so that it will get all the contents the current page
+			*        style=> it content of the css of sections.
+			*
+ 			*  for more defination please check the serial_layout.php file.
+			*/				
+ 
 				serial_layout($display_page, $style);
 
 			} else {
+
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
 				if (!empty($row)) {
