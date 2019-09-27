@@ -1155,6 +1155,8 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
   if(!empty($event_log_code)){
     $event_action_default = $event_log_code['event_action_default'];
     $notification_alert_type = $event_log_code['notification_alert_type'];
+    $notification_subject = $event_log_code['notification_subject'];
+    $notification_message = $event_log_code['notification_message'];
   }
 
   if($senderId!== false){
@@ -1173,11 +1175,11 @@ function log_event($display_page,$action,$senderId=false,$reciverId=false){
     $data['event_log_code'] = $event_log_code['event_log_code_id'];
     $data['notification_type'] = $notification_alert_type;
     $log_id =insert('event_log',$data);
-    log_notification($notification_alert_type,$display_page,$action,$userId,$targetUserId);
+    log_notification($notification_alert_type,$display_page,$action,$userId,$targetUserId,$notification_subject,$notification_message);
   }
 }
 
-function log_notification($type,$displayPage,$action,$senderId,$reciverId){
+function log_notification($type,$displayPage,$action,$senderId,$reciverId,$notification_subject,$notification_message){
   if(NOTIFICATION_ALERTS_ON !=='ON'){
     return;
   }
@@ -1189,34 +1191,51 @@ function log_notification($type,$displayPage,$action,$senderId,$reciverId){
   $data['alert_type'] = 0;
   $notif_id = insert('notification_log',$data);
   if($type=='Email' || $type=='Alert 1'){
-    send_notification_alert($type,$displayPage,$action,$senderId,$reciverId);
+    send_notification_alert($type,$displayPage,$action,$senderId,$reciverId,$notification_subject,$notification_message);
   }
 }
 
-function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId){
+function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId,$notification_subject,$notification_message){
   if($type=='Email'){
-    sendEmailNotification($displayPage,$action,$senderId,$reciverId);
+    sendEmailNotification($displayPage,$action,$senderId,$reciverId,$notification_subject,$notification_message);
   }else if($type=='Alert 1'){
     //push notification
   }
 }
 //Code Change for Task 8.5.101 End
 
-function sendEmailNotification($page,$action,$senderId,$reciverId){
+function sendEmailNotification($page,$action,$senderId,$reciverId,$notification_subject,$notification_message){
   $str =  $_SERVER['HTTP_HOST'];
   $sender = getUserData($senderId);
   $reciver = getUserData($reciverId);
-      $to = $reciver['email'];
-      $subject = "Action Notification | Generic Platform";
-      $message = "<html><head><title>Notification</title></head><body>";
-      $message .= "Hi ".$reciver['name'].",<br/>";
+  $to = $reciver['email'];
+
+  /*$subject = "Action Notification | Generic Platform";
+  $message = "<html><head><title>Notification</title></head><body>";
+  $message .= "Hi ".$reciver['name'].",<br/>";
   $message .= "An Action '".$action."' has occured at '".$page."' page";
+
   if($senderId != $reciverId){
     $message .=" by ".$sender['name'].".";
   }
   $message .= "<br/>";
   $message .= "<br/><br/>Regards,<br>Generic Platform";
-  $message .= "</body></html>";
+  $message .= "</body></html>";*/
+
+  if($senderId != $reciverId){
+    $message .=" by ".$sender['name'].".";
+    $notification_message = str_replace("sender_name", $sender['name'].'.', $notification_message);
+  }else{
+    $notification_message = str_replace(' by sender_name', '', $notification_message);
+  }
+
+  $notification_message = str_replace("user_name", $reciver['name'], $notification_message);
+  $notification_message = str_replace("action_name", "'".$action."'", $notification_message);
+  $notification_message = str_replace("page_name", "'".$page."'", $notification_message);
+
+  $subject = $notification_subject;
+  $message = $notification_message;
+
   // Always set content-type when sending HTML email
   $headers = "MIME-Version: 1.0" . "\r\n";
   $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";

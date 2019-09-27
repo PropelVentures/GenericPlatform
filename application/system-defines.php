@@ -162,7 +162,7 @@ define("defaultFieldLenBooleanMax", "10");
 
 define("defaultFieldLenIntegerMin", "15");
 define("defaultFieldLenOtherIntegerMin", "10");
-define("defaultFieldLenTextMin", "12");
+define("defaultFieldLenTextMin", "20");
 define("defaultFieldLenTextareaMin", "25");
 define("defaultFieldLenBooleanMin", "5");
 //Code Change for Task 8.4.603 End
