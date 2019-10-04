@@ -67,78 +67,6 @@ function parseFieldType($row) {
     return $field_length;
 }
 
-//Code Change for Task 8.4.603 Start
-function parseFieldTypeMax($row) {
-
-    $con = connect();
-
-    $result = $con->query("describe $row[database_table_name]");
-
-    while ($result_rec = $result->fetch_assoc()) {
-        if ($result_rec['Field'] == $row['generic_field_name']) {
-
-            $field_type = $result_rec['Type'];
-        }
-    }
-    $field_type = explode("(", $field_type);
-    $field_length = '60';
-
-    if ($field_type[0] == 'varchar') {
-        $field_length = defaultFieldLenTextMax;
-    } else if ($field_type[0] == 'text') {
-
-        $field_length = defaultFieldLenTextareaMax;
-    } else if ($field_type[0] == 'int') {
-
-        $field_length = defaultFieldLenIntegerMax;
-    } else if ($field_type[0] == 'boolean') {
-
-        $field_length = defaultFieldLenBooleanMax;
-    } else if ($field_type[0] == 'double' || $field_type[0] == 'float' || $field_type[0] == 'tinyint') {
-
-        $field_length = defaultFieldLenOtherIntegerMax;
-    }
-
-    return $field_length;
-}
-
-
-function parseFieldTypeMin($row) {
-
-    $con = connect();
-
-    $result = $con->query("describe $row[database_table_name]");
-
-    while ($result_rec = $result->fetch_assoc()) {
-        if ($result_rec['Field'] == $row['generic_field_name']) {
-
-            $field_type = $result_rec['Type'];
-        }
-    }
-    $field_type = explode("(", $field_type);
-    $field_length = '40';
-
-    if ($field_type[0] == 'varchar') {
-
-        $field_length = defaultFieldLenTextMin;
-    } else if ($field_type[0] == 'text') {
-
-        $field_length = defaultFieldLenTextareaMin;
-    } else if ($field_type[0] == 'int') {
-
-        $field_length = defaultFieldLenIntegerMin;
-    } else if ($field_type[0] == 'boolean') {
-
-        $field_length = defaultFieldLenBooleanMin;
-    } else if ($field_type[0] == 'double' || $field_type[0] == 'float' || $field_type[0] == 'tinyint') {
-
-        $field_length = defaultFieldLenOtherIntegerMin;
-    }
-
-    return $field_length;
-}
-//Code Change for Task 8.4.603 End
-
 function getDefaultLengthsByType($row){
   $con = connect();
 
@@ -1280,8 +1208,7 @@ function boxViewPagination($pagination, $tab_num, $list_select_arr) {
                     <?php
                     if (!empty($pagination) && !empty($no_of_pages)) {
                     ?>
-                        var number_of_pages = Math.ceil(number_of_items / 8);
-                        //var number_of_pages = <?= $no_of_pages; ?>;
+                        var number_of_pages = <?= $no_of_pages; ?>;
                         var without_added_pages = <?= $no_of_pages; ?>;
                         var pagination = <?= $pagination; ?>;
                         var totalleft = without_added_pages*pagination;
@@ -1779,13 +1706,13 @@ function isStripHtmlTags($value){
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
-  $isExistField = str_replace(';','',$isExistField);
   if($isExistField == null || $isExistFilter == null){
     return true;
   }
   if(!isset($row[$isExistField])){
     return true;
   }
+
   $value = trim($row[$isExistField]);
   if($isExistFilter=='exist'){
     if(empty($value)){
@@ -1797,9 +1724,6 @@ function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
       return false;
     }
   }else if($isExistFilter=='not_exist'){
-    if(empty($value)){
-      return true;
-    }
     if(file_exists(USER_UPLOADS.$value)){
       return false;
     }else{
@@ -1957,26 +1881,6 @@ function listColumnWidth($tbRow,$minLimit = 100){
   return $colWidth;
 }
 
-//Code Change for Task 8.4.603 Start
-function listColumnMinMaxWidth($tbRow){
-  if(!empty(trim($tbRow['format_length']))){
-        $colWidth = explode(',',trim($tbRow['format_length']));
-        $colWidth = $colWidth[0];
-        $maxWidth = parseFieldTypeMax($tbRow);
-        $minWidth = parseFieldTypeMin($tbRow);
-        if ($colWidth < $minWidth ) {
-            $colWidth = $minWidth; 
-        }
-        if ($colWidth > $maxWidth ) {
-            $colWidth = $maxWidth;
-        }
-  }else{
-    $colWidth = parseFieldTypeMax($tbRow);
-  }
-  return $colWidth;
-}
-//Code Change for Task 8.4.603 End
-
 function calculateWidthsInPercentage($array){
   $count  = count($array)+1;
   $total = 0;
@@ -1991,10 +1895,8 @@ function calculateWidthsInPercentage($array){
 
 function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
   $data= trim($data);
-  //Code Change for Task 8.4.603 Start
-  /*if($roundPxls){
+  if($roundPxls){
     $width = $width/6.7;
-  }*/
-  //Code Change for Task 8.4.603 End
+  }
   return substr($data, 0, $width);
 }

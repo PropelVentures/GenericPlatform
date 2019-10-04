@@ -35,26 +35,25 @@
 		unset($_SESSION['tab']);
 	}
 	unset($_SESSION['popup_munu_array']);
+	//echo($_SESSION['return_url']) . "<br>";		
+	//exit( $_SESSION['add_url_list']);		
+	///// copy these two files for displaying navigation/////		
 
-	?>
 	
-	<div class="navbar navbar-default navbar-fixed-top">
-		<?php 
-
-			/*
-			* "Navigation" is function which is inhireted from the links_and_nav.php file, Which is include functions_loader.php 
-			*  Navigation this function take two params 
-			*  		display_page => name of the page 
-			*		header => this is the location of the menu
-			*  For details defination is given in the "links_and_nav.php" file	
-			*/	
+		/*
+		* "Navigation" is function which is inhireted from the links_and_nav.php file, Which is include 
+		* functions_loader.php 
+		*  Navigation this function take two params 
+		*  		display_page = name of the page 
+		*		header = this is the location of the menu
+		*  For details defination is given in the "links_and_nav.php" file	
+		*/	
 	
 			Navigation($display_page,'header');
 			Navigation($display_page,'header2');
-		?>
+	
 
-	</div>
-	<?php
+	
 		/*
 		* "ShowTableTypeParallaxBanner" is function which is inhireted from the links_and_nav.php file, Which is include functions_loader.php 
 		*  Navigation this function take two params 
@@ -64,8 +63,8 @@
 		*/	
 
 
-	$haveParalax = false;
-	ShowTableTypeParallaxBanner($display_page,$haveParalax);
+		$haveParalax = false;
+		ShowTableTypeParallaxBanner($display_page,$haveParalax);
 
 	/* 
 	* if that is the homepage then include this file
@@ -79,7 +78,8 @@
 <div class="container main-content-container">
 	<?php
 		/* CHECKING NAV HAS VISIBILITY  START
-		*  navHasVisibility is function which is inhireted from the functions.php file, Which is include functions_loader.php.
+		*  navHasVisibility is function which is inhireted from the functions.php file, Which is include 
+		* functions_loader.php.
 		*  This function is responsible for check to show the header navigation on the current page or not.
 		*  for more defination please check the function.php file.
 		*/
@@ -90,18 +90,20 @@
 			/*
 				* Finding page layout by DD->tab_num
 			*/
-			$con = connect();
-			$cond = 'display_page="'.$display_page.'"';
-			$rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
-			$list_sort = '';
+			// $con = connect();
+			// $cond = 'display_page="'.$display_page.'"';
+			// $rsList = $con->query("SELECT list_sort FROM data_dictionary where list_filter='$cond'");
+			// $list_sort = '';
 
-			while ($row1 = $rsList->fetch_assoc()) {
-				$list_sort = $row1['list_sort'];
-			}
+			// while ($row1 = $rsList->fetch_assoc()) {
+			// 	$list_sort = $row1['list_sort'];
+			// }
 
 			/* 
-			* Get_Data_FieldDictionary_Record is function which is inhireted from the get_data_fd_record.php file, Which is include *functions_loader.php.
-			*  This function is responsible for get content of navigation, their order , parents menu, sub menu.
+			* Get_Data_FieldDictionary_Record is function which is inhireted from the
+			* get_data_fd_record.php file, Which is include *functions_loader.php.
+			*  This function is responsible for get content of navigation, their order , parents menu, sub 
+			*  menu.
 			*  for more defination please check the get_data_fd_record.php file.
 			*/
 
@@ -223,11 +225,14 @@
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
 				
 			/* 
-			*  serial_layout is function which is inhireted from the serial_layout.php file, Which is include functions_loader.php.
-			*  This function is responsible for get the content for the page, assign the css how it will look like .
+			*  serial_layout is function which is inhireted from the serial_layout.php file, Which is 
+			*include functions_loader.php.
+			*  This function is responsible for get the content for the page, assign the css how it will 
+			*look like .
 			*
 			*  Its take two params: 
-			*        display_page => name of current page so that it will get all the contents the current page
+			*        display_page => name of current page so that it will get all the contents the current 
+			*         page
 			*        style=> it content of the css of sections.
 			*
  			*  for more defination please check the serial_layout.php file.

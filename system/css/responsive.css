@@ -16,9 +16,16 @@
     /***submit/cancel button .update-btn2****/
 
     
-    #form-footer .form_element{display:inline;width:auto;}
-    
+    #form-footer .form_element{display:inline;width:auto;}    
     #form-footer input{ font-size: 12px;}
+    /*box*/
+    .box_style1.boxViewContainer .boxView{max-width: 47%;height: 200px;min-height: initial;}
+    .box_style1 .boxView .edit{bottom: 80px;}
+    .box_style1 .boxView .boxView_line:last-child{font-size: 20px;}
+    .navbar-default{z-index: 999999;}
+    
+    
+    
 
 }
 
@@ -47,6 +54,10 @@
        #form-footer .form_element{display:inline;width:auto;}
     
     #form-footer input{ font-size: 12px;}
+    
+    
+    
+    
 }
 
 @media only screen and (min-width: 480px) and (max-width: 569px) {
@@ -61,6 +72,7 @@
     
     
      #form-footer .form_element{display:inline;width:auto;}
+    
     
     #form-footer input{ font-size: 12px;}
 }
@@ -134,5 +146,10 @@
     /*****TESTING****/
 
     .content-manual{width:100%; float: none;display:block;}
+    /*box*/
+    .box_style1.boxViewContainer .boxView{max-width: 90%;height: 200px;min-height: initial;margin: 10px;}  
+    .box_style1 .boxView .edit{bottom: 80px;}
+    .box_style1 .boxView .boxView_line:last-child{font-size: 20px;}
+    .navbar-fixed-top, .navbar-fixed-bottom,.navbar-default{z-index: 999999 !important;}
 
-}
+} 

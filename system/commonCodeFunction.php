@@ -1,14 +1,17 @@
 <?php
-/**
- * These function are common for tab and one page layout
- *(tab_num = S-C , S-R, S-L || tab_num = 1, 2,3)
- *
- */
+	/**
+	* These function are common for tab and one page layout
+	*(tab_num = S-C , S-R, S-L || tab_num = 1, 2,3)
+	*
+	* "generateBreadcrumbsAndBackPage" is function which generate the breadcrumb , so we can understand the
+	*  parent page/listing of the of current page.
+	*  
+	*/	
 function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 	if(hideBreadCrumb($row1['list_extra_options']) ){
 		return;
 	}
-	if ($_GET['checkFlag'] == 'true' && $row1['dd_editable'] == 11) {
+	if ($_GET['checkFlag'] == 'true' && $row1['real_dd_editable'] == 11) {
 		if ($_GET['table_type'] == 'child'){
 			$link_to_return = $_SESSION['child_return_url'];
 		} else {
@@ -20,10 +23,10 @@ function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
 		}
 		$home_test = explode("display", $link_to_return);
 		if ($home_test[1] == '=home'){
-			$breadcrumb_display = " Back To <span>Home</span> Page";
+			$breadcrumb_display = " Back To2 <span>Home</span> Page";
 		} else {
 			$backText = str_replace('*', '', $_SESSION['list_tab_name']);
-			$breadcrumb_display = " Back To <span>$backText</span> Lists";
+			$breadcrumb_display = " Back To3 <span>$backText</span> Lists";
 		}
 
 		if($onepage){
@@ -54,10 +57,10 @@ function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
 
 			$home_test = explode("display", $link_to_return);
 			if ($home_test[1] == '=home'){
-				$breadcrumb_display = " Back To <span>Home</span> Page";
+				$breadcrumb_display = " Back To4 <span>Home</span> Page";
 			} else {
 				$backText = str_replace('*', '', $_SESSION['list_tab_name']);
-				$breadcrumb_display = " Back To <span>$backText</span> Lists";
+				$breadcrumb_display = " Back To5 <span>$backText</span> Lists";
 			}
 			if($onepage){
 				$url = "$_SESSION[return_url2]&button=cancel&fnc=onepage";

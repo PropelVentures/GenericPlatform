@@ -6,8 +6,13 @@
 function start_app_session(){
   //to set the session saving path .
   $DirectoryPath = "/tmp"."/".$_SERVER['HTTP_HOST'];
+  
+  // this check the directory is exit or not. If not then create it with full premission access.
   is_dir($DirectoryPath) or mkdir($DirectoryPath, 0777);
+  
+  // ini_set function sets the value of the given configuration option. The configuration option will keep this new value during the script's // execution, and will be restored at the script's ending.
   ini_set("session.save_path", $DirectoryPath);
+  
   @session_start();
 }
 
