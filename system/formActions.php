@@ -1054,13 +1054,27 @@ function sendVerificationEmail($data){
 	$token = $data['token'];
 	$table = $_SESSION['update_table2']['database_table_name'];
 	$url = BASE_URL_SYSTEM."main.php?action=verify_registration_email&table=$table&token=$token";
-	$subject = "Email Verification | Generic Platform";
+
+     /*Code Change for Task 8.5.102 Start*/
+    $event_log_code = get('event_log_codes',"event_name='SIGNUP'");
+    $notification_subject = $event_log_code['notification_subject'];
+    $notification_message = $event_log_code['notification_message'];
+    /*Code Change for Task 8.5.102 End*/
+
+	/*$subject = "Email Verification | Generic Platform";
 	$message = "<html><head><title>Email Verification</title></head><body>";
 	$message .= "Hi,<br/>";
 	$message .= "Please click <a href='".$url."'>here</a> to verify your email address or visit the below link.</br>";
 	$message .= "$url";
 	$message .= "<br/><br/>Regards,<br>Generic Platform";
-	$message .= "</body></html>";
+	$message .= "</body></html>";*/
+
+    /*Code Change for Task 8.5.102 Start*/
+    $notification_message = str_replace("verification_url", $url, $notification_message);
+    $subject = $notification_subject;
+    $message = $notification_message;
+    /*Code Change for Task 8.5.102 End*/
+
 
 	// Always set content-type when sending HTML email
 	$headers = "MIME-Version: 1.0" . "\r\n";

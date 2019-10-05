@@ -138,7 +138,7 @@ function generateCustomFunctionArray($customFunctionArray,$showlineBreak=false )
 				#<!-- Button trigger modal -->
 				echo "<button type='button' class='btn actionImportButton btn-primary {$customFunction['style']}' data-function_name='{$customFunction['function']}'
 					data-function_params='{$customFunction['params']}' name='add_import' data-import_type='$importButtonActionType'
-					data-toggle='modal' data-target='#addimportModal'>" . $customFunction['label'] . "</button>";
+					data-toggle='modal' data-target='#addimportFileModal'>" . $customFunction['label'] . "</button>";
 
 				?>
 
