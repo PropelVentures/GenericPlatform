@@ -160,3 +160,28 @@
     width: 35%;
     margin: auto;
 }
+
+.nav_item
+{
+color: blue !important;
+}
+
+a li .nav_item
+{
+color: blue !important;
+}
+
+img.nav_icon_default_class
+{
+height:40px  !important;
+width:40px  !important;
+ vertical-align: text-top;
+}
+
+
+
+img.nav_icon_test_class
+{
+height:19px  !important;
+width:19px  !important;
+}

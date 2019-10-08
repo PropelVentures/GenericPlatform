@@ -1,8 +1,16 @@
 <?php
 // @session_start();
 // $_SESSION['lang'] = 'en';
+/*
+* As the name explain it content all the css, js and other required files which required to render any page
+* on the browser 
+*/
 
-
+/* 
+* It is checking for the api request if yes then its checking for the required params.
+* so that send the response or render the page accordingly 
+*
+*/
 if($_GET['source'] == 'api'){
 
     $_SESSION['uid'] = $_GET['uid'];
@@ -11,6 +19,16 @@ if($_GET['source'] == 'api'){
     $_SESSION['country'] = $_GET['country'];
 
     $dictId = $_GET['did'];
+
+    /*
+    * " get_single_record " is function which is inhireted from the get_record.php file. 
+    *  get_single_record this function take three params 
+    *       data_dictionary => this the database table name.
+    *       dict_id => primary of the data_dictionary table. 
+    *       dictId => this is serach key.
+    *
+    *  For details defination is given in the "get_record.php" file  
+    */  
 
     $dict = get_single_record('data_dictionary','dict_id', $dictId);
 

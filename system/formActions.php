@@ -431,220 +431,293 @@ function addData()
 }
 
 
-/*
- *
- * Update function STARTS here
- * Also check table type to call function;
- *
- */
-if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') {
-    $_GET['table_type'] = trim(strtolower($_GET['table_type']));
-	switch($_GET['table_type']){
-		case 'login':
-			callToLogin();
-			break;
+    /*
+     *
+     * Update function STARTS here
+     * Also check table type to call function;
+     *
+     */
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' AND $_GET['action'] == 'update') 
+    {
+        $_GET['table_type'] = trim(strtolower($_GET['table_type']));
 
-		case 'signup':
-			callToSignup();
-			break;
+	    switch($_GET['table_type'])
+        {
+    		case 'login':
+    			callToLogin();
+    			break;
 
-		case 'facebooklogin':
-			echo json_encode(facebookLogin());
-			break;
+    		case 'signup':
+    			callToSignup();
+    			break;
 
-		case 'linkedinlogin':
-			echo json_encode(linkedInLogin());
-			break;
+    		case 'facebooklogin':
+    			echo json_encode(facebookLogin());
+    			break;
 
-		case 'linkedinimportprofile':
-			echo json_encode(importProfileFromLinkedIn());
-			break;
+    		case 'linkedinlogin':
+    			echo json_encode(linkedInLogin());
+    			break;
 
-		case 'forgotpassword':
-			forgotPassword();
-			break;
+    		case 'linkedinimportprofile':
+    			echo json_encode(importProfileFromLinkedIn());
+    			break;
 
-		case 'reset_password':
-			resetPassword();
-			break;
+    		case 'forgotpassword':
+    			forgotPassword();
+    			break;
 
-		case 'change_password':
-			changePassword();
-			break;
+    		case 'reset_password':
+    			resetPassword();
+    			break;
 
-		default:
-			$save_add_url = "";
-			if (array_key_exists('save_add_record', $_POST)) {
-				$save_add_url = $_SESSION['save_add_url'];
-				unset($_POST['save_add_record']);
-				unset($_SESSION['save_add_url']);
-			}
+    		case 'change_password':
+    			changePassword();
+    			break;
 
-			if (array_key_exists('old_audio', $_POST)) {
-				unset($_POST['old_audio']);
-			}
-			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
-            if($ddRecord['dd_editable'][1]=='1'){
-                $_SESSION['show_with_edit_button'] = true;
-                $_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
+    		default:
+    			$save_add_url = "";
+    			if(array_key_exists('save_add_record', $_POST)) 
+                {
+    				$save_add_url = $_SESSION['save_add_url'];
+    				unset($_POST['save_add_record']);
+    				unset($_SESSION['save_add_url']);
+    			}
 
-            }
-			$ddRecord['keyfield'] = firstFieldName($ddRecord['database_table_name']);
-			/****** for pdf files ********** */
-			foreach ($_POST['pdf'] as $img => $img2) {
-				if (!empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-					$ret = uploadPdfFile($img2['uploadcare'], $img2['imageName']);
-					$oldImage = $_POST[$img]['img_extra'];
-					if (!empty($ret['image'])) {
-						unset($_POST['pdf'][$img]);
-						$_POST[$img] = $ret['image'];
-					}
-					//if user want to replace current image
-					if (!empty($oldImage)) {
-						@unlink(USER_UPLOADS . "pdf/$oldImage");
-					}
-					//if user didn't touch the with images
-				} else {
-					//if user clicks on remove current image
-					if (empty($img2['uploadcare']) && !empty($img2['imageName'])) {
-						if (!empty($_POST[$img]['img_extra'])) {
-							@unlink(USER_UPLOADS . "pdf/$img2[imageName]");
+    			if(array_key_exists('old_audio', $_POST)) 
+                {
+    				unset($_POST['old_audio']);
+    			}
+
+    			$ddRecord = get('data_dictionary', 'dict_id=' . $_SESSION['dict_id']);
+
+                if($ddRecord['dd_editable'][1]=='1')
+                {
+                    $_SESSION['show_with_edit_button'] = true;
+                	$_SESSION['show_with_edit_button_DD'] = $ddRecord['dict_id'];
+      		    }
+
+				$ddRecord['keyfield'] = firstFieldName($ddRecord['database_table_name']);
+
+				/****** for pdf files ********** */
+			    foreach ($_POST['pdf'] as $img => $img2) 
+			    {
+					if(!empty($img2['uploadcare']) && !empty($img2['imageName'])) 
+					{
+						$ret = uploadPdfFile($img2['uploadcare'], $img2['imageName']);
+					    $oldImage = $_POST[$img]['img_extra'];
+					    if (!empty($ret['image'])) 
+					    {
 							unset($_POST['pdf'][$img]);
-							$_POST[$img] = '';
-						} else {
+						    $_POST[$img] = $ret['image'];
+					    }
+					    
+					    //if user want to replace current image
+					    if (!empty($oldImage)) 
+					    {
+					    	@unlink(USER_UPLOADS . "pdf/$oldImage");
+					    }
+					    
+					    //if user didn't touch the with images
+				    } 
+				    else 
+				    {
+					    //if user clicks on remove current image
+					    if(empty($img2['uploadcare']) && !empty($img2['imageName'])) 
+					    {
+						    if(!empty($_POST[$img]['img_extra'])) 
+						    {
+							    @unlink(USER_UPLOADS . "pdf/$img2[imageName]");
+							    unset($_POST['pdf'][$img]);
+							    $_POST[$img] = '';
+						    } 
+						    else
+						    {
+							    unset($_POST['pdf'][$img]);
+						    }
+					    }
+					    else
+					    {
 							unset($_POST['pdf'][$img]);
-						}
-					} else {
-						unset($_POST['pdf'][$img]);
+					    }
 					}
 				}
-			}
-			//deleting array which is used for holding imgu values
-			if (empty($_POST['pdf']))
-				unset($_POST['pdf']);
-
-			/*****For images********** */
-            checkImageesInDataANdUpload();
-
-            $recordedFileNmae = '';
-            if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio'])){
-              $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
-              if(!empty($recordedFileNmae)){
-                $_POST['temp_audio_file'] = $recordedFileNmae;
-              }
-            }
-			foreach ($_FILES as $file => $file2) {
-				//checking if audio file is not empty
-				if (!empty($file2['name'])) {
-            $file_name = uploadAudioFile($file2);
-  					// if file successfully uploaded to target dir
-  					if (!empty($file_name)) {
-  						$_POST[$file] = $file_name;
-  					}
-				} else {
-					$_POST[$file] = '';
+			
+			    //deleting array which is used for holding imgu values
+				if(empty($_POST['pdf']))
+				{
+					unset($_POST['pdf']);
 				}
-				//Dealing with database now
-				$row = getWhere($ddRecord['database_table_name'], array($ddRecord['keyfield'] => $_SESSION['search_id2']));
-				$oldFile = $row[0][$file];
-				if ($oldFile != "") {
-					if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) {
-						@unlink(USER_UPLOADS . "audio/" . $oldFile);
-					}
-				}
-			}
 
-              if(isset($_POST['temp_audio_file'])){
-                $_POST['audio_file'] = $_POST['temp_audio_file'];
-              }
-              // die();
-			/* Storing Base Latitude and Longitude Start*/
-			$dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
-			$_POST = setBaseGpsCordinate($dataFdRecord,$_POST);
-			/* Storing Base Latitude and Longitude End*/
-
-			/* removing extra fields that are not preset in table start */
-			$tableFields = getColumnNames($ddRecord['database_table_name']);
-			$fieldsNotPresent = array_diff_key($_POST,$tableFields);
-			if(!empty($fieldsNotPresent)){
-				foreach($fieldsNotPresent as $key=>$value){
-					unset($_POST[$key]);
-				}
-			}
-			/* removing extra fields that are not preset in table end */
-			$status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
+			    /*****For images********** */
+       		    checkImageesInDataANdUpload();
 
 
-              // **** DISABLED BY CJ (this reset dd_editable!!)			update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
-              $dd_editable_bit2 = $ddRecord['dd_editable'][1];
-              if(empty($dd_editable_bit2) || is_null($dd_editable_bit2)){
-                $dd_editable_bit2 = '0';
-              }
-              //
-              if($dd_editable_bit2=='0' || $dd_editable_bit2=='1'){
-                  $current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
-                  if(!empty($current_link_in_tab)){
-                    unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
-                    echo "<script> window.location='$current_link_in_tab'; </script>";
-                  }
-              }
+                $recordedFileNmae = '';
+    			if(isset($_POST['recorded_audio']) && !empty($_POST['recorded_audio']))
+            	{                       
+        		    $recordedFileNmae = uploadRecordedAudio($_POST['recorded_audio']);
 
-			if ($_GET['checkFlag'] == 'true') {
-				if($save_add_url){
-					$link_to_return = $save_add_url;
-				}else{
-					if ($_GET['table_type'] == 'child'){
-						$link_to_return = $_SESSION['child_return_url2'];
-					} else {
-						$link_to_return = $_SESSION['return_url2'];
-					}
+        		    if(!empty($recordedFileNmae))
+        		    {
+        		    	$_POST['temp_audio_file'] = $recordedFileNmae;
+        		    }
+        		}
 
-                    if(isset($_SESSION['link_in_case_of_DDetiable_2'])){
-                       $link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
-                       unset($_SESSION['link_in_case_of_DDetiable_2']);
-                    }
-				}
-				if ($_GET['fnc'] != 'onepage') {
-					//exit($link_to_return);
-					if($status === true){
-                        echo "<script>window.location='$link_to_return';</script>";
-                      }
-					else
+        		foreach ($_FILES as $file => $file2) 
+        		{
+	   				//checking if audio file is not empty
+        			if (!empty($file2['name'])) 
+        			{
+        				$file_name = uploadAudioFile($file2);
+  						// if file successfully uploaded to target dir
+        				if (!empty($file_name)) 
+        				{
+        					$_POST[$file] = $file_name;
+        				}
+        			}
+        			else
+        			{
+        				$_POST[$file] = '';
+        			}
+
+        			//Dealing with database now
+        			$row = getWhere($ddRecord['database_table_name'], array($ddRecord['keyfield'] => $_SESSION['search_id2']));
+        			$oldFile = $row[0][$file];
+
+        			if($oldFile != "")
+        			{
+        				if (file_exists(USER_UPLOADS . "audio/" . $oldFile)) 
+        				{
+        					@unlink(USER_UPLOADS . "audio/" . $oldFile);
+        				}
+        			}
+        		}
+
+		        if(isset($_POST['temp_audio_file']))
+		        {
+		            $_POST['audio_file'] = $_POST['temp_audio_file'];
+		        }
+    		    // die();
+			    /* Storing Base Latitude and Longitude Start*/
+			    $dataFdRecord = getDataFieldRecordByDictId($_SESSION['dict_id']);
+			    $_POST = setBaseGpsCordinate($dataFdRecord,$_POST);
+			    /* Storing Base Latitude and Longitude End*/
+
+			    /* removing extra fields that are not preset in table start */
+			    $tableFields = getColumnNames($ddRecord['database_table_name']);
+			    $fieldsNotPresent = array_diff_key($_POST,$tableFields);
+			    if(!empty($fieldsNotPresent))
+			    {
+					foreach($fieldsNotPresent as $key => $value)
 					{
-						echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
-					}
-				} else {
-					if($status === true)
-						echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]';</script>";
-					else
-					{
-						echo "<script> alert(\"$status\"); window.location='$link_to_return$_SESSION[anchor_tag]'; </script>";
-					}
-				}
-			} else {
-				if (!empty($_SESSION['display2'])) {
-					$_SESSION[display] = $_SESSION['display2'];
-				}
-				if ($_GET['fnc'] != 'onepage') {
-					if($status === true)
-						echo "<script>window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]';</script>";
-					else
-					{
-						echo "<script> alert(\"$status\"); window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]'; </script>";
-					}
-				} else {
-					if($status === true)
-						echo "<script>window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]';</script>";
-					else
-					{
-						echo "<script> alert(\"$status\"); window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]'; </script>";
-					}
-				}
-			}
-		break;
+					    unset($_POST[$key]);
+				    }
+			    }
+			    /* removing extra fields that are not preset in table end */
+			    $status = update($ddRecord['database_table_name'], $_POST, array($ddRecord['keyfield'] => $_SESSION['search_id2']));
+
+      		    // **** DISABLED BY CJ (this reset dd_editable!!)			
+      		    //update('data_dictionary', array('dd_editable' => '1'), array('dict_id' => $_SESSION['dict_id']));
+      		   
+			    $dd_editable_bit2 = $ddRecord['dd_editable'][1];
+			    if(empty($dd_editable_bit2) || is_null($dd_editable_bit2))
+			    {
+			    	$dd_editable_bit2 = '0';
+			    }
+                //
+			    if($dd_editable_bit2=='0' || $dd_editable_bit2=='1')
+			    {
+			    	$current_link_in_tab =   $_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab'];
+			    	if(!empty($current_link_in_tab))
+			    	{
+			    		unset($_SESSION[$ddRecord['dict_id'].'current_dd_url_in_tab']);
+			    		echo "<script> window.location='$current_link_in_tab'; </script>";
+			    	}
+			    }
+
+			    if ($_GET['checkFlag'] == 'true') 
+			    {
+			    	if($save_add_url)
+			    	{
+			    		$link_to_return = $save_add_url;
+			    	}
+			    	else
+			    	{
+			    		if ($_GET['table_type'] == 'child')
+			    		{
+			    			$link_to_return = $_SESSION['child_return_url2'];
+			    		} 
+			    		else 
+			    		{
+			    			$link_to_return = $_SESSION['return_url2'];
+			    		}
+
+			    		if(isset($_SESSION['link_in_case_of_DDetiable_2']))
+			    		{
+			    			$link_to_return = $_SESSION['link_in_case_of_DDetiable_2'];
+			    			unset($_SESSION['link_in_case_of_DDetiable_2']);
+			    		}
+			    	}
+
+			    	if ($_GET['fnc'] != 'onepage') 
+			    	{
+					    //exit($link_to_return);
+			    		if($status === true)
+			    		{
+			    			echo "<script>window.location='$link_to_return';</script>";
+			    		}
+			    		else
+			    		{
+			    			echo "<script> alert(\"$status\"); window.location='$link_to_return'; </script>";
+			    		}
+			    	} 
+			    	else 
+			    	{
+			    		if($status === true)
+			    		{
+			    			echo "<script>window.location='$link_to_return$_SESSION[anchor_tag]';</script>";
+			    		}
+			    		else
+			    		{
+			    			echo "<script> alert(\"$status\"); window.location='$link_to_return$_SESSION[anchor_tag]'; </script>";
+			    		}
+			    	}
+			    } 
+			    else 
+			    {
+			    	if (!empty($_SESSION['display2'])) 
+			    	{
+			    		$_SESSION[display] = $_SESSION['display2'];
+			    	}
+
+			    	if ($_GET['fnc'] != 'onepage') 
+			    	{
+			    		if($status === true)
+			    		{
+			    			echo "<script>window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]';</script>";
+			    		}
+			    		else
+			    		{
+			    			echo "<script> alert(\"$status\"); window.location = '?display=$_SESSION[display]&tab=$_SESSION[tab]&tabNum=$_GET[tabNum]'; </script>";
+			    		}
+			    	} 
+			    	else 
+			    	{
+			    		if($status === true)
+			    		{
+			    			echo "<script>window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]';</script>";
+			    		}
+			    		else
+			    		{
+			    			echo "<script> alert(\"$status\"); window.location='$_SESSION[return_url2]$_SESSION[anchor_tag]'; </script>";
+			    		}
+			    	}
+			    }
+			    break;
+		}
+		exit;
 	}
-	exit;
-}
 
 /*
  * // To Do: Login Function functionality
@@ -1450,6 +1523,7 @@ function setBaseGpsCordinate($dataFdRecord,$postData){
 					if (array_key_exists($base_latitude_field, $postData)) {
 						$postData[$base_latitude_field] = $gpsCordinate['lat'];
 					}
+
 					if (array_key_exists($base_longitude_field, $postData)) {
 						$postData[$base_longitude_field] = $gpsCordinate['lng'];
 					}

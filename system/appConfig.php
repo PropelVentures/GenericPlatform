@@ -1,16 +1,28 @@
 <?php
-
+/*
+*  start_app_session function for making the session of the user and same it 
+*  in the specific path on the server to cross check the user session or not 
+*/
 function start_app_session(){
   //to set the session saving path .
   $DirectoryPath = "/tmp"."/".$_SERVER['HTTP_HOST'];
+  
+  // this check the directory is exit or not. If not then create it with full premission access.
   is_dir($DirectoryPath) or mkdir($DirectoryPath, 0777);
+  
+  // ini_set function sets the value of the given configuration option. The configuration option will keep this new value during the script's // execution, and will be restored at the script's ending.
   ini_set("session.save_path", $DirectoryPath);
+  
   @session_start();
 }
 
 start_app_session();
 
 require_once("../application/system-config.php");
+
+/* The dbFunctions.php file responsible for making the connecting with db and all 
+*the action like get data, update, fetch, delete and other function are defined 
+*/
 require_once("dbFunctions.php");
 
 $now = time();

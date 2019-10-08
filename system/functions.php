@@ -1,5 +1,13 @@
 <?php
 // Root directory
+
+/*
+* "isUserLoggedIn" function is played an important role to check 
+* Is user logged or not by checking the keyword  "UID" is set and not blank 
+* return => true if uid set in session
+*           flase if not set or blank 
+*/
+
 function isUserLoggedin()
 {
   if (isset($_SESSION['uid']) && $_SESSION['uid'] != "")
@@ -12,12 +20,29 @@ function isUserLoggedin()
   }
 }
 
+/*
+* "isProjectOwner" function is played an important role to check 
+* Is logged user is project owner or not.  
+* return => 1 (true) if the user exist in the table.
+*           0 (false) if the user didn't exist in the table 
+* 
+*  take one params "project id"
+*  flag: not used any where in the code.
+*/
+
 function isProjectOwner($pid)
 {
   $sql = "SELECT * FROM projects WHERE pid=" . $pid . " AND uid=" . $_SESSION['uid'];
   $result = mysql_query($sql);
   return mysql_num_rows($result);
 }
+ 
+/*
+* "isAmin" function is played an important role to check 
+* Is logged user is Admin user or not by checking the "level" value in the session 
+* flag: not used any where in the code. 
+*/
+
 
 function isAdmin()
 {
@@ -31,6 +56,13 @@ function isAdmin()
   }
 }
 
+/*
+* "get_user_details" function is used to get the information of user.
+* 
+*
+* flag: not used any where in the code.
+*/
+
 function get_user_details($userTblArray)
 {
   if (isset($_SESSION) && $_SESSION['uid'] != "")
@@ -38,17 +70,6 @@ function get_user_details($userTblArray)
     $uid = $_SESSION['uid'];
     $sql = "SELECT u.{$userTblArray['uname_fld']},u.{$userTblArray['firstname_fld']},u.{$userTblArray['lastname_fld']}, u.{$userTblArray['user_type_fld']} from {$userTblArray['database_table_name']} as u WHERE u.{$userTblArray['uid_fld']} =" . $uid;
     $query = mysql_query($sql);
-
-/*
-       echo "uid =".$uid."<br><br>";
-       echo "sql =".$sql."<br><br>";
-       echo "query =".$query."<br><br>";
-
-       echo "userTblArray =".$userTblArray."<br><br>";
-             print_r($userTblArray);
-	                    exit;
-*/
-
     if (mysql_num_rows($query) == 1)
     {
       return $row = mysql_fetch_array($query);
@@ -64,9 +85,18 @@ function get_user_details($userTblArray)
   }
 }
 
+/*
+* "get_client_ip" function is used to get the ip address of enduser.
+* "getenv" Gets the value of an environment variable
+*
+* flag: not used any where in the code.
+*/
+
+
 function get_client_ip()
 {
   $ipaddress = '';
+
   if (getenv('HTTP_CLIENT_IP'))
     $ipaddress = getenv('HTTP_CLIENT_IP');
   else if (getenv('HTTP_X_FORWARDED_FOR'))
@@ -83,6 +113,19 @@ function get_client_ip()
     $ipaddress = 'UNKNOWN';
   return $ipaddress;
 }
+
+/*
+* "FlashMessage" Class is used to to show the flash message in the system.
+*  This class have two fucntion:
+*        1- public static function render
+*        2- public static function add
+*
+* render fucntion => is responsible for render the message on screen, It get the message value form the "messages" array variable from 
+* session.
+* add function => Is take one params "messages" for adding the flash message on the "message"  array variable of session.
+*   
+* flag: not used any where in the code.                        
+*/
 
 class FlashMessage
 {
@@ -109,7 +152,16 @@ class FlashMessage
 
 }
 
-/* * *****Image Upload class starts here********* */
+/* * *****Image Upload function starts here********* */
+
+/*
+* "imageUpload" is responsible to upload the image in server in given path.
+* It's check extension valid image fomate by checking the extension of image (valid extension "gif", "jpeg", "jpg", "png", "JPEG", "JPG")
+* 
+* This function also responsible for making the thumbnail of uplaod image.
+* For making the Thum it used the resizeImage lib.
+* flag: not used any where in the code.    
+*/
 
 function imageUpload($fileDetails)
 {
@@ -124,6 +176,11 @@ function imageUpload($fileDetails)
 
   $doc_root = $_SERVER['DOCUMENT_ROOT'] . '/generic/';
   $chk_dir = "img";
+
+  /* "is_dir" function
+  * Check the particluer directoy is exist or notin the specific location. 
+  */ 
+
   if (!is_dir($chk_dir))
   {
 
@@ -138,6 +195,12 @@ function imageUpload($fileDetails)
   }
   else
   {
+    /* 
+    * This function check the files is exist by the same name or not.
+    * if exist then return false.
+    * if not then create the file on the specifice location with the same file 
+    * name 
+    */
     if (file_exists("img/" . $filen))
     {
       echo $filen . " already exists. ";
@@ -146,6 +209,13 @@ function imageUpload($fileDetails)
     }
     else
     {
+      /* "move_upload_file" fucntion  
+      * This function checks to ensure that the file designated by filename is a 
+      * valid upload file (meaning that it was uploaded via PHP's HTTP POST 
+      * upload 
+      * mechanism). If the file is valid, it will be moved to the filename given 
+      * by destination. 
+      */
       if (move_uploaded_file($fileDetails["projectImage"]["tmp_name"], $doc_root . "img/" . $filen))
       {
         //Resize the image
@@ -303,6 +373,17 @@ function userNameAlreadyExists($uname, $userTblArray)
 /* * ************CHECK USERNAME ALREADY EXITS*********** */
 
 /* * ************UPLOAD CARE FUNCTION*********** */
+/*
+* "fileUploadCare" fucntion is used for upalod the image of the give specific 
+*  location. 
+* It's take 3 params 
+*    - Image url 
+*    - Image name 
+*    - Location wher it wil be stored
+* It also validation that file should be only image.
+* It's also make the Thumbnail for the image going to upload in server 
+*/  
+
 
 function fileUploadCare($uploadCareURL, $imageName, $src)
 {
@@ -394,7 +475,14 @@ function create_recovery_password()
 
 
 /* * ****Send Email starts here***** */
-
+/* 
+* "send_mail_to" function is responsbale to send the email as per the parame value
+* Its take 4 params :
+* to =  a person who receiver  the email.
+* subject = subject of email.
+* message_to = message.
+* headers = Header for email 
+*/
 function send_mail_to($to, $subject, $message_to, $headers)
 {
   if (mail($to, $subject, $message_to, $headers))
@@ -435,8 +523,15 @@ function send_mail_to($to, $subject, $message_to, $headers)
 function userHasPrivilege(){
 	//var_dump(defined("USER_PRIVILEGE"));die;
 }
-
+/*
+* "itemHasVisibility" function check user have the visibility permission or not. 
+* If yes then it will return ture otherwise false. 
+* Accordingly that user are able to see the content. 
+* It's take on param which content the visibility value.
+*/
 function itemHasVisibility($visibility){
+  // Its check user have defined privilege value true on global veriable
+
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
 	}
@@ -445,7 +540,11 @@ function itemHasVisibility($visibility){
 	}
 	return false;
 }
-
+/*
+* "itemHasPrivilege" function check USER_PRIVILEGE have defined value or not  . 
+* If yes then it will return ture otherwise false. 
+* 
+*/
 function itemHasPrivilege($privilege){
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
@@ -455,6 +554,12 @@ function itemHasPrivilege($privilege){
 	}
 	return false;
 }
+
+/*
+* "itemEditable" function check USER_PRIVILEGE have defined value or not  . 
+* If yes then it will return ture otherwise false. 
+* 
+*/
 function itemEditable($editable){
 	if(!defined("USER_PRIVILEGE")){
 		define("USER_PRIVILEGE",'NO');
@@ -571,7 +676,7 @@ function generateTopNavigation($navItems,$loginRequired){
 
 	if(!empty($navItems)){
 		foreach($navItems as $parent){
-			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id']) || $parent['item_number']==0)){
+			if($loginRequired && (!itemHasVisibility($parent['item_visibility']) || !isset($parent['nav_id'])) ){
 				continue;
 			}
       $label = dislayUserNameSelector($parent['item_label']);
@@ -657,30 +762,11 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='$enable_class nav_item $item_style' style='$nav_css_code'>
-									<a onClick=urlVariables(this) class='$disable_child $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>"
-										.$item_icon.
+									<a onClick=urlVariables(this) class='$disable_child $item_style' $target_blank data-link='$target' href='javascript:;' title='$title' style='$nav_css_code'>".
+										$item_icon.
 										getSaperator($label)."
 									</a>
-								</li>
-                <script>
-                                function urlVariables(e){
-                                  var target = $(e).data('link');
-                                  if(target != '' && target != null){
-                                    if (!e) e = window.event;
-
-                                    if (!e.ctrlKey) {
-                                      $.ajax({
-                                          method: 'GET',
-                                          url: 'ajax-actions.php',
-                                          data:{ values_to_unset: 'abc' }
-                                      })
-                                      .done(function (msg) {
-                                          window.location = target;
-                                      });
-                                    }
-                                  }
-                                }
-                                </script>";
+								</li>";
 						break;
 					}
 				}
@@ -704,7 +790,7 @@ function generateTopNavigation($navItems,$loginRequired){
 						break;
 						default:
 						$menu.="<li class='nav_item $enable_class $item_style' style='$nav_css_code'>
-									<a onClick=urlVariables(this) class='$disable $item_style' $target_blank data-link='$target' href='$target' title='$title' style='$nav_css_code'>
+									<a onClick=urlVariables(this) class='$disable $item_style' $target_blank data-link='$target' href='javascript:;' title='$title' style='$nav_css_code'>
 										".$item_icon.getSaperator($label)."
 									</a>
 								</li>
@@ -712,18 +798,15 @@ function generateTopNavigation($navItems,$loginRequired){
                                 function urlVariables(e){
                                   var target = $(e).data('link');
                                   if(target != '' && target != null){
-                                    if (!e) e = window.event;
-
-                                    if (!e.ctrlKey) {
-                                      $.ajax({
-                                          method: 'GET',
-                                          url: 'ajax-actions.php',
-                                          data:{ values_to_unset: 'abc' }
-                                      })
-                                      .done(function (msg) {
-                                          window.location = target;
-                                      });
-                                    }
+                                    $.ajax({
+                                        method: 'GET',
+                                        url: 'ajax-actions.php',
+                                        data:{ values_to_unset: 'abc' }
+                                    })
+                                    .done(function (msg) {
+                                        console.log(target)
+                                        window.location = target;
+                                    });
                                   }
                                 }
                                 </script>
@@ -1256,26 +1339,26 @@ function sendEmailNotification($page,$action,$senderId,$reciverId,$notification_
 }
 
 function sendMessageAsEmail($to,$messageText){
-	$subject = "Message Notification | Generic Platform";
-	$message = "<html><head><title>Message</title></head><body>";
-	$message .= "Hi,<br/>";
+  $subject = "Message Notification | Generic Platform";
+  $message = "<html><head><title>Message</title></head><body>";
+  $message .= "Hi,<br/>";
   $message .= "User ".$_SESSION['current-user-first-lastname']." send you you a message.which is : <br> ".$messageText." <br/>";
-	$message .= "<br/><br/>Regards,<br>Generic Platform";
-	$message .= "</body></html>";
-	// Always set content-type when sending HTML email
-	$headers = "MIME-Version: 1.0" . "\r\n";
-	$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-	// More headers
-	$headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
-	try{
-		$sent = mail($to,$subject,$message,$headers);
-		if($sent){
-			return true;
-		}
-		return "Unable to send email";
-	} catch(Exception $e){
-		return $e->getMessage();
-	}
+  $message .= "<br/><br/>Regards,<br>Generic Platform";
+  $message .= "</body></html>";
+  // Always set content-type when sending HTML email
+  $headers = "MIME-Version: 1.0" . "\r\n";
+  $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+  // More headers
+  $headers .= 'From: Generic Platform<noreply@genericplatform.com>' . "\r\n";
+  try{
+    $sent = mail($to,$subject,$message,$headers);
+    if($sent){
+      return true;
+    }
+    return "Unable to send email";
+  } catch(Exception $e){
+    return $e->getMessage();
+  }
 }
 
 function sendMessageAndAddLog(){
@@ -1364,7 +1447,7 @@ function findAndSetCategoryStyles($con,$category_styles){
   $style_refrence_id = trim($category_styles['field']);
   $allStyles = $con->query("SELECT * FROM $style_table");
 
-	while ($style = $allStyles->fetch_assoc()) {
+  while ($style = $allStyles->fetch_assoc()) {
     $dataSet[$style[$style_refrence_id]]['class'] =$style['css_class'];
     $dataSet[$style[$style_refrence_id]]['code'] =$style['css_code'];
     $dataSet[$style[$style_refrence_id]]['icon'] =$style['map_icon'];
