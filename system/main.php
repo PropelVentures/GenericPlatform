@@ -51,7 +51,7 @@
 	
 			Navigation($display_page,'header');
 			Navigation($display_page,'header2');
-	
+                       
 
 	
 		/*
@@ -65,6 +65,7 @@
 
 		$haveParalax = false;
 		ShowTableTypeParallaxBanner($display_page,$haveParalax);
+                
 
 	/* 
 	* if that is the homepage then include this file
@@ -187,6 +188,7 @@
 			* left sidebar code
 			*/
 			sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
+                        
 			/*
 			* displaying tab area
 			*/
@@ -214,7 +216,7 @@
 					}
 				}
 			}
-
+  
 			//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 		<!-- Tab Content area .. -->
@@ -237,9 +239,8 @@
 			*
  			*  for more defination please check the serial_layout.php file.
 			*/				
- 
-				serial_layout($display_page, $style);
 
+				serial_layout($display_page, $style);
 			} else {
 
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
@@ -1116,6 +1117,7 @@
 	}
 </script>
 <?php
-  echo "<div style='height:25px'></div>";
+    showLinkedInProfile(LINKEDIN_SIGNIN_APP_REDIRECT_URL, $_SESSION['linkedInCSRFSignIn']);
+    echo "<div style='height:25px'></div>";
 	Footer($display_page,'footer2');
 ?>

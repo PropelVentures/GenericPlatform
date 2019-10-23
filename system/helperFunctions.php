@@ -1587,6 +1587,27 @@ function generateGoogleButton($google_array){
 }
 
 function generateLinkedinButton($linkedin_array){
+    /*NEW CODE */
+        if(!isset($_SESSION['linkedInCSRFSignIn'])){
+            $csrf = getUniqueRandomToken(24);
+            $_SESSION['linkedInCSRFSignIn'] = $csrf;
+        }else{
+            $csrf = $_SESSION['linkedInCSRFSignIn'];
+        }
+        $authUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=" . LINKEDIN_APP_ID . "&redirect_uri=" . LINKEDIN_SIGNIN_APP_REDIRECT_URL . "&state=" . $csrf . "&scope=" . LINKEDIN_APP_PERMISSIONS;
+        $linkedinButton = "<a onclick='signInWithLinkedin();' class='btn btn-primary update-btn " . $linkedin_array['style'] . "'>
+							<span class='fa fa-linkedin'></span>
+							".$linkedin_array['value']."
+						</a> &nbsp;"; ?>
+        <script type="text/javascript">
+            function signInWithLinkedin(){
+                window.location.href="<?php echo $authUrl; ?>";
+            }
+	</script>
+        <?php
+        return $linkedinButton;
+        
+        /*OLD CODE
 	$linkedinButton = "<a onclick='onLinkedInLoad()' class='btn btn-primary update-btn " . $linkedin_array['style'] . "'>
 							<span class='fa fa-linkedin'></span>
 							".$linkedin_array['value']."
@@ -1618,7 +1639,7 @@ function generateLinkedinButton($linkedin_array){
 			document.getElementById("location").innerHTML = user.location.name;
 			document.getElementById("link").innerHTML = '<a href="'+user.publicProfileUrl+'" target="_blank">Visit profile</a>';
 			document.getElementById('profileData').style.display = 'block'; */
-			saveUserData(user);
+			/*saveUserData(user);
 		}
 
 		// Save user data to the database
@@ -1662,7 +1683,7 @@ function generateLinkedinButton($linkedin_array){
 		}
 		</script>
 	<?php
-	return $linkedinButton;
+	return $linkedinButton;*/
 }
 
 

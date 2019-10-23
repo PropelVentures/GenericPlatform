@@ -3,7 +3,6 @@
 // =======================================================================
 // SYSTEM CONSTANTS, GLOBAL PARAMETERS etc
 // =======================================================================
-
 // For Porting, Mainly
 define("PROJECT", "Project");
 define("CHILD", "Child");
@@ -122,28 +121,27 @@ define("BACK_BUTTON", "Back");
 
 
 
-/* ****** SPECIAL CONSTANTS  ****  */
+/* * ***** SPECIAL CONSTANTS  ****  */
 
 define('EDIT', 'Edit');
 
 
 /*  Constants for DD DataDictionary Special Table Types  */
 $internal_table_types = array(
-"USER",
-"PROJECT",
-"CROSSREF",
-"TRANSACTION",
-"CHILD",
-"P2P");
+    "USER",
+    "PROJECT",
+    "CROSSREF",
+    "TRANSACTION",
+    "CHILD",
+    "P2P");
 
-$arrlength=count($internal_table_types);
-for($x=0;$x<$arrlength;$x++)
-  {
-  $z=$internal_table_types[$x]."_TABLETYPE";
-  define($z, $internal_table_types[$x]);
-  }
+$arrlength = count($internal_table_types);
+for ($x = 0; $x < $arrlength; $x++) {
+    $z = $internal_table_types[$x] . "_TABLETYPE";
+    define($z, $internal_table_types[$x]);
+}
 
-/******
+/* * ****
  *
  * Defining default field_length for field_types
  */
@@ -167,19 +165,18 @@ define("defaultFieldLenTextareaMin", "25");
 define("defaultFieldLenBooleanMin", "5");
 //Code Change for Task 8.4.603 End
 
-/******
+/* * ****
  *
  * Defining default limit for multi select
  */
- define("maxSelectLimit", "5");
+define("maxSelectLimit", "5");
 
 
 define("showClear", "true"); ///set rating icon
-define("dropdownSeparator", "&nbsp;");///dropdown separator
-define("favoriteTitle", "Favorite");///FFFR favorite title
-define("friendTitle", "Friend");///
-define("followTitle", "Follow");///
-
+define("dropdownSeparator", "&nbsp;"); ///dropdown separator
+define("favoriteTitle", "Favorite"); ///FFFR favorite title
+define("friendTitle", "Friend"); ///
+define("followTitle", "Follow"); ///
 //define("ratingTitle", "Rate Me");///dropdown separator
 
 define("AlERTBOX", "Alert Box"); ////Alert box of voting(FFFR)
@@ -187,7 +184,7 @@ define("voteInserted", "<p>Vote Inserted Successfully</p>"); ////Alert box of vo
 define("editBtnAlertMsg", "Please update/cancel the current data before trying to edit a different column"); ////Alert box of Edit button
 define("backAlertMsg", "Are you sure ,You want to go to Main List without Saving!"); ////Alert box when user want to go back to list without saving the form.
 
-/************ On page Form pagination Constants *********/
+/* * ********** On page Form pagination Constants ******** */
 
 define("pageFirst", "First");
 define("pagePrev", "Prev");
@@ -196,10 +193,10 @@ define("pageLast", "Last");
 
 
 
-/************ Audio upload Constants *********/
+/* * ********** Audio upload Constants ******** */
 
-/**** buttons TEXT are enraped in anchor tag. so you can replace
- *  these names with html tag as well , for using glyphicon icons etc ****/
+/* * ** buttons TEXT are enraped in anchor tag. so you can replace
+ *  these names with html tag as well , for using glyphicon icons etc *** */
 
 define("audioRecord", "Record");
 define("audioPause", "Pause");
@@ -212,17 +209,17 @@ define("audioRecordingResume", "Recording has been Resumed/Started!");
 define("audioPauseMsg", "Recording has been Paused!");
 
 
-/**************FFFR ICONS CONSTANTS***********/
+/* * ************FFFR ICONS CONSTANTS********** */
 #define("audioClear", "Clear");
 
 
-/******** update & cancel button & Save Record ***********/
+/* * ****** update & cancel button & Save Record ********** */
 define("formUpdate", "Update");
 define("formCancel", "Cancel");
 define("formSave", "Save Record");
 
 
-/************* FFFR ICONS **************/
+/* * *********** FFFR ICONS ************* */
 
 define("friendOn", "Friend");
 define("friendOff", "Un-Friend");
@@ -233,14 +230,14 @@ define("votingNoSubmitBtn", "<i class='glyphicon glyphicon-ok-sign'></i>");
 #define("formSave", "Save Record");
 
 
-/************* List filter multiple Selection of Delete/copy Confirmation Msgs **************/
+/* * *********** List filter multiple Selection of Delete/copy Confirmation Msgs ************* */
 define("deleteConfirm", "Are you sure ,You want to Delete the Records!");
 define("copyConfirm", "Are you sure ,You want to Copy the Records!");
 define("pdfInline", "Click Me!");
 define("noFile", "No File!");
 
 
-/************* Notification and event logging tables and veriables**************/
+/* * *********** Notification and event logging tables and veriables************* */
 define("eventLog", "event_log");
 define("eventCodes", "event_codes");
 define("notificationAlertTypes", "notification_alert_types");
@@ -252,201 +249,200 @@ define("NOTIFICATION_ALERTS_ON", "ON");
 
 
 
-/******** Constant use for user_privilege_level *******/
+/* * ****** Constant use for user_privilege_level ****** */
 define("user_privilege_level", "user_privilege_level");
 define("USER_PRIVILEGE", 'YES');
 
-/******** Constant use for Transaction popup Title *******/
+/* * ****** Constant use for Transaction popup Title ****** */
 define("transTtile", "Title Goes here");
 define("transSuccess", "Transaction Successful!");
 define("transFail", "Transaction Fail, Please Try again!");
 
-/**************** ERROR CODE *********************/
-define("ERROR_403","You don't have enough privilege to view contents");
+/* * ************** ERROR CODE ******************** */
+define("ERROR_403", "You don't have enough privilege to view contents");
 
-/******************MAP CONSTANT****************************/
-define("GOOGLE_GEO_API_KEY" , "AIzaSyD2XMNK3swWjkiGUIGxnD34A3nHxDZxHM4");
-define("GOOGLE_MAP_API_KEY" , "AIzaSyB_RG_AlKVthUJnPJ_I73siI_YhkrIhcOk");
+/* * ****************MAP CONSTANT*************************** */
+define("GOOGLE_GEO_API_KEY", "AIzaSyD2XMNK3swWjkiGUIGxnD34A3nHxDZxHM4");
+define("GOOGLE_MAP_API_KEY", "AIzaSyB_RG_AlKVthUJnPJ_I73siI_YhkrIhcOk");
 //define("GOOGLE_MAP_API_KEY" , "AIzaSyBS34pdyzNxNbjrDmaytiyskwFH5vtIRKI");
-define("MAP_CENTER_LATITUDE" , 31.3259); //float value
-define("MAP_CENTER_LONGITUDE" , 74.2037); //float value
-define("MAP_ZOOM" , 10); //integer
+define("MAP_CENTER_LATITUDE", 31.3259); //float value
+define("MAP_CENTER_LONGITUDE", 74.2037); //float value
+define("MAP_ZOOM", 10); //integer
 
-/********************SOCIAL CREDENTIALS********************/
+/* * ******************SOCIAL CREDENTIALS******************* */
 //define("FACEBOOK_APP_ID" , "372901176588464");
-define("FACEBOOK_APP_ID" , "1602880633344065");
-define("GOOGLE_CLIENT_ID" , "33458340737-u50tq5ut3oijde7ufdemf7p37osqnsiu.apps.googleusercontent.com");
-define("LINKEDIN_APP_ID" , "86j4ktoqu4eouz");
+define("FACEBOOK_APP_ID", "1602880633344065");
+define("GOOGLE_CLIENT_ID", "33458340737-u50tq5ut3oijde7ufdemf7p37osqnsiu.apps.googleusercontent.com");
+define("LINKEDIN_APP_ID", "86j4ktoqu4eouz");
+define("LINKEDIN_APP_SECRET", "XfrQ5g1mCy7DLPAE");
+define("LINKEDIN_APP_PERMISSIONS", "r_emailaddress r_liteprofile w_member_social");
+define("LINKEDIN_IMPORT_PROFILE_APP_REDIRECT_URL", BASE_URL . "system/import_profile_linkedin.php");
+define("LINKEDIN_SIGNIN_APP_REDIRECT_URL", BASE_URL . "system/main.php?display=genericlogin&layout=&style=");
 //define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
-
-
 //Message to show when a record limit is reached for a list
-define("MAXIMUM_LIMIT_REACHED","Maximum records limit reach, You can not add more records");
+define("MAXIMUM_LIMIT_REACHED", "Maximum records limit reach, You can not add more records");
 
 /* * *Form labels for PROFILE page** */
 /* THESE ARE NO LONGER NEEDED!
-define("USER", "User");
-define("USER_NAME", "Name");
-define("USER_FIRST_NAME", "First Name");
-define("USER_LAST_NAME", "Last Name");
-define("USER_ABOUT_ME", "About me");
-define("USER_INTERESTS", "Interests");
-define("USER_SKILLS", "Skills");
-define("USER_EMAIL", "Email");
-define("USER_COMPANY", "Company");
-define("USER_CITY", "City");
-define("USER_STATE", "State");
-define("USER_ZIP", "Zip");
-define("USER_FACEBOOK_ACCOUNT", "Your Facebook account");
-define("USER_GOOGLEPLUS_ACCOUNT", "Your Google+ account");
-define("USER_TWITTER_ACCOUNT", "Your Twitter account");
-define("USER_DESCRIPTION", "Profile");
-define("USER_COUNTRY", "Country");
-define("UPDATE_PROFILE_BUTTON", "Update Profile");
-define("USER_IMAGE_SAVE_BUTTON", "SAVE");
-define("USER_IMAGE_CANCEL_BUTTON", "CANCEL");
-define("REMOVE_IMAGE_BUTTON", "Remove Image");
-define("PROFILE_UPDATE_SUCCESS", "Profile Updated Successfully.");
-define("PROFILE_UPDATE_NOT_SUCCESS", "Profile Updated Not Successfully.");
-define("PROFILE_COMPLETE_LABEL", "Profile Completion");
-define("SEARCH_TRANSACTIONS", "Search Transaction");
-define("PROFILE_IMAGE_UPLOAD_SUCCESS", "Image successfully uploaded");
-define("PROFILE_IMAGE_UPLOAD_ERROR", "Image could not be uploaded. Please try again");
-define("SEARCH_USERS", "Search " . USER);
-define("USER_TYPE", "User Types");
-*/
+  define("USER", "User");
+  define("USER_NAME", "Name");
+  define("USER_FIRST_NAME", "First Name");
+  define("USER_LAST_NAME", "Last Name");
+  define("USER_ABOUT_ME", "About me");
+  define("USER_INTERESTS", "Interests");
+  define("USER_SKILLS", "Skills");
+  define("USER_EMAIL", "Email");
+  define("USER_COMPANY", "Company");
+  define("USER_CITY", "City");
+  define("USER_STATE", "State");
+  define("USER_ZIP", "Zip");
+  define("USER_FACEBOOK_ACCOUNT", "Your Facebook account");
+  define("USER_GOOGLEPLUS_ACCOUNT", "Your Google+ account");
+  define("USER_TWITTER_ACCOUNT", "Your Twitter account");
+  define("USER_DESCRIPTION", "Profile");
+  define("USER_COUNTRY", "Country");
+  define("UPDATE_PROFILE_BUTTON", "Update Profile");
+  define("USER_IMAGE_SAVE_BUTTON", "SAVE");
+  define("USER_IMAGE_CANCEL_BUTTON", "CANCEL");
+  define("REMOVE_IMAGE_BUTTON", "Remove Image");
+  define("PROFILE_UPDATE_SUCCESS", "Profile Updated Successfully.");
+  define("PROFILE_UPDATE_NOT_SUCCESS", "Profile Updated Not Successfully.");
+  define("PROFILE_COMPLETE_LABEL", "Profile Completion");
+  define("SEARCH_TRANSACTIONS", "Search Transaction");
+  define("PROFILE_IMAGE_UPLOAD_SUCCESS", "Image successfully uploaded");
+  define("PROFILE_IMAGE_UPLOAD_ERROR", "Image could not be uploaded. Please try again");
+  define("SEARCH_USERS", "Search " . USER);
+  define("USER_TYPE", "User Types");
+ */
 
 
 
 /* * *Form labels for CREATE PROJECT page** */
 /* THESE ARE NO LONGER NEEDED!
-define("PROJECT", "Product");
-define("PROJECT_NAME", PROJECT . " Name");
-define("PROJECT_PRICE", PROJECT . " Price");
-define("PROJECT_QUANTITY", PROJECT . " Quantity");
-define("PROJECT_CATEGORY", "Category");
-define("PROJECT_EXPIRY_DATE", "Expiry Date");
-define("PROJECT_CREATED_DATE", "Created Date");
-define("PROJECT_LAUNCH", "Launch");
-define("PROJECT_TAGS", "Tags");
-define("PROJECT_AFFILIATION_ONE", "Affiliation 1");
-define("PROJECT_AFFILIATION_TWO", "Affiliation 2");
-define("PROJECT_TAG_PLACEHOLDER", "Add tags here");
-define("ADD_TAG_BUTTON", "Add Tag");
-define("PROJECT_DESCRIPTION", "Description");
-define("RESET_BUTTON", "Reset");
-define("PROJECT_SAVE_BUTTON", "Save " . PROJECT);
-define("PROJECT_NAME_PLACEHOLDER", PROJECT . " Name");
-define("PROJECT_DESC_PLACEHOLDER", PROJECT . " Description");
-define("PROJECT_ADDED_SUCCESS", PROJECT . " added successfully.");
-define("PROJECT_NOT_ADDED_SUCCESS", PROJECT . " could not be added.Please try again");
-define("PROJECT_UPDATE_SUCCESS", PROJECT . " Updated successfully.");
-define("PROJECT_NOT_UPDATE_SUCCESS", PROJECT . " could not be updated.Please try again");
-define("PROJECT_IMAGE_NOT_UPDATE_SUCCESS", PROJECT . " Image could not be updated.Please try again");
-define("PROJECT_DELETE_SUCCESS", PROJECT . " Deleted successfully.");
-define("PROJECT_IMAGE_REMOVE_SUCCESS", PROJECT . " Image Removed Successfull.");
-define("PROJECT_IMAGE_REMOVE_NOT_SUCCESS", PROJECT . " Image Removed Not Successfull.");
-define("FORK_PROJECT", "Allow Fork ");
-define("COPY_PROJECT", "Allow Copy ");
-define("SUBSCRIBE_PROJECT", "Allow Subscribe ");
-define("SHARE_PROJECT", "Allow Share ");
-define("SHOW_PROJECT_DESC", "Show Description ");
-define("SHOW_PROJECT_IMG_GALLERY", "Show Image Gallery ");
-define("SHOW_PROJECT_TRANSACTIONS", "Show Transactions ");
-define("SHOW_PROJECT_COMMENTS", "Show Comments ");
-define("PROJECT_SCRIPT", "Script");
-define("PROJECT_FAVORITES", "Product Favorites");
-define("PROJECT_LAUNCH_STATUS_LABEL", "Product Launch Status");
+  define("PROJECT", "Product");
+  define("PROJECT_NAME", PROJECT . " Name");
+  define("PROJECT_PRICE", PROJECT . " Price");
+  define("PROJECT_QUANTITY", PROJECT . " Quantity");
+  define("PROJECT_CATEGORY", "Category");
+  define("PROJECT_EXPIRY_DATE", "Expiry Date");
+  define("PROJECT_CREATED_DATE", "Created Date");
+  define("PROJECT_LAUNCH", "Launch");
+  define("PROJECT_TAGS", "Tags");
+  define("PROJECT_AFFILIATION_ONE", "Affiliation 1");
+  define("PROJECT_AFFILIATION_TWO", "Affiliation 2");
+  define("PROJECT_TAG_PLACEHOLDER", "Add tags here");
+  define("ADD_TAG_BUTTON", "Add Tag");
+  define("PROJECT_DESCRIPTION", "Description");
+  define("RESET_BUTTON", "Reset");
+  define("PROJECT_SAVE_BUTTON", "Save " . PROJECT);
+  define("PROJECT_NAME_PLACEHOLDER", PROJECT . " Name");
+  define("PROJECT_DESC_PLACEHOLDER", PROJECT . " Description");
+  define("PROJECT_ADDED_SUCCESS", PROJECT . " added successfully.");
+  define("PROJECT_NOT_ADDED_SUCCESS", PROJECT . " could not be added.Please try again");
+  define("PROJECT_UPDATE_SUCCESS", PROJECT . " Updated successfully.");
+  define("PROJECT_NOT_UPDATE_SUCCESS", PROJECT . " could not be updated.Please try again");
+  define("PROJECT_IMAGE_NOT_UPDATE_SUCCESS", PROJECT . " Image could not be updated.Please try again");
+  define("PROJECT_DELETE_SUCCESS", PROJECT . " Deleted successfully.");
+  define("PROJECT_IMAGE_REMOVE_SUCCESS", PROJECT . " Image Removed Successfull.");
+  define("PROJECT_IMAGE_REMOVE_NOT_SUCCESS", PROJECT . " Image Removed Not Successfull.");
+  define("FORK_PROJECT", "Allow Fork ");
+  define("COPY_PROJECT", "Allow Copy ");
+  define("SUBSCRIBE_PROJECT", "Allow Subscribe ");
+  define("SHARE_PROJECT", "Allow Share ");
+  define("SHOW_PROJECT_DESC", "Show Description ");
+  define("SHOW_PROJECT_IMG_GALLERY", "Show Image Gallery ");
+  define("SHOW_PROJECT_TRANSACTIONS", "Show Transactions ");
+  define("SHOW_PROJECT_COMMENTS", "Show Comments ");
+  define("PROJECT_SCRIPT", "Script");
+  define("PROJECT_FAVORITES", "Product Favorites");
+  define("PROJECT_LAUNCH_STATUS_LABEL", "Product Launch Status");
 
 
-define("MY_PROJECTS_TITLE", "My " . PROJECT . "s");
-define("OTHERS_PROJECTS_TITLE", "Others " . PROJECT . "s");
-define("CREATE_PROJECTS_TITLE", "Create " . PROJECT);
-define("PROJECTS_NOT_AVAILABLE_MESSAGE", "You currently do not have any " . PROJECT . ". Please <a href='" . BASE_URL . "createProduct.php'>CREATE</a> one.");
-define("OTHERS_PROJECTS_NOT_AVAILABLE_MESSAGE", "Currently There are no " . PROJECT . "s available.");
-define("MANAGE_PROJECT", "Manage " . PROJECT);
-define("DELETE_PROJECT", "Delete");
+  define("MY_PROJECTS_TITLE", "My " . PROJECT . "s");
+  define("OTHERS_PROJECTS_TITLE", "Others " . PROJECT . "s");
+  define("CREATE_PROJECTS_TITLE", "Create " . PROJECT);
+  define("PROJECTS_NOT_AVAILABLE_MESSAGE", "You currently do not have any " . PROJECT . ". Please <a href='" . BASE_URL . "createProduct.php'>CREATE</a> one.");
+  define("OTHERS_PROJECTS_NOT_AVAILABLE_MESSAGE", "Currently There are no " . PROJECT . "s available.");
+  define("MANAGE_PROJECT", "Manage " . PROJECT);
+  define("DELETE_PROJECT", "Delete");
 
-*/
+ */
 
 
 
 /* * *Form labels for USERS page** */
 /* THESE ARE NO LONGER NEEDED!
-define("SORT_BUTTON", "SORT");
-define("SEARCH_BUTTON", "Searech Users");
-#define("SORT_BY", "Sort By");
-define("PROJECT_VISBILITY_LABEL", "Product Visibility");
-*/
+  define("SORT_BUTTON", "SORT");
+  define("SEARCH_BUTTON", "Searech Users");
+  #define("SORT_BY", "Sort By");
+  define("PROJECT_VISBILITY_LABEL", "Product Visibility");
+ */
 
 
 
 /* * *******PROJECTS PAGE**************** */
 /* THESE ARE NO LONGER NEEDED!
 
-define("MY_PROJECTS_TITLE", "My " . PROJECT . "s");
-define("OTHERS_PROJECTS_TITLE", "Others " . PROJECT . "s");
-define("CREATE_PROJECTS_TITLE", "Create " . PROJECT);
-define("PROJECTS_NOT_AVAILABLE_MESSAGE", "You currently do not have any " . PROJECT . ". Please <a href='" . BASE_URL . "createProduct.php'>CREATE</a> one.");
-define("OTHERS_PROJECTS_NOT_AVAILABLE_MESSAGE", "Currently There are no " . PROJECT . "s available.");
-define("MANAGE_PROJECT", "Manage " . PROJECT);
-define("DELETE_PROJECT", "Delete");
-define("POPULAR_PROJECTS", "Popular Products");
+  define("MY_PROJECTS_TITLE", "My " . PROJECT . "s");
+  define("OTHERS_PROJECTS_TITLE", "Others " . PROJECT . "s");
+  define("CREATE_PROJECTS_TITLE", "Create " . PROJECT);
+  define("PROJECTS_NOT_AVAILABLE_MESSAGE", "You currently do not have any " . PROJECT . ". Please <a href='" . BASE_URL . "createProduct.php'>CREATE</a> one.");
+  define("OTHERS_PROJECTS_NOT_AVAILABLE_MESSAGE", "Currently There are no " . PROJECT . "s available.");
+  define("MANAGE_PROJECT", "Manage " . PROJECT);
+  define("DELETE_PROJECT", "Delete");
+  define("POPULAR_PROJECTS", "Popular Products");
 
 
-define("SEARCH_PROJECTS", "Search Products");
-define("SORT_BY", "Sort by");
-define("ALPHABETICALL", "Alphabetically");
-define("DATE_JOINED", "Date Joined");
-define("RELEVANCE", "Relevance");
-define("TODAY", "Today");
-define("LAST_WEEK", "Last Week");
-define("LAST_MONTH", "Last Month");
-*/
+  define("SEARCH_PROJECTS", "Search Products");
+  define("SORT_BY", "Sort by");
+  define("ALPHABETICALL", "Alphabetically");
+  define("DATE_JOINED", "Date Joined");
+  define("RELEVANCE", "Relevance");
+  define("TODAY", "Today");
+  define("LAST_WEEK", "Last Week");
+  define("LAST_MONTH", "Last Month");
+ */
 
 
 
 /* * *TAB LABELS** */
 /* THESE ARE NO LONGER NEEDED!
-define("MY_ACCOUNT", "My Account");
-define("MY_TRANSACTIONS", "My Transactions");
-define("OTHER_TRANSACTIONS", "Other Transactions");
-define("USER_INFO", "User Info");
-*/
+  define("MY_ACCOUNT", "My Account");
+  define("MY_TRANSACTIONS", "My Transactions");
+  define("OTHER_TRANSACTIONS", "Other Transactions");
+  define("USER_INFO", "User Info");
+ */
 
 
 /* * *menu labels for HEADER** */
 /* THESE ARE NO LONGER NEEDED!
-define("HOME_MENU", "Home");
-define("ABOUT_MENU", "About");
-define("CONTACT_MENU", "Contact");
-define("PROFILE_MENU", "Profile");
-define("MYACCOUNT_MENU", "My Account");
-define("PROJECTS_MENU", "Products");
-define("MY_PROJECTS_MENU", "My Products");
-define("MY_FAVORITES", "My Favorites");
-define("USER_FOLLOW", "My Follows");
-define("USER_FRIENDS", "My Friends");
-define("USER_LIKES", "My Likes");
-*/
+  define("HOME_MENU", "Home");
+  define("ABOUT_MENU", "About");
+  define("CONTACT_MENU", "Contact");
+  define("PROFILE_MENU", "Profile");
+  define("MYACCOUNT_MENU", "My Account");
+  define("PROJECTS_MENU", "Products");
+  define("MY_PROJECTS_MENU", "My Products");
+  define("MY_FAVORITES", "My Favorites");
+  define("USER_FOLLOW", "My Follows");
+  define("USER_FRIENDS", "My Friends");
+  define("USER_LIKES", "My Likes");
+ */
 
 /*
-define("HOME_FOOTER_TITLE", "Where products come from");
-define("HOME_FOOTER_CONTENT", " Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
-define("HOME_FOOTER_BUTTON_TEXT", "Learn more");
-*/
+  define("HOME_FOOTER_TITLE", "Where products come from");
+  define("HOME_FOOTER_CONTENT", " Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
+  define("HOME_FOOTER_BUTTON_TEXT", "Learn more");
+ */
 
 
 
 /* * *******COMMENTS**************** */
 /* THESE ARE NO LONGER NEEDED!
-define("COMMENT", "Comment");
-define("COMMENT_BUTTON", "Post a Comment");
-define("NO_COMMENTS", "No " . COMMENT . "s has been posted yet");
-define("COMMENTS_POST_ERROR", "Some internal error. Your " . COMMENT . " couldnt be posted.");
-define("NO_COMMENT_EMPTY", "Please make sure you " . COMMENT . " box in not empty");
-*/
-
-
-
+  define("COMMENT", "Comment");
+  define("COMMENT_BUTTON", "Post a Comment");
+  define("NO_COMMENTS", "No " . COMMENT . "s has been posted yet");
+  define("COMMENTS_POST_ERROR", "Some internal error. Your " . COMMENT . " couldnt be posted.");
+  define("NO_COMMENT_EMPTY", "Please make sure you " . COMMENT . " box in not empty");
+ */
 ?>

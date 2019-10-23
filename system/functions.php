@@ -1475,4 +1475,72 @@ function getListSortingValue($list_sort){
   }
   return $field_str;
 }
+
+
+/* makeCurlRequest makes a cURL request to a URL.
+ * It accepts parameters to send as argument $param
+ * It accepts POST or GET method by passing $post with true or false
+ */
+function makeCurlRequest($url, $params, $post) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60000);
+    if ($post) {
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["application/x-www-form-urlencoded"]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return $response;
+}
+
+/* getLinkedInProfileInfo makes a cURL request to a userprofile linkedin API URL.
+ * It accepts access token as parameter $accessToken
+ * It returns profile info as json
+ */
+function getLinkedInProfileInfo($accessToken) {
+    $url = "https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))&oauth2_access_token=" . $accessToken;
+    $params = [];
+    return makeCurlRequest($url, $params, false);
+}
+
+/* getUniqueRandomToken generates a unique random token
+ * It accepts a integer as length of the token to generate 
+ */
+function getUniqueRandomToken($length){
+    return bin2hex(openssl_random_pseudo_bytes($length));
+}
+/* showLinkedInProfile displays the profile of the linkedin user
+ * It accepts the redirect URL and csrf session as parameter.
+ * It return the userprofile or false
+ */
+function showLinkedInProfile($redirectURL, $csrfSession){
+    if (isset($_GET['state']) && isset($_GET['code']) && isset($csrfSession) && $_GET['state'] == $csrfSession) {
+        $url = "https://www.linkedin.com/oauth/v2/accessToken";
+        $params = [
+            'client_id' => LINKEDIN_APP_ID,
+            'client_secret' => LINKEDIN_APP_SECRET,
+            'redirect_uri' => $redirectURL,
+            'code' => $_GET['code'],
+            'grant_type' => 'authorization_code',
+        ];
+        $response = makeCurlRequest($url, $params, true);
+        $arrayResponse = json_decode($response, true);
+        $stdProfile = getLinkedInProfileInfo($arrayResponse['access_token']);
+        $arrayProfile = json_decode($stdProfile, true);
+        echo "<pre>";
+        print_r($arrayProfile);
+        echo "</pre>";
+        $languageCountry = array_keys($arrayProfile['firstName']['localized'])[0];
+        echo "First Name: " . $arrayProfile['firstName']['localized'][$languageCountry] . "<br>";
+        echo "Last Name: " . $arrayProfile['lastName']['localized'][$languageCountry] . "<br>";
+        echo "Profile Image: " . $arrayProfile['profilePicture']['displayImage~']['elements'][0]['identifiers'][0]['identifier'] . "<br>";
+        echo "<img src='" . $arrayProfile['profilePicture']['displayImage~']['elements'][0]['identifiers'][0]['identifier'] . "'/><br>";
+    }else{
+        return false;
+    } 
+}
+
 ?>
