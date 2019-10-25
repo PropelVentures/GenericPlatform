@@ -78,6 +78,15 @@
 ?>
 <div class="container main-content-container">
 	<?php
+		/*code start for 8.2.001 */
+		$display_search = $_GET['display'];
+		$actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&layout=&style=&dtablesearch=$display_search";
+
+		if(supereditEnabled =='ON'){
+        echo "<a href=$actual_link  target='_blank' class='page-edit-link' >Page-Edit</a>";
+        }
+
+        /*code end for 8.2.001 */
 		/* CHECKING NAV HAS VISIBILITY  START
 		*  navHasVisibility is function which is inhireted from the functions.php file, Which is include 
 		* functions_loader.php.
@@ -241,10 +250,34 @@
 			*/				
 
 				serial_layout($display_page, $style);
+				/*code start for 8.2.001 */
+				if(supereditEnabled =='ON'){
+		        echo "<a href=#  class='page-edit-link' >DD-Edit</a>";
+		        }
+		        /*code end for 8.2.001 */
 			} else {
 
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
+
+				/*code start for 8.2.001 */
+				$rs1 = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'");
+				$row1 = $rs1->fetch_assoc();
+
+
+				if (!empty($row)) {
+					$dict_id = $row[dict_id];
+				}else{
+					$dict_id = $row1['dict_id'];
+				}
+
+				$actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&tab=data_dictionary&tabNum=1&ta=data_dictionary&search_id=$dict_id&checkFlag=true&table_type=parent&edit=true#false";
+
+				if(supereditEnabled =='ON'){
+		        echo "<a href=$actual_link  target='_blank' class='page-edit-link' >DD-Edit</a>";
+		        }
+
+		        /*code end for 8.2.001 */
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
