@@ -70,11 +70,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 
         if (empty($row['format_length']) && ($row['format_type'] != 'dropdown') && $row['format_type'] != 'multi_dropdown') {
 
-            if ( $row['display_page']=='genericlogin') {
-                $row['format_length'] = listColumnMinMaxWidth($row);
-            }else{
-                $row['format_length'] = parseFieldType($row);
-            }
+            $row['format_length'] = parseFieldType($row);
         }
 
 
@@ -461,18 +457,7 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 					if(empty($fieldValue) && $fieldValue!==0 && $fieldValue!=='0'){
 						$place_holder =KEYFIELD_PLACEHOLDER;
 					}
-                    /*code start for 8.2.001*/
-                    $actual_link = BASE_URL_SYSTEM . "main.php?display=field_dictionary&tab=field_dictionary&tabNum=1&ta=field_dictionary&search_id=$row[field_def_id]&checkFlag=true&table_type=parent&edit=true#false";
-
-                    echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div>";
-
-                    if(supereditEnabled =='ON'){
-                    echo "<a href=$actual_link target='_blank' class='page-edit-link'>FD</a>";
-                    }
-                    /*code end for 8.2.001*/
-                    echo "<label>$row[field_label_name]</span></label>";
-
-					/*echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label>$row[field_label_name]</span></label>";*/
+					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label>$row[field_label_name]</span></label>";
 					// echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimensions['style'] size=$dimensions['width'] class='form-control'>";
 					echo "<input type='$row[format_type]' name='$field' placeholder='$place_holder' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]'  size=$dimWidth class='form-control'>";
 					echo "</div></div>";
@@ -482,37 +467,12 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
 					$height = $params['1'].'em';
 					$width = $params['0'];
 					$style = "style='height:$height;$fd_css_style'";
-                    /*code start for 8.2.001*/
-                    $actual_link = BASE_URL_SYSTEM . "main.php?display=field_dictionary&tab=field_dictionary&tabNum=1&ta=field_dictionary&search_id=$row[field_def_id]&checkFlag=true&table_type=parent&edit=true#false";
-
-                    echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div>";
-                    if(supereditEnabled =='ON'){
-                    echo "<a href=$actual_link target='_blank' class='page-edit-link'>FD</a>";
-                    }
-                    /*code end for 8.2.001*/
-                    echo"<label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-
-
-					/*echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";*/
-
+					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' size=$width class='form-control $fd_css_class' $style >";
 					echo "</div></div>";
 			/*Code Start for Task 5.4.112*/
 				}else{
-                    /*code start for 8.2.001*/
-                    $actual_link = BASE_URL_SYSTEM . "main.php?display=field_dictionary&tab=field_dictionary&tabNum=1&ta=field_dictionary&search_id=$row[field_def_id]&checkFlag=true&table_type=parent&edit=true#false";
-
-                    echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div>";
-
-                    if(supereditEnabled =='ON'){
-                    echo "<a href=$actual_link target='_blank' class='page-edit-link'>FD</a>";
-                    }
-                    /*code end for 8.2.001*/
-                    echo "<label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
-
-					/*echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";*/
-
-
+					echo "<div class='new_form $sigle_line_alignment $fd_css_class' style='$fd_css_style'><div><label class='$fd_css_class' style='$fd_css_style'>$row[field_label_name]</label>";
 					// echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]' $dimensions['style'] size=$dimensions['width'] class='form-control'>";
 					echo "<input type='$row[format_type]' name='$field' value='$fieldValue' $row[strict_disabled] $readonly $disabled $required title='$row[help_message]'  size=$dimWidth class='form-control $fd_css_class' style='$dimStyle;$fd_css_style'>";
 					echo "</div></div>";
@@ -804,7 +764,6 @@ function tagFnc($row, $urow = 'false', $image_display = 'false', $dimStyle, $dim
 
 function image_upload($row, $urow = 'false', $image_display = 'false') {
 
-    $actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&tab=data_dictionary&tabNum=1&ta=data_dictionary&search_id=$row[dict_id]&checkFlag=true&table_type=parent&edit=true#false";
 
 	$fd_css_class  =$row['fd_css_class'];
 	$fd_css_style = $row['fd_css_code'];
@@ -871,12 +830,6 @@ function image_upload($row, $urow = 'false', $image_display = 'false') {
 
 
     echo " </div>";
-    /*code start for 8.2.001*/
-    if(supereditEnabled =='ON'){
-        echo "<a href=$actual_link target='_blank' class='page-edit-link' >DD-Edit</a>";
-        }
-    /*code end for 8.2.001*/
-
 }
 
 /*
