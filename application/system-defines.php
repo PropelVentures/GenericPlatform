@@ -282,8 +282,8 @@ define("LINKEDIN_SIGNIN_APP_REDIRECT_URL", BASE_URL . "system/main.php?display=g
 //Message to show when a record limit is reached for a list
 define("MAXIMUM_LIMIT_REACHED", "Maximum records limit reach, You can not add more records");
 
-define("supereditEnabled", "ON");
-define("supereditToggle", "true");
+define("supereditEnabled", "OFF");
+define("supereditToggle", "false");
 
 /* * *Form labels for PROFILE page** */
 /* THESE ARE NO LONGER NEEDED!
