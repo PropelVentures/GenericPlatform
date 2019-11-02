@@ -160,7 +160,7 @@ define("defaultFieldLenBooleanMax", "10");
 
 define("defaultFieldLenIntegerMin", "15");
 define("defaultFieldLenOtherIntegerMin", "10");
-define("defaultFieldLenTextMin", "20");
+define("defaultFieldLenTextMin", "5");
 define("defaultFieldLenTextareaMin", "25");
 define("defaultFieldLenBooleanMin", "5");
 //Code Change for Task 8.4.603 End
@@ -281,6 +281,9 @@ define("LINKEDIN_SIGNIN_APP_REDIRECT_URL", BASE_URL . "system/main.php?display=g
 //define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
 //Message to show when a record limit is reached for a list
 define("MAXIMUM_LIMIT_REACHED", "Maximum records limit reach, You can not add more records");
+
+define("supereditEnabled", "ON");
+define("supereditToggle", "true");
 
 /* * *Form labels for PROFILE page** */
 /* THESE ARE NO LONGER NEEDED!

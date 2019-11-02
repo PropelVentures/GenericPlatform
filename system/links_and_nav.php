@@ -265,6 +265,30 @@ function Navigation($page, $menu_location = 'header') {
     ?>
     <!-- Navigation starts here -->
     <div class="navbar navbar-default navbar-fixed-top <?=$classForNavBr2 ?>">
+    <!-- code start for 8.2.001 -->
+    <?php if (supereditEnabled == 'ON') { ?>
+	<div class="dropdown custom-edit">
+       <!--  <form method="post" action="<?php echo $PHP_SELF;?>"><select name="superedit_select" id="superedit_select" onchange="submit();"> -->
+
+       <form method="post" action="<?php echo $PHP_SELF;?>"><select name="superedit_select" id="superedit_select" >
+                        <option>Superedit</option>
+
+                        <option value="Enabled"<?php if (supereditEnabled == 'ON') echo ' selected="selected"'; ?>>Enabled</option>
+
+                        <option value="Disabled"<?php if (supereditEnabled == 'OFF') echo ' selected="selected"'; ?>>Disabled</option>
+                     
+                        </select>
+
+                        </form>
+    </div>
+    <?php } ?>
+
+    <?php if(isset($_POST['superedit_select'])) 
+	{
+	$_SESSION['superedit_selected'] = $_POST['superedit_select']; 
+	} 
+	?>
+	<!-- code end for 8.2.001 -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">
@@ -308,6 +332,22 @@ function Navigation($page, $menu_location = 'header') {
                     ?>
                 </a>
             <?php } }?>
+
+            <?php
+
+            foreach($navItems as $parent){
+                	$nav_id = $parent['nav_id'];
+
+            }
+            /*code start for 8.2.001 */
+             $actual_link = BASE_URL_SYSTEM . "main.php?display=navigation&tab=navigation&layout=&style=";
+         	if(supereditEnabled =='ON'){ 
+	    		?>
+	    	<a href=<?php echo $actual_link; ?> target='_blank' class='page-edit-link'>Nav-Edit</a>
+			  <?php 
+			  }?>
+			  <!-- code end for 8.2.001 -->
+
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right <?= $item_style;?>">

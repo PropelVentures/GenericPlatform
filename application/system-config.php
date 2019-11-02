@@ -26,7 +26,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox3";
 	$config['db_user'] = "genericsandbox3";
-	$config['db_password'] = "Lennin1003##";
+	$config['db_password'] = "Lennin1039##";
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox4.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox4";
@@ -42,27 +42,28 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox6";
 	$config['db_user'] = "genericsandbox6";
-	$config['db_password'] = "Lennin1006##";
+	$config['db_password'] = "Lennin1096##";
 
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox7.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox7";
 	$config['db_user'] = "genericsandbox7";
-	$config['db_password'] = "Lennin1007##";
+	$config['db_password'] = "Lennin9977##";
 
 
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox8.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox8";
 	$config['db_user'] = "genericsandbox8";
-	$config['db_password'] = "Lennin1008##";
+	$config['db_password'] = "Lennin1018##";
 
 
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox9.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox9";
 	$config['db_user'] = "genericsandbox9";
-	$config['db_password'] = "Lennin1009##";
+	$config['db_password'] = "Lennin9009##";
+
 
 } elseif($_SERVER['HTTP_HOST'] == 'generic.cjcornell.net') {
 	$config['db_host'] = "localhost";

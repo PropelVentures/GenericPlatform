@@ -230,6 +230,13 @@ function display_content($row) {
 			echo "<div id='$tab_id' class='$DD_style_list' style='$DD_css_style'>";
 			/* Show Table Type Header*/
 			// ShowTableTypeHeaderContent($row['display_page'],$row['tab_num']);
+			/*code start for 8.2.001 */
+			$actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&tab=data_dictionary&tabNum=1&ta=data_dictionary&search_id=$row1[dict_id]&checkFlag=true&table_type=parent&edit=true#false";
+			
+			if(supereditEnabled =='ON'){
+		        echo "<a href=$actual_link target='_blank'  class='page-edit-link' >DD-Edit</a>";
+		        } 
+			/*code end for 8.2.001 */
 
 			echo "<section class='section-sep'><a name='$tab_anchor'></a><h1 class='section-title'>$tab_anchor</h1><!-- h1-content class not used-->";
 
