@@ -134,7 +134,10 @@ function formating_Update($row, $method, $urow, $image_display = 'false', $page_
     //////////////////////////////////////////////////////////////////
     $userPrivilege = false;
 
-	if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){
+	/*
+	* 9.5.101
+	if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level'])){*/
+	if(itemHasPrivilege($row['privilege_level'])){
 		$userPrivilege = true;
 	}
 

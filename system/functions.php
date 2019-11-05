@@ -1287,6 +1287,16 @@ function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId
 }
 //Code Change for Task 8.5.101 End
 
+/**
+ * Custom Function for Remove Specific Tag in the string.
+ * Added to handle  9.3.401
+ */
+function strip_single_html_tags($tag,$string) {
+  $string = preg_replace('/<'.$tag.'[^>]*>/i', '', $string);
+  $string = preg_replace('/<\/'.$tag.'>/i', '', $string);
+  return $string;
+}
+
 function sendEmailNotification($page,$action,$senderId,$reciverId,$notification_subject,$notification_message){
   $str =  $_SERVER['HTTP_HOST'];
   $sender = getUserData($senderId);
@@ -1312,9 +1322,18 @@ function sendEmailNotification($page,$action,$senderId,$reciverId,$notification_
     $notification_message = str_replace(' by sender_name', '', $notification_message);
   }
 
+  
+  //changes for 9.3.401-START
+  //if user has added any encapsulation tags system must remove it.
+  $notification_message = str_replace("<title>Notification</title>", '', $notification_message);
+  $notification_message = strip_single_html_tags('head',$notification_message);
+  $notification_message = strip_single_html_tags('body',$notification_message);
+  //changes for 9.3.401-END
   $notification_message = str_replace("user_name", $reciver['name'], $notification_message);
   $notification_message = str_replace("action_name", "'".$action."'", $notification_message);
   $notification_message = str_replace("page_name", "'".$page."'", $notification_message);
+  //9.3.401: the system adds body ,head and title tags to the message
+  $notification_message = '<html><head><title>Notification</title></head><body>'.$notification_message.'</body></html>';
 
   $subject = $notification_subject;
   $message = $notification_message;

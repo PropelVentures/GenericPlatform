@@ -47,7 +47,8 @@ function Get_Links($display_page) {
 	if($rs->num_rows){
         echo "<ul class='center-tab' role='tablist' >";
 		while ($row = $rs->fetch_assoc()) {
-    		if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
+    		//9.5.101 if($row['loginRequired']== '1' && !itemHasVisibility($row['dd_visibility'])){
+    		if($row['loginRequired']== '1'){
     			continue;
     		}
 
@@ -144,7 +145,8 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
                         $css_style = $row['dd_css_code'];
 
 						$tab_id = "#".$display_page.$row['dict_id'];
-						if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
+						//9.5.101 if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
+						if(!loginNotRequired()){
 							continue;
 						} ?>
 						<li class="tab-class js_tab <?= $dd_css_class ?>" style="<?= $css_style?>"id="<?php echo $tab_id; ?>">
@@ -159,7 +161,8 @@ function generateTabs($display_page,$row,$ulClass='vertical-tab '){
 					} else if(trim($row['tab_name']) && $tabQuery->num_rows > 1 && !empty($row['tab_name'])){
 						$list_style = $row['list_style'];
 						$tab_id = "#".$display_page.$row['dict_id'];
-						if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
+						//9.5.101 if(!loginNotRequired() && !itemHasVisibility($row['dd_visibility'])){
+						if(!loginNotRequired()){
 							continue;
 						} ?>
 						<li class="tab-class js_tab" id="<?php echo $tab_id; ?>">

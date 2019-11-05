@@ -5,6 +5,9 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
     if($_GET['edit'] || $_GET['addFlag']){
         $actual_link = $_SESSION['return_url'];
     }
+	if(empty($_SESSION['user_privilege'])){
+		$_SESSION['user_privilege'] = 0;
+	}
 
     $con = connect();
     ///setting form editable if user click on list for editing purpose
@@ -173,7 +176,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
                 $defaultOptions = getDefaultListViewExtraOptions($con,$row['display_page']);
 
                 ##DD.edit_operation
-                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] == 1)
+                if ( ($row1['dd_editable'] == 11 || $row1['dd_editable'] == 1) && $row1['page_editable'] <= $_SESSION['user_privilege'])
                 {
                     $operation = 'edit_operations';
 
@@ -185,7 +188,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
           					}
 					/*Code Change End Task ID 5.6.4*/
                 }
-                else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] == 0) ##DD.view_operation
+                else if ($row1['dd_editable'] !== 11 || $row1['page_editable'] > $_SESSION['user_privilege']) ##DD.view_operation
                 {
 
                     $operation = 'view_operations';
@@ -292,25 +295,29 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 		if(itemHasPrivilege($row1['dd_privilege_level'])){
 			$userPrivilege = true;
 		}
-		if(!itemHasVisibility($row1['dd_visibility'])){
+		/*if(!itemHasVisibility($row1['dd_visibility'])){
 			$userPrivilege = false;
-		}
+		}*/
 		if(loginNotRequired()){
 			$userPrivilege = true;
 		}
         if ($userPrivilege === true) {
         	////adding class if form is not for editing purpose
-		      $page_editable = true;
+			if($row1['page_editable'] <= $_SESSION['user_privilege']){
+				$page_editable = true;
+			}
+		      
 
-				if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
-					$page_editable = false;
+			//7.3.202	if ($row1['page_editable'] == 0 && trim($row1['table_type']) != 'transaction') {
+				if (trim($row1['table_type']) != 'transaction') {
+					//$page_editable = false;
 					if (!empty($row1['dd_css_class'])){
 						$dd_css_class ='page_not_editable '. $row1['dd_css_class'];
 					} else {
 						$dd_css_class = 'page_not_editable';
 					}
 				} elseif ($row1['page_editable'] == 2) {
-					$page_editable = false;
+					//$page_editable = false;
 					if (!empty($row1['dd_css_class'])){
 						$dd_css_class = 'profile_page '. $row1['dd_css_class'];
 					} else {
@@ -766,7 +773,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 
 
 
-								if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+								if ($row1['dd_editable'] == 11 && $row1['page_editable'] <= $_SESSION['user_privilege']) {
 									if ($_GET['checkFlag'] == 'true' ||  $dd_EditAbleHaveValue2) {
 
 										if ($_GET['table_type'] == 'child'){
@@ -788,7 +795,12 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
                                         }
 
 										$actual_link = $link_to_return;
-										//   $cancel_value = formCancel;
+										//$cancel_value = formCancel;
+									}
+									//8.3.007 dd_editable not working to spec ("20" should stay on form)
+									if($row1['real_dd_editable'][1] == "0" || $row1['real_dd_editable'][1] == "1"){
+										$link_to_return = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+										$_SESSION['link_in_case_of_DDetiable_2'] = $link_to_return;
 									}
 
 									$actual_link = $actual_link . "&button=cancel&table_type=$_GET[table_type]";
@@ -817,7 +829,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 								}/// if for submit and cancel ends here
 								// profile-image }
 							}
-							if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+							if ($row1['dd_editable'] == 11 && $row1['page_editable'] <= $_SESSION['user_privilege']) {
 								echo "<div style='clear:both'></div><hr>";
 							}
 						}
@@ -829,7 +841,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 						/* *************************************************** */
 
 
-						if ($row1['dd_editable'] == 1 && $row1['page_editable'] == 1) {
+						if ($row1['dd_editable'] == 1 && $row1['page_editable'] <= $_SESSION['user_privilege']) {
                 echo "<button type='button' class='edit-btn btn btn-default pull-right' id='$row1[dict_id]'>" . EDIT . "</button>";
 							$image_display = 'false';
 						}
@@ -908,7 +920,7 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
 							///when edit form is not list
 							//  $cancel_value = 'Cancel';
 
-							if ($row1['dd_editable'] == 11 && $row1['page_editable'] == 1) {
+							if ($row1['dd_editable'] == 11 && $row1['page_editable'] <= $_SESSION['user_privilege']) {
 
 								if ($_GET['checkFlag'] == 'true') {
 
