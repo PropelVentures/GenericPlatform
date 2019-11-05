@@ -31,7 +31,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox4";
 	$config['db_user'] = "genericsandbox4";
-	$config['db_password'] = "Lennin1009##";
+	$config['db_password'] = "Lennin4009##";
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox5.cjcornell.net') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox5";
