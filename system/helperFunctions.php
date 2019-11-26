@@ -50,7 +50,6 @@ function parseFieldType($row) {
     if ($field_type[0] == 'varchar') {
 
         $field_length = defaultFieldLenText;
-        //print_r($field_length);
     } else if ($field_type[0] == 'text') {
 
         $field_length = defaultFieldLenTextarea;
@@ -63,76 +62,6 @@ function parseFieldType($row) {
     } else if ($field_type[0] == 'double' || $field_type[0] == 'float' || $field_type[0] == 'tinyint') {
 
         $field_length = defaultFieldLenOtherInteger;
-    }
-
-    return $field_length;
-}
-
-function parseFieldTypeMax($row) {
-
-    $con = connect();
-
-    $result = $con->query("describe $row[database_table_name]");
-
-    while ($result_rec = $result->fetch_assoc()) {
-        if ($result_rec['Field'] == $row['generic_field_name']) {
-
-            $field_type = $result_rec['Type'];
-        }
-    }
-    $field_type = explode("(", $field_type);
-    $field_length = '60';
-
-    if ($field_type[0] == 'varchar') {
-        $field_length = defaultFieldLenTextMax;
-    } else if ($field_type[0] == 'text') {
-
-        $field_length = defaultFieldLenTextareaMax;
-    } else if ($field_type[0] == 'int') {
-
-        $field_length = defaultFieldLenIntegerMax;
-    } else if ($field_type[0] == 'boolean') {
-
-        $field_length = defaultFieldLenBooleanMax;
-    } else if ($field_type[0] == 'double' || $field_type[0] == 'float' || $field_type[0] == 'tinyint') {
-
-        $field_length = defaultFieldLenOtherIntegerMax;
-    }
-
-    return $field_length;
-}
-
-
-function parseFieldTypeMin($row) {
-
-    $con = connect();
-
-    $result = $con->query("describe $row[database_table_name]");
-
-    while ($result_rec = $result->fetch_assoc()) {
-        if ($result_rec['Field'] == $row['generic_field_name']) {
-
-            $field_type = $result_rec['Type'];
-        }
-    }
-    $field_type = explode("(", $field_type);
-    $field_length = '40';
-
-    if ($field_type[0] == 'varchar') {
-
-        $field_length = defaultFieldLenTextMin;
-    } else if ($field_type[0] == 'text') {
-
-        $field_length = defaultFieldLenTextareaMin;
-    } else if ($field_type[0] == 'int') {
-
-        $field_length = defaultFieldLenIntegerMin;
-    } else if ($field_type[0] == 'boolean') {
-
-        $field_length = defaultFieldLenBooleanMin;
-    } else if ($field_type[0] == 'double' || $field_type[0] == 'float' || $field_type[0] == 'tinyint') {
-
-        $field_length = defaultFieldLenOtherIntegerMin;
     }
 
     return $field_length;
@@ -1952,29 +1881,6 @@ function listColumnWidth($tbRow,$minLimit = 100){
   return $colWidth;
 }
 
-function listColumnMinMaxWidth($tbRow){
-
-  if(!empty(trim($tbRow['format_length']))){
-
-        $colWidth = explode(',',trim($tbRow['format_length']));
-        $colWidth = $colWidth[0];
-        $maxWidth = parseFieldTypeMax($tbRow);
-        $minWidth = parseFieldTypeMin($tbRow);
-        
-        if ($colWidth < $minWidth ) {
-            $colWidth = $minWidth;
-        }
-        
-        if ($colWidth > $maxWidth ) {
-            $colWidth = $maxWidth;
-        }
-
-  }else{
-    $colWidth = parseFieldTypeMax($tbRow);
-  }
-  return $colWidth;
-}
-
 function calculateWidthsInPercentage($array){
   $count  = count($array)+1;
   $total = 0;
@@ -1989,9 +1895,8 @@ function calculateWidthsInPercentage($array){
 
 function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
   $data= trim($data);
-  /*if($roundPxls){
+  if($roundPxls){
     $width = $width/6.7;
-    
-  }*/
+  }
   return substr($data, 0, $width);
 }

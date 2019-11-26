@@ -9,7 +9,6 @@ define("CHILD", "Child");
 define("USER", "User");
 
 
-
 // For Key Fields
 define('KEYFIELD_PLACEHOLDER', "******");
 
@@ -155,7 +154,7 @@ define("defaultFieldLenBoolean", "10");
 //Code Change for Task 8.4.603 Start
 define("defaultFieldLenIntegerMax", "30");
 define("defaultFieldLenOtherIntegerMax", "20");
-define("defaultFieldLenTextMax", "40");
+define("defaultFieldLenTextMax", "20");
 define("defaultFieldLenTextareaMax", "50");
 define("defaultFieldLenBooleanMax", "10");
 

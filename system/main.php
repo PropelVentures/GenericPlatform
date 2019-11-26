@@ -51,7 +51,7 @@
 	
 			Navigation($display_page,'header');
 			Navigation($display_page,'header2');
-                       
+	
 
 	
 		/*
@@ -65,7 +65,6 @@
 
 		$haveParalax = false;
 		ShowTableTypeParallaxBanner($display_page,$haveParalax);
-                
 
 	/* 
 	* if that is the homepage then include this file
@@ -78,15 +77,6 @@
 ?>
 <div class="container main-content-container">
 	<?php
-		/*code start for 8.2.001 */
-		$display_search = $_GET['display'];
-		$actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&layout=&style=&dtablesearch=$display_search";
-
-		if(supereditEnabled =='ON'){
-        echo "<a href=$actual_link  target='_blank' class='page-edit-link' >Page-Edit</a>";
-        }
-
-        /*code end for 8.2.001 */
 		/* CHECKING NAV HAS VISIBILITY  START
 		*  navHasVisibility is function which is inhireted from the functions.php file, Which is include 
 		* functions_loader.php.
@@ -195,9 +185,22 @@
 
 			/*
 			* left sidebar code
+			*
+			* "sidebar" is function which is inherited/
+			* definition  in the "sidebars.php" file.This function
+			* is responsible to get the side-bar as per it location(left, right
+			* and both)
+			* 
+			* Its take four  params :
+			*  position = It's take value of sidebar type "left/right"  
+			*  both_position = If the value "both" if  you want to sidebar on 
+			*                   both side.
+			*  page name = Name of the page   
+			*  sidebar size = It contant width of sidebar.
+			*  
+			
 			*/
 			sidebar($left_sidebar, $both_sidebar, $display_page, $left_sidebar_width);
-                        
 			/*
 			* displaying tab area
 			*/
@@ -225,7 +228,7 @@
 					}
 				}
 			}
-  
+
 			//if( $both_sidebar == 'false' &&  $right_sidebar == 'false' && $left_sidebar == 'false'  )
 		?>
 		<!-- Tab Content area .. -->
@@ -236,65 +239,90 @@
 			if (isset($page_layout_style) && ($page_layout_style == 'serial-layout')) {
 				
 			/* 
-			*  serial_layout is function which is inhireted from the serial_layout.php file, Which is 
-			*include functions_loader.php.
-			*  This function is responsible for get the content for the page, assign the css how it will 
-			*look like .
+			*  serial_layout is function which is inhireted from the
+			*  serial_layout.php file, Which is 
+			*  include functions_loader.php.
+			*  This function is responsible for get the content for the page, 
+			*  assign the css how it will 
+			*   look like .
 			*
 			*  Its take two params: 
-			*        display_page => name of current page so that it will get all the contents the current 
-			*         page
+			*        display_page => name of current page so that it will get all 
+			*          the contents the current page.
 			*        style=> it content of the css of sections.
 			*
  			*  for more defination please check the serial_layout.php file.
 			*/				
-
+ 
 				serial_layout($display_page, $style);
-				/*code start for 8.2.001 */
-				if(supereditEnabled =='ON'){
-		        echo "<a href=#  class='page-edit-link' >DD-Edit</a>";
-		        }
-		        /*code end for 8.2.001 */
+
 			} else {
 
 				$rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page' and (tab_num='0' OR tab_num ='S-0' OR tab_num ='S-L' OR tab_num='S-R' OR tab_num ='S-C')");
 				$row = $rs->fetch_assoc();
-
-				/*code start for 8.2.001 */
-				$rs1 = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'");
-				$row1 = $rs1->fetch_assoc();
-
-
-				if (!empty($row)) {
-					$dict_id = $row[dict_id];
-				}else{
-					$dict_id = $row1['dict_id'];
-				}
-
-				$actual_link = BASE_URL_SYSTEM . "main.php?display=data_dictionary&tab=data_dictionary&tabNum=1&ta=data_dictionary&search_id=$dict_id&checkFlag=true&table_type=parent&edit=true#false";
-
-				if(supereditEnabled =='ON'){
-		        echo "<a href=$actual_link  target='_blank' class='page-edit-link' >DD-Edit</a>";
-		        }
-
-		        /*code end for 8.2.001 */
 				if (!empty($row)) {
 					$tab_status = 'true';
 					$_SESSION['display2'] = $display_page;
-					/* Side Bar Navigation Start*/
-
+					/* Side Bar Navigation Start
+					
+					* "GetSideBarNavigation" is function which is inherited/
+					* definition  in the "links_and_nav.php" file.This function
+					* is responsible to get the side-bar menu as per the page 
+					* title and display as per the given location.
+					*  
+					* This fucntion is responsible to get the side bar menu as
+					* per the page title and display as per the given location. 
+					* Its take two params :
+					*  display_page = It's take the title of the page  
+					*  menu_location = It's take the location of the menu (added
+					*  class like  body-center) 
+					*  
+					*  
+					*/	
 					 GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
-					fffr_icons($display_page);
 
+					fffr_icons($display_page);
+					/*
+ 					* "headersAndSubHeaders" is function which is inherited/
+					* definition  in the "links_and_nav.php" file.This function
+					* is responsible to get the header and sub header of the  
+					* page.
+					* Its take one params :
+					*  display_page = It's take the title of the page  
+					*  
+					* 
+					*/
 					headersAndSubHeaders($display_page);
 
-					/* Tab Navigation Start*/
+					/* Tab Navigation Start
+					* "Get_Tab_Links" is function which is inherited/
+					* definition in the "links_and_nav.php" file.This function
+					* is responsible to generate the tabs and its linking on the 
+					* page.
+					* Its take two  params :
+					*  display_page = It's take the title of the page  
+					*  postion = left/right/center
+					* 	
+					*/
 					Get_Tab_Links($display_page,'center');
 					/* Tab Navigation End*/
 					if($middleContentExist){
 						// renderHeadersAndSubheaders($display_page);
 						if($list_sort!=''){
+						/* Tab Navigation Start
+						* "getListSortingValue" is function which is inherited/
+						* definition in the "fucntions.php" file.This function
+						* is responsible for making the new shorted array. This 
+						* sorting is work according to the value.
+
+						* Its take one params:
+						*  list array = It's take array of list   
+						*  
+						* returns:
+						*  new shorted list back 
+						* 	
+						*/
 							$field_str = getListSortingValue($list_sort);
 							$field_str = rtrim($field_str,',');
 						}else{
@@ -305,7 +333,16 @@
 				} else {
 
 					$_SESSION['display2'] = '';
-					unset($_SESSION['display2']);
+				/* Tab Navigation Start
+					* "Get_Tab_Links" is function which is inherited/
+					* definition in the "links_and_nav.php" file.This function
+					* is responsible to generate the tabs and its linking on the 
+					* page.
+					* Its take two  params :
+					*  display_page = It's take the title of the page  
+					*  postion = left/right/center
+					* 	
+					*/		unset($_SESSION['display2']);
 					/* Side Bar Navigation Start*/
 					GetSideBarNavigation($display_page,'body-center');
 					/* Side Bar Navigation End*/
@@ -1150,7 +1187,6 @@
 	}
 </script>
 <?php
-    showLinkedInProfile(LINKEDIN_SIGNIN_APP_REDIRECT_URL, $_SESSION['linkedInCSRFSignIn']);
-    echo "<div style='height:25px'></div>";
+  echo "<div style='height:25px'></div>";
 	Footer($display_page,'footer2');
 ?>

@@ -54,17 +54,6 @@ form .form-control {
 
 #user_profile_form hr{display: block !important; }
 
-.custom-edit{
-    position: absolute;
-    top: 15px;
-    right: 15px;
-}
-.custom-edit select{
-    background-color: #fff;
-    padding:5px;
-    border-radius:5px;
-}
-
 /********* Main template Content classes Ends here*******/
 
 

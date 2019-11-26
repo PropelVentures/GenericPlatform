@@ -1,13 +1,21 @@
 <?php
-
-function connect($config = 'false') {
+/**
+ * @param string $config
+ * @return false|mysqli
+ *
+ *
+ * 
+ */
+function connect($config = 'false')
+{
 
     $config = $_SESSION['config'];
 
     return mysqli_connect($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
 }
 
-function connect_generic() {
+function connect_generic()
+{
 
     return mysqli_connect($GLOBALS['db-host'], $GLOBALS['db-username'], $GLOBALS['db-password'], $GLOBALS['db-database']);
 }
@@ -34,7 +42,8 @@ function connect_generic() {
 //////////////////////insert/////
 
 
-function query($qry) {
+function query($qry)
+{
 //echo "SELECT * FROM $table WHERE $ws ";die;
     $result = mysqli_query(connect(), "$qry");
 
@@ -42,7 +51,8 @@ function query($qry) {
     // return $row;
 }
 
-function insert($table, $data, $config = 'false') {
+function insert($table, $data, $config = 'false')
+{
 
     $con = connect($config);
     $is = insertString($data);
@@ -51,7 +61,8 @@ function insert($table, $data, $config = 'false') {
     return mysqli_insert_id($con);
 }
 
-function insertString($data) {
+function insertString($data)
+{
     $f = implode(", ", array_keys($data));
     $v = array();
     foreach ($data as $d) {
@@ -61,22 +72,23 @@ function insertString($data) {
     return "($f) VALUES ($v)";
 }
 
-function update($table, $data, $where, $config = 'false') {
+function update($table, $data, $where, $config = 'false')
+{
     $ws = whereString($where);
     $us = updateString($data);
 //    echo ("UPDATE $table SET $us WHERE $ws");echo "<br>";
 
     $con = connect($config);
-    if(!$status = mysqli_query($con, "UPDATE $table SET $us WHERE $ws") )
-    {
+    if (!$status = mysqli_query($con, "UPDATE $table SET $us WHERE $ws")) {
         $errorMessage = "Error description: database_table_name -> $table, error details - " . mysqli_error($con);
-        if($_SESSION['user_privilege'] == 9 || $_SESSION['user_privilege'] == 3)
+        if ($_SESSION['user_privilege'] == 9 || $_SESSION['user_privilege'] == 3)
             $status = $errorMessage;
     }
     return $status;
 }
 
-function delete($table, $where) {
+function delete($table, $where)
+{
     $ws = whereString($where);
 
     //exit("DELETE FROM $table WHERE $ws");
@@ -84,19 +96,21 @@ function delete($table, $where) {
     mysqli_query(connect(), "DELETE FROM $table WHERE $ws");
 }
 
-function updateString($data) {
+function updateString($data)
+{
     $i = array();
     foreach ($data as $key => $value) {
-          //5.4.202 trimiing spaces
-        trimSpacesAroundSepraters($value,',');
-        trimSpacesAroundSepraters($value,';',',');
+        //5.4.202 trimiing spaces
+        trimSpacesAroundSepraters($value, ',');
+        trimSpacesAroundSepraters($value, ';', ',');
         $i[] = "$key = '$value'";
     }
 
     return implode(", ", $i);
 }
 
-function whereString($data) {
+function whereString($data)
+{
     $w = array();
     foreach ($data as $key => $value) {
         $w[] = "$key = '$value'";
@@ -104,12 +118,13 @@ function whereString($data) {
     return implode(" AND ", $w);
 }
 
-function getWhere($table, $where = "false", $order = "",$setwhereString = true) {
+function getWhere($table, $where = "false", $order = "", $setwhereString = true)
+{
 
     if ($where != 'false') {
-      if($setwhereString){
-        $where = whereString($where);
-      }
+        if ($setwhereString) {
+            $where = whereString($where);
+        }
         $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $where $order");
     } else {
 
@@ -122,7 +137,8 @@ function getWhere($table, $where = "false", $order = "",$setwhereString = true) 
     return $r;
 }
 
-function get($table, $ws) {
+function get($table, $ws)
+{
 //echo "SELECT * FROM $table WHERE $ws ";die;
     $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $ws ");
 
@@ -132,10 +148,11 @@ function get($table, $ws) {
     return $row;
 }
 
-function getMulti($table, $ws, $field='false') {
+function getMulti($table, $ws, $field = 'false')
+{
 //echo "SELECT * FROM $table WHERE $ws ";die;
 
-    if($field == 'false')
+    if ($field == 'false')
         $field = '*';
     $result = mysqli_query(connect(), "SELECT $field FROM $table WHERE $ws ");
 
@@ -146,7 +163,8 @@ function getMulti($table, $ws, $field='false') {
     return $r;
 }
 
-function numOfRows($table, $where) {
+function numOfRows($table, $where)
+{
 
     $ws = whereString($where);
 
@@ -158,7 +176,8 @@ function numOfRows($table, $where) {
     return mysqli_num_rows($result);
 }
 
-function sumValues($table, $where = 'false') {
+function sumValues($table, $where = 'false')
+{
 
 
     if ($where != 'false') {
@@ -189,7 +208,8 @@ function sumValues($table, $where = 'false') {
  * ******************************************
  */
 
-function firstFieldName($tableName) {
+function firstFieldName($tableName)
+{
 
 
     $con = connect();
@@ -214,19 +234,21 @@ function firstFieldName($tableName) {
  * ******************************************
  */
 
-function getColumnNames($tableName) {
+function getColumnNames($tableName)
+{
     $con = connect();
     $res = $con->query("SHOW COLUMNS FROM $tableName");
-	$data = array();
-	if($res->num_rows){
-		while($row = $res->fetch_assoc()){
-			$data[$row['Field']] = $row['Field'];
-		}
-	}
+    $data = array();
+    if ($res->num_rows) {
+        while ($row = $res->fetch_assoc()) {
+            $data[$row['Field']] = $row['Field'];
+        }
+    }
     return $data;
 }
 
-function nextKey($tblName, $pkey, $current_id, $clause) {
+function nextKey($tblName, $pkey, $current_id, $clause)
+{
 
 
     $con = connect();
@@ -245,7 +267,8 @@ function nextKey($tblName, $pkey, $current_id, $clause) {
     return $row[$pkey];
 }
 
-function prevKey($tblName, $pkey, $current_id, $clause) {
+function prevKey($tblName, $pkey, $current_id, $clause)
+{
 
 
     $con = connect();
@@ -266,7 +289,8 @@ function prevKey($tblName, $pkey, $current_id, $clause) {
     return $row[$pkey];
 }
 
-function firstKey($tblName, $pkey, $clause) {
+function firstKey($tblName, $pkey, $clause)
+{
 
 
     $con = connect();
@@ -282,7 +306,8 @@ function firstKey($tblName, $pkey, $clause) {
     return $row[$pkey];
 }
 
-function lastKey($tblName, $pkey, $clause) {
+function lastKey($tblName, $pkey, $clause)
+{
 
 
     $con = connect();
@@ -307,12 +332,13 @@ function lastKey($tblName, $pkey, $clause) {
  * @param boolean $quoted
  * @return string
  */
-function secure($value, $type = "", $quoted = true) {
+function secure($value, $type = "", $quoted = true)
+{
     global $con;
-    if($value !== 'null') {
+    if ($value !== 'null') {
         // [1] Sanitize //
         /* Escape all (single-quote, double quote, backslash, NULs) */
-        if(get_magic_quotes_gpc()) {
+        if (get_magic_quotes_gpc()) {
             $value = stripslashes($value);
         }
         /* Convert all applicable characters to HTML entities */
@@ -321,24 +347,24 @@ function secure($value, $type = "", $quoted = true) {
         $value = $con->real_escape_string($value);
         switch ($type) {
             case 'int':
-                $value = ($quoted)? "'".intval($value)."'" : intval($value);
+                $value = ($quoted) ? "'" . intval($value) . "'" : intval($value);
                 break;
             case 'datetime':
-                $value = ($quoted)? "'".set_datetime($value)."'" : set_datetime($value);
+                $value = ($quoted) ? "'" . set_datetime($value) . "'" : set_datetime($value);
                 break;
             case 'search':
-                if($quoted) {
-                    $value = (!is_empty($value))? "'%".$value."%'" : "''";
+                if ($quoted) {
+                    $value = (!is_empty($value)) ? "'%" . $value . "%'" : "''";
                 } else {
-                    $value = (!is_empty($value))? "'%%".$value."%%'" : "''";
+                    $value = (!is_empty($value)) ? "'%%" . $value . "%%'" : "''";
                 }
                 break;
 
-			case 'NULL':
+            case 'NULL':
                 $value = NULL;
                 break;
             default:
-                $value = (!is_empty($value))? "'".$value."'" : "''";
+                $value = (!is_empty($value)) ? "'" . $value . "'" : "''";
                 break;
         }
     }
@@ -351,8 +377,9 @@ function secure($value, $type = "", $quoted = true) {
  * @param string $value
  * @return boolean
  */
-function is_empty($value) {
-    if(strlen(trim(preg_replace('/\xc2\xa0/',' ',$value))) == 0) {
+function is_empty($value)
+{
+    if (strlen(trim(preg_replace('/\xc2\xa0/', ' ', $value))) == 0) {
         return true;
     } else {
         return false;
@@ -370,7 +397,8 @@ function is_empty($value) {
  * @param string $date
  * @return string
  */
-function set_datetime($date) {
+function set_datetime($date)
+{
     return date("Y-m-d H:i:s", strtotime($date));
 }
 
@@ -381,7 +409,8 @@ function set_datetime($date) {
  * @param string $date
  * @return string
  */
-function get_datetime($date) {
+function get_datetime($date)
+{
     return date("m/d/Y g:i A", strtotime($date));
 }
 
@@ -400,28 +429,30 @@ $con = connect();
  * took a string by reference and a $separator and parse it such that if there are extra spaces around that $separator
  *it trims out those spaces like width=5px ; height=10px   ;  it will become width=5px;height=10px;
  */
-function trimSpacesAroundSepraters(&$string, $separator,$unsetIfRaw = false){
-  if(!empty($string) && is_string($string)){
-    $parts = explode($separator, $string);
-    if(count($parts)> 1){
-      $string = '';
-      foreach ($parts as $key => $value) {
-        if(!empty($value)){
-          if($value!==$unsetIfRaw){
-            $string = $string.trim($value).$separator;
-          }
+function trimSpacesAroundSepraters(&$string, $separator, $unsetIfRaw = false)
+{
+    if (!empty($string) && is_string($string)) {
+        $parts = explode($separator, $string);
+        if (count($parts) > 1) {
+            $string = '';
+            foreach ($parts as $key => $value) {
+                if (!empty($value)) {
+                    if ($value !== $unsetIfRaw) {
+                        $string = $string . trim($value) . $separator;
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function unsetExtraRows(&$data){
-  foreach ($data as $key => $value) {
-    if(is_numeric($key)){
-      unset($data[$key]);
+function unsetExtraRows(&$data)
+{
+    foreach ($data as $key => $value) {
+        if (is_numeric($key)) {
+            unset($data[$key]);
+        }
     }
-  }
 }
 
 ?>

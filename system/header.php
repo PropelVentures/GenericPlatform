@@ -21,13 +21,14 @@ if($_GET['source'] == 'api'){
     $dictId = $_GET['did'];
 
     /*
-    * " get_single_record " is function which is inhireted from the get_record.php file. 
+    * " get_single_record " is function which is inherited  from the 
+    *  get_record.php file. 
     *  get_single_record this function take three params 
     *       data_dictionary => this the database table name.
-    *       dict_id => primary of the data_dictionary table. 
-    *       dictId => this is serach key.
+    *       dict_id => primary key of the data_dictionary table. 
+    *       dictId => this is search  key.
     *
-    *  For details defination is given in the "get_record.php" file  
+    *  For details definition  is given in the "get_record.php" file  
     */  
 
     $dict = get_single_record('data_dictionary','dict_id', $dictId);

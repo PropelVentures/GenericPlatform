@@ -396,21 +396,7 @@ function addData()
                 break;
             }
         }
-        /*code start for 9.2.101*/
-        while ($fdCol = $rs->fetch_assoc()) {
-             $newarray[] = $fdCol['Field'];
-        }
-        /*code end for 9.2.101*/
-
     }
-    /*code start for 9.2.101*/
-    foreach ($data as $key => $value) {
-        if (!in_array($key, $newarray)) {
-            unset($data[$key]);
-        }
-    }
-     /*code end for 9.2.101*/
-
     if ($field == 'true') {
         $additional_array = array('user_id' => $_SESSION['uid']);
         $data = array_merge($additional_array, $data);

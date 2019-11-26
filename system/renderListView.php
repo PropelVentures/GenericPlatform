@@ -1,5 +1,6 @@
 <?php
-function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor){
+function renderListView($isExistFilter, $isExistField, $row, $tbQry, $list,$qry,$list_pagination,$tab_anchor)
+{
 	$con = connect();
 	//styling of data table
 	//*
@@ -73,21 +74,19 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 	?>
 
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
-
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
-	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%' style="table-layout: fixed !important;
-    word-wrap:break-word;">
+	<table id='table_<?php echo $dict_id;?>' class='display nowrap compact clear1 <?=$dd_css_class ?>' cellspacing='0' width='100%'>
 	<!--Code Changes for Task 5.4.77 End-->
 		<thead>
 			<tr class='tr-heading'>
 				<th class='tbl-action'><span style='visibility:hidden;'>12<span></th>
-				<?php $tbRs = $con->query($tbQry);
+				<?php $tbRs = $con->query($tbQry); 
 				$sort_index = 0;
 				$count = 0;
-				while ($tbRow = $tbRs->fetch_assoc()) {
+				while ($tbRow = $tbRs->fetch_assoc()) 
+				{
 					if(itemHasVisibility($tbRow['visibility']) && itemHasPrivilege($tbRow['privilege_level']) && $tbRow['format_type'] != 'list_fragment'){
-						
 					    //Code Change for Task 5.4.22 Start
 						if($tbRow['ignore_in_lists'] != 1){
 							$count++;
@@ -115,18 +114,10 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 							// 			// $colStyle = "style='width:100px'";
 							// 		}
 							// }
-						//$colWidth = listColumnWidth($tbRow);
-						//Code Change for Task 8.4.603 Start
-            			
-            			//echo "<pre>";print_r($tbRow);die;
-						
-						$colWidth = listColumnMinMaxWidth($tbRow);
-						//Code Change for Task 8.4.603 End
-
+						$colWidth = listColumnWidth($tbRow);
 						$$column_widths_array_with_name[$tbRow['generic_field_name']] = $colWidth;
 						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
-						$colWidth1 = $colWidth.'px';
 
 					  ?>
 						<th> <?= $tbRow['field_label_name']; ?></th>
@@ -140,133 +131,173 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 		</thead>
 		<tbody>
 			<?php
-			if ($list->num_rows > 0) {
-				$i=0;
-				$count = 1;
+				if ($list->num_rows > 0) 
+				{
+					$i=0;
+					$count = 1;
 
-				preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
-				$no_of_pages = $limitPage[0][0];
-				$limit = $limitPage[0][0] * $list_pagination['itemsperpage'];
+					preg_match_all('!\d+!', $list_pagination['totalpages'], $limitPage);
+					$no_of_pages = $limitPage[0][0];
+					$limit = $limitPage[0][0] * $list_pagination['itemsperpage'];
 
-				if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems']))){
-					$limit = trim($list_pagination['totalitems']);
-				}
-				$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
-
-				while ($listRecord = $list->fetch_assoc()) {
-					if($count > $limit){
-						break;
+					if(isset($list_pagination['totalitems']) && !empty(trim($list_pagination['totalitems'])))
+					{
+						$limit = trim($list_pagination['totalitems']);
 					}
+					$list_pagination['totalpages'] = '#' . ceil($list_pagination['totalitems']/ $list_pagination['itemsperpage']);
 
-					if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-						break;
+					while ($listRecord = $list->fetch_assoc()) 
+					{
+						if($count > $limit)
+						{
+							break;
+						}
+
+						if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField))
+						{
+							break;
+						}
+
+						$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
+						$rs = $con->query($qry);
+
+						if(!empty($list_select) || $table_type == 'child') 
+						{
+							if (strpos($list_select, '()')) 
+							{
+								exit('function calls');
+							} 
+							else if (strpos($list_select, '.php')) 
+							{
+								exit('php file has been called');
+							} 
+							else 
+							{
+								$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
+								$navList = $nav->fetch_assoc();
+								/// Extracting action ,when user click on edit button or on list
+								if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) 
+								{
+									if (count($list_select_arr[0]) == 2) 
+									{
+										$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+										/// add button url
+										$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									} 
+									else 
+									{
+										$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+										/// add button url
+										$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									}
+								}
+								/// Extracting action, when user click on boxView Image of list
+								if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) 
+								{
+									if (count($list_select_arr[1]) == 2) 
+									{
+										$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+									}
+									else
+									{
+										$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+									}
+								} 
+								?>
+								<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr">
+									<td class='dt-body-center'>
+										<?php 
+											$checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
+											/*
+											 * displaying checkboxes
+											 * checking in database if checklist is there
+											 */
+											if ($list_views['checklist'] == 'true') 
+											{ 
+												?>
+												<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='<?= $checkbox_id; ?>' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>
+												<input type='hidden' name='dict_id[]' value='<?php echo $dict_id; ?>'>
+												<?php 
+											}
+										?>
+										<span class='list-del' id='<?php echo $checkbox_id; ?>' name='<?php echo $dict_id; ?>'></span>
+									</td>
+									<?php
+							}
+										/*
+										 *
+										 *
+										 * ******
+										 * *************************
+										 * ******************************
+										 * ***********************************FETCHING DATA AND PUTING IN CORRESPONDING TDS
+										 * **************
+										 * *************************
+										 * ******************************************************************
+										 *
+										 */
+										/////table view starts here
+										//fetching data from corresponding table
+										while ($row = $rs->fetch_assoc()) 
+										{
+											//Code Change for Task 5.4.22 Start
+											$flag = false;
+											if($row['ignore_in_lists'] != 1)
+											{
+												$flag = true;
+												$fieldValue = $listRecord[$row[generic_field_name]];
+											}
+											else
+											{
+												$flag = false;
+											}
+												//$fieldValue = $listRecord[$row[generic_field_name]];
+												//Code Change for Task 5.4.22 End
+											if (!empty($row[dropdown_alias])) 
+											{
+												$fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
+											}
+											if($stripTags)
+											{
+												$fieldValue = strip_tags($fieldValue);
+											}
+												//edit by Akshay S (2019-Aug-04 19:00 IST)
+												//function 'truncateLongDataAsPerAvailableWidth' commented to fix truncation of text fields (Task ID: 8.3.404)
+
+												//truncating the lengths of data											
+												//truncateLongDataAsPerAvailableWidth($fieldValue,$$column_widths_array_with_name[$row[generic_field_name]]);
+												//Code Change for Task 5.4.22 Start
+											if($flag == true)
+											{
+													//Code Change for Task 5.4.22 End
+												if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment')
+												{ 
+													?>
+													<td><?php echo $fieldValue; ?></td>
+													<?php
+												}
+													//Code Change for Task 5.4.22 Start
+											}
+										  		//Code Change for Task 5.4.22 End
+										}
+										if ($table_type == 'child') 
+										{
+											$_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+										}
+										else
+										{
+											$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+										}
+									} /// end of mainIF 
+									?>
+								</tr>
+								<?php
+									$count++;
 					}
-
-					$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
-					$rs = $con->query($qry);
-					if (!empty($list_select) || $table_type == 'child') {
-						if (strpos($list_select, '()')) {
-							exit('function calls');
-						} elseif (strpos($list_select, '.php')) {
-							exit('php file has been called');
-						} else {
-							$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
-							$navList = $nav->fetch_assoc();
-							/// Extracting action ,when user click on edit button or on list
-							if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
-								if (count($list_select_arr[0]) == 2) {
-									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
-									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
-								} else {
-									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
-									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
-								}
-							}
-							/// Extracting action, when user click on boxView Image of list
-							if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) {
-								if (count($list_select_arr[1]) == 2) {
-									$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
-								} else {
-									$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
-								}
-							} ?>
-							<tr id="<?php echo $target_url.'&edit=true#'.$tab_anchor; ?>" class="boxview-tr">
-								<td class='dt-body-center'>
-									<?php $checkbox_id = $listRecord[$_SESSION['update_table']['keyfield']];
-									/*
-									 * displaying checkboxes
-									 * checking in database if checklist is there
-									 */
-									if ($list_views['checklist'] == 'true') { ?>
-										<span class='span-checkbox'><input type='checkbox'  name='list[]'  value='<?= $checkbox_id; ?>' class='list-checkbox tabholdEvent' style='margin:right:6px;'/></span>
-										<input type='hidden' name='dict_id[]' value='<?php echo $dict_id; ?>'>
-									<?php } ?>
-									<span class='list-del' id='<?php echo $checkbox_id; ?>' name='<?php echo $dict_id; ?>'></span>
-								</td>
-						<?php
-						}
-						/*
-						 *
-						 *
-						 * ******
-						 * *************************
-						 * ******************************
-						 * ***********************************FETCHING DATA AND PUTING IN CORRESPONDING TDS
-						 * **************
-						 * *************************
-						 * ******************************************************************
-						 *
-						 */
-						/////table view starts here
-						//fetching data from corresponding table
-						while ($row = $rs->fetch_assoc()) {
-							//Code Change for Task 5.4.22 Start
-								$flag = false;
-								if($row['ignore_in_lists'] != 1){
-									$flag = true;
-									$fieldValue = $listRecord[$row[generic_field_name]];
-								}else{
-									$flag = false;
-								}
-								//$fieldValue = $listRecord[$row[generic_field_name]];
-							//Code Change for Task 5.4.22 End
-							if (!empty($row[dropdown_alias])) {
-								$fieldValue = dropdown($row, $urow = 'list_display', $fieldValue);
-							}
-							if($stripTags){
-								$fieldValue = strip_tags($fieldValue);
-							}
-							//truncating the lengths of data
-							$fieldValue =  truncateLongDataAsPerAvailableWidth($fieldValue,$$column_widths_array_with_name[$row[generic_field_name]]);
-							//Code Change for Task 5.4.22 Start
-							if($flag == true){
-							//Code Change for Task 5.4.22 End
-							if(itemHasVisibility($row['visibility']) && itemHasPrivilege($row['privilege_level']) && $row['format_type'] != 'list_fragment'){ ?>
-
-								<td> <?php echo $fieldValue; ?></td>
-							<?php
-							}
-							//Code Change for Task 5.4.22 Start
-						  }
-						  //Code Change for Task 5.4.22 End
-						}
-						if ($table_type == 'child') {
-							$_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-						} else {
-							$_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-						}
-					}/// end of mainIF ?>
-							</tr>
-				<?php
-				$count++;
-				}
-			} ?>
+				} 
+			?>
 		</tbody>
 	</table>
-	<input id="mytext" type="text" value="<?php echo $_GET['dtablesearch']; ?>" />
-
 	<?php
 
 		global $popup_menu;
@@ -277,23 +308,11 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 
 
 	?>
-	
 	<script>
-	
-	/*var demo = $('#mytext').val();
-	$( document ).ready(function() {
-   	$('input[type="search"]').val(demo);
-	});*/
-
-
 	<?php $page_no = $list_pagination['itemsperpage']; ?>
 		$('#table_<?php echo $dict_id;?>').DataTable({
-			/*search: <?php echo $_GET['dtablesearch']; ?>,*/
-			/*"oSearch": {"sSearch": $('#mytext').val()},*/
-			/*"oSearch": {"sSearch": $('#mytext').val() },*/
-			/*bRegex : 'false',*/
 			pageLength: <?php echo $page_no; ?>,
-			scrollX: <?php echo $list_pagination['scrollX'];?>,
+  			scrollX: <?php echo $list_pagination['scrollX'];?>,
 			paging: <?php echo $list_pagination['paging'];?>,
 			scrollY:<?php echo $list_pagination['scrollY'];?>,
 			scrollCollapse: <?php echo $list_pagination['scrollCollapse'];?>,
@@ -305,7 +324,7 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			order: [<?php echo $sort_index; ?>, <?php echo "'" . $sort_order . "'"; ?>],
 			columnDefs:[
 				<?php foreach ($column_widths_array as $key => $value) { ?>
-						{ "width": <?=$value?>, "targets": [<?=$key?>] },
+						{ "width": <?php echo $value?>, "targets": "<?php echo $key?>" },
 				<?php }?>
 			],
 			bStateSave: true
@@ -396,9 +415,5 @@ function renderListView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$lis
 			});
 		}
 	</script>
-
-
-
-
 <?php
 } ?>
