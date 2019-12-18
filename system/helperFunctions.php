@@ -1900,3 +1900,45 @@ function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
   }
   return substr($data, 0, $width);
 }
+
+function format_field_value_length( $tbRow, $value ) {
+	
+	$fieldValue = $value;
+	if ( !isset($tbRow['format_type']) || $tbRow['format_type'] == "" || empty($row['format_type'])) {
+		$tbRow['format_type'] = 'text';								
+	}
+	$format_type = $tbRow['format_type'];
+	if( ! isset($tbRow['format_length']) || $tbRow['format_length'] == "" || ! $tbRow['format_length'] || ! is_numeric($tbRow['format_length']) ) {
+		$create_constant_name =  "defaultFieldLen".ucfirst($format_type)."Max";
+		$tbRow['format_length'] = constant($create_constant_name);
+	}
+	
+	$min_length1 = "defaultFieldLen".ucfirst($format_type)."Min";
+	$min_length = constant($min_length1);
+	
+	if( ! $min_length ) {
+		$min_length = 5;
+	}
+	if( ! $tbRow['format_length'] ) {
+		$tbRow['format_length'] = 25;
+	}
+	
+	if( isset($tbRow['format_length']) && $tbRow['format_length'] != "" && $tbRow['format_length'] && is_numeric($tbRow['format_length']) ) {
+		$old_field_value = $fieldValue;
+		//$row['format_length'] = 5;
+		$fieldValue = substr($fieldValue, 0, $tbRow['format_length']);
+		if( $fieldValue != "" && strlen($old_field_value) > $tbRow['format_length'] ) {
+			$fieldValue .= " ...";
+		} 
+		else if ( $min_length && strlen($old_field_value) < $tbRow['format_length'] ) {
+			$fieldValue = str_pad($fieldValue, $min_length, " ");
+		}
+	}
+	return array( "min_length" => $min_length, "max_length" => $tbRow['format_length'], "fieldValue" => $fieldValue );
+	
+}
+
+
+
+
+

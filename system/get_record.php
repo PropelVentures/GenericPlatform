@@ -54,7 +54,7 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
       $clause ='WHERE ' . $clause;
     }
 
-    if($singleSort !=='false'){
+    if($singleSort !=='false' && !is_array( $singleSort ) ){
       $temp = strtoupper($singleSort);
       if($temp==='RANDOM'){
         $clause = $clause .' order by rand()';
@@ -62,6 +62,22 @@ function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $sing
         $clause = $clause .' order by '.$singleSort;
       }
     }
+	
+	/*else if($singleSort !=='false' && is_array( $singleSort ) ){
+		$key = 0;
+		foreach($singleSort as $sorter) {
+			if( $sorter ) {
+				if( $key == 0 ) {					
+					$clause = $clause .' order by '.$sorter; $key++;
+				} 
+				else {
+					$clause = $clause .', '.$sorter; $key++;
+					$key++;
+				}
+			}
+		}
+	}*/
+	//echo "SELECT * FROM $db_name $clause ";
     $user = $con->query("SELECT * FROM $db_name $clause ");
     return $user;
 }

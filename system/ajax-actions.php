@@ -603,6 +603,20 @@ if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
     unset($_SESSION['SuccessAddImport'], $_SESSION['errorsAddImport']);
 }
 
+if (isset($_POST["check_action"]) && $_POST["check_action"] == 'sort_boxview') {
+	
+	if (isset($_POST["dict_id"]) && !empty($_POST["dict_id"]) && isset($_POST["sort_param"]) && !empty($_POST["sort_param"]) ) {
+	
+		$frow = getWhere("data_dictionary", array("dict_id" => $_POST["dict_id"]));
+		if( $frow && !empty($frow) && isset($frow[0]) ) {
+			$row = $frow[0];
+			//display_content($row);
+			
+		}
+	}
+	
+}
+
 function isAllowedToPerformListAction($row){
   $user_privilege = $_SESSION['user_privilege'];
   $DD_privilege = $row['dd_privilege_level'];

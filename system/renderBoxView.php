@@ -15,6 +15,14 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	if($style_refrence_configs !== false){
 		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
 	}
+	
+	/*Rashid Code Start*/
+	
+	$list_sort = $row['list_sort'];
+	$list_sort = array_filter( array_map('trim', explode(',', $row['list_sort'])) );
+	
+	/*Rashid End*/
+	
 	$list_select_arr = getListSelectParams($list_select);
 	?>
 	<div class="boxViewContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
@@ -37,12 +45,13 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 			}
 			while ($listRecord = $list->fetch_assoc()) {
 				$itemId = $listRecord[$row['generic_field_name']];
+				
 				if($count > $limit){
 					break;
 				}
 				
 				if(!isFileExistFilterFullFillTheRule($listRecord,$isExistFilter,$isExistField)){
-					break;
+					continue; //break;
 				}
 
 				$_SESSION['list_pagination'] = array($list_pagination[0],$no_of_pages);
@@ -51,7 +60,19 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				if($category_styles!==false && isset($category_styles[$listRecord[$style_refrence_configs['field']]])){
 					$boxStyleClass = $category_styles[$listRecord[$style_refrence_configs['field']]]['class'];
 					$boxStyleCode = $category_styles[$listRecord[$style_refrence_configs['field']]]['code'];
-				}?>
+				}
+				$data = "";
+				if (is_array($list_sort) && !empty($list_sort) ) {
+					/*echo "<div class='hidden-sorts'>";*/
+					foreach( $list_sort as $lsort ){
+						if( ltrim($lsort,"-") != "" ) {
+							//$data .= "<input type='hidden' class='".$lsort."' value='".$listRecord[$lsort]."' > ";
+							$data .= "data-".$lsort." = ".$listRecord[$lsort]." ";
+						}
+					}
+					/*echo "</div>";*/
+				}
+				?>
 				<div style="<?=  $boxStyleCode.$css_style ?>" class="boxView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
 						<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
@@ -144,43 +165,58 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
 				$_SESSION['popup_munu_array'][] = $popup_menu;
 			}?>
+			
 			<script>
-			if (mobileDetector().any()) {
-				$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
-					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
-					var xPos = event.originalEvent.touches[0].pageX;
-					var yPos = event.originalEvent.touches[0].pageY;
-					$(this).addClass('tabholdEvent');
-					popup_del = $(this).find('.list-del').attr('id');
-					dict_id = $(this).find('.list-del').attr('name');
-					//alert(popup_del);
-					// Avoid the real one
-					event.preventDefault();
-					// Show contextmenu
-					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
-					// In the right position (the mouse)
-					css({
-						top: yPos + "px",
-						left: xPos + "px"
+				if (mobileDetector().any()) {
+					$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
+						// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
+						var xPos = event.originalEvent.touches[0].pageX;
+						var yPos = event.originalEvent.touches[0].pageY;
+						$(this).addClass('tabholdEvent');
+						popup_del = $(this).find('.list-del').attr('id');
+						dict_id = $(this).find('.list-del').attr('name');
+						//alert(popup_del);
+						// Avoid the real one
+						event.preventDefault();
+						// Show contextmenu
+						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+						// In the right position (the mouse)
+						css({
+							top: yPos + "px",
+							left: xPos + "px"
+						});
 					});
-				});
-			} else {
-				$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
-					popup_del = $(this).find('.list-del').attr('id');
-					dict_id = $(this).find('.list-del').attr('name');
-					//console.log(dict_id);
-					// Avoid the real one
-					event.preventDefault();
-					// Show contextmenu
-					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
-					// In the right position (the mouse)
-					css({
-						top: event.pageY + "px",
-						left: event.pageX + "px"
+				} else {
+					$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
+						popup_del = $(this).find('.list-del').attr('id');
+						dict_id = $(this).find('.list-del').attr('name');
+						//console.log(dict_id);
+						// Avoid the real one
+						event.preventDefault();
+						// Show contextmenu
+						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+						// In the right position (the mouse)
+						css({
+							top: event.pageY + "px",
+							left: event.pageX + "px"
+						});
 					});
-				});
-			}
-		</script>
+				}
+				
+				if($(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").length > 0) {
+					$(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").click(function() {
+						var dict_id = $(this).data("dict");
+						var sort_param = $(this).data("value");
+						$.ajax({
+							method: "POST",
+							url: "ajax-actions.php",
+							data: {check_action: 'sort_boxview', dict_id: dict_id, sort_param: sort_param}
+						}).done(function (msg) {
+							console.log(msg);
+						});
+					});
+				}
+			</script>
 		<?php } else { ?>
 	</div>
 		<?php

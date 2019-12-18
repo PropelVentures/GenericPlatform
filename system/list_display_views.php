@@ -183,7 +183,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
 		"popup_openChild" => $ret_array['popup_openChild']
 	);
     if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
-        <div class="col-6 col-sm-6 col-lg-6 sortby">
+        <div class="col-6 col-sm-6 col-lg-6 sortby boxview-sort sorting-<?=$row['dict_id']?>">
             <h3>Sort by </h3>
             <span>
                 <div class="btn-group select2">
@@ -223,7 +223,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                             }
                             $q = $con->query("select field_label_name from field_dictionary where generic_field_name='$val' and table_alias='$tbl'");
                             $fdField = $q->fetch_assoc();
-                            echo "<li id='sort-li' data-value='$val'>
+                            echo "<li class='sorting-li' id='sort-li' data-value='$val' data-dict='".$row['dict_id']."'>
                                     <a>$fdField[field_label_name]$order</a>
                                 </li>";
                         }
@@ -305,11 +305,11 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             //edit by Akshay S (2019-Aug-04 18:30 IST)
             //jQuery code added to refresh DataTable when search field is empty (Task ID: 8.3.501)
         	$("#list-form")[0].reset();
-        	var table = $('table.clear1').DataTable();
+        	var table = $('table.clear1').DataTable({ "bInfo" : false });
         	table.search('').draw();
 	    }
 	</script>
-    <div class="row" id="popular_users" >
+    <div class="row start_render_view" id="popular_users" >
         <form name="list-form" id="list-form" action="ajax-actions.php" method="post">
 			<?php if(!empty(array_filter($ret_array))) { ?>
             <div id='checklist-div'>
@@ -389,7 +389,10 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
             }//// if record is zero... ends here
             //if no record to display
       if(!checkIfEmptyList($list,$row)){
-
+			
+			$isExistField = chop($isExistField, ";");
+			$isExistFilter = chop($isExistFilter, ";");
+			$listView  = chop($listView, ";");
   			switch($listView){
   				case 'mapview':
   					include_once('renderMapView.php');
@@ -555,11 +558,11 @@ function listViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $im
 	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
 		if(!empty($listData)){
 			foreach($listData as $data){
-        if(isset($data['data_length'])){
-          $value = truncateLongDataAsPerAvailableWidth($data['field_value'],$data['data_length']);
-        }else{
-          $value = trim($data['field_value']);
-        }
+				if(isset($data['data_length'])){
+				  $value = truncateLongDataAsPerAvailableWidth($data['field_value'],$data['data_length']);
+				}else{
+				  $value = trim($data['field_value']);
+				}
 				echo "<div class='boxView_line ".$data['field_style']."'>".$value."</div>";
 			}
 		}

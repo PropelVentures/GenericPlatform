@@ -71,8 +71,79 @@ function renderListView($isExistFilter, $isExistField, $row, $tbQry, $list,$qry,
 	$column_widths_array = [];
 	$column_widths_array_with_name = [];
 	$stripTags = isStripHtmlTags($row['list_extra_options']);
-	?>
+	
+	/* Rashid Code Start*/
+	$dd_row = $row;
+	
+	$list_sort = array_filter( array_map('trim', explode(',', $dd_row['list_sort'])) );
+	if (count($list_sort) >= 1 && !empty($row['list_sort'])) {
+		$show_sort = false;
+		$tbl = $row['table_alias'];
+		foreach ($list_sort as $val) {
+			$q = $con->query("select field_label_name from field_dictionary where generic_field_name='$val' and table_alias='$tbl'");
+			$fdField = $q->fetch_assoc();
+			if( $fdField[field_label_name] != "" ) {
+				$show_sort = true;
+				break;
+			}
+		}
+		if($show_sort) {
+        ?>
+		<h3>Sort by </h3>
+		<span>
+			<div class="btn-group select2 listview">
+				<button type="button" class="select_btn btn btn-danger main-select2 dropdown-toggle" data-toggle="dropdown" id="sort_popular_users_value">	---Select----</button>
+				<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+					<span class="sr-only">Toggle navigation</span>
+				</button>
+				<ul class="dropdown-menu" role="menu" id="sort_popular_users">
+					<?php
+					$tbl = $row['table_alias'];
+					if (!empty($_GET['sort']) && empty($_GET['orderFlag'])) {
+						$orderFlag = 'down';
+					} else if (!empty($_GET['sort']) && $_GET['orderFlag'] == 'down') {
+						$orderFlag = 'up';
+					} else if (!empty($_GET['sort']) && $_GET['orderFlag'] == 'up') {
+						$orderFlag = 'down';
+					}
+					$order = "<span class='glyphicon glyphicon-chevron-up'></span>";
+					foreach ($list_sort as $val) {
+						if ($val != $_GET['sort']) {
+							$order = "<span class='glyphicon'></span>";
+						} else {
 
+							switch ($orderFlag) {
+								case 'up':
+									$order = "<span class='glyphicon glyphicon-chevron-up'></span>";
+									break;
+								case 'down':
+									$order = "<span class='glyphicon glyphicon-chevron-down'></span>";
+									break;
+								default:
+									$order = "<span class='glyphicon'></span>";
+							}
+						}
+						$q = $con->query("select field_label_name from field_dictionary where generic_field_name='$val' and table_alias='$tbl'");
+						
+						$fdField = $q->fetch_assoc();
+						if( $fdField[field_label_name] != "" ) {							
+							echo "<li id='sort-li' class='sorting-li' data-value='$val'>
+									<a>$fdField[field_label_name]$order</a>
+								</li>";
+						}
+					}
+					?>
+				</ul>
+			</div>
+		</span>
+		<?php
+		}
+    } 
+	
+	/*Rashid Code over*/
+	?>
+	
 	<input type='button' onclick='clearFunction()' id='test' value='X' class='clearFunction'>
 	<!--Code Changes for Task 5.4.77 Start-->
 	<!--<table id='table_<?php //echo $dict_id;?>' class='display nowrap compact' cellspacing='0' width='100%'>-->
@@ -118,7 +189,10 @@ function renderListView($isExistFilter, $isExistField, $row, $tbQry, $list,$qry,
 						$$column_widths_array_with_name[$tbRow['generic_field_name']] = $colWidth;
 						$column_widths_array[$count] ='"'.$colWidth.'px"';
 						//Code Change for Task 5.4.22 End
-
+						/*Rashid Format Length Start*/
+						$fieldValue = format_field_value_length($tbRow, $tbRow['field_label_name'] );
+						$fieldValue = $fieldValue['fieldValue'];
+						/* Rashid Format Length Over */
 					  ?>
 						<th> <?= $tbRow['field_label_name']; ?></th>
 					<?php
@@ -267,6 +341,10 @@ function renderListView($isExistFilter, $isExistField, $row, $tbQry, $list,$qry,
 												//truncating the lengths of data											
 												//truncateLongDataAsPerAvailableWidth($fieldValue,$$column_widths_array_with_name[$row[generic_field_name]]);
 												//Code Change for Task 5.4.22 Start
+											/*Rashid Format Length Start*/
+											$fieldValue = format_field_value_length($tbRow, $fieldValue );
+											$fieldValue = $fieldValue['fieldValue'];
+											/* Rashid Format Length Over */
 											if($flag == true)
 											{
 													//Code Change for Task 5.4.22 End
