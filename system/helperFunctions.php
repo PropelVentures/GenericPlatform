@@ -718,7 +718,7 @@ function listvalues($setlistviews) {
     // print_r($action);die;
 
     foreach ($listviews as $act) {
-
+		$act = chop($act, ";");
         switch (trim($act)) {
             case 'checklist':
                 $checklist = 'true';
@@ -1117,14 +1117,18 @@ function boxViewHscroll($pagination, $tab_num, $list_select_arr) { ?>
 		if (n > box.length) {slideIndex[tab_num] = Math.abs(per_page)}
 		if (n < Math.abs(per_page)) {slideIndex[tab_num] = box.length} ;
 		for (i = 0; i < box.length; i++) {
-			box[i].classList.remove("showDiv"+tab_num);
-			box[i].classList.add("showDiv"+tab_num);
-			box[i].style.display = "none";
+			if(typeof box[item] != "undefined" && box[i].length > 0) {
+				box[i].classList.remove("showDiv"+tab_num);
+				box[i].classList.add("showDiv"+tab_num);
+				box[i].style.display = "none";
+			}
 		}
 		var start = parseInt(slideIndex[tab_num] - Math.abs(per_page));
 		for(var item = start; item < slideIndex[tab_num]; item++){
-			box[item].classList.add("hideDiv"+tab_num);
-			box[item].style.display = "block";
+			if(typeof box[item] != "undefined" && box[item].length > 0) {
+				box[item].classList.add("hideDiv"+tab_num);
+				box[item].style.display = "block";
+			}
 		}
 	}
 	</script>
@@ -1706,30 +1710,32 @@ function isStripHtmlTags($value){
 }
 
 function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
-  if($isExistField == null || $isExistFilter == null){
-    return true;
-  }
-  if(!isset($row[$isExistField])){
-    return true;
-  }
+	if($isExistField == null || $isExistFilter == null){
+		return true;
+	}
+	if(!isset($row[$isExistField])){
+		return true;
+	}
 
-  $value = trim($row[$isExistField]);
-  if($isExistFilter=='exist'){
-    if(empty($value)){
-      return false;
-    }
-    if(file_exists(USER_UPLOADS.$value)){
-      return true;
-    }else{
-      return false;
-    }
-  }else if($isExistFilter=='not_exist'){
-    if(file_exists(USER_UPLOADS.$value)){
-      return false;
-    }else{
-      return true;
-    }
-  }
+	$value = trim($row[$isExistField]);
+	if($isExistFilter=='exist'){
+		if(empty($value)){
+		  return false;
+		}
+		
+		if(file_exists(USER_UPLOADS.$value)){
+		  return true;
+		}else{
+		  return false;
+		}
+	}
+	else if($isExistFilter=='not_exist'){
+		if(file_exists(USER_UPLOADS.$value)){
+		  return false;
+		}else{
+		  return true;
+		}
+	}
 }
 
 function getDefaultListViewExtraOptions($con,$displaypage){

@@ -185,6 +185,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
     if (count($list_sort) > 1 && ($listView == 'boxview' || $listView == 'boxview')) { ?>
         <div class="col-6 col-sm-6 col-lg-6 sortby boxview-sort sorting-<?=$row['dict_id']?>">
             <h3>Sort by </h3>
+			
             <span>
                 <div class="btn-group select2">
                     <button type="button" class="btn btn-danger main-select2" id="sort_popular_users_value">
@@ -222,6 +223,7 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                                 }
                             }
                             $q = $con->query("select field_label_name from field_dictionary where generic_field_name='$val' and table_alias='$tbl'");
+							
                             $fdField = $q->fetch_assoc();
                             echo "<li class='sorting-li' id='sort-li' data-value='$val' data-dict='".$row['dict_id']."'>
                                     <a>$fdField[field_label_name]$order</a>
@@ -388,37 +390,37 @@ function list_display($qry, $tab_num = 'false', $tab_anchor = 'false') {
                 $_SESSION['return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
             }//// if record is zero... ends here
             //if no record to display
-      if(!checkIfEmptyList($list,$row)){
+			if(!checkIfEmptyList($list,$row)){
 			
-			$isExistField = chop($isExistField, ";");
-			$isExistFilter = chop($isExistFilter, ";");
-			$listView  = chop($listView, ";");
-  			switch($listView){
-  				case 'mapview':
-  					include_once('renderMapView.php');
-  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
-  					break;
+				$isExistField = chop($isExistField, ";");
+				$isExistFilter = chop($isExistFilter, ";");
+				$listView  = chop($listView, ";");
+				switch($listView){
+					case 'mapview':
+						include_once('renderMapView.php');
+						renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=false); // renderMapView.php
+						break;
 
-  				case 'mapaddress':
-  					include_once('renderMapView.php');
-  					renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
-  					break;
+					case 'mapaddress':
+						include_once('renderMapView.php');
+						renderMapView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array,$mapAddress=true); // renderMapView.php
+						break;
 
-  				case 'boxview':
-  					include_once('renderBoxView.php');
-  					renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-  					break;
+					case 'boxview':
+						include_once('renderBoxView.php');
+						renderBoxView($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+						break;
 
-          case 'boxwide':
-  					include_once('renderBoxWide.php');
-  					renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
-  					break;
+					case 'boxwide':
+						include_once('renderBoxWide.php');
+						renderBoxWide($isExistFilter,$isExistField,$row,$tbQry,$list,$qry,$list_pagination,$tab_anchor,$tab_num,$imageField,$ret_array); // renderBoxView.php
+						break;
 
-  				default:
-  					include_once('renderListView.php');
-  					renderListView($isExistFilter, $isExistField, $row, $tbQry, $list, $qry, $list_pagination, $tab_anchor); // renderListView.php
-  					break;
-  			} }?>
+					default:						
+						include_once('renderListView.php');
+						renderListView($isExistFilter, $isExistField, $row, $tbQry, $list, $qry, $list_pagination, $tab_anchor); // renderListView.php
+						break;
+				} }?>
         </form>
     </div>
 
@@ -556,6 +558,7 @@ function listViews($boxStyles,$boxClass,$listData, $table_type, $target_url, $im
 	$listData = array_filter($listData);
 	//  This is the
 	echo "<div class='boxView_content list-data $boxClass' style='$boxStyles'>";
+		
 		if(!empty($listData)){
 			foreach($listData as $data){
 				if(isset($data['data_length'])){

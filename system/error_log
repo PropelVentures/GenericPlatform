@@ -1,0 +1,25 @@
+[19-Dec-2019 16:56:28 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php:1141
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php(177): dropdown(Array, Array, 'false', 'false')
+#1 /home/cjcornell/public_html/genericsandbox5/system/display_content.php(518): formating_Update(Array, 'edit', Array, 'true')
+#2 /home/cjcornell/public_html/genericsandbox5/system/get_data_fd_record.php(76): display_content(Array)
+#3 /home/cjcornell/public_html/genericsandbox5/system/main.php(331): Get_Data_FieldDictionary_Record('', NULL, 'myproduct', 'true', 'false', 'true', 'tab_num')
+#4 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php on line 1141
+[27-Dec-2019 02:22:03 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox5/system/links_and_nav.php:236
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox5/system/main.php(52): Navigation('home', 'header')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox5/system/links_and_nav.php on line 236
+[28-Dec-2019 21:57:49 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on boolean in /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php:1141
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php(177): dropdown(Array, Array, 'false', true)
+#1 /home/cjcornell/public_html/genericsandbox5/system/get_data_fd_record.php(871): formating_Update(Array, 'edit', Array, 'true', true)
+#2 /home/cjcornell/public_html/genericsandbox5/system/main.php(360): Get_Data_FieldDictionary_Record('', 'myaccount', 'MYACCOUNT', 'false')
+#3 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox5/system/formDisplayFnc.php on line 1141
+[11-Jan-2020 20:15:52 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on boolean in /home/cjcornell/public_html/genericsandbox5/system/links_and_nav.php:236
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox5/system/main.php(52): Navigation('home', 'header')
+#1 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox5/system/links_and_nav.php on line 236

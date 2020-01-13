@@ -4,11 +4,11 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
-  $keyfield = firstFieldName($row['database_table_name']);
-  $table_type = trim($row['table_type']);
-  $table_name = trim($row['database_table_name']);
-  $list_fields = trim($row['list_fields']);
-  $dict_id = $row['dict_id'];
+	$keyfield = firstFieldName($row['database_table_name']);
+	$table_type = trim($row['table_type']);
+	$table_name = trim($row['database_table_name']);
+	$list_fields = trim($row['list_fields']);
+	$dict_id = $row['dict_id'];
 	$style_refrence_configs = false;
 	$category_styles = false;
 	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
@@ -73,9 +73,10 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					/*echo "</div>";*/
 				}
 				?>
-				<div style="<?=  $boxStyleCode.$css_style ?>" class="boxView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px">
+				<div style="<?=  $boxStyleCode.$css_style ?>" class="boxView <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?> $boxStyleClass" data-scroll-reveal="enter bottom over 1s and move 100px" <?php echo $data; ?> >
 						<input type='hidden' id='<?php echo $itemId; ?>' name='<?php echo $dict_id; ?>' class='list-del' />
 					<?php
+					
 					if (!empty($list_select) || $table_type == 'child') {
 						if (strpos($list_select, '()')) {
 							exit('function calls');
@@ -165,58 +166,57 @@ function renderBoxView($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
 				$_SESSION['popup_munu_array'][] = $popup_menu;
 			}?>
-			
 			<script>
-				if (mobileDetector().any()) {
-					$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
-						// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
-						var xPos = event.originalEvent.touches[0].pageX;
-						var yPos = event.originalEvent.touches[0].pageY;
-						$(this).addClass('tabholdEvent');
-						popup_del = $(this).find('.list-del').attr('id');
-						dict_id = $(this).find('.list-del').attr('name');
-						//alert(popup_del);
-						// Avoid the real one
-						event.preventDefault();
-						// Show contextmenu
-						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
-						// In the right position (the mouse)
-						css({
-							top: yPos + "px",
-							left: xPos + "px"
-						});
+			if (mobileDetector().any()) {
+				$(".boxViewContainer#content<?php echo $tab_num;?>").on("taphold", '.boxView', function (event) {
+					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
+					var xPos = event.originalEvent.touches[0].pageX;
+					var yPos = event.originalEvent.touches[0].pageY;
+					$(this).addClass('tabholdEvent');
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//alert(popup_del);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: yPos + "px",
+						left: xPos + "px"
 					});
-				} else {
-					$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
-						popup_del = $(this).find('.list-del').attr('id');
-						dict_id = $(this).find('.list-del').attr('name');
-						//console.log(dict_id);
-						// Avoid the real one
-						event.preventDefault();
-						// Show contextmenu
-						$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
-						// In the right position (the mouse)
-						css({
-							top: event.pageY + "px",
-							left: event.pageX + "px"
-						});
+				});
+			} else {
+				$(".boxViewContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxView', function (event) {
+					popup_del = $(this).find('.list-del').attr('id');
+					dict_id = $(this).find('.list-del').attr('name');
+					//console.log(dict_id);
+					// Avoid the real one
+					event.preventDefault();
+					// Show contextmenu
+					$("#popup_menu_<?php echo $dict_id?>.custom-menu").finish().toggle(100).
+					// In the right position (the mouse)
+					css({
+						top: event.pageY + "px",
+						left: event.pageX + "px"
 					});
-				}
-				
-				if($(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").length > 0) {
-					$(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").click(function() {
-						var dict_id = $(this).data("dict");
-						var sort_param = $(this).data("value");
-						$.ajax({
-							method: "POST",
-							url: "ajax-actions.php",
-							data: {check_action: 'sort_boxview', dict_id: dict_id, sort_param: sort_param}
-						}).done(function (msg) {
-							console.log(msg);
-						});
+				});
+			}
+			
+			if($(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").length > 0) {
+				$(".boxview-sort.sorting-<?php echo $dict_id;?> .sorting-li").click(function() {
+					var dict_id = $(this).data("dict");
+					var sort_param = $(this).data("value");
+					$.ajax({
+						method: "POST",
+						url: "ajax-actions.php",
+						data: {check_action: 'sort_boxview', dict_id: dict_id, sort_param: sort_param}
+					}).done(function (msg) {
+						console.log(msg);
 					});
-				}
-			</script>
+				});
+			}
+		</script>
 		<?php } else { ?>
 	</div>
 		<?php
