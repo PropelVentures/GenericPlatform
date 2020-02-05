@@ -40,10 +40,10 @@ function Get_Data_FieldDictionary_Record($dd_position,$table_alias, $display_pag
      */
     if ($tab_status == 'true') {
       if($aboveThanTabs){
-        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND dd_component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+        $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND component_location='above' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }else{
 
-          $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (dd_component_location IS NULL OR dd_component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
+          $rs = $con->query("SELECT * FROM data_dictionary where display_page='$display_page'  AND (component_location IS NULL OR component_location!='above') and tab_num REGEXP '^[0-9]+$' AND tab_num >'0' AND table_type NOT REGEXP 'header|subheader' order by tab_num");
       }
       while ($row = $rs->fetch_assoc()) {
           if(!isAllowedToShowByPrivilegeLevel($row)){
