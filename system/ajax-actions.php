@@ -1,10 +1,16 @@
 <?php
+/*
+function isAllowedToPerformListAction($row){
+
+*/
+
+
 
 // session_start();
 
 require_once 'functions_loader.php';
 
-echo $_SESSION['child_return_url'];
+//echo $_SESSION['child_return_url'];
 if(!empty($_GET['values_to_unset'])){
 
     unset($_SESSION['child_return_url']);
@@ -17,44 +23,44 @@ if(!empty($_GET['values_to_unset'])){
     unset($_GET['search_id2']);
 
     unset($_SESSION['parent_value']);
-    unset($_SESSION['parent_url']);
+    // unset($_SESSION['parent_url']);
 
     // unset($_SESSION['parent_list_tabname']);
     return true;
 }
 
-/*on chnage of list filter*/
+/*on change of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_filter') {
-  if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
-    $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_filter'] = $_GET['selected_filter'];
-  }
-  exit;
+    if (isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])) {
+        $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_filter'] = $_GET['selected_filter'];
+    }
+    exit;
 }
 
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'contact_me') {
-  sendMessageAndAddLog();
-  exit;
+    sendMessageAndAddLog();
+    exit;
 }
 
-/*on chnage of list filter*/
+/*on change of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'set_list_view') {
-  if(isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])){
-    $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_view'] = $_GET['selected_filter'];
-  }
-  exit;
+    if (isset($_GET['dict_id_to_apply_filter']) && isset($_GET['selected_filter'])) {
+        $_SESSION[$_GET['dict_id_to_apply_filter'].'_selected_view'] = $_GET['selected_filter'];
+    }
+    exit;
 }
 
 
-/*on chnage of list filter*/
+/*on change of list filter*/
 if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'adding_new_options') {
-  $table = $_GET['table'];
-  $insert =$_GET['data'];
-  if(!empty($_GET['selectedKeyField'])){
-    $insert[$_GET['selectedKeyField']] = $_GET['selectedprimaryvalue'];
-  }
-  $id = insert($table,$insert);
-  echo $id;
-  exit;
+    $table_name = $_GET['table_name'];
+    $insert =$_GET['data'];
+    if(!empty($_GET['selectedKeyField'])){
+        $insert[$_GET['selectedKeyField']] = $_GET['selectedprimaryvalue'];
+    }
+    $id = insert($table_name,$insert);
+    echo $id;
+    exit;
 }
 
 
@@ -63,30 +69,30 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'adding_new_option
  * @checklist Multiple Deletion
  */
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'delete') {
-    log_event($_GET['display'],'delete');
+    log_event($_GET['page_name'],'delete');
 
     $item = implode(",", $_POST['list']);
     $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
     $frow = getWhere("field_dictionary", array("table_alias" => $row['table_alias'], "format_type" => "image"));
-    $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $_GET["list_delete"]));
+    $image_name = getWhere($row['table_name'], array(firstFieldName($row['table_name']) => $_GET["list_delete"]));
     foreach ($frow AS $val) {
         foreach ($_POST['list'] as $list_id) {
-            $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $list_id));
+            $image_name = getWhere($row['table_name'], array(firstFieldName($row['table_name']) => $list_id));
             if (!empty($image_name[0][$val['generic_field_name']])) {
                 @unlink(USER_UPLOADS. "" . $image_name[0][$val['generic_field_name']]);
             }
         }/////inside list
     }
-    $keyField = firstFieldName($row['database_table_name']);
-    mysqli_query($con, "delete from " . $row['database_table_name'] . " where " . $keyField . " IN( $item )");
-    if($row['table_type'] == 'parent'){
-      $childRow = get("data_dictionary", "parent_table='".$row['database_table_name']."' AND table_type='child' ");
-      $childTable = $childRow['database_table_name'];
-      $childKey = 'child_'.$keyField;
+    $keyField = firstFieldName($row['table_name']);
+    mysqli_query($con, "delete from " . $row['table_name'] . " where " . $keyField . " IN( $item )");
+    if ($row['table_type'] == 'parent') {
+        $childRow = get("data_dictionary", "parent_table='".$row['table_name']."' AND table_type='child' ");
+        $childTable = $childRow['table_name'];
+        $childKey = 'child_'.$keyField;
         mysqli_query($con, "delete from " .$childTable . " where " . $childKey . " IN( $item )");
     }
-    if($row['database_table_name'] == 'project'){
-        mysqli_query($con, "delete from project_child  where " . firstFieldName($row['database_table_name']) . " IN( $item )");
+    if ($row['table_name'] == 'project') {
+        mysqli_query($con, "delete from project_child  where " . firstFieldName($row['table_name']) . " IN( $item )");
     }
 }
 
@@ -97,34 +103,34 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
  * @checklist Multiple copy
  */
 if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["checkHidden"] == 'copy') {
-    log_event($_GET['display'],'copy');
+    log_event($_GET['page_name'],'copy');
     $item = implode(",", $_POST['list']);
     $row = get("data_dictionary", "dict_id='" . $_POST['dict_id'] . "'");
-    $table = $row['database_table_name'];
+    $table_name = $row['table_name'];
     $keyField = $row['keyfield'];
     $isParent = false;
-    if($row['table_type'] == 'parent'){
-      $isParent = true;
-      $childRow = get("data_dictionary", "parent_table='".$row['database_table_name']."' AND table_type='child' ");
-      $childTable = $childRow['database_table_name'];
-      $childKey = 'child_'.$keyField;
+    if ($row['table_type'] == 'parent') {
+        $isParent = true;
+        $childRow = get("data_dictionary", "parent_table='".$row['table_name']."' AND table_type='child' ");
+        $childTable = $childRow['table_name'];
+        $childKey = 'child_'.$keyField;
     }
-    $allRecords = getWhere($table, "$keyField IN( $item )","",false);
+    $allRecords = getWhere($table_name, "$keyField IN( $item )", "", false);
     foreach ($allRecords as $key => $record) {
-      $tempRecord = $record;
-     unsetExtraRows($tempRecord);
-      $parentId= $record[$keyField];
-      unset($tempRecord[$keyField]);
-      $newId = insert($table,$tempRecord);
-      if($isParent){
-        $llChildren = getWhere($childTable,"$childKey='$parentId'",'',false);
-        foreach ($llChildren as $key => $value) {
-          unsetExtraRows($value);
-          unset($value['id']);
-          $value[$childKey] = $newId;
-          insert($childTable,$value);
+        $tempRecord = $record;
+        unsetExtraRows($tempRecord);
+        $parentId= $record[$keyField];
+        unset($tempRecord[$keyField]);
+        $newId = insert($table_name,$tempRecord);
+        if ($isParent) {
+            $llChildren = getWhere($childTable,"$childKey='$parentId'",'',false);
+            foreach ($llChildren as $key => $value) {
+                unsetExtraRows($value);
+                unset($value['id']);
+                $value[$childKey] = $newId;
+                insert($childTable,$value);
+            }
         }
-      }
     }
 }
 
@@ -136,7 +142,7 @@ if (isset($_POST["checkHidden"]) && !empty($_POST["checkHidden"]) && $_POST["che
 if (isset($_GET["tab_check"]) && !empty($_GET["tab_check"]) && $_GET["tab_check"] == 'true') {
 
 
-// ***>    update("data_dictionary", array('dd_editable' => '1'), array('table_alias' => $_GET['tab_name'], 'tab_num' => $_GET['tab_num']));
+// ***>    update("data_dictionary", array('dd_editable' => '1'), array('table_alias' => $_GET['component_name'], 'component_order' => $_GET['component_order']));
 }
 
 
@@ -148,7 +154,7 @@ if (isset($_GET["tab_check"]) && !empty($_GET["tab_check"]) && $_GET["tab_check"
 if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_action"] == 'delete') {
 
 /// Searching and deleting images from targeted table first
-    log_event($_GET['display'],'delete');
+    log_event($_GET['page_name'],'delete');
 
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
     if(!isAllowedToPerformListAction($row)){
@@ -156,31 +162,24 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
       die();
     }
     $frow = getWhere("field_dictionary", array("table_alias" => $row['table_alias'], "format_type" => "image"));
-
-    $image_name = getWhere($row['database_table_name'], array(firstFieldName($row['database_table_name']) => $_GET["list_delete"]));
-
+    $image_name = getWhere($row['table_name'], array(firstFieldName($row['table_name']) => $_GET["list_delete"]));
 
     foreach ($frow AS $val) {
-
-
         if (!empty($image_name[0][$val['generic_field_name']])) {
-
             @unlink(USER_UPLOADS . "" . $image_name[0][$val['generic_field_name']]);
         }
     }
 
 /// deleting actual record////
-    // mysqli_query($con, "delete from " . $_SESSION['update_table']['database_table_name'] . " where " . $_SESSION['update_table']['keyfield'] . "=" . $_GET["list_delete"]);
+    // mysqli_query($con, "delete from " . $_SESSION['update_table']['table_name'] . " where " . $_SESSION['update_table']['keyfield'] . "=" . $_GET["list_delete"]);
 
-    mysqli_query($con, "delete from " . $row['database_table_name'] . " where " . firstFieldName($row['database_table_name']) . "=" . $_GET["list_delete"]);
+    mysqli_query($con, "delete from " . $row['table_name'] . " where " . firstFieldName($row['table_name']) . "=" . $_GET["list_delete"]);
 
 	$returnUrl = $_SESSION['return_url2'];
 	if($_GET['fnc'] == 'onepage'){
 		$returnUrl .= $_SESSION['anchor_tag'];
 	}
 	echo $returnUrl; exit;
-
-    //exit('yasir');
 }
 
 /*
@@ -188,20 +187,20 @@ if (isset($_GET["list_delete"]) && !empty($_GET["list_delete"]) && $_GET["check_
  * @checklist single copy
  */
 if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_action"] == 'copy') {
-  $row = get("data_dictionary", "dict_id='" . $_SESSION['dict_id'] . "'");
+    $row = get("data_dictionary", "dict_id='" . $_SESSION['dict_id'] . "'");
     if(!isAllowedToPerformListAction($row)){
       echo 'false';
       die();
     }
-    log_event($_GET['display'],'copy');
+    log_event($_GET['page_name'],'copy');
 
 
 
-    mysqli_query($con, "CREATE table temporary_table2 AS SELECT * FROM " . $row['database_table_name'] . " WHERE " . firstFieldName($row['database_table_name']) . " = $_GET[list_copy]");
+    mysqli_query($con, "CREATE table temporary_table2 AS SELECT * FROM " . $row['table_name'] . " WHERE " . firstFieldName($row['table_name']) . " = $_GET[list_copy]");
 
-    mysqli_query($con, "UPDATE temporary_table2 SET " . firstFieldName($row['database_table_name']) . " =NULL;");
+    mysqli_query($con, "UPDATE temporary_table2 SET " . firstFieldName($row['table_name']) . " =NULL;");
 
-    mysqli_query($con, "INSERT INTO " . $row['database_table_name'] . " SELECT * FROM temporary_table2;");
+    mysqli_query($con, "INSERT INTO " . $row['table_name'] . " SELECT * FROM temporary_table2;");
 
     mysqli_query($con, "DROP TABLE IF EXISTS temporary_table2;");
 
@@ -218,11 +217,8 @@ if (isset($_GET["list_copy"]) && !empty($_GET["list_copy"]) && $_GET["check_acti
  */
 
 if (isset($_GET["list_add"]) && !empty($_GET["list_add"]) && $_GET["check_action"] == 'add') {
-
     $row = get("data_dictionary", "dict_id='" . $_GET['list_add'] . "'");
-
-
-    exit($_GET['url'] . "&addFlag=true&checkFlag=true&ta=$row[table_alias]&table_type=$row[table_type]");
+    exit($_GET['url'] . "&addFlag=true&checkFlag=true&table_alias$row[table_alias]&table_type=$row[table_type]");
 }
 
 /*
@@ -230,60 +226,85 @@ if (isset($_GET["list_add"]) && !empty($_GET["list_add"]) && $_GET["check_action
  * @checklist openChild
  */
 
+
 if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"] == 'openChild') {
     $_SESSION['child_return_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
+    
     $search_key = $_GET["childID"];
     $row = get("data_dictionary", "dict_id='" . $_GET['dict_id'] . "'");
+    
     if (trim($row['table_type']) == 'parent') {
 
-// **********************************************************************************
-//  CJ-NOTE ***
-// I am not sure what the line below does or why 'child_parent_key_diff' exists ... it almost seems as a fix to cover a mistake.
-// **********************************************************************************
-        if ($_SESSION['update_table']['child_parent_key_diff'] == 'true') {
+    // **********************************************************************************
+    //  CJ-NOTE ***
+    // I am not sure what the line below does or why 'child_parent_key_diff' exists ... it almost seems as a fix to cover a mistake.
+    // **********************************************************************************
 
-			$primary_key = firstFieldName($row['database_table_name']);
-            $child_parent_value = getWhere($row['database_table_name'], array($primary_key => $_GET['childID']));
-			$key = (!empty($row['keyfield']) ? $row['keyfield'] : $primary_key );
+        /**
+         * TODO: Find out what this condition is doing.
+         */
+        if ($_SESSION['update_table']['child_parent_key_diff'] == 'true') {
+            //print_r($_SESSION);
+            //print_r($row);
+            $primary_key = firstFieldName($row['table_name']);
+            $key = (!empty($row['keyfield']) ? $row['keyfield'] : $primary_key );
+            $child_parent_value = getWhere($row['table_name'], array($key => $_GET['childID']));
             $search_key = $_SESSION['parent_value'] = $child_parent_value[0][$key];
         } else {
-// **********************************************************************************
-//  CJ-NOTE ***
-// hard to tell based on just label names but the line below does not quite seem right
-// ansd maybe the source of paarent child problems why would a parent_value be set to a child ID?
-// **********************************************************************************
+            // **********************************************************************************
+            //  CJ-NOTE ***
+            // hard to tell based on just label names but the line below does not quite seem right
+            // ansd maybe the source of paarent child problems why would a parent_value be set to a child ID?
+            // **********************************************************************************
             $search_key = $_SESSION['parent_value'] = $_GET['childID'];
         }
     }
-    $list_select_sep = explode(';', $row['list_select']);
+    /*$list_select_sep = explode(';', trim($row['list_select']));
     foreach ($list_select_sep as $listArray) {
-        $list_select_arr[] = explode(",", $listArray);
-    }
+        $list_select_arr[] = array_map('trim', explode(",", $listArray));
+    }*/
+    // Added by Marko
+    $list_select_arr = getListSelectParams($row['list_select']);
 
-// **********************************************************************************
-//  CJ-NOTE ***
-// Why is this  Nav Table code relevant in this "open child" block of code??
-// **********************************************************************************
+/* *************************************************************************************
+OVERHAUL NOTE - in progress - right now, if first para in list_select is an integer,
+then GPE will redirect to the DD record using dict_id
+otherwise, for now, we will use the old method [table_alias, order, component_name
+we have to 
+a) code the new "list_options" parameters ...
+(maybe we dont need it ... just code it into the popup !!!
+b) code in the more complex list_select triads
+[dict_id or URL],[label],[style];[dict_id or URL],[label],[style];[dict_id or URL],[label],[style];
+************************************************************************************* */
 
-    $nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
+    $nav = $con->query("SELECT * FROM navigation where target_page_name='$_GET[page_name]'");
     $navList = $nav->fetch_assoc();
-    $display_page = trim($list_select_arr[1][2]);
-    $tab_alias = trim($list_select_arr[1][0]);
-    $tab_num = trim($list_select_arr[1][1]);
-    $result = get('data_dictionary',"display_page='$display_page' AND table_alias='$tab_alias' AND tab_num='$tab_num'");
+    $page_name = $list_select_arr[1][2];
+    $table_alias = $list_select_arr[1][0];
+// below is the new line of code for the in-progress list_select conversion
+//    $dict_id=(is_int($list_select_arr[1][0]) ? $list_select_arr[0][0] : 0)
+        
+    $component_order = $list_select_arr[1][1];
+    $result = get('data_dictionary',"page_name='$page_name' AND table_alias='$table_alias' AND component_order='$component_order'");
+    
     if(isAllowedToPerformListAction($result)){
-      $target_url = "" . $navList['item_target'] . "?display=" . trim($list_select_arr[1][2]) . "&tab=" . trim($list_select_arr[1][0]) . "&tabNum=" . trim($list_select_arr[1][1]) . "&layout=" . trim($navList['page_layout_style']) . "&style=" . trim($navList['nav_css_class']) . "&ta=" . trim($list_select_arr[1][0]) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
+        $params = [
+            'page_name' => $page_name,
+            'table_alias' => $table_alias,
+            'ComponentOrder' => $component_order,
+            'search_id' => $search_key,
+            'checkFlag' => 'true',
+            'table_type' => 'child',
+        ];
+        $target_url = '?' . http_build_query($params);
+        // $target_url = "" . ($navList['item_target'] == '#' ? '' : $navList['item_target']) . "?page_name=" . trim($list_select_arr[1][2]) . "&table_alias=" . trim($list_select_arr[1][0]) . "&ComponentOrder=" . trim($list_select_arr[1][1]) . "&style=" . trim($navList['nav_css_class']) . "&search_id=" . $search_key . "&checkFlag=true&table_type=child";
     }else{
-      $target_url = 'false';
+        $target_url = 'false';
     }
 
     exit($target_url);
     ///////openChild ends here
 }
-
-
-
 
 
 /*
@@ -300,49 +321,37 @@ if (isset($_GET["childID"]) && !empty($_GET["childID"]) && $_GET["check_action"]
 
 if (isset($_GET["id"]) && !empty($_GET["id"]) && $_GET["check_action"] == 'enable_edit') {
     $check = getWhere('data_dictionary', array('dict_id' => $_GET["id"]));
-    $dp_page = $check[0]['display_page'];
-    $row = getWhere('data_dictionary', array('dd_editable' => '11', 'display_page' => $dp_page));
+    $dp_page = $check[0]['page_name'];
+    $row = getWhere('data_dictionary', array('dd_editable' => '11', 'page_name' => $dp_page));
     if ($row) {
         if ($_GET['form_edit_conf'] == 'changed')
             exit('active');
         else {
           $_SESSION['form_open_for_edit'] = true;
           $_SESSION['form_open_for_edit_DD'] = $_GET['id'];
-           // query("update data_dictionary set dd_editable=1 where display_page='$dp_page' and dict_id != $_GET[id]");
+           // query("update data_dictionary set dd_editable=1 where page_name='$dp_page' and dict_id != $_GET[id]");
            // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
            exit('not-active');
         }
     } else {
-      $_SESSION['form_open_for_edit'] = true;
-      $_SESSION['form_open_for_edit_DD'] = $_GET['id'];
-		 // update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
-         exit('not-active');
+        $_SESSION['form_open_for_edit'] = true;
+        $_SESSION['form_open_for_edit_DD'] = $_GET['id'];
+		// update('data_dictionary', array('dd_editable' => 11), array('dict_id' => $_GET['id']));
+        exit('not-active');
     }
 }
 
 ////////////
 ////////////////////////
 if (isset($_GET["checkEmail"]) && !empty($_GET["checkEmail"])) {
-
     $email = getWhere('users', array('email' => $_GET["email"]));
-    if ($email) {
-        echo "true";
-    } else {
-        echo "false";
-    }
+    echo $email ? "true" : "false";
 }
 
 
 if (isset($_GET["checkUserName"]) && !empty($_GET["checkUserName"])) {
-
-
     $uname = getWhere('users', array('uname' => $_GET["userName"]));
-
-    if ($uname) {
-        echo "true";
-    } else {
-        echo "false";
-    }
+    echo $uname ? "true" : "false";
 }
 
 /* * ********************************* */
@@ -363,7 +372,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_submit') {
 
     if (!empty($imageInfo)) {
 
-        update($_SESSION['update_table2']['database_table_name'], array($fieldName => $imageInfo['image']), array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+        update($_SESSION['update_table2']['table_name'], array($fieldName => $imageInfo['image']), array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
     } else {
         exit('notSaved');
     }
@@ -378,7 +387,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_delete') {
 
     $fieldName = $_GET['fieldName'];
 
-    $row = getWhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+    $row = getWhere($_SESSION['update_table2']['table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
     $fileName = $row[0][$fieldName];
 
@@ -390,7 +399,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_delete') {
     }
 
 
-    $check = update($_SESSION['update_table2']['database_table_name'], array($fieldName => ''), array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+    $check = update($_SESSION['update_table2']['table_name'], array($fieldName => ''), array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
     if ($_GET['profile_img'] != 'no-profile') {
 
@@ -407,7 +416,7 @@ if (!empty($_GET["check_action"]) && $_GET["check_action"] == 'image_delete') {
 /* * ********************************* */
 if (!empty($_GET["img_revert"]) && $_GET["img_revert"] == 'img-revert') {
 
-    $query = getwhere($_SESSION['update_table2']['database_table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
+    $query = getwhere($_SESSION['update_table2']['table_name'], array($_SESSION['update_table2']['keyfield'] => $_SESSION['search_id2']));
 
     $fieldValue = trim($query[0][$_GET[field_name]]);
 
@@ -438,7 +447,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fri
       $result = 'deleted';
       $log_action = 'UNFRIEND';
   }
-  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  log_event($_GET['page_name'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
   exit($result);
 }
 
@@ -462,7 +471,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fol
       $result = 'deleted';
       $log_action = 'UNFOLLOW';
   }
-  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  log_event($_GET['page_name'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
   exit($result);
 }
 
@@ -488,7 +497,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'fav
       $result = 'deleted';
       $log_action = 'UNFAVORITE';
   }
-  log_event($_GET['display_page'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
+  log_event($_GET['page_name'],$log_action,$_SESSION['uid'],$_GET['fffr_search_id']);
   exit($result);
 }
 
@@ -516,7 +525,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rat
         exit('deleted');
     } else {
         /////////Checking the limitsss
-        $fffr = getWhere('data_dictionary', array('display_page' => $_SESSION[display], 'table_alias' => $_GET['ta'], 'tab_num' => $_GET['tabNum']));
+        $fffr = getWhere('data_dictionary', array('page_name' => $_SESSION[page_name], 'table_alias' => $_GET['table_alias'], 'component_order' => $_GET['ComponentOrder']));
         $icons_table = listExtraOptions($fffr[0]['list_extra_options']);
         $disable_status = 'false';
         $dilog_msg = '';
@@ -566,7 +575,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'rat
         if (empty($dilog_msg) && $disable_status == 'false') {
             if (empty($check[0])) {
                 insert($_GET['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id'], 'value' => $_GET['value']));
-                log_event($_GET['display_page'],'VOTE',$_SESSION['uid'],$_GET['fffr_search_id']);
+                log_event($_GET['page_name'],'VOTE',$_SESSION['uid'],$_GET['fffr_search_id']);
                 exit('deleted');
             } else {
                 update($_GET['table_name'], array('value' => $_GET['value']), array('user_id' => $_SESSION['uid'], 'target_id' => $_GET['fffr_search_id']));
@@ -604,32 +613,33 @@ if(!empty($_POST['action']) && $_POST['action'] == 'addimport_session_unset')
 }
 
 if (isset($_POST["check_action"]) && $_POST["check_action"] == 'sort_boxview') {
-	
+
 	if (isset($_POST["dict_id"]) && !empty($_POST["dict_id"]) && isset($_POST["sort_param"]) && !empty($_POST["sort_param"]) ) {
-	
+
 		$frow = getWhere("data_dictionary", array("dict_id" => $_POST["dict_id"]));
 		if( $frow && !empty($frow) && isset($frow[0]) ) {
 			$row = $frow[0];
-			//display_content($row);
-			
+			//form_content_display_loop($row);
+
 		}
 	}
-	
+
 }
 
 function isAllowedToPerformListAction($row){
-  $user_privilege = $_SESSION['user_privilege'];
-  $DD_privilege = $row['dd_privilege_level'];
-  $DD_visibility = $row['dd_visibility'];
-  if(is_null($user_privilege)){
-    $user_privilege = 0;
-  }
-  if($DD_visibility ==0){
-    return false;
-  }
+    $user_privilege = (int) $_SESSION['user_privilege'];
+    $DD_privilege = (int) $row['dd_privilege_level'];
+    $DD_visibility = (int) $row['dd_visibility'];
+    
+    if (is_null($user_privilege)) {
+        $user_privilege = 0;
+    }
+    if ($DD_visibility == 0) {
+        return false;
+    }
 
-  if($user_privilege >= $DD_privilege){
-    return true;
-  }
-  return false;
+    if ($user_privilege >= $DD_privilege) {
+        return true;
+    }
+    return false;
 }

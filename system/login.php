@@ -15,6 +15,9 @@ include_once("functions_loader.php");
 * functions_loader.php 
 * For details definition is given in the "functions.php" file  
 */
+
+
+
 if (isUserLoggedin())
 {
 	echo "<script>window.location='../index.php';</script>";
@@ -76,19 +79,17 @@ $alias = 'login';
           <div class="col-lg-12">
             <!--Login block starts here-->
             <div class="login-div sign-in">
-              <form class="form-signin" role="form" action="main.php?action=login" method="post" onSubmit="return loginFormvalidate()">
+              <form class="form-signin" role="form" action="main-loop.php?action=login" method="post" onSubmit="return loginFormvalidate()">
                 <h2 class="form-signin-heading"><?php echo LOGIN_LOGO ?></h2>
                 <p><?php echo REGISTRATION_MESSAGE1 ?><a href="register.php"><?php echo REGISTRATION_MESSAGE2 ?></a></p>
                 
 
                 <?php
                   /*
-                  * "Select_Data_FieldDictionary_Record" is function which is inhireted from the select_dd_fd.php file, Which is include 
-                  * functions_loader.php 
                   *  Select_Data_FieldDictionary_Record this function take one params 
                   *     alias = name of the page like login etc..
                   *   get the DD form the table for the current page after login.
-                  *  For details definition is given in the "links_and_nav.php" file  
+                  *  For details definition is given in the "component_display_functions.php" file  
                   */  
                     
 

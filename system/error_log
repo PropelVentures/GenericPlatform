@@ -1,0 +1,6 @@
+[24-Sep-2020 16:44:34 UTC] PHP Fatal error:  Uncaught TypeError: Argument 1 passed to getNavItems() must be of the type string, null given, called in /home/cjcornell/public_html/genericsandbox8/system/nav_functions.php on line 635 and defined in /home/cjcornell/public_html/genericsandbox8/system/nav_functions.php:36
+Stack trace:
+#0 /home/cjcornell/public_html/genericsandbox8/system/nav_functions.php(635): getNavItems(NULL, 'header1', false)
+#1 /home/cjcornell/public_html/genericsandbox8/system/main-loop.php(70): Navigation(NULL, 'header1')
+#2 {main}
+  thrown in /home/cjcornell/public_html/genericsandbox8/system/nav_functions.php on line 36

@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once("functions_loader.php");
-include("header.php");
+include("html_headers");
 
-function makeCurlRequest($url, $params, $post) 
+function makeCurlRequest($url, $params, $post)
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -58,13 +58,13 @@ if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCS
 <?php
 
 /* require_once("functions_loader.php");
-  include("header.php");
+  include("html_headers");
   /*
   $conn = connect();
   $nav = $conn->query("SELECT * FROM navigation where item_target='".BASE_URL_SYSTEM."import_profile_linkedin.php'");
   if($nav->num_rows > 0){
   $navRecord = $nav->fetch_assoc();
-  $displayPage = $navRecord['target_display_page']; ?>
+  $displayPage = $navRecord['target_page_name']; ?>
   <script type="text/javascript" src="//platform.linkedin.com/in.js">
   api_key		: <?php echo LINKEDIN_APP_ID; ?>
   authorize	: true
@@ -93,7 +93,7 @@ if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCS
   function saveUserData(userData){
   $.ajax({
   type: 'POST',
-  url: '?action=update&table_type=linkedinimportprofile&display_page=<?php echo $displayPage; ?>',
+  url: '?action=update&component_type=linkedinimportprofile&page_name=<?php echo $displayPage; ?>',
   dataType: 'json',
   data: userData,
   beforeSend: function(xhr) {
@@ -142,7 +142,7 @@ if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCS
 
   <?php
   /*require_once("functions_loader.php");
-  include("header.php");
+  include("html_headers");
 
   if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCSRF']) && $_GET['state'] == $_SESSION['linkedInCSRF']) {
   $url = "https://www.linkedin.com/oauth/v2/accessToken";
@@ -195,7 +195,7 @@ if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCS
 
   if($nav->num_rows > 0){
   $navRecord = $nav->fetch_assoc();
-  $displayPage = $navRecord['target_display_page']; ?>
+  $displayPage = $navRecord['target_page_name']; ?>
   <script type="text/javascript" src="//platform.linkedin.com/in.js">
   api_key		: <?php echo LINKEDIN_APP_ID. PHP_EOL; ?>
   authorize	: true
@@ -224,7 +224,7 @@ if (isset($_GET['state']) && isset($_GET['code']) && isset($_SESSION['linkedInCS
   function saveUserData(userData){
   $.ajax({
   type: 'POST',
-  url: '?action=update&table_type=linkedinimportprofile&display_page=<?php echo $displayPage; ?>',
+  url: '?action=update&component_type=linkedinimportprofile&page_name=<?php echo $displayPage; ?>',
   dataType: 'json',
   data: userData,
   beforeSend: function(xhr) {

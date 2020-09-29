@@ -1,8 +1,11 @@
 <?php
 /* * *SITE INFORMATION********* */
-// require_once '../system/config.php';
 
 define("SESSION_AUTO_TIMEOUT","604800");
+
+//  (for later)
+// include $_SERVER['DOCUMENT_ROOT'] . "gpe-master-app-credentials.php";
+
 
 /// =======================================================================
 // DATABASE CONFIG (Location, CREDENTIALS)
@@ -55,7 +58,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_host'] = "localhost";
 	$config['db_name'] = "genericsandbox8";
 	$config['db_user'] = "genericsandbox8";
-	$config['db_password'] = "Starr1964**";
+	$config['db_password'] = "Jeep1996**";
 
 
 } elseif($_SERVER['HTTP_HOST'] == 'genericsandbox9.cjcornell.net') {
@@ -84,6 +87,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$config['db_password'] = "Lennin1009##";
 
 }
+
 
 $GLOBALS['db-host'] =  $config['db_host'];
 $GLOBALS['db-username'] = $config['db_name'] ;

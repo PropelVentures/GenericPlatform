@@ -1,10 +1,10 @@
 <?php
-function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $tab_num, $imageField, $ret_array){
+function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,$list_pagination, $tab_anchor, $component_order, $imageField, $ret_array){
 	$con = connect();
 	$list_select = trim($row['list_select']);
 	$dd_css_class = $row['dd_css_class'];
 	$css_style = trim($row['dd_css_code']);
-  $keyfield = firstFieldName($row['database_table_name']);
+  $keyfield = firstFieldName($row['table_name']);
 	$style_refrence_configs = false;
 	$category_styles = false;
 	$style_refrence_configs = setBoxStyles($row['list_extra_options']);
@@ -12,12 +12,15 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 		$category_styles = findAndSetCategoryStyles($con,$style_refrence_configs);
 	}
   $table_type = trim($row['table_type']);
-  $table_name = trim($row['database_table_name']);
+  $component_type = trim($row['component_type']);
+  $table_name = trim($row['table_name']);
   $list_fields = trim($row['list_fields']);
   $dict_id = $row['dict_id'];
 	$list_select_arr = getListSelectParams($list_select);
+
+
 	?>
-	<div class="boxWideContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $tab_num; ?>'>
+	<div class="boxWideContainer <?php echo (!empty($dd_css_class) ? $dd_css_class : '') ?>" id='content<?php echo $component_order; ?>'>
 		<!-- the input fields that will hold the variables we will use -->
 		<input type='hidden' class='current_page' />
 		<input type='hidden' class='show_per_page' />
@@ -60,26 +63,31 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 						} elseif (strpos($list_select, '.php')) {
 							exit('php file has been called');
 						} else {
-							$nav = $con->query("SELECT * FROM navigation where target_display_page='$_GET[display]'");
+							$nav = $con->query("SELECT * FROM navigation where target_page_name='$_GET[page_name]'");
 							$navList = $nav->fetch_assoc();
+
+//  DD OVERHAUL 2-18-2020 ... Here is where we can get into trouble replacing table_type with component_type
+//  CJ:  I added component type in the blocks below instead of replacing table type
+
+
 							/// Extracting action ,when user click on edit button or on list
 							if (isset($list_select_arr[0]) && !empty($list_select_arr[0])) {
 								if (count($list_select_arr[0]) == 2) {
-									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+									$target_url = BASE_URL_SYSTEM . "main-loop.php?page_name=" . $list_select_arr[0][2] . "&table_alias=" . $list_select_arr[0][0] . "&ComponentOrder=" . $list_select_arr[0][1] . "&style=" . $navList['nav_css_class'] . "&table_alias" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type&"component_type=" . $component_type;
 									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main-loop.php?page_name=" . $list_select_arr[0][2] . "&table_alias=" . $list_select_arr[0][0] . "&ComponentOrder=" . $list_select_arr[0][1] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&table_alias" . $list_select_arr[0][0] . "&table_type=" . $table_type&"component_type=" . $component_type;
 								} else {
-									$target_url = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&ta=" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type;
+									$target_url = BASE_URL_SYSTEM . "main-loop.php?page_name=" . $list_select_arr[0][2] . "&table_alias=" . $list_select_arr[0][0] . "&ComponentOrder=" . $list_select_arr[0][1] . "&table_alias" . $list_select_arr[0][0] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&table_type=" . $table_type&"component_type=" . $component_type;
 									/// add button url
-									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[0][2] . "&tab=" . $list_select_arr[0][0] . "&tabNum=" . $list_select_arr[0][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&ta=" . $list_select_arr[0][0] . "&table_type=" . $table_type;
+									$_SESSION['add_url_list'] = BASE_URL_SYSTEM . "main-loop.php?page_name=" . $list_select_arr[0][2] . "&table_alias=" . $list_select_arr[0][0] . "&ComponentOrder=" . $list_select_arr[0][1] . "&style=" . $navList['nav_css_class'] . "&addFlag=true&checkFlag=true&table_alias" . $list_select_arr[0][0] . "&table_type=" . $table_type&"component_type=" . $component_type;
 								}
 							}
 							/// Extracting action, when user click on boxView Image of list
 							if (isset($list_select_arr[1][0]) && !empty($list_select_arr[1][0])) {
 								if (count($list_select_arr[1]) == 2) {
-									$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&layout=" . $navList['page_layout_style'] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+									$target_url2 = BASE_URL_SYSTEM . $navList['item_target'] . "?page_name=" . $list_select_arr[1][2] . "&table_alias=" . $list_select_arr[1][0] . "&table_alias" . $list_select_arr[1][0] . "&ComponentOrder=" . $list_select_arr[1][1] . "&style=" . $navList['nav_css_class'] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 								} else {
-									$target_url2 = BASE_URL_SYSTEM . "main.php?display=" . $list_select_arr[1][2] . "&tab=" . $list_select_arr[1][0] . "&ta=" . $list_select_arr[1][0] . "&tabNum=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
+									$target_url2 = BASE_URL_SYSTEM . "main-loop.php?page_name=" . $list_select_arr[1][2] . "&table_alias=" . $list_select_arr[1][0] . "&table_alias" . $list_select_arr[1][0] . "&ComponentOrder=" . $list_select_arr[1][1] . "&search_id=" . $listRecord[$keyfield] . "&checkFlag=true&edit=true&fnc=onepage";
 								}
 							}
 						}
@@ -123,7 +131,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					 *
 					 * give bOX LIST UI and data inside lists
 					 */
-					wideListViews($boxStyleCode,$boxStyleClass,$listData, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
+					wideListViews($boxStyleCode,$boxStyleClass,$listData, $component_type, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $ret_array['users'], $list_select_arr); ///boxview ends here
 					?>
 				</div>
 			<?php
@@ -134,19 +142,19 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 			 * Pagination Function goes here
 			 */
 			 if(isset($list_pagination['hscroll']) && strtoupper($list_pagination['hscroll']) == 'ON'){
- 				boxViewHscroll($list_pagination, $tab_num, $list_select_arr);
+ 				boxViewHscroll($list_pagination, $component_order, $list_select_arr);
  			} else {
- 				echo boxViewPagination($list_pagination, $tab_num, $list_select_arr);
+ 				echo boxViewPagination($list_pagination, $component_order, $list_select_arr);
  			}
 			global $popup_menu;
 			if ($popup_menu['popupmenu'] == 'true') {
 				$popup_menu['popup_menu_id'] = "popup_menu_$dict_id";
-				$_SESSION['popup_munu_array'][] = $popup_menu;
+				$_SESSION['popup_menu_array'][] = $popup_menu;
 			}?>
 
 			<script>
 			if (mobileDetector().any()) {
-				$(".boxWideContainer#content<?php echo $tab_num;?>").on("taphold", '.boxWide', function (event) {
+				$(".boxWideContainer#content<?php echo $component_order;?>").on("taphold", '.boxWide', function (event) {
 					// alert('X: ' + holdCords.holdX + ' Y: ' + holdCords.holdY );
 					var xPos = event.originalEvent.touches[0].pageX;
 					var yPos = event.originalEvent.touches[0].pageY;
@@ -165,7 +173,7 @@ function renderBoxWide($isExistFilter,$isExistField,$row , $tbQry ,$list ,$qry ,
 					});
 				});
 			} else {
-				$(".boxWideContainer#content<?php echo $tab_num;?>").on("contextmenu", '.boxWide', function (event) {
+				$(".boxWideContainer#content<?php echo $component_order;?>").on("contextmenu", '.boxWide', function (event) {
 					popup_del = $(this).find('.list-del').attr('id');
 					dict_id = $(this).find('.list-del').attr('name');
 					//console.log(dict_id);

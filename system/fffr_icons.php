@@ -1,6 +1,14 @@
 <?php
 
 /*
+function fffr_friend($row){
+function fffr_favorite($row){	
+function fffr_follow($row){	
+function fffr_contact($row){
+function fffr_rating($row){	
+function fffr_icons($page_name){ 
+function iconOrButton($row,$check,$type){
+	
  *
  * FFFr_ICONS function for voting/rating
  */
@@ -8,8 +16,8 @@
 
 function fffr_friend($row){
   $title = friendTitle;
-  if(!empty(trim($row['tab_name']))){
-    $title = trim($row['tab_name']);
+  if(!empty(trim($row['component_name']))){
+    $title = trim($row['component_name']);
   }
 
   $css_class = trim($row['list_style']);
@@ -17,10 +25,10 @@ function fffr_friend($row){
   $dd_css_code = trim($row['dd_css_code']);
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
-  $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  $check = getWhere($row['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
 
   if(!iconOrButton($row,$check,'friend_me_icon')){
-    echo "<button type='button' class='button friend_me_icon $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+    echo "<button type='button' class='button friend_me_icon $css_class' id='$row[table_name]' title='" . $title . "'>"
     . (empty($check[0]) ? friendOn : friendOff) . "</button>";
     echo "<input type='hidden' id='friend_me_icon_selected' value='".friendOn."' />";
     echo "<input type='hidden' id='friend_me_icon_unselected' value='".friendOff."' />";
@@ -32,8 +40,8 @@ function fffr_friend($row){
 
 function fffr_favorite($row){
   $title = favoriteTitle;
-  if(!empty(trim($row['tab_name']))){
-    $title = trim($row['tab_name']);
+  if(!empty(trim($row['component_name']))){
+    $title = trim($row['component_name']);
   }
   $css_class = trim($row['list_style']);
   $dd_css_class = trim($row['dd_css_class']);
@@ -42,10 +50,10 @@ function fffr_favorite($row){
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
 
-  $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  $check = getWhere($row['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
   if(!iconOrButton($row,$check,'favorite_me_icon')){
     echo " <span class='"
-    . (empty($check[0]) ? "favorite_me_icon" : "favorite_me_icon_selected" ) . "' id='$row[database_table_name]' title='" . $title . "'></span>";
+    . (empty($check[0]) ? "favorite_me_icon" : "favorite_me_icon_selected" ) . "' id='$row[table_name]' title='" . $title . "'></span>";
     echo "<input type='hidden' id='favorite_me_icon_selected' value='favorite_me_icon' />";
     echo "<input type='hidden' id='favorite_me_icon_unselected' value='favorite_me_icon_selected' />";
     echo "<input type='hidden' id='favorite_me_icon_type' value='icon' />";
@@ -56,8 +64,8 @@ function fffr_favorite($row){
 
 function fffr_follow($row){
   $title = followTitle;
-  if(!empty(trim($row['tab_name']))){
-    $title = trim($row['tab_name']);
+  if(!empty(trim($row['component_name']))){
+    $title = trim($row['component_name']);
   }
   $css_class = trim($row['list_style']);
   $dd_css_class = trim($row['dd_css_class']);
@@ -65,9 +73,9 @@ function fffr_follow($row){
 
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
-  $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  $check = getWhere($row['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
   if(!iconOrButton($row,$check,'follow_me_icon')){
-    echo "<button type='button' class='button follow_me_icon $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+    echo "<button type='button' class='button follow_me_icon $css_class' id='$row[table_name]' title='" . $title . "'>"
     . (empty($check[0]) ? followOn : followOff) . "</button>";
     echo "<input type='hidden' id='follow_me_icon_selected' value='".followOn."' />";
     echo "<input type='hidden' id='follow_me_icon_unselected' value='".followOff."' />";
@@ -80,13 +88,13 @@ function fffr_follow($row){
 
 function fffr_contact($row){
   $title = 'Contact Me';
-  if(!empty(trim($row['tab_name']))){
-    $title = trim($row['tab_name']);
+  if(!empty(trim($row['component_name']))){
+    $title = trim($row['component_name']);
   }
   $css_class = trim($row['list_style']);
   $dd_css_class = trim($row['dd_css_class']);
   $dd_css_code = trim($row['dd_css_code']);
-  $table = trim($row['database_table_name']);
+  $table_name = trim($row['table_name']);
   $_SESSION['fffr_search_id'] = $_GET['search_id'];
   $reciverId = $_SESSION['fffr_search_id'];
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
@@ -101,7 +109,7 @@ function fffr_rating($row){
   $dd_css_code = trim($row['dd_css_code']);
   echo "<div class=fffr ' $css_class $dd_css_class' style='$dd_css_code'>";
   $icons_table = listExtraOptions($row['list_extra_options']);
-  $check = getWhere($row['database_table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
+  $check = getWhere($row['table_name'], array('user_id' => $_SESSION['uid'], 'target_id' => $_SESSION['fffr_search_id']));
   $value = $check[0][value];
   //data-toggle='tooltip' data-placement='bottom' title='Tooltip on bottom'
   /*             * **coding the javascript function** */
@@ -116,7 +124,7 @@ function fffr_rating($row){
   }
   ///////////Voting limit checked (user allowed to vote on number of profiles//////
   if (!empty(trim($icons_table['userLimit']))) {
-      $records = numOfRows($row['database_table_name'], array('user_id' => $_SESSION['uid']));
+      $records = numOfRows($row['table_name'], array('user_id' => $_SESSION['uid']));
       if (( $icons_table['userLimit'] <= $records )) {
           $disable_status = 'true';
           $dilog_msg .= "<p>You can not cast vote on more than $icons_table[userLimit] Profiles</p>";
@@ -124,7 +132,7 @@ function fffr_rating($row){
   }
   ///////////total vote allowed for profile//////
   if (!empty(trim($icons_table['voteLimit']))) {
-      $records = sumValues($row['database_table_name']);
+      $records = sumValues($row['table_name']);
       if ( $icons_table['voteLimit'] <= $records ) {
           $disable_status = 'true';
           $dilog_msg .= "<p>Total Vote Limit Of $icons_table[voteLimit] Has Been Reached</p>";
@@ -132,7 +140,7 @@ function fffr_rating($row){
   }
   ///////////total vote allowed for SINGLE USER//////
   if (!empty(trim($icons_table['userVoteLimit']))) {
-      $records = sumValues($row['database_table_name'], array('user_id' => $_SESSION['uid']));
+      $records = sumValues($row['table_name'], array('user_id' => $_SESSION['uid']));
       //print_r($records);die;
       if ( $icons_table['userVoteLimit'] <= $records ) {
           $disable_status = 'true';
@@ -158,7 +166,7 @@ function fffr_rating($row){
             <a href='#' class='button voting-number" . ( ($disable_status == 'true') ? " disabled" : "" )  . "' id='$icons_table[rating_tbl]'>". votingNoSubmitBtn . "</a>
           </span>";
   }else{
-       echo "<div class='rating-container'><input type='number' id='$row[database_table_name]' class='rating rate_me' data-min='$icons_table[lowerLimit]' data-show-clear='". showClear ."' " . ( ($disable_status == 'true') ? " data-disabled='true'" : "" )  . "data-show-caption='false' data-max='$icons_table[upperLimit]' data-step='1' data-size='xs' data-stars='$icons_table[upperLimit]'"
+       echo "<div class='rating-container'><input type='number' id='$row[table_name]' class='rating rate_me' data-min='$icons_table[lowerLimit]' data-show-clear='". showClear ."' " . ( ($disable_status == 'true') ? " data-disabled='true'" : "" )  . "data-show-caption='false' data-max='$icons_table[upperLimit]' data-step='1' data-size='xs' data-stars='$icons_table[upperLimit]'"
   . (!empty($value) ? " value='$value'" : "" ) . "></div>  ";
   }
   echo "</div>";
@@ -176,13 +184,13 @@ function fffr_rating($row){
   }
 }
 
-function fffr_icons($display_page){
+function fffr_icons($page_name){
     echo "<div>";
     $haveAnyFFFR = false;
     $con = connect();
-    $fffr_rs = $con->query("SELECT * FROM  data_dictionary where display_page = '$display_page'" );
+    $fffr_rs = $con->query("SELECT * FROM  data_dictionary where page_name = '$page_name'" );
     while($row = $fffr_rs->fetch_assoc()){
-    switch($row['table_type']){
+    switch($row['component_type']){
       case 'friend':
         $haveAnyFFFR = true;
         fffr_friend($row);
@@ -219,8 +227,8 @@ function iconOrButton($row,$check,$type){
   $selected ;
   $unselected;
   $title = friendTitle;
-  if(!empty(trim($row['tab_name']))){
-    $title = trim($row['tab_name']);
+  if(!empty(trim($row['component_name']))){
+    $title = trim($row['component_name']);
   }
   $extraOptions = trim($row['list_extra_options']);
   if(empty($extraOptions)){
@@ -244,9 +252,9 @@ function iconOrButton($row,$check,$type){
 
   if($display_type =='icon'){
     echo " <span class='"
-    . (empty($check[0]) ? "$selected" : "$unselected" ) . "' id='$row[database_table_name]' title='" . $title . "'></span>";
+    . (empty($check[0]) ? "$selected" : "$unselected" ) . "' id='$row[table_name]' title='" . $title . "'></span>";
   }else if($display_type=='text'){
-      echo "<button type='button' class='button $type $css_class' id='$row[database_table_name]' title='" . $title . "'>"
+      echo "<button type='button' class='button $type $css_class' id='$row[table_name]' title='" . $title . "'>"
         .(empty($check[0]) ? $selected : $unselected) . "</button>";
 
   }

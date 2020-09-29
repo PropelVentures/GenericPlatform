@@ -6,7 +6,8 @@ start_app_session();
 /*
 require_once 'config.php';
 require_once("appConfig.php");
-require_once 'functions.php';
+require_once 'functions_misc.php';
+require_once 'login_functions.php';
 include_once($GLOBALS['APP_DIR'] . "application/system-config.php");
 */
 

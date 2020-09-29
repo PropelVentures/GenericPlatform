@@ -22,18 +22,18 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'exe
 
 
 
-    $check = getWhere('data_dictionary', array('table_alias' => $_GET['ta'], 'display_page' => $_GET['display']));
+    $check = getWhere('data_dictionary', array('table_alias' => $_GET['table_alias'], 'page_name' => $_GET['page_name']));
 
     if (!empty($check[0])) {
 
         if (!empty(trim($check[0]['keyfield'])))
             $primary_key = trim($check[0]['keyfield']);
         else
-            $primary_key = firstFieldName(trim($check[0]['database_table_name']));
+            $primary_key = firstFieldName(trim($check[0]['database_component_name']));
 
 
 
-        $record = getWhere(trim($check[0]['database_table_name']), array($primary_key => $_GET['project_id']));
+        $record = getWhere(trim($check[0]['database_component_name']), array($primary_key => $_GET['project_id']));
 
 
         $date = date("Y-m-d") . ' ' . date("h:i:s");
@@ -47,7 +47,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"]) && $_GET["action"] == 'exe
         $check = getWhere('data_dictionary', array('dict_id' => $_GET['dd_id']));
 
 
-        $fd_record = getWhere('field_dictionary', array('table_alias' => $check[0][list_select] ), "order by display_field_order");
+        $fd_record = getWhere('field_dictionary', array('table_alias' => $check[0][list_select] ), "order by field_order");
 
 
         $fd_collector = array();

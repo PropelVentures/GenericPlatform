@@ -1,22 +1,48 @@
 <?php
-/**
- * @param string $config
- * @return false|mysqli
- *
- *
- * 
- */
+/*
 function connect($config = 'false')
+function connect_generic()
+function connect($config = 'false') 
+function query($qry)
+function insert($table_name, $data, $config = 'false')
+function insertString($data)
+function update($table_name, $data, $where, $config = 'false')
+function delete($table_name, $where)
+function updateString($data)
+function whereString($data)
+function getWhere($table_name, $where = "false", $order = "", $setwhereString = true)
+function get($table_name, $ws)
+function getMulti($table_name, $ws, $field = 'false')
+function numOfRows($table_name, $where)
+function sumValues($table_name, $where = 'false')
+function firstFieldName($tableName)
+function getColumnNames($tableName)
+function nextKey($tblName, $pkey, $current_id, $clause)
+function prevKey($tblName, $pkey, $current_id, $clause)
+function firstKey($tblName, $pkey, $clause)
+function lastKey($tblName, $pkey, $clause)
+function secure($value, $type = "", $quoted = true)
+function is_empty($value)
+
+*/
+
+/**
+ * Establish mysqli connection
+ * 
+ * @param mixed $config Config for the database connection, optional
+ * 
+ * @author ph
+ * 
+ * @return false|mysqli
+ */
+function connect($config = null)
 {
-
     $config = $_SESSION['config'];
-
     return mysqli_connect($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
 }
 
 function connect_generic()
 {
-
     return mysqli_connect($GLOBALS['db-host'], $GLOBALS['db-username'], $GLOBALS['db-password'], $GLOBALS['db-database']);
 }
 
@@ -42,22 +68,27 @@ function connect_generic()
 //////////////////////insert/////
 
 
+/**
+ * Execute query with mysqli connection
+ * 
+ * @param string $qry SQL to execute
+ * 
+ * @author ph
+ * 
+ * @return void
+ */
 function query($qry)
 {
-//echo "SELECT * FROM $table WHERE $ws ";die;
     $result = mysqli_query(connect(), "$qry");
-
-    //$row = mysqli_fetch_array($result);
-    // return $row;
 }
 
-function insert($table, $data, $config = 'false')
+function insert($table_name, $data, $config = 'false')
 {
 
     $con = connect($config);
     $is = insertString($data);
-    //echo "INSERT INTO $table $is";die;
-    mysqli_query($con, "INSERT INTO $table $is");
+    //echo "INSERT INTO $table_name $is";die;
+    mysqli_query($con, "INSERT INTO $table_name $is");
     return mysqli_insert_id($con);
 }
 
@@ -72,28 +103,28 @@ function insertString($data)
     return "($f) VALUES ($v)";
 }
 
-function update($table, $data, $where, $config = 'false')
+function update($table_name, $data, $where, $config = 'false')
 {
     $ws = whereString($where);
     $us = updateString($data);
-//    echo ("UPDATE $table SET $us WHERE $ws");echo "<br>";
+//    echo ("UPDATE $table_name SET $us WHERE $ws");echo "<br>";
 
     $con = connect($config);
-    if (!$status = mysqli_query($con, "UPDATE $table SET $us WHERE $ws")) {
-        $errorMessage = "Error description: database_table_name -> $table, error details - " . mysqli_error($con);
+    if (!$status = mysqli_query($con, "UPDATE $table_name SET $us WHERE $ws")) {
+        $errorMessage = "Error description: table_name -> $table_name, error details - " . mysqli_error($con);
         if ($_SESSION['user_privilege'] == 9 || $_SESSION['user_privilege'] == 3)
             $status = $errorMessage;
     }
     return $status;
 }
 
-function delete($table, $where)
+function delete($table_name, $where)
 {
     $ws = whereString($where);
 
-    //exit("DELETE FROM $table WHERE $ws");
+    //exit("DELETE FROM $table_name WHERE $ws");
 
-    mysqli_query(connect(), "DELETE FROM $table WHERE $ws");
+    mysqli_query(connect(), "DELETE FROM $table_name WHERE $ws");
 }
 
 function updateString($data)
@@ -118,17 +149,17 @@ function whereString($data)
     return implode(" AND ", $w);
 }
 
-function getWhere($table, $where = "false", $order = "", $setwhereString = true)
+function getWhere($table_name, $where = "false", $order = "", $setwhereString = true)
 {
 
     if ($where != 'false') {
         if ($setwhereString) {
             $where = whereString($where);
         }
-        $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $where $order");
+        $result = mysqli_query(connect(), "SELECT * FROM $table_name WHERE $where $order");
     } else {
 
-        $result = mysqli_query(connect(), "SELECT * FROM $table $order");
+        $result = mysqli_query(connect(), "SELECT * FROM $table_name $order");
     }
     $r = array();
     while ($row = mysqli_fetch_array($result)) {
@@ -137,10 +168,10 @@ function getWhere($table, $where = "false", $order = "", $setwhereString = true)
     return $r;
 }
 
-function get($table, $ws)
+function get($table_name, $ws)
 {
-//echo "SELECT * FROM $table WHERE $ws ";die;
-    $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $ws ");
+//echo "SELECT * FROM $table_name WHERE $ws ";die;
+    $result = mysqli_query(connect(), "SELECT * FROM $table_name WHERE $ws ");
 
     //$r = array();
     $row = mysqli_fetch_array($result);
@@ -148,13 +179,13 @@ function get($table, $ws)
     return $row;
 }
 
-function getMulti($table, $ws, $field = 'false')
+function getMulti($table_name, $ws, $field = 'false')
 {
-//echo "SELECT * FROM $table WHERE $ws ";die;
+//echo "SELECT * FROM $table_name WHERE $ws ";die;
 
     if ($field == 'false')
         $field = '*';
-    $result = mysqli_query(connect(), "SELECT $field FROM $table WHERE $ws ");
+    $result = mysqli_query(connect(), "SELECT $field FROM $table_name WHERE $ws ");
 
     //$r = array();
     while ($row = mysqli_fetch_assoc($result)) {
@@ -163,20 +194,20 @@ function getMulti($table, $ws, $field = 'false')
     return $r;
 }
 
-function numOfRows($table, $where)
+function numOfRows($table_name, $where)
 {
 
     $ws = whereString($where);
 
-    //exit("SELECT * FROM $table WHERE $ws ");
+    //exit("SELECT * FROM $table_name WHERE $ws ");
 
-    $result = mysqli_query(connect(), "SELECT * FROM $table WHERE $ws ");
+    $result = mysqli_query(connect(), "SELECT * FROM $table_name WHERE $ws ");
 
 
     return mysqli_num_rows($result);
 }
 
-function sumValues($table, $where = 'false')
+function sumValues($table_name, $where = 'false')
 {
 
 
@@ -184,7 +215,7 @@ function sumValues($table, $where = 'false')
 
         $ws = whereString($where);
 
-        $result = mysqli_query(connect(), "SELECT SUM(value) as total_value FROM $table WHERE $ws");
+        $result = mysqli_query(connect(), "SELECT SUM(value) as total_value FROM $table_name WHERE $ws");
     } else {
 
         $result = mysqli_query(connect(), "SELECT SUM(value) as total_value FROM $table");

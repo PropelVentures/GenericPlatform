@@ -1,0 +1,543 @@
+RIGHT NOW - Look at
+---------------------------------------------
+
+form_content_display_loop.php
+component_display_loop.php
+
+
+
+
+
+list_display_views
+ajax-actions.php
+
+component_display_functions.php
+
+list_functions.php
+
+formDisplay.php
+formActions.php
+
+main-loop.php
+
+renderBoxView.php
+renderBoxWide.php
+renderListView.php
+renderMapView.php
+------------------------------------------
+NEED TO BE CONSOLIDATED!!
+These are virtually Identical!!
+
+
+**** NOTE 
+Later Change detection of DD->page_layout   (component_order=0 ... too complex)
+change this to NAV->page_layout_style !!  more elegant ???  
+(though there could be multiple entries for the same page_name !! ) - careful
+
+
+
+====================================================================================================
+BIG NEW PROBLEM ...  Needs to be solved
+NOW - click on a record - going to a form ..
+now gives a page error ...
+(privuilege error ..
+
+====================================================================================================
+====================================================================================================
+
+
+********* PRIORITY *************
+----------------------------------
+display_content.php
+----------------------------------
+function form_content_display_loop($row) {
+function addCustomFunctionModal($customFunctionArray){
+
+display_content is a BIG function
+
+
+
+
+********* PRIORITY *************
+-----------------------------------------
+get_data_fd_record.php
+------------------------------------------
+function component_display_loop($component_location,$table_alias, $page_name, $tab_style = 'serial', $component_order = 'false', $editable = 'true') {
+	(HUGE FUNCTION)
+
+
+function get_FD_rec_By_DictId($dict_id){
+
+function get_single_record($db_name, $pkey, $search) {
+
+function get_multi_record($db_name, $pkey, $search, $listFilter = 'false', $singleSort = 'false', $listCheck = 'false',&$isExistFilter,&$isExistField) {
+
+function get_listFragment_record($db_name, $pkey, $listFilter = 'false', $limit = 'false', $fields = 'false') {
+
+function Select_Data_FieldDictionary_Record($alias) {
+function formating_Select($row) {
+
+
+
+
+********* PRIORITY *************
+----------------------------------
+main-loop.php
+---------------------------------------------
+	/*
+    *	This the main layout page or parent page which defines how the  page looks according to URL.
+	* 	Its for including all the Class, Lib and Component (header,footer, sidebar, database connection,
+	*	session for user login/	logout check ).
+	* 	Its identified which page load by getting value from the "display" parameters from the URL.
+	*	Layout of the page is defind by the "layout" parameters from the URL.
+	*   Which Css file will be include defind by the "style" parameters from the URL.
+	*/
+this has a potential issue around line 30-40
+(regarding retrievng table_alias va component_order
+
+
+
+
+
+
+********* PRIORITY *************
+----------------------------------
+formActions.php
+------------------------------------------
+A huge form handling file ...
+withjust one extra function inside
+function setBaseGpsCordinate($dataFdRecord,$postData){
+
+
+
+
+********* PRIORITY *************
+----------------------------------
+formDisplay.php
+------------------------------------------
+A huge form handling file ...mostly formats FD FIELDS ...
+* FD fields display on the forms ,Their functions are listed in the following series
+ 
+function formating_Update($row, $method, $urow, $image_display = 'false', $page_editable = 'false') function parseFieldType($row) {
+function getDefaultLengthsByType($row){
+function parseProgressBarStyles($style){
+function progressbar($value,$class,$style,$width,$height){
+function checklist($row, $urow = 'false', $page_editable = 'false'){
+function get_field_width_height($format_length){
+function uploadAudioFile($parameters) {
+function uploadRecordedAudio($string){
+function uploadImageFile($uploadCareURL, $imageName) {
+function uploadPdfFile($uploadCareURL, $imageName) {
+function audio_upload($row, $urow = 'false', $image_display = 'false') {
+function tagFnc($row, $urow = 'false', $image_display = 'false', $dimStyle, $dimWidth) {
+function image_upload($row, $urow = 'false', $image_display = 'false') {
+function pdf_upload($row, $urow = 'false', $image_display = 'false') {
+function pdf_inline($row, $urow = 'false', $image_display = 'false') {
+function checkbox($row, $urow = 'false', $page_editable = 'false') {
+function dropdown($row, $urow = 'false', $fieldValue = 'false', $page_editable = 'check') {
+function multi_dropdown($row, $formatArray, $urow = 'false', $fieldValue = 'false', $page_editable = function list_fragment($row2) {
+function boolean_slider($row, $formatArray, $urow = false, $page_editable = false) {
+function boolean_button($row, $formatArray, $urow = false, $page_editable = false) {
+function number_slider($row, $formatArray, $urow = false, $page_editable = false) {
+function datepicker($row, $formatArray, $urow = false, $page_editable = false) {
+function dateTimePicker($row, $formatArray,$dimWidth,$dimStyle, $urow = false, $page_editable = function getImageDimension($string){
+function getFieldDimension($string){
+function setTheVideoURL($rawURL){
+function setThePptURL($rawURL){
+function getFieldFormatLength($formatLength){
+function getVideoFormatLength($formatLength){
+function isKeyField($row){
+function showVideo($row,$single_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize){
+function showPPT($row,$single_line_alignment,$fd_css_class,$fd_css_style,$field,$fieldValue,$readonly,$required,$inputSize){
+function isSlideShareURL(&$url){
+*/
+
+
+
+
+********* PRIORITY *************
+-----------------------------------------
+ajax-actions.php
+----------------------------
+Overall it looks like this file formats lists and forms ...
+hard to tell (still need more investigation
+only one other funciton inside
+
+function isAllowedToPerformListAction($row){
+
+
+
+********* IMPORTANT *************
+------------------------------------------
+renderBoxView.php
+renderBoxWide.php
+renderListView.php
+renderMapView.php
+------------------------------------------
+NEED TO BE CONSOLIDATED!!
+These are virtually Identical!!
+
+
+
+
+********* IMPORTANT *************
+------------------------------------------
+list_display_views
+------------------------------------------
+(big file)
+
+function list_display($qry, $component_order = 'false', $tab_anchor = 'false')
+
+function listViews($boxStyles,$boxClass,$listData, $component_type, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {
+
+function wideListViews($boxStyles,$boxClass,$listData, $component_type, $table_type, $target_url, $imageField, $listRecord, $keyfield, $target_url2, $tab_anchor, $user_field, $list_select_arr) {	
+
+
+********* IMPORTANT *************
+------------------------------------------
+list_functions.php
+------------------------------------------
+function listExtraOptions($list_extra_options) {
+function editPagePagination()
+function listFilter()
+function boxViewPagination($pagination, $component_order, $list_select_arr) {
+function get_string_between($string, $start, $end){
+function getColumnsNames($table){
+function listExtraOptions($list_extra_options, $listOperations = false) {
+function parseCsvParameters($csvAndParenthesisParameters)
+function getOperationsData($operations, $operationType = 'list_operations') {
+function listvalues($setlistviews) {
+function listpageviews($setpageviews) {
+function getAlignmentClass($operation){
+function editPagePagination($list_extra_options, $pkey) {
+function helperOfEPP($id, $mode = 'false') {
+function translateSpecialKeysValueTOSQL($array,&$isexistFilter,&$isExistField){
+function convertVariableValuesToRealValues($value){
+function convertFilterToSQL($filter,&$isexistFilter,&$isExistField){
+function checkORConditionAndConvertToSQL($filter,&$isexistFilter,&$isExistField){
+function listFilter($listFilter, $search,&$isexistFilter,&$isExistField) {
+function getFiltersArray($list_filters){
+function boxViewHscroll($pagination, $component_order, $list_select_arr) { ?>
+function plusDivs(per_page,component_order) {
+function showDivs(n,per_page,component_order) {
+ 
+ function callBxSlider($component_order,$list_pagination){  ** not USED?
+
+function list_delete($label, $look) {
+function list_copy($label, $look) {
+function list_add($label, $look) {
+function single_delete($loc, $look) {
+function single_copy($loc, $look) {
+function popup_delete($label, $look) {
+function popup_copy($label, $look) {
+function popup_add($label, $look) {
+function popup_openChild($label, $look) {
+function submitOptions($label, $look) {
+function isAllowedToShowByPrivilegeLevel($row){
+function isStripHtmlTags($value){
+function isFileExistFilterFullFillTheRule($row,$isExistFilter,$isExistField){
+function getDefaultListViewExtraOptions($con,$displaypage){
+// function setLeftRightsidebar_display_functions($con,$page_name,$posittion,&$left_sidebar,&$right_sidebar,&
+(commented out??)
+function showListFilterSelection($row,$filters_srray,$selected_filter_index){
+function showListViewSelection($row,$filters_srray,$selected_filter_index){
+function listColumnWidth($tbRow,$minLimit = 100){
+function calculateWidthsInPercentage($array){
+function truncateLongDataAsPerAvailableWidth($data,$width,$roundPxls=true){
+function format_field_value_length( $tbRow, $value ) {
+
+
+
+
+----------------------------------
+commonCodeFunction.php
+------------------------------------------
+	/*
+function generateBreadcrumbsAndBackPage($row1,$primary_key,$onepage){
+function generateBreadcrumbsAndBackPageForAdd($row1,$onepage){
+function generateCustomFunctionArray($customFunctionArray,$showlineBreak=false ){
+function getRecordAddUrl($list_select_arr,$component_type, $table_type){
+function getRecordAddUrlInner($row){
+function hideBreadCrumb($extraOptions){
+function getDataFromExtraOptionForField($extraOptions,$field){
+function isHaveToShowImage($extraOptions){
+function checkListItemsLimit($extraOptions){
+function parseExtraOptions($string){
+function checkIfEmptyList($list,$row){
+function emptyListConfigs($value){	
+	* These function are common for tab and one page layout
+	*(component_order = S-C , S-R, S-L || component_order = 1, 2,3)
+	*
+	* "generateBreadcrumbsAndBackPage" is function which generate the breadcrumb , so we can understand the
+	*  parent page/listing of the of current page.
+
+
+
+
+	
+------------------------------------------
+sidebar_display_functions.php
+------------------------------------------
+function sidebar($sidebar, $both_sidebar, $page_name, $sidebar_width) {
+(short file ...)
+
+
+------------------------------------------
+functions_user_admin.php
+------------------------------------------
+function isUserLoggedin()
+function isProjectOwner($pid)
+function isAdmin()
+function get_user_details($userTblArray)
+function get_client_ip()
+function profileCompletion($users, $userTblArray)
+function loginNotRequired(){
+function resetPasswordIfFlagIsSet($con){	
+
+
+
+
+------------------------------------------
+functions_misc.php
+------------------------------------------
+/*
+* "isUserLoggedIn" function is played an important role to check
+* Is user logged or not by checking the keyword  "UID" is set and not blank
+* return => true if uid set in session
+*           flase if not set or blank
+class FlashMessage
+  public static function render()
+  public static function add($message)
+
+function imageUpload($fileDetails)
+
+function getAllCategories()
+
+function emailAlreadyExists($email, $userTblArray)
+function userNameAlreadyExists($uname, $userTblArray)
+
+function fileUploadCare($uploadCareURL, $imageName, $src)
+
+function create_recovery_password()
+function send_mail_to($to, $subject, $message_to, $headers)
+public function likeUser(){
+
+function userHasPrivilege(){
+function itemHasVisibility($visibility){
+function itemHasPrivilege($privilege){
+function itemEditable($editable){
+
+function parseListExtraOption($listExtraOptions,$inPx=false){
+
+function getSliderImages($description,$dict_id){
+function getImages($description){
+function getBannerImages($description){
+
+function getIframeUrl($description){
+function dislayUserNameSelector($selector){
+function setUserDataInSession($con,$user){
+
+function log_event($page_name,$action,$senderId=false,$reciverId=false){
+function log_notification($type,$displayPage,$action,$senderId,$reciverId,$notification_subject,$notification_message){
+function send_notification_alert($type,$displayPage,$action,$senderId,$reciverId,
+function sendEmailNotification($page,$action,$senderId,$reciverId,$notification_subject,
+function sendMessageAsEmail($to,$messageText){
+function sendMessageAndAddLog(){
+
+function getUserData($userId){
+function getSliderInterval($extra_options){
+function setBoxStyles($listExtraOptions){
+function issetStyleForBox($array,$filter){
+function fetchStyleConfigs($category_styles){
+function findAndSetCategoryStyles($con,$category_styles){
+function getListSortingValue($list_sort){
+
+
+------------------------------------------
+nav_functions.php
+------------------------------------------	
+function Navigation($page, $menu_location = 'header') {
+function GetSideBarNavigation($page_name,$menu_location){
+function getDDUrl($list_select){
+function getNavItemIcon($item_icon,$class,$style){
+function getNavTarget($row){
+function getSeperator($label=''){	
+function itemHasEnable($enable){
+function navHasVisibility(){
+function generateSideBarNavigation($navItems,$menu){
+function generateTopNavigation($navItems,$loginRequired){
+function getSideBarNavItems($page,$menu_location,$overRide= false){	
+function getNavItems($page,$menu_location,$overRide= false){
+	
+
+	
+	
+	
+------------------------------------------
+component_display_functions.php
+------------------------------------------
+Generally - processes the Navigation Menu(s()
+
+Navigation Processing ...
+ * function Get_Serial_Tab_Links($page_name)
+
+ * ****Creating TABS
+ * function Navigation($page, $menu_location = 'header')
+ * Getting tabs name for page_name
+ 
+function is_FFFR_DD($componentType){
+function ShowTab($page_name, $rs, $row, $tab, $class=''){
+function generateTabs($page_name,$row,$ulClass='vertical-tab '){
+function Get_Serial_Tab_Links($page_name,$sidebar) {
+
+function headersAndSubHeaders($page_name){
+
+function ShowComponentTypeHeaderContent($page_name,$ComponentOrder=''){
+function ShowComponentTypeSubHeaderContent($page_name,$ComponentOrder=''){
+function ShowComponentTypeBanner($page_name,$ComponentOrder=''){
+function ShowComponentTypeParallaxBanner($page_name,&$haveParalax,$ComponentOrder=''){
+function ShowComponentTypeContent($page_name,$ComponentOrder=''){
+function ShowComponentTypeURL($page_name,$ComponentOrder=''){
+function ShowComponentTypeSlider($page_name,$ComponentOrder=''){
+function ShowComponentTypeImage($page_name,$ComponentOrder=''){
+function ShowComponentTypeIcon($page_name,$ComponentOrder=''){
+
+function Footer($page, $menu_location = 'footer') {
+
+
+	
+------------------------------------------
+html_headers.php
+-------------------------------------------
+html tags (before "body")
+loads initial javascript and other external APis/files, css, bootstrap, font files, jquery
+
+
+
+
+------------------------------------------
+fffr_icons.php
+------------------------------------------
+function fffr_friend($row){
+function fffr_favorite($row){	
+function fffr_follow($row){	
+function fffr_contact($row){
+function fffr_rating($row){	
+function fffr_icons($page_name){ 
+function iconOrButton($row,$check,$type){
+
+------------------------------------------
+footer.php
+-----------------------------------------
+Just html to format the footer ...
+this might need to be overhauled or eliminated
+
+------------------------------------------
+functions_loader.php
+------------------------------------------
+loads all the other function files
+
+
+------------------------------------------
+config.php
+------------------------------------------
+sets the basline URL and folders based on the current domain/server path
+
+------------------------------------------
+appConfig.php
+-----------------------------
+this starts/restarts the app and session variables
+
+function start_app_session
+(is called upon boot/reboot - or upon login/logout
+
+
+------------------------------------------
+login.php
+------------------------------
+handles login 
+(needs scrutiny)
+
+
+------------------------------------------
+register.php
+------------------------------
+signup/registration functions
+
+------------------------------------------
+logout.php
+------------------------------
+forces logout
+
+------------------------------------------
+login_functions.php
+-------------------------------
+function generateFacebookButton($facebook_array){
+function generateGoogleButton($google_array){
+function generateLinkedinButton($linkedin_array){
+function callToLogin(){
+function callToSignup(){
+function forgotPassword(){
+function resetPassword(){
+function changePassword(){
+function sendResetLinkEmail($data,$email){
+function sendVerificationEmail($data){
+function facebookLogin(){
+function linkedInLogin(){
+function importProfileFromLinkedIn(){
+function verifyEmail(){
+function redirectToResetPassword(){
+
+
+
+
+home-slider.php
+------------------------------
+html - just for the home page slider ...
+might be deprcated once we have the general component_type=slider
+
+
+import_profile_linkedin.php
+------------------------------
+
+
+dbFunctions.php
+===========================================
+function connect($config = 'false')
+function connect_generic()
+function connect($config = 'false') 
+function query($qry)
+function insert($table, $data, $config = 'false')
+function insertString($data)
+function update($table, $data, $where, $config = 'false')
+function delete($table, $where)
+function updateString($data)
+function whereString($data)
+function getWhere($table, $where = "false", $order = "", $setwhereString = true)
+function get($table, $ws)
+function getMulti($table, $ws, $field = 'false')
+function numOfRows($table, $where)
+function sumValues($table, $where = 'false')
+function firstFieldName($tableName)
+function getColumnNames($tableName)
+function nextKey($tblName, $pkey, $current_id, $clause)
+function prevKey($tblName, $pkey, $current_id, $clause)
+function firstKey($tblName, $pkey, $clause)
+function lastKey($tblName, $pkey, $clause)
+function secure($value, $type = "", $quoted = true)
+function is_empty($value)
+
+resizeimage.php
+------------------------
+
+
+urlsFiles.php
+------------------------
+NOT USED
+
+load_handler.php
+special_handler.php
+--------------------------
+currently not used ...
+but is / was being used for direct DD url's 
+(url's constructed to dirctly access certain pages and records

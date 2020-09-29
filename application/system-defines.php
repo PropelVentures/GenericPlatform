@@ -9,6 +9,9 @@ define("CHILD", "Child");
 define("USER", "User");
 
 
+define("SPECIAL_COMPONENT_TYPES_DEFAULT_ABOVE","header|header1|header2|banner|slider|subheader|subheader1|subheader2");
+define("SPECIAL_COMPONENT_TYPES","header|header1|header2|banner|slider|content|url|text|subheader|subheader1|subheader2|image|icon");
+
 // For Key Fields
 define('KEYFIELD_PLACEHOLDER', "******");
 
@@ -259,7 +262,7 @@ define("transSuccess", "Transaction Successful!");
 define("transFail", "Transaction Fail, Please Try again!");
 
 /* * ************** ERROR CODE ******************** */
-define("ERROR_403", "You don't have enough privilege to view contents");
+define("ERROR_NOT_ENOUGH_PRIVILEGE_LEVEL", "You don't have enough privilege to view contents");
 
 /* * ****************MAP CONSTANT*************************** */
 define("GOOGLE_GEO_API_KEY", "AIzaSyD2XMNK3swWjkiGUIGxnD34A3nHxDZxHM4");
@@ -277,12 +280,12 @@ define("LINKEDIN_APP_ID", "86j4ktoqu4eouz");
 define("LINKEDIN_APP_SECRET", "XfrQ5g1mCy7DLPAE");
 define("LINKEDIN_APP_PERMISSIONS", "r_emailaddress r_liteprofile w_member_social");
 define("LINKEDIN_IMPORT_PROFILE_APP_REDIRECT_URL", BASE_URL . "system/import_profile_linkedin.php");
-define("LINKEDIN_SIGNIN_APP_REDIRECT_URL", BASE_URL . "system/main.php?display=genericlogin&layout=&style=");
+define("LINKEDIN_SIGNIN_APP_REDIRECT_URL", BASE_URL . "system/main-loop.php?page_name=genericlogin&layout=&style=");
 //define("LINKEDIN_APP_ID" , "81jr2ghfqfv7is");
 //Message to show when a record limit is reached for a list
 define("MAXIMUM_LIMIT_REACHED", "Maximum records limit reach, You can not add more records");
 
-define("supereditEnabled", "on");
+define("supereditEnabled", "OFF");
 define("supereditToggle", "false");
 
 /* * *Form labels for PROFILE page** */
